@@ -1,0 +1,204 @@
+{
+  "apk": "app/build/outputs/apk/debug/app-debug.apk",
+  "bytes": 890073507,
+  "sha256": "13ae925f380092dd707e35a0b3a14259dd6f587c213036def738810970bcdd36",
+  "payloadStoredBytes": 889626163,
+  "zipSigningAndAlignmentBytes": 447344,
+  "groups": {
+    "3D anatomy assets": {
+      "entries": 51,
+      "storedBytes": 30731837,
+      "uncompressedBytes": 32408140,
+      "percentOfApk": 3.4527
+    },
+    "ABI arm64-v8a": {
+      "entries": 12,
+      "storedBytes": 21209838,
+      "uncompressedBytes": 53111408,
+      "percentOfApk": 2.3829
+    },
+    "ABI armeabi-v7a": {
+      "entries": 8,
+      "storedBytes": 18585552,
+      "uncompressedBytes": 37984052,
+      "percentOfApk": 2.0881
+    },
+    "ABI x86": {
+      "entries": 8,
+      "storedBytes": 24034035,
+      "uncompressedBytes": 59050140,
+      "percentOfApk": 2.7002
+    },
+    "ABI x86_64": {
+      "entries": 8,
+      "storedBytes": 23417049,
+      "uncompressedBytes": 57783832,
+      "percentOfApk": 2.6309
+    },
+    "DEX resources and other payload": {
+      "entries": 831,
+      "storedBytes": 40974882,
+      "uncompressedBytes": 107627239,
+      "percentOfApk": 4.6035
+    },
+    "GIF images": {
+      "entries": 1205,
+      "storedBytes": 202426773,
+      "uncompressedBytes": 202426773,
+      "percentOfApk": 22.7427
+    },
+    "Linux / DSH runtime": {
+      "entries": 5,
+      "storedBytes": 239070940,
+      "uncompressedBytes": 239070940,
+      "percentOfApk": 26.8597
+    },
+    "Other fish assets": {
+      "entries": 11,
+      "storedBytes": 3564002,
+      "uncompressedBytes": 3584821,
+      "percentOfApk": 0.4004
+    },
+    "Other workout assets": {
+      "entries": 10,
+      "storedBytes": 2319911,
+      "uncompressedBytes": 3735318,
+      "percentOfApk": 0.2606
+    },
+    "Speech models and vocabulary": {
+      "entries": 9,
+      "storedBytes": 283291344,
+      "uncompressedBytes": 283472605,
+      "percentOfApk": 31.8279
+    }
+  },
+  "runtimeAssets": [
+    {
+      "path": "assets/fish/dsh-runtime.bin",
+      "storedBytes": 127308331,
+      "uncompressedBytes": 127308331
+    },
+    {
+      "path": "assets/fish/glibc-python.bin",
+      "storedBytes": 6565414,
+      "uncompressedBytes": 6565414
+    },
+    {
+      "path": "assets/fish/offline-rootfs.bin",
+      "storedBytes": 85783057,
+      "uncompressedBytes": 85783057
+    },
+    {
+      "path": "assets/fish/python-support.bin",
+      "storedBytes": 904360,
+      "uncompressedBytes": 904360
+    },
+    {
+      "path": "assets/fish/time-agent-overlay.bin",
+      "storedBytes": 18509778,
+      "uncompressedBytes": 18509778
+    }
+  ],
+  "largestEntries": [
+    {
+      "path": "assets/asr/sensevoice/model.int8.onnx",
+      "storedBytes": 239233841,
+      "uncompressedBytes": 239233841
+    },
+    {
+      "path": "assets/fish/dsh-runtime.bin",
+      "storedBytes": 127308331,
+      "uncompressedBytes": 127308331
+    },
+    {
+      "path": "assets/fish/offline-rootfs.bin",
+      "storedBytes": 85783057,
+      "uncompressedBytes": 85783057
+    },
+    {
+      "path": "assets/asr/vosk-model-small-cn-0.22.zip",
+      "storedBytes": 43898754,
+      "uncompressedBytes": 43898754
+    },
+    {
+      "path": "assets/fish/time-agent-overlay.bin",
+      "storedBytes": 18509778,
+      "uncompressedBytes": 18509778
+    },
+    {
+      "path": "classes.dex",
+      "storedBytes": 10828065,
+      "uncompressedBytes": 42264604
+    },
+    {
+      "path": "lib/x86/libonnxruntime.so",
+      "storedBytes": 10298121,
+      "uncompressedBytes": 26491148
+    },
+    {
+      "path": "assets/workout/anatomy/xitong/obj/all.emg",
+      "storedBytes": 10196436,
+      "uncompressedBytes": 10193336
+    },
+    {
+      "path": "lib/x86_64/libonnxruntime.so",
+      "storedBytes": 9926834,
+      "uncompressedBytes": 25581120
+    },
+    {
+      "path": "lib/arm64-v8a/libonnxruntime.so",
+      "storedBytes": 8621469,
+      "uncompressedBytes": 22249560
+    },
+    {
+      "path": "lib/armeabi-v7a/libonnxruntime.so",
+      "storedBytes": 7615598,
+      "uncompressedBytes": 15359592
+    },
+    {
+      "path": "assets/fish/glibc-python.bin",
+      "storedBytes": 6565414,
+      "uncompressedBytes": 6565414
+    },
+    {
+      "path": "classes17.dex",
+      "storedBytes": 5766958,
+      "uncompressedBytes": 14539364
+    },
+    {
+      "path": "lib/x86/libmlkit_google_ocr_pipeline.so",
+      "storedBytes": 5085276,
+      "uncompressedBytes": 11561048
+    },
+    {
+      "path": "lib/x86_64/libmlkit_google_ocr_pipeline.so",
+      "storedBytes": 4889192,
+      "uncompressedBytes": 11626128
+    },
+    {
+      "path": "lib/arm64-v8a/libmlkit_google_ocr_pipeline.so",
+      "storedBytes": 4689888,
+      "uncompressedBytes": 11064544
+    },
+    {
+      "path": "classes19.dex",
+      "storedBytes": 4459722,
+      "uncompressedBytes": 10978972
+    },
+    {
+      "path": "lib/x86/libvosk.so",
+      "storedBytes": 3966502,
+      "uncompressedBytes": 10397552
+    },
+    {
+      "path": "lib/x86_64/libvosk.so",
+      "storedBytes": 3902829,
+      "uncompressedBytes": 10335120
+    },
+    {
+      "path": "classes18.dex",
+      "storedBytes": 3673136,
+      "uncompressedBytes": 9913720
+    }
+  ]
+}

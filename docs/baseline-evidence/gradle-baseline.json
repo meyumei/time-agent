@@ -1,0 +1,20 @@
+{
+  "exitCode": 0,
+  "startedAt": "2026-10-31T19:18:37.0259300+08:00",
+  "sourceCommit": "61e4806ebfc65c17967af9ddb1c30f394f964531",
+  "finishedAt": "2026-10-31T19:24:21.1286164+08:00",
+  "tasks": [
+    ":core:test",
+    ":agent-runtime:testDebugUnitTest",
+    ":app:testDebugUnitTest",
+    ":app:assembleDebug",
+    ":app:lintDebug"
+  ],
+  "flags": [
+    "--rerun-tasks",
+    "--console=plain",
+    "--no-parallel",
+    "--max-workers=2",
+    "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK"
+  ]
+}

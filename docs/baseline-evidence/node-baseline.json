@@ -1,0 +1,7 @@
+{
+  "startedAt": "2026-10-31T19:15:34.6477596+08:00",
+  "exitCode": 0,
+  "finishedAt": "2026-10-31T19:15:35.4511740+08:00",
+  "command": "node --test test/*.test.mjs",
+  "nodeVersion": "v24.16.0"
+}

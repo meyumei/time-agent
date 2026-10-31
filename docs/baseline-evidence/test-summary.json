@@ -1,0 +1,1187 @@
+{
+  "date": "2026-10-31",
+  "businessBaseline": "660d129",
+  "modules": {
+    "core": {
+      "tests": 82,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 82,
+      "suiteCount": 11,
+      "suites": [
+        {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.core.CourseImportTest",
+          "timestamp": "2026-10-31T11:18:50"
+        },
+        {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.core.FishCompanionTest",
+          "timestamp": "2026-10-31T11:18:50"
+        },
+        {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.core.RecurringRulesTest",
+          "timestamp": "2026-10-31T11:18:50"
+        },
+        {
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.core.SleepSummaryTest",
+          "timestamp": "2026-10-31T11:18:50"
+        },
+        {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.core.TimeInputTest",
+          "timestamp": "2026-10-31T11:18:50"
+        },
+        {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.core.TimelineSelectionTest",
+          "timestamp": "2026-10-31T11:18:50"
+        },
+        {
+          "tests": 11,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.core.TimelineViewportTest",
+          "timestamp": "2026-10-31T11:18:50"
+        },
+        {
+          "tests": 10,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.core.TimeRulesTest",
+          "timestamp": "2026-10-31T11:18:50"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.core.VoiceAudioTest",
+          "timestamp": "2026-10-31T11:18:50"
+        },
+        {
+          "tests": 19,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.core.workout.WorkoutExtendedRulesTest",
+          "timestamp": "2026-10-31T11:18:50"
+        },
+        {
+          "tests": 11,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.core.workout.WorkoutRulesTest",
+          "timestamp": "2026-10-31T11:18:51"
+        }
+      ],
+      "skippedCases": [],
+      "failedCases": []
+    },
+    "agent-runtime": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 7,
+      "suiteCount": 3,
+      "suites": [
+        {
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.runtime.GuestPathsTest",
+          "timestamp": "2026-10-31T11:18:47"
+        },
+        {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.runtime.RuntimeUpgradeTest",
+          "timestamp": "2026-10-31T11:18:47"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.runtime.StdoutEventsTest",
+          "timestamp": "2026-10-31T11:18:47"
+        }
+      ],
+      "skippedCases": [],
+      "failedCases": []
+    },
+    "app": {
+      "tests": 629,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2,
+      "passed": 627,
+      "suiteCount": 122,
+      "suites": [
+        {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.AssistantConfirmationTest",
+          "timestamp": "2026-10-31T11:22:16"
+        },
+        {
+          "tests": 20,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.AssistantConversationTest",
+          "timestamp": "2026-10-31T11:22:17"
+        },
+        {
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.AssistantInboxIntegrationTest",
+          "timestamp": "2026-10-31T11:22:27"
+        },
+        {
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.AssistantInboxProtocolTest",
+          "timestamp": "2026-10-31T11:22:28"
+        },
+        {
+          "tests": 15,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.AssistantParserTest",
+          "timestamp": "2026-10-31T11:22:28"
+        },
+        {
+          "tests": 9,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.AssistantProtocolTest",
+          "timestamp": "2026-10-31T11:22:28"
+        },
+        {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.AssistantRepositoryIntegrationTest",
+          "timestamp": "2026-10-31T11:22:28"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.AssistantRequestCancellationTest",
+          "timestamp": "2026-10-31T11:22:28"
+        },
+        {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.AssistantScreenFlowTest",
+          "timestamp": "2026-10-31T11:22:29"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.AssistantSettingsTest",
+          "timestamp": "2026-10-31T11:22:33"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.AssistantVoiceResultTest",
+          "timestamp": "2026-10-31T11:22:33"
+        },
+        {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.ConversationIntentGuardTest",
+          "timestamp": "2026-10-31T11:22:34"
+        },
+        {
+          "tests": 16,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.ConversationInterpreterTest",
+          "timestamp": "2026-10-31T11:22:34"
+        },
+        {
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.HoldToTalkSessionTest",
+          "timestamp": "2026-10-31T11:22:34"
+        },
+        {
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.LanguageSafetyRegressionTest",
+          "timestamp": "2026-10-31T11:22:34"
+        },
+        {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.LocalHistoryPrivacyTest",
+          "timestamp": "2026-10-31T11:22:34"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.NaturalRecordParserTest",
+          "timestamp": "2026-10-31T11:22:34"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.OfflineModelFilesTest",
+          "timestamp": "2026-10-31T11:22:34"
+        },
+        {
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.OfflineSpeechInputTest",
+          "timestamp": "2026-10-31T11:22:35"
+        },
+        {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.RecordNarrationIntegrationTest",
+          "timestamp": "2026-10-31T11:22:35"
+        },
+        {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.SampleCourseCleanupTest",
+          "timestamp": "2026-10-31T11:22:35"
+        },
+        {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.SleepInferenceTest",
+          "timestamp": "2026-10-31T11:22:36"
+        },
+        {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.VoiceCommandHintsTest",
+          "timestamp": "2026-10-31T11:22:36"
+        },
+        {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.VoiceNBestTranscriptTest",
+          "timestamp": "2026-10-31T11:22:36"
+        },
+        {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.VoiceTranscriptTest",
+          "timestamp": "2026-10-31T11:22:36"
+        },
+        {
+          "tests": 20,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.assistant.VoiceUnderstandingRegressionTest",
+          "timestamp": "2026-10-31T11:22:36"
+        },
+        {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.attachments.AttachmentOcrTest",
+          "timestamp": "2026-10-31T11:22:36"
+        },
+        {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.attachments.AttachmentStoreTest",
+          "timestamp": "2026-10-31T11:22:36"
+        },
+        {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.backup.AttachmentBackupTest",
+          "timestamp": "2026-10-31T11:22:36"
+        },
+        {
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.backup.PersonalBackupTest",
+          "timestamp": "2026-10-31T11:22:37"
+        },
+        {
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.backup.ProjectsBackupTest",
+          "timestamp": "2026-10-31T11:22:40"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.backup.RecurringBackupTest",
+          "timestamp": "2026-10-31T11:22:41"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.calendar.CalendarHandoffTest",
+          "timestamp": "2026-10-31T11:22:42"
+        },
+        {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.data.ActivityTemplatesTest",
+          "timestamp": "2026-10-31T11:22:49"
+        },
+        {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.data.AssistantAtomicityTest",
+          "timestamp": "2026-10-31T11:22:50"
+        },
+        {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.data.BusinessMigrationTest",
+          "timestamp": "2026-10-31T11:22:50"
+        },
+        {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.data.DatabaseMigrationTest",
+          "timestamp": "2026-10-31T11:22:50"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.data.GridCreationTest",
+          "timestamp": "2026-10-31T11:22:50"
+        },
+        {
+          "tests": 16,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.data.HealthSyncRepositoryTest",
+          "timestamp": "2026-10-31T11:22:50"
+        },
+        {
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.data.InboxNotesPersistenceTest",
+          "timestamp": "2026-10-31T11:22:51"
+        },
+        {
+          "tests": 13,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.data.InboxNotesRedoTest",
+          "timestamp": "2026-10-31T11:22:52"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.data.JsonCourseAdapterTest",
+          "timestamp": "2026-10-31T11:22:52"
+        },
+        {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.data.PersonalMemoryRepositoryTest",
+          "timestamp": "2026-10-31T11:22:52"
+        },
+        {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.data.ProjectsMigrationTest",
+          "timestamp": "2026-10-31T11:22:53"
+        },
+        {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.data.ProjectsRepositoryTest",
+          "timestamp": "2026-10-31T11:22:53"
+        },
+        {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.data.ProjectsSchemaTest",
+          "timestamp": "2026-10-31T11:22:53"
+        },
+        {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.data.RecordTitleMigrationTest",
+          "timestamp": "2026-10-31T11:22:53"
+        },
+        {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.data.RecurringMigrationTest",
+          "timestamp": "2026-10-31T11:22:53"
+        },
+        {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.data.RecurringSchemaTest",
+          "timestamp": "2026-10-31T11:22:53"
+        },
+        {
+          "tests": 15,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.data.RepositoryTest",
+          "timestamp": "2026-10-31T11:22:53"
+        },
+        {
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.data.SuggestionActionsTest",
+          "timestamp": "2026-10-31T11:22:54"
+        },
+        {
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.data.SuggestionRepositoryTest",
+          "timestamp": "2026-10-31T11:22:55"
+        },
+        {
+          "tests": 12,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.extraction.ChatTextExtractorTest",
+          "timestamp": "2026-10-31T11:22:55"
+        },
+        {
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.extraction.ExtractionSaveTest",
+          "timestamp": "2026-10-31T11:22:55"
+        },
+        {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.fish.FishCharacterTest",
+          "timestamp": "2026-10-31T11:22:56"
+        },
+        {
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.fish.FishCompanionNativeTest",
+          "timestamp": "2026-10-31T11:23:00"
+        },
+        {
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.fish.FishGlobalCompanionTest",
+          "timestamp": "2026-10-31T11:23:04"
+        },
+        {
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.fish.FishGlobalInteractionTest",
+          "timestamp": "2026-10-31T11:23:05"
+        },
+        {
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.fish.FishTimeToolsTest",
+          "timestamp": "2026-10-31T11:23:05"
+        },
+        {
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.health.GadgetbridgeImporterTest",
+          "timestamp": "2026-10-31T11:23:05"
+        },
+        {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.health.HealthConnectReaderTest",
+          "timestamp": "2026-10-31T11:23:05"
+        },
+        {
+          "tests": 10,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.history.LocalHistoryTest",
+          "timestamp": "2026-10-31T11:23:05"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.imports.CourseImportScreenTest",
+          "timestamp": "2026-10-31T11:23:05"
+        },
+        {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 1,
+          "name": "com.timeagent.imports.PdfTimetableExtractorTest",
+          "timestamp": "2026-10-31T11:23:07"
+        },
+        {
+          "tests": 9,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.imports.TimetableParsersTest",
+          "timestamp": "2026-10-31T11:23:11"
+        },
+        {
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ledger.LedgerTest",
+          "timestamp": "2026-10-31T11:23:11"
+        },
+        {
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.memory.PersonalMemoryTest",
+          "timestamp": "2026-10-31T11:23:12"
+        },
+        {
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.organization.OrganizationTest",
+          "timestamp": "2026-10-31T11:23:12"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.projects.ProjectProgressTest",
+          "timestamp": "2026-10-31T11:23:12"
+        },
+        {
+          "tests": 10,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.recurring.DeadlineServiceTest",
+          "timestamp": "2026-10-31T11:23:12"
+        },
+        {
+          "tests": 14,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.recurring.RecurringServiceTest",
+          "timestamp": "2026-10-31T11:23:13"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.recurring.RecurringStateTest",
+          "timestamp": "2026-10-31T11:23:14"
+        },
+        {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.reminders.ReminderAppLaunchTest",
+          "timestamp": "2026-10-31T11:23:14"
+        },
+        {
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.reminders.ReminderNotificationContractTest",
+          "timestamp": "2026-10-31T11:23:16"
+        },
+        {
+          "tests": 11,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.reminders.ReminderSystemTest",
+          "timestamp": "2026-10-31T11:23:16"
+        },
+        {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.reminders.ReminderTaskLifecycleTest",
+          "timestamp": "2026-10-31T11:23:26"
+        },
+        {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.reply.ReplyCopilotTest",
+          "timestamp": "2026-10-31T11:23:26"
+        },
+        {
+          "tests": 9,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.suggestions.SuggestionEngineTest",
+          "timestamp": "2026-10-31T11:23:26"
+        },
+        {
+          "tests": 26,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 1,
+          "name": "com.timeagent.ui.AppFlowTest",
+          "timestamp": "2026-10-31T11:23:26"
+        },
+        {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.BriefingHealthStatusTest",
+          "timestamp": "2026-10-31T11:23:34"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.ButlerBatchOneFlowTest",
+          "timestamp": "2026-10-31T11:23:34"
+        },
+        {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.ButlerBatchTwoFlowTest",
+          "timestamp": "2026-10-31T11:23:35"
+        },
+        {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.ButlerPageGroupingTest",
+          "timestamp": "2026-10-31T11:23:36"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.ConflictDisplayProposalTest",
+          "timestamp": "2026-10-31T11:23:36"
+        },
+        {
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.ConflictGroupAppearanceTest",
+          "timestamp": "2026-10-31T11:23:36"
+        },
+        {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.ConflictLayoutSampleTest",
+          "timestamp": "2026-10-31T11:23:36"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.DailyBriefingCompactUiTest",
+          "timestamp": "2026-10-31T11:23:37"
+        },
+        {
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.DailyBriefingTest",
+          "timestamp": "2026-10-31T11:23:37"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.DeadlineEntryTest",
+          "timestamp": "2026-10-31T11:23:37"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.DeadlineStatusTest",
+          "timestamp": "2026-10-31T11:23:37"
+        },
+        {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.FishNativePreviewTest",
+          "timestamp": "2026-10-31T11:23:37"
+        },
+        {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.GadgetbridgeSyncFlowTest",
+          "timestamp": "2026-10-31T11:23:38"
+        },
+        {
+          "tests": 12,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.GridBlockEditorFlowTest",
+          "timestamp": "2026-10-31T11:23:39"
+        },
+        {
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.HealthSyncScreenTest",
+          "timestamp": "2026-10-31T11:23:42"
+        },
+        {
+          "tests": 12,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.HoldToTalkButtonTest",
+          "timestamp": "2026-10-31T11:23:42"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.HomeNavigationFlowTest",
+          "timestamp": "2026-10-31T11:23:43"
+        },
+        {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.HomeVoiceDockTest",
+          "timestamp": "2026-10-31T11:23:45"
+        },
+        {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.MainActivityWindowTest",
+          "timestamp": "2026-10-31T11:23:45"
+        },
+        {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.ProjectNextActionTest",
+          "timestamp": "2026-10-31T11:23:45"
+        },
+        {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.ProjectsEntryTest",
+          "timestamp": "2026-10-31T11:23:45"
+        },
+        {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.RecurringEntryTest",
+          "timestamp": "2026-10-31T11:23:45"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.SuggestionInboxTest",
+          "timestamp": "2026-10-31T11:23:46"
+        },
+        {
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.TaskPointInboxFlowTest",
+          "timestamp": "2026-10-31T11:23:46"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.ThemePreferenceTest",
+          "timestamp": "2026-10-31T11:23:47"
+        },
+        {
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.TimelineCardTest",
+          "timestamp": "2026-10-31T11:23:48"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.TimelineColorPreferencesTest",
+          "timestamp": "2026-10-31T11:23:48"
+        },
+        {
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.TimelineConflictGroupUiTest",
+          "timestamp": "2026-10-31T11:23:48"
+        },
+        {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.TimelineConflictsTest",
+          "timestamp": "2026-10-31T11:23:48"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.TimelineGroupHitTest",
+          "timestamp": "2026-10-31T11:23:48"
+        },
+        {
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.TimelinePaletteTest",
+          "timestamp": "2026-10-31T11:23:48"
+        },
+        {
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.TimelinePendingSelectionTest",
+          "timestamp": "2026-10-31T11:23:48"
+        },
+        {
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.TimelinePerformanceTest",
+          "timestamp": "2026-10-31T11:23:48"
+        },
+        {
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.TimelineRecordWidthTest",
+          "timestamp": "2026-10-31T11:23:49"
+        },
+        {
+          "tests": 12,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.TimelineRenderCacheTest",
+          "timestamp": "2026-10-31T11:23:49"
+        },
+        {
+          "tests": 12,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.TimelineViewportUiTest",
+          "timestamp": "2026-10-31T11:23:49"
+        },
+        {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.VoiceRecordEditorTest",
+          "timestamp": "2026-10-31T11:23:49"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.ui.WakeupInteractionPreviewTest",
+          "timestamp": "2026-10-31T11:23:49"
+        },
+        {
+          "tests": 21,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.workout.data.WorkoutRepositoryTest",
+          "timestamp": "2026-10-31T11:23:52"
+        },
+        {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.workout.WorkoutAssetsTest",
+          "timestamp": "2026-10-31T11:23:50"
+        },
+        {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.workout.WorkoutDialogTest",
+          "timestamp": "2026-10-31T11:23:50"
+        },
+        {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.workout.WorkoutFlowTest",
+          "timestamp": "2026-10-31T11:23:50"
+        },
+        {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "name": "com.timeagent.workout.WorkoutRuntimeTest",
+          "timestamp": "2026-10-31T11:23:52"
+        }
+      ],
+      "skippedCases": [
+        {
+          "class": "com.timeagent.imports.PdfTimetableExtractorTest",
+          "test": "locallyProvidedScutPdfHasSixteenScheduledRows"
+        },
+        {
+          "class": "com.timeagent.ui.AppFlowTest",
+          "test": "private PDF imports into Room and renders the full day timeline"
+        }
+      ],
+      "failedCases": []
+    }
+  },
+  "baselineRun": {
+    "exitCode": 0,
+    "startedAt": "2026-10-31T19:18:37.0259300+08:00",
+    "sourceCommit": "61e4806ebfc65c17967af9ddb1c30f394f964531",
+    "finishedAt": "2026-10-31T19:24:21.1286164+08:00",
+    "tasks": [
+      ":core:test",
+      ":agent-runtime:testDebugUnitTest",
+      ":app:testDebugUnitTest",
+      ":app:assembleDebug",
+      ":app:lintDebug"
+    ],
+    "flags": [
+      "--rerun-tasks",
+      "--console=plain",
+      "--no-parallel",
+      "--max-workers=2",
+      "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK"
+    ]
+  },
+  "lint": {
+    "severities": {
+      "Warning": 73,
+      "Information": 2
+    },
+    "issuesById": {
+      "ApplySharedPref": 2,
+      "ImplicitSamInstance": 6,
+      "InlinedApi": 2,
+      "OldTargetApi": 1,
+      "GradleDependency": 9,
+      "TrustAllX509TrustManager": 3,
+      "WakelockTimeout": 1,
+      "StaticFieldLeak": 1,
+      "AutoboxingStateCreation": 2,
+      "ViewConstructor": 1,
+      "UseKtx": 45,
+      "ClickableViewAccessibility": 1,
+      "RtlHardcoded": 1
+    }
+  },
+  "total": {
+    "tests": 718,
+    "passed": 716,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 2
+  }
+}
