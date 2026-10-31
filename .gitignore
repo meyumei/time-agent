@@ -1,0 +1,54 @@
+# Gradle / Android / IDE
+.gradle/
+.kotlin/
+.idea/
+**/build/
+local.properties
+*.iml
+
+# Local-only tooling and session state
+.tools/
+.tmp/
+.workbuddy/
+.archify/
+.paused-workout/
+
+# Generated verification evidence and release artifacts
+evidence/
+outputs/
+
+# Python and local databases
+__pycache__/
+*.py[cod]
+**/_*tmp/
+*.db
+*.sqlite
+*.sqlite3
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+node_modules/
+.env
+.env.*
+!.env.example
+
+# Secrets and signing material
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.key
+id_rsa
+id_ed25519*
+
+# Logs and editor/OS noise
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini

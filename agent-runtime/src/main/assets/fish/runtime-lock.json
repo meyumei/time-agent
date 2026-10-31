@@ -1,0 +1,178 @@
+{
+  "schema": 1,
+  "dsha": {
+    "repository": "https://github.com/DSH-APP/DSHA",
+    "commit": "ff32d420d2b3318f9cbd11877158e349daebc1ca",
+    "apkSha256": "d62f17f23a7949f0f25285ec7afa44cb35de24a6bc91887ba4600023d18ffee0"
+  },
+  "dshVersion": "0.2.1-rc.2",
+  "sdkVersion": "0.2.1-rc.2",
+  "fish": {
+    "repository": "https://github.com/derkinL/dsh-remembers",
+    "commit": "cadbc0219156de3dd2f1c312b3ec41c9b2615736",
+    "enabled": true,
+    "status": "Adapted; real SDK loading and resume checked on desktop; phone pending"
+  },
+  "numpy": {
+    "version": "2.1.3",
+    "wheel": "numpy-2.1.3-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl",
+    "sha256": "8637dcd2caa676e475503d1f8fdb327bc495554e10838019651b76d17b98e512"
+  },
+  "archives": [
+    {
+      "name": "offline-rootfs.bin",
+      "sha256": "b9fe8a0460bc0d0e96f1cec0d65d46c9ff71a10c6a8d05a390b732a81d30cef3",
+      "strip": 0
+    },
+    {
+      "name": "dsh-runtime.bin",
+      "sha256": "0bf8830eef95e317ffd25d9bce4547871694063d94facbf78104ebe2c197097a",
+      "strip": 0
+    },
+    {
+      "name": "python-support.bin",
+      "sha256": "9f8299ea3fa7a1cf84c23087ae80f584599a828585f3175f92da575955a63464",
+      "strip": 0
+    },
+    {
+      "name": "glibc-python.bin",
+      "sha256": "d3f472848bf56dc856f23bc7a20d546703075b4851fd3de9cb07936b52feba9d",
+      "strip": 0
+    },
+    {
+      "name": "time-agent-overlay.bin",
+      "sha256": "5f54ca664f975dff28759ff73bcf09ceec39c0541c65bd35c7291283ac25c529",
+      "strip": 0
+    }
+  ],
+  "biliCli": {
+    "repository": "https://github.com/Alterssss/dsh-bili-whale",
+    "version": "0.4.5",
+    "commit": "ef3f74171b4104249f5583c4d2df9bebad14934a",
+    "scope": "tools only; one shared dsh-remembers role"
+  },
+  "qrcode": {
+    "version": "8.2",
+    "sha256": "16e64e0716c14960108e85d853062c9e8bba5ca8252c0b4d0231b9df4060ff4f"
+  },
+  "edgeTts": {
+    "source": "https://github.com/rany2/edge-tts",
+    "version": "7.3.1",
+    "target": "CPython 3.12 Linux aarch64",
+    "wheels": [
+      {
+        "file": "aiohappyeyeballs-2.7.1-py3-none-any.whl",
+        "sha256": "9243213661e29250eb41368e5daa826fc017156c3b8a11440826b2e3ed376472",
+        "Name": "aiohappyeyeballs",
+        "Version": "2.7.1"
+      },
+      {
+        "file": "aiohttp-3.14.5-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl",
+        "sha256": "abfda5cb094a829f7bc25216a32f7db2e85cc65bd59910f8e7b40b3d9b224764",
+        "Name": "aiohttp",
+        "Version": "3.14.5"
+      },
+      {
+        "file": "aiosignal-1.4.0-py3-none-any.whl",
+        "sha256": "053243f8b92b990551949e63930a839ff0cf0b0ebbe0597b0f3fb19e1a0fe82e",
+        "Name": "aiosignal",
+        "Version": "1.4.0"
+      },
+      {
+        "file": "attrs-26.1.0-py3-none-any.whl",
+        "sha256": "c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309",
+        "Name": "attrs",
+        "Version": "26.1.0"
+      },
+      {
+        "file": "certifi-2026.10.23-py3-none-any.whl",
+        "sha256": "e9b54de76e530bb6cf0ccd036787103acb58fd42ba930ea8bf948ddbaa2f61d1",
+        "Name": "certifi",
+        "Version": "2026.10.23"
+      },
+      {
+        "file": "edge_tts-7.3.1-py3-none-any.whl",
+        "sha256": "2a3c79d6235a7a736d681233823ce5492e829b43eb47beae49aa181237a8f9a4",
+        "Name": "edge-tts",
+        "Version": "7.3.1"
+      },
+      {
+        "file": "frozenlist-1.8.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl",
+        "sha256": "96f423a119f4777a4a056b66ce11527366a8bb92f54e541ade21f2374433f6d4",
+        "Name": "frozenlist",
+        "Version": "1.8.0"
+      },
+      {
+        "file": "idna-3.20-py3-none-any.whl",
+        "sha256": "ab7ae7122974553370f0bdb919e1a960b2cd1bc1ef0276416d896db81c14582c",
+        "Name": "idna",
+        "Version": "3.20"
+      },
+      {
+        "file": "multidict-7.2.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl",
+        "sha256": "fa0ecd064b0ae18d235283abb5adbc4e07304dba8f2aa7c0d61f28bebcc70d4c",
+        "Name": "multidict",
+        "Version": "7.2.1"
+      },
+      {
+        "file": "propcache-0.5.4-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl",
+        "sha256": "60a64cbccaa11b7760ce705a14ada17ba459e7ca9f23ba587eb013821032d7ef",
+        "Name": "propcache",
+        "Version": "0.5.4"
+      },
+      {
+        "file": "tabulate-0.10.0-py3-none-any.whl",
+        "sha256": "f0b0622e567335c8fabaaa659f1b33bcb6ddfe2e496071b743aa113f8774f2d3",
+        "Name": "tabulate",
+        "Version": "0.10.0"
+      },
+      {
+        "file": "typing_extensions-4.16.0-py3-none-any.whl",
+        "sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8",
+        "Name": "typing_extensions",
+        "Version": "4.16.0"
+      },
+      {
+        "file": "yarl-1.25.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl",
+        "sha256": "4d781294bb815ecb5ea57ff6bbf8038e0a31a95fdf3e1788f66e0dc100d64b58",
+        "Name": "yarl",
+        "Version": "1.25.1"
+      }
+    ]
+  },
+  "caBundle": {
+    "source": "https://curl.se/ca/cacert.pem",
+    "snapshot": "2026-10-20",
+    "sha256": "796f1389bfea13c0ed78f663b765baaff54a508e5483786bd6ece73c5e3e3cbe"
+  },
+  "officialDshModules": [
+    {
+      "name": "@deepseek-ai/dsh-tools",
+      "version": "0.2.1-rc.2",
+      "sha256": "1e53932e7c4213ea24a7d87f06960b7a7702cb21f8a5741c97242b4a470a442a",
+      "npmIntegrity": "sha512-K3gET3VPbtxM66pkeRsEGrZ+bQKiBqrTbNXiIreBKu0hP+qPvlSwhiSI5MTnFp2tMFK5rpuYMZosRIdbfrbJ/g==",
+      "path": "usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-tools/lib/index.js"
+    },
+    {
+      "name": "@deepseek-ai/dsh-tool-bash",
+      "version": "0.2.1-rc.2",
+      "sha256": "a1215d7bcaf82c0755be48321ef6bb45075f1cb33296d6263009e9d10fd596f6",
+      "npmIntegrity": "sha512-TwHTe7WTbvkcH9d5mTW8X7FviWEVbDCjfbi6bvsleFSsvPJoWCHdn14XXYlc0hOCpfVWoTxaW2bhryykh/W7+g==",
+      "path": "usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-tool-bash/lib/index.js"
+    },
+    {
+      "name": "@deepseek-ai/dsh-tool-fs",
+      "version": "0.2.1-rc.2",
+      "sha256": "b11d3fa50b9042019a91cc38a6abe35d74ed651374278f95e60b42734e079df1",
+      "npmIntegrity": "sha512-hd3LmMFiOa4TTFL9+oabTe26CjzGUbflCMm8TcXm9jHN1tIhB8el1cyzaQ2x4A15G/jIlAsGZyuwuf5/FFJIOQ==",
+      "path": "usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-tool-fs/lib/index.js"
+    },
+    {
+      "name": "@deepseek-ai/dsh-tool-str-replace-editor",
+      "version": "0.2.1-rc.2",
+      "sha256": "14a7380c94b53150ec5545dfb8fcf28bb26c99b6deef9b27bb9cf4ff6fabb616",
+      "npmIntegrity": "sha512-9F4fQjyCORpO7NABEmAIEVCB3ApZcpf6GyPTwHmh//oJxC9Rg1RHEZFLiXMnsUv78JFj+OihxQaEiz/fjBspmw==",
+      "path": "usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-tool-str-replace-editor/lib/index.js"
+    }
+  ]
+}

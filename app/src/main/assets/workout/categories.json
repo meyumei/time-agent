@@ -1,0 +1,2206 @@
+{
+  "cates": [
+    "胸",
+    "背",
+    "腿",
+    "肩",
+    "前锯肌",
+    "斜方肌",
+    "二头",
+    "三头",
+    "小腿",
+    "前臂",
+    "颈部",
+    "臀部",
+    "功能性",
+    "核心稳定",
+    "腹部",
+    "热身动作",
+    "拉伸",
+    "有氧",
+    "组合",
+    "全身",
+    "计时动作",
+    "Tabata",
+    "自重"
+  ],
+  "cates_small_muscle": {
+    "胸": [
+      {
+        "key": "UpperChest",
+        "label": "上胸",
+        "eng_label": "Upper Chest"
+      },
+      {
+        "key": "Chest",
+        "label": "中下胸",
+        "eng_label": "Mid-Lower Chest"
+      }
+    ],
+    "肩": [
+      {
+        "key": "FontDelt",
+        "label": "前束",
+        "eng_label": "Front Delts"
+      },
+      {
+        "key": "MidDelt",
+        "label": "中束",
+        "eng_label": "Mid Delts"
+      },
+      {
+        "key": "RearDelt",
+        "label": "后束",
+        "eng_label": "Rear Delts"
+      }
+    ],
+    "背": [
+      {
+        "key": "Lats",
+        "label": "背阔肌",
+        "eng_label": "Latissimus Dorsi"
+      },
+      {
+        "key": "TeresMajor",
+        "label": "大圆肌",
+        "eng_label": "Teres Major"
+      },
+      {
+        "key": "Rhomboids",
+        "label": "菱形肌",
+        "eng_label": "Rhomboids"
+      },
+      {
+        "key": "TrapsMiddleLower",
+        "label": "中下斜方",
+        "eng_label": "Middle / Lower Traps"
+      },
+      {
+        "key": "TrapsTop",
+        "label": "上斜方",
+        "eng_label": "Upper Traps"
+      },
+      {
+        "key": "BackLower",
+        "label": "竖脊肌",
+        "eng_label": "Spinal Erectors"
+      }
+    ],
+    "腹部": [
+      {
+        "key": "RectusAbdominis",
+        "label": "腹直肌",
+        "eng_label": "Rectus Abdominis"
+      },
+      {
+        "key": "SideAbs",
+        "label": "侧腹",
+        "eng_label": "Obliques"
+      }
+    ],
+    "腿": [
+      {
+        "key": "Quats",
+        "label": "股四头",
+        "eng_label": "Quadriceps"
+      },
+      {
+        "key": "Hams",
+        "label": "腘绳肌",
+        "eng_label": "Hamstrings"
+      }
+    ],
+    "三头": [
+      {
+        "key": "TricepInner",
+        "label": "内侧头",
+        "eng_label": "Triceps (Inner Head)"
+      },
+      {
+        "key": "TricepOuter",
+        "label": "外侧头",
+        "eng_label": "Triceps (Outer Head)"
+      }
+    ],
+    "二头": [
+      {
+        "key": "Bicep",
+        "label": "内侧头",
+        "eng_label": "Biceps (Inner Head)"
+      },
+      {
+        "key": "BicepOuter",
+        "label": "外侧头",
+        "eng_label": "Biceps (Outer Head)"
+      }
+    ],
+    "臀部": [
+      {
+        "key": "UpperGlute",
+        "label": "上臀",
+        "eng_label": "Upper Glutes"
+      },
+      {
+        "key": "Glutes",
+        "label": "下臀",
+        "eng_label": "Lower Glutes"
+      }
+    ],
+    "功能性": [
+      {
+        "key": "Glutes",
+        "label": "髋",
+        "eng_label": "Hip Joint"
+      },
+      {
+        "key": "Quats",
+        "label": "膝关节",
+        "eng_label": "Quadriceps"
+      },
+      {
+        "key": "MidDelt",
+        "label": "肩关节",
+        "eng_label": "Shoulder"
+      }
+    ],
+    "热身动作": [
+      {
+        "key": "Chest",
+        "label": "胸",
+        "eng_label": "Mid-Lower Chest"
+      },
+      {
+        "key": "Lats",
+        "label": "上背",
+        "eng_label": "Upper Back"
+      },
+      {
+        "key": "BackLower",
+        "label": "下背",
+        "eng_label": "Lower Back"
+      },
+      {
+        "key": "Hams",
+        "label": "腘绳肌",
+        "eng_label": "Hamstrings"
+      },
+      {
+        "key": "Quats",
+        "label": "大腿",
+        "eng_label": "Quadriceps"
+      },
+      {
+        "key": "Glutes",
+        "label": "臀部",
+        "eng_label": "Lower Glutes"
+      },
+      {
+        "key": "MidDelt",
+        "label": "肩膀",
+        "eng_label": "Mid Delts"
+      }
+    ],
+    "拉伸": [
+      {
+        "key": "Chest",
+        "label": "胸",
+        "eng_label": "Mid-Lower Chest"
+      },
+      {
+        "key": "Lats",
+        "label": "上背",
+        "eng_label": "Upper Back"
+      },
+      {
+        "key": "BackLower",
+        "label": "下背",
+        "eng_label": "Lower Back"
+      },
+      {
+        "key": "Quats",
+        "label": "大腿",
+        "eng_label": "Quadriceps"
+      },
+      {
+        "key": "Hams",
+        "label": "腘绳肌",
+        "eng_label": "Hamstrings"
+      },
+      {
+        "key": "Glutes",
+        "label": "臀部",
+        "eng_label": "Lower Glutes"
+      },
+      {
+        "key": "MidDelt",
+        "label": "肩膀",
+        "eng_label": "Mid Delts"
+      }
+    ]
+  },
+  "derivedMovementCategoryIds": {
+    "前锯肌": [
+      "f_s_f387",
+      "plank_recorder",
+      "bench_pullover",
+      "f_s_f397",
+      "55401201",
+      "07251201-Single-Arm-Push-up_Chest_small",
+      "f_s_f450",
+      "f_s_f54",
+      "29791201",
+      "f_s_f182",
+      "f_s_f543",
+      "f_s_f540",
+      "f_s_f202",
+      "f_s_f427",
+      "f_s_f480"
+    ]
+  },
+  "SectionContants": {
+    "barbell": {
+      "key": "barbell",
+      "label": "杠铃",
+      "en_label": "Barbell",
+      "order": 1
+    },
+    "dumbell": {
+      "key": "dumbell",
+      "label": "哑铃",
+      "en_label": "Dumbbell",
+      "order": 2
+    },
+    "kettle_bell": {
+      "key": "kettle_bell",
+      "label": "壶铃",
+      "en_label": "kettle Bell",
+      "order": 2.08
+    },
+    "cable": {
+      "key": "cable",
+      "label": "绳索",
+      "en_label": "Cable Machine",
+      "order": 2.09
+    },
+    "hammer": {
+      "key": "hammer",
+      "label": "悍马机",
+      "en_label": "Hammer Strength Machine",
+      "order": 2.1
+    },
+    "smithmachine": {
+      "key": "smithmachine",
+      "label": "史密斯机",
+      "en_label": "Smith Machine",
+      "order": 3
+    },
+    "machine": {
+      "key": "machine",
+      "label": "器械",
+      "en_label": "Strength Machine",
+      "order": 5
+    },
+    "trxband": {
+      "key": "trxband",
+      "label": "TRX&弹力带",
+      "en_label": "TRX & Resistance Bands",
+      "order": 5.1
+    },
+    "selfweight": {
+      "key": "selfweight",
+      "label": "自重",
+      "en_label": "Bodyweight",
+      "order": 6.1
+    },
+    "other": {
+      "key": "other",
+      "label": "其他",
+      "en_label": "Other",
+      "order": 7
+    }
+  },
+  "MuscleKey": [
+    {
+      "key": "TrapsTop",
+      "label": "斜方肌"
+    },
+    {
+      "key": "UpperChest",
+      "label": "上胸"
+    },
+    {
+      "key": "Chest",
+      "label": "中下胸"
+    },
+    {
+      "key": "Lats",
+      "label": "背部"
+    },
+    {
+      "key": "BackLower",
+      "label": "下背"
+    },
+    {
+      "key": "Cavfs",
+      "label": "小腿"
+    },
+    {
+      "key": "Forearms",
+      "label": "小臂"
+    },
+    {
+      "key": "Tricep",
+      "label": "三头",
+      "hidden": true
+    },
+    {
+      "key": "TricepInner",
+      "label": "三头内侧"
+    },
+    {
+      "key": "TricepOuter",
+      "label": "三头外侧"
+    },
+    {
+      "key": "Bicep",
+      "label": "内侧二头"
+    },
+    {
+      "key": "BicepOuter",
+      "label": "外侧二头"
+    },
+    {
+      "key": "RearDelt",
+      "label": "后束"
+    },
+    {
+      "key": "MidDelt",
+      "label": "中束"
+    },
+    {
+      "key": "FontDelt",
+      "label": "前束"
+    },
+    {
+      "key": "SideAbs",
+      "label": "侧腹"
+    },
+    {
+      "key": "Abs",
+      "label": "腹肌"
+    },
+    {
+      "key": "UpperGlute",
+      "label": "上臀部"
+    },
+    {
+      "key": "Glutes",
+      "label": "下臀部"
+    },
+    {
+      "key": "Hams",
+      "label": "腘绳"
+    },
+    {
+      "key": "Quats",
+      "label": "股四"
+    },
+    {
+      "key": "SerratusAnterior",
+      "label": "前锯肌"
+    }
+  ],
+  "SubAry": [
+    [
+      {
+        "key": "reverse-hyper"
+      },
+      {
+        "key": "band-reverse-hyper"
+      },
+      {
+        "key": "reverse-hyper-45"
+      }
+    ],
+    [
+      {
+        "key": "bench_squat"
+      },
+      {
+        "key": "dumbelllanges"
+      }
+    ],
+    [
+      {
+        "key": "benchpress"
+      },
+      {
+        "key": "Pause-Barbell-Bench-Press_Chest"
+      },
+      {
+        "key": "dumbellpress"
+      },
+      {
+        "key": "62701201"
+      },
+      {
+        "key": "36681201-Dumbbell-Lying-on-Floor-Chest-Press_Chest"
+      },
+      {
+        "key": "smithpress"
+      }
+    ],
+    [
+      {
+        "key": "fly"
+      },
+      {
+        "key": "41491201-Dumbbell-Floor-Fly_Chest.gif"
+      },
+      {
+        "key": "03161201-Dumbbell-Incline-Breeding_Chest_small"
+      },
+      {
+        "key": "03191201-Dumbbell-Incline-Fly_Chest_small"
+      },
+      {
+        "key": "machinefly"
+      },
+      {
+        "key": "10301301-Lever-Pec-Deck-Fly_Chest_180.gif"
+      },
+      {
+        "key": "cablefly"
+      },
+      {
+        "key": "front_cablefly"
+      },
+      {
+        "key": "cable-seated-upward-fly"
+      }
+    ],
+    [
+      {
+        "key": "hammermachine_press"
+      },
+      {
+        "key": "10411201-Lever-Lying-Chest-Press-plate-loaded_Chest_small"
+      },
+      {
+        "key": "machinepress"
+      }
+    ],
+    [
+      {
+        "key": "bardips"
+      },
+      {
+        "key": "Assisted-Chest-Dip-kneeling"
+      },
+      {
+        "key": "33191201-Dumbbell-Lying-on-Floor-Hammer-Press_Chest_withnewxunji"
+      },
+      {
+        "key": "03241201-Dumbbell-Incline-Palm-in-Press_Chest_small"
+      },
+      {
+        "key": "machine_tricep_press"
+      },
+      {
+        "key": "machine_tricep_press14511103-Lever-Seated-Dip_Upper-Arms_180.gif"
+      },
+      {
+        "key": "machine_tricep_extendsion"
+      },
+      {
+        "key": "machine_tricep_extendsionv2"
+      }
+    ],
+    [
+      {
+        "key": "hackssssquat"
+      },
+      {
+        "key": "29501201"
+      },
+      {
+        "key": "smithsquat"
+      },
+      {
+        "key": "18751201-Lever-Squat-plate-loaded_Thighs_small.mp4"
+      },
+      {
+        "key": "15451201-Barbell-full-Zercher-Squat_Thighs.gif"
+      },
+      {
+        "key": "squat"
+      }
+    ],
+    [
+      {
+        "key": "leg_curl_linedown"
+      },
+      {
+        "key": "05821201-Lever-Kneeling-Leg-Curl-_Thighs"
+      },
+      {
+        "key": "Lever-Seated-Leg"
+      },
+      {
+        "key": "Dumbbell-Stiff-Leg-Deadlift"
+      },
+      {
+        "key": "romaniadeadlift"
+      },
+      {
+        "key": "42921201-Dumbbell-Lying-Hamstring-Curl_Thighs"
+      },
+      {
+        "key": "24001201-Inverse-Leg-Curl.mp4"
+      }
+    ],
+    [
+      {
+        "key": "deadlift"
+      },
+      {
+        "key": "Sumo-Deadlift"
+      },
+      {
+        "key": "Smith-Deadlift_Hips_smal"
+      },
+      {
+        "key": "Trap-Bar-Deadlift"
+      }
+    ],
+    [
+      {
+        "key": "legpress_machine"
+      },
+      {
+        "key": "legpress"
+      },
+      {
+        "key": "Barbell-Front-Squat"
+      },
+      {
+        "key": "17601201-Dumbbell-Goblet-Squat_Thighs"
+      },
+      {
+        "key": "Lever-Horizontal-Leg-Press_Thighs"
+      }
+    ],
+    [
+      {
+        "key": "incline-benchpress"
+      },
+      {
+        "key": "upperdumbellpress"
+      },
+      {
+        "key": "16241301-Dumbbell-Reverse-Bench-Press_Chest_180"
+      },
+      {
+        "key": "07571201-Smith-Incline-Bench-Press_Chest_small"
+      }
+    ],
+    [
+      {
+        "key": "weight_pullup"
+      },
+      {
+        "key": "weight_reverse_pullup_heping"
+      },
+      {
+        "key": "pulldown"
+      },
+      {
+        "key": "08181201"
+      },
+      {
+        "key": "22851301-Lever-Pullover-(plate-loaded)_Back.gif"
+      },
+      {
+        "key": "machine_pulldown"
+      },
+      {
+        "key": "26651201-Lever-Lateral-Wide-Pulldown_Back_small.mp4"
+      },
+      {
+        "key": "hammermachine_pulldown"
+      },
+      {
+        "key": "18701201-Lever-Lateral-Pulldown-plate-loaded_Back_small.mp4"
+      },
+      {
+        "key": "weight_reverse_pullup"
+      },
+      {
+        "key": "04991201-Inverted-Row_Back_small.mp4"
+      }
+    ],
+    [
+      {
+        "key": "02131201-Cable-Seated-High-Row-V-bar_Back_small.mp4"
+      },
+      {
+        "key": "closepulldown"
+      },
+      {
+        "key": "narrow-grip-underhand-pulldown"
+      }
+    ],
+    [
+      {
+        "key": "cable_lader_row"
+      },
+      {
+        "key": "Lateral-Raise_Shoulders"
+      },
+      {
+        "key": "laderrow"
+      },
+      {
+        "key": "dumbbell-overhead-lateral-raise"
+      },
+      {
+        "key": "05841201-Lever-Lateral-Raise_shoulder_small"
+      },
+      {
+        "key": "Dumbbell-Standing-Bent-Arm-Lateral-raise-_Shoulders"
+      }
+    ],
+    [
+      {
+        "key": "calble_overhead_pullup"
+      },
+      {
+        "key": "dumbbellbackpull"
+      },
+      {
+        "key": "04231301-Dumbbell-Standing-One-Arm-Extension_Upper-Arms_180.gif"
+      }
+    ],
+    [
+      {
+        "key": "tbar_row"
+      },
+      {
+        "key": "tbar_row_close"
+      },
+      {
+        "key": "sit_cable_row"
+      },
+      {
+        "key": "wide_sit_cable_row"
+      },
+      {
+        "key": "seated-reverse-grip-cable-row"
+      },
+      {
+        "key": "narrowgrip_sit_cable_row"
+      },
+      {
+        "key": "26611201-Cable-Seated-Row-with-V-bar_Back_small.mp4"
+      }
+    ],
+    [
+      {
+        "key": "13501201"
+      },
+      {
+        "key": "seal-machine-row"
+      },
+      {
+        "key": "22651201"
+      },
+      {
+        "key": "11941201-Lever-Lying-T-bar-Row_Back_small.mp4"
+      },
+      {
+        "key": "01631201"
+      },
+      {
+        "key": "36541201"
+      },
+      {
+        "key": "machinerowling"
+      },
+      {
+        "key": "42141201-Lever-Low-Row-plate-loaded_Back__withicon.mp4"
+      },
+      {
+        "key": "33201201-Dumbbell-Hammer-Grip-Incline-Bench-Two-Arm-Row_Back"
+      },
+      {
+        "key": "13281201-Dumbbell-Lying-Rear-Delt-Row_Back_small.mp4"
+      },
+      {
+        "key": "linedown_dumbel_row"
+      },
+      {
+        "key": "linedown_barbell_row"
+      }
+    ],
+    [
+      {
+        "key": "dumbellrowbench"
+      },
+      {
+        "key": "12361201-Dumbbell-One-Arm-Row-rack-support_Back_small.mp4"
+      },
+      {
+        "key": "13191201-Cable-Palm-Rotational-Row_Back_small.mp4"
+      },
+      {
+        "key": "12051201-Cable-one-arm-twisting-seated-row_back_small.mp4"
+      },
+      {
+        "key": "12041201-Cable-one-arm-lat-pulldown_back_small.mp4"
+      },
+      {
+        "key": "seated-single-arm-underhand-pulldown"
+      }
+    ],
+    [
+      {
+        "key": "barbellrow"
+      },
+      {
+        "key": "barbellrow_revseer"
+      },
+      {
+        "key": "30171201-Barbell-Pendlay-Row_Back"
+      },
+      {
+        "key": "07611201-Smith-Narrow-Row_Back_small.mp4"
+      }
+    ],
+    [
+      {
+        "key": "Lever-Seated-Reverse-Fly"
+      },
+      {
+        "key": "sideladerrow"
+      },
+      {
+        "key": "03411201-Dumbbell-Lying-One-Arm-Deltoid-Rear_Shoulders_"
+      },
+      {
+        "key": "66101201-Dumbbell-Incline-Reverse-Raise-With-Chest-Support_Shoulders_"
+      },
+      {
+        "key": "dumbbell-seated-bent-over-rear-delt-row"
+      },
+      {
+        "key": "dumbbell-chest-supported-rear-delt-row"
+      },
+      {
+        "key": "Dumbbell-Rear-Delt-Row_shoulder"
+      },
+      {
+        "key": "37211201-Barbell-Bent-Over-Wide-Grip-Row_Back"
+      },
+      {
+        "key": "benover_lader_row"
+      },
+      {
+        "key": "02151201-Cable-Seated-Rear-Lateral-Raise_"
+      },
+      {
+        "key": "face-pullingg"
+      },
+      {
+        "key": "trx-face-pull"
+      }
+    ],
+    [
+      {
+        "key": "machineshoulderpress"
+      },
+      {
+        "key": "Smith-Seated-Shoulder-Press"
+      },
+      {
+        "key": "hammer_machineshoulderpress"
+      },
+      {
+        "key": "shoulderpress"
+      },
+      {
+        "key": "04041201-Dumbbell-Seated-Shoulder-Press-parallel-grip"
+      },
+      {
+        "key": "seatd_barbell_showlderpress"
+      }
+    ],
+    [
+      {
+        "key": "machine_curl"
+      },
+      {
+        "key": "preter_machine_curl"
+      },
+      {
+        "key": "cablecurl"
+      },
+      {
+        "key": "seated-cable-straight-bar-curl"
+      },
+      {
+        "key": "04471201"
+      },
+      {
+        "key": "reverse_prechercurl"
+      },
+      {
+        "key": "prechercurl"
+      },
+      {
+        "key": "linedown_bench_curl"
+      },
+      {
+        "key": "03721301-Dumbbell-Preacher-Curl_Upper-Arms_180.gif"
+      }
+    ],
+    [
+      {
+        "key": "55161201-Lever-Reverse-Vertical-Hack-Squat_Hips"
+      },
+      {
+        "key": "Smith-Chair-Squat"
+      },
+      {
+        "key": "15971201"
+      },
+      {
+        "key": "40901201"
+      },
+      {
+        "key": "42471201"
+      }
+    ],
+    [
+      {
+        "key": "10311301-Lever-Standing-Hip-Extension_Hips"
+      },
+      {
+        "key": "Lever-Standing-Rear-Kick_Hips_small"
+      },
+      {
+        "key": "22861201"
+      },
+      {
+        "key": "08801201"
+      },
+      {
+        "key": "44211201"
+      },
+      {
+        "key": "Smith-kneeling-rear-kick_Hips_"
+      },
+      {
+        "key": "Bent-Leg-Kickback-kneeling_Hips"
+      }
+    ],
+    [
+      {
+        "key": "35491201"
+      },
+      {
+        "key": "hiptrust"
+      },
+      {
+        "key": "bottombridge"
+      },
+      {
+        "key": "21461201"
+      }
+    ],
+    [
+      {
+        "key": "rollpulldown"
+      },
+      {
+        "key": "43181201-Dumbbell-Pullover-on-floor_Back"
+      }
+    ]
+  ],
+  "categoryMembership": {
+    "胸": [
+      "benchpress",
+      "Pause-Barbell-Bench-Press_Chest",
+      "Barbell-Wide-Bench-Press",
+      "incline-benchpress",
+      "decline-bar-benchpress",
+      "dumbellpress",
+      "36681201-Dumbbell-Lying-on-Floor-Chest-Press_Chest",
+      "upperdumbellpress",
+      "decline_dumble_press",
+      "17311201-Dumbbell-Close-Grip-Press_Upper-Arms",
+      "machinepress",
+      "hammermachine_press",
+      "26591208",
+      "smithpress",
+      "07531201-Smith-Decline-Bench-Press_Chest_small",
+      "07571201-Smith-Incline-Bench-Press_Chest_small",
+      "29191201-Smith-Hex-Press_Chest_small",
+      "fly",
+      "41491201-Dumbbell-Floor-Fly_Chest.gif",
+      "machinefly",
+      "10301301-Lever-Pec-Deck-Fly_Chest_180.gif",
+      "cablefly",
+      "front_cablefly",
+      "bench_pullover",
+      "bardips",
+      "bardips_weighted",
+      "pushup-xunji",
+      "pushup-to-steps",
+      "knee-push-up-fz",
+      "weighted-push-up-fz",
+      "reverse-grip-push-up-fz",
+      "reverse-weighted-grip-push-up-fz",
+      "dip-grip-push-up-fz",
+      "dip-harder-grip-push-up-fz",
+      "floor-knee-fly-fz",
+      "floor-fly-fz",
+      "floor-weighted-fly-fz",
+      "29211301-Pike-Push-up_Chest_180",
+      "14861301-Push-up-(With-push-up-handles)_Chest_180",
+      "Assisted-Chest-Dip-kneeling",
+      "Cable-Bench-Press_Chest_small",
+      "Cable-Incline-Fly-on-stability-ball_Chest_small",
+      "01791201-Cable-Low-Fly_Chest_small",
+      "18511301-Incline-Push-Press_Chest_180",
+      "Decline-Push-Up_Chest_small",
+      "Decline-harder-Push-Up_Chest_small",
+      "02881201-Dumbbell-Around-Pullover_Chest_small",
+      "03161201-Dumbbell-Incline-Breeding_Chest_small",
+      "03191201-Dumbbell-Incline-Fly_Chest_small",
+      "03241201-Dumbbell-Incline-Palm-in-Press_Chest_",
+      "16241301-Dumbbell-Reverse-Bench-Press_Chest_180",
+      "62751201-Dumbbell-Reverse-Press-on-Floor_Chest_",
+      "33191201-Dumbbell-Lying-on-Floor-Hammer-Press_Chest_withnewxunji",
+      "03241201-Dumbbell-Incline-Palm-in-Press_Chest_small",
+      "06631201-Push-Up-Medicine-Ball_Chest_small",
+      "07251201-Single-Arm-Push-up_Chest_small",
+      "08561201-Weighted-Svend-Press_Chest_small",
+      "10411201-Lever-Lying-Chest-Press-plate-loaded_Chest_small",
+      "12731201-Clap-Push-Up_Plyometrics_Chest_small",
+      "08981301-Band-high-fly_Chest_180",
+      "09081301-Band-low-fly_Chest_180",
+      "09131301-Band-middle-fly_Chest_180",
+      "09151301-Band-push_Chest-up_Chest_180",
+      "09201301-Band-standing-chest-press_Chest_180",
+      "09231301-Band-standing-incline-chest-press_Chest_180.gif",
+      "12541301-Band-Bench-Press_Chest_180",
+      "31241301-Resistance-Band-Seated-Chest-Press_Upper-Arms_180",
+      "62701201",
+      "13001201",
+      "33441201",
+      "93981201",
+      "58431201",
+      "55761201.mp4",
+      "57361201.mp4",
+      "21951201.mp4",
+      "23191201.mp4",
+      "22781201.mp4",
+      "10291201.mp4",
+      "22771201.mp4",
+      "70821201.mp4",
+      "05761201.mp4",
+      "88511201.mp4",
+      "99651205.mp4",
+      "99651201.mp4",
+      "103051201.mp4",
+      "103061201.mp4",
+      "105021201.mp4",
+      "f_s_f5",
+      "f_s_f10",
+      "f_s_f6",
+      "f_s_f19",
+      "f_s_f29",
+      "f_s_f42",
+      "f_s_f54",
+      "f_s_f93",
+      "f_s_f89",
+      "f_s_f129",
+      "f_s_f141",
+      "f_s_f140",
+      "f_s_f163",
+      "f_s_f190",
+      "f_s_f198",
+      "f_s_f193",
+      "f_s_f223",
+      "f_s_f224",
+      "f_s_f225",
+      "f_s_f231",
+      "f_s_f230",
+      "f_s_f262",
+      "f_s_f295",
+      "f_s_f298",
+      "f_s_f304",
+      "f_s_f316",
+      "f_s_f342",
+      "f_s_f340",
+      "f_s_f345",
+      "f_s_f358",
+      "f_s_f387",
+      "f_s_f406",
+      "f_s_f409",
+      "f_s_f423",
+      "f_s_f425",
+      "f_s_f429",
+      "f_s_f450",
+      "f_s_f455",
+      "f_s_f463",
+      "f_s_f461",
+      "f_s_f514",
+      "f_s_f513",
+      "f_s_f520",
+      "f_s_f519",
+      "f_s_f541",
+      "f_s_f548",
+      "f_s_f561",
+      "f_s_f573",
+      "cable-seated-upward-fly"
+    ],
+    "背": [
+      "53301201-Dumbbell-Pullover-(VERSION-2)_Back_",
+      "reverse-hyper-45",
+      "reverse-hyper",
+      "band-reverse-hyper",
+      "pulldown",
+      "closepulldown",
+      "barbellrow",
+      "barbellrow_revseer",
+      "50341201-Landmine-One-Arm-Bent-Over-Row-VERSION-2_Back",
+      "30171201-Barbell-Pendlay-Row_Back",
+      "00741301-Barbell-Rack-Pull_Hips_180",
+      "rollpulldown",
+      "machinerowling",
+      "26651201-Lever-Lateral-Wide-Pulldown_Back_small.mp4",
+      "machine_pulldown",
+      "hammermachine_pulldown",
+      "sit_cable_row",
+      "wide_sit_cable_row",
+      "narrowgrip_sit_cable_row",
+      "seated-reverse-grip-cable-row",
+      "dumbellrowbench",
+      "standing_dumbellrowbench",
+      "26221201-Dumbbell-Palm-Rotational-Bent-Over-Row-female_Back",
+      "43181201-Dumbbell-Pullover-on-floor_Back",
+      "linedown_barbell_row",
+      "33201201-Dumbbell-Hammer-Grip-Incline-Bench-Two-Arm-Row_Back",
+      "linedown_dumbel_row",
+      "tbar_row",
+      "tbar_row_close",
+      "weight_pullup",
+      "weight_pullup_weighted",
+      "weight_reverse_pullup",
+      "weight_reverse_pullup_weight",
+      "weight_reverse_pullup_heping",
+      "weight_reverse_pullup_heping_closegrip",
+      "02051201-Cable-Rear-Pulldown_Back_small.mp4",
+      "02131201-Cable-Seated-High-Row-V-bar_Back_small.mp4",
+      "02141201-Cable-Seated-One-Arm-Alternate-Row_Back_small.mp4",
+      "02381201-Cable-Straight-Arm-Pulldown_Back_small.mp4",
+      "narrow-grip-underhand-pulldown",
+      "02451201-Cable-Underhand-Pulldown_Back_small.mp4",
+      "04991201-Inverted-Row_Back_small.mp4",
+      "07611201-Smith-Narrow-Row_Back_small.mp4",
+      "08771201-45-degree-hyperextension-arms-in-front-of-chest_Back_small.mp4",
+      "11981201-Jumping-Pull-up_Back_small.mp4",
+      "12041201-Cable-one-arm-lat-pulldown_back_small.mp4",
+      "seated-single-arm-underhand-pulldown",
+      "12051201-Cable-one-arm-twisting-seated-row_back_small.mp4",
+      "12361201-Dumbbell-One-Arm-Row-rack-support_Back_small.mp4",
+      "13191201-Cable-Palm-Rotational-Row_Back_small.mp4",
+      "13281201-Dumbbell-Lying-Rear-Delt-Row_Back_small.mp4",
+      "42141201-Lever-Low-Row-plate-loaded_Back__withicon.mp4",
+      "18701201-Lever-Lateral-Pulldown-plate-loaded_Back_small.mp4",
+      "26611201-Cable-Seated-Row-with-V-bar_Back_small.mp4",
+      "11941201-Lever-Lying-T-bar-Row_Back_small.mp4",
+      "17721301-Elbow-Lift---Reverse-Push-Up_Back_180.gif",
+      "trx-lat-pull-down-fz",
+      "trx-weighted-lat-pull-down-fz",
+      "trx-row-fz",
+      "trx-intermid-row-fz",
+      "trx-weighted-row-fz",
+      "08921201-Band-Bent-over-Row-female",
+      "09291201-Band-straight-back-seated-row-female_Back.gif",
+      "38421201-Band-Kneeling-One-Arm-Pulldown-female_Back_withicon",
+      "38431201-Band-One-Arm-Twisting-Seated-Row-female_Back_withicon",
+      "09021301-Band-hyperextension_Back_180",
+      "09051301-Band-kneeling-pulldown_Back_180",
+      "09281301-Band-straight_Back-arm-pulldown_Back_180",
+      "09291301-Band-straight_Back-back-seated-row_Back_180",
+      "09301301-Band-straight_Back-back-standing-row_Back_180",
+      "31161301-Band-Fixed-Back-Underhand-Pulldown_Back_180.gif",
+      "09741301-Band-close-grip-pulldown_Back_180.gif",
+      "01631201",
+      "13501201",
+      "22651201",
+      "seal-machine-row",
+      "36541201",
+      "08181201",
+      "18651201",
+      "05731201",
+      "68811201",
+      "86461201",
+      "22851301-Lever-Pullover-(plate-loaded)_Back.gif",
+      "96891201",
+      "2887625.mp4",
+      "27361201.mp4",
+      "0571120.mp4",
+      "13471201",
+      "42141201.mp4",
+      "65151201",
+      "86921201.mp4",
+      "79351201.mp4",
+      "13131201.mp4",
+      "88481201.mp4",
+      "54471201.mp4",
+      "64951201",
+      "65131201",
+      "63921201.mp4",
+      "55801201.mp4",
+      "12371201.mp4",
+      "01891201.mp4",
+      "93171201.mp4",
+      "f_s_f8",
+      "f_s_f25",
+      "f_s_f63",
+      "f_s_f72",
+      "f_s_f87",
+      "f_s_f104",
+      "f_s_f103",
+      "f_s_f114",
+      "f_s_f120",
+      "f_s_f139",
+      "f_s_f155",
+      "f_s_f185",
+      "f_s_f196",
+      "f_s_f217",
+      "f_s_f216",
+      "f_s_f218",
+      "f_s_f222",
+      "f_s_f234",
+      "f_s_f236",
+      "f_s_f228",
+      "f_s_f324",
+      "f_s_f326",
+      "f_s_f380",
+      "f_s_f379",
+      "f_s_f388",
+      "f_s_f399",
+      "f_s_f397",
+      "f_s_f396",
+      "f_s_f400",
+      "f_s_f420",
+      "f_s_f424",
+      "f_s_f428",
+      "f_s_f430",
+      "f_s_f431",
+      "f_s_f437",
+      "f_s_f453",
+      "f_s_f452",
+      "f_s_f447",
+      "f_s_f462",
+      "f_s_f487",
+      "f_s_f494",
+      "f_s_f495",
+      "f_s_f502",
+      "f_s_f506",
+      "f_s_f508",
+      "f_s_f503",
+      "f_s_f525",
+      "f_s_f523",
+      "f_s_f524",
+      "f_s_f544",
+      "f_s_f546",
+      "f_s_f557",
+      "f_s_f560",
+      "f_s_f571",
+      "f_s_f331"
+    ],
+    "腿": [
+      "15831201-Sled-Reverse-Hack-Squat_Thighs-FIX_",
+      "squat",
+      "15451201-Barbell-full-Zercher-Squat_Thighs.gif",
+      "00461301-Barbell-Hack-Squat_Hips_180.gif",
+      "16551301-Dumbbell-Biceps-Curl-Squat_Upper-Arms_180",
+      "Barbell-Front-Squat",
+      "deadlift",
+      "Sumo-Deadlift",
+      "37311201-Barbell-Sumo-Romanian-Deadlift_Hips_",
+      "Power-Clean_Thighs_small.mp4",
+      "romaniadeadlift",
+      "hackssssquat",
+      "Barbell-Jefferson-Squat",
+      "smithsquat",
+      "07691301-Smith-Split-Squat_Thighs-FIX_180.gif",
+      "f_s_f381",
+      "07681301-Smith-Single-Leg-Split-Squat_thighs_180.gif",
+      "Smith-Chair-Squat",
+      "Smith-Deadlift_Hips_smal",
+      "Trap-Bar-Deadlift",
+      "05781201-Lever-Deadlift-_Thighs_small",
+      "Barbell-Stiff-Legged-Deadlift",
+      "15551201-Dumbbell-Squat_Thighs_withicon",
+      "17601201-Dumbbell-Goblet-Squat_Thighs",
+      "29661201-Dumbbell-Front-Squat_Thighs",
+      "42921201-Dumbbell-Lying-Hamstring-Curl_Thighs",
+      "Dumbbell-Stiff-Leg-Deadlift",
+      "leg_curl_linedown",
+      "Lever-Seated-Leg",
+      "05821201-Lever-Kneeling-Leg-Curl-_Thighs",
+      "legextendtion",
+      "legpress_machine",
+      "legpress",
+      "Lever-Horizontal-Leg-Press_Thighs",
+      "bench_squat",
+      "langes",
+      "dumbelllanges",
+      "03811201-Dumbbell-Rear-Lunge_Thighs_small.mp4",
+      "dumbbell_bench_squat",
+      "03711201-Dumbbell-Plyo-Squat_thighs_small.mp4",
+      "05141201-Jump-Squat_Thighs_small.mp4",
+      "tower-ham-curl",
+      "tower-harder-ham-curl",
+      "11971201-Squat-m_Thighs_small.mp4",
+      "06761201-Reverse-Lunge-(leg-kick)-(female)_Thighs",
+      "self_weight_bench_squat",
+      "self_weight_harder_bench_squat",
+      "17591201-Single-Leg-Squat-pistol-male_Thighs_small.mp4",
+      "18751201-Lever-Squat-plate-loaded_Thighs_small.mp4",
+      "24001201-Inverse-Leg-Curl.mp4",
+      "11661201-Jump-Split-m_Plyometrics",
+      "trx-pistol-squats",
+      "trx-pistol-middle-squats",
+      "trx-pistol-harder-squats",
+      "24191301-Resistance-Band-Leg-Lift_Thighs_180.gif",
+      "09091301-Band-Lunges_Thighs_180.gif",
+      "09111301-Band-lying-leg-curl_Thighs_180.gif",
+      "09261301-Band-standing-leg-extension_Thighs_180.gif",
+      "09001301-Band-hip-adduction_Hips_180.gif",
+      "08991301-Band-hip-abduction_Hips_180.gif",
+      "21621301-Resistance-Band-Plank-March_Thighs_180.gif",
+      "21661301-Resistance-Band-Supine-Hip-Bridge-March_Thighs_180.gif",
+      "24221301-Resistance-Band-Leg-Curl_Thighs_180.gif",
+      "24241301-Resistance-Band-Lunge_Thighs_180.gif",
+      "10041301-Band-squat_Hips_180.gif",
+      "10011301-Band-single-leg-split-squat_Hips_180.gif",
+      "30051301-Resistance-Band-Seated-Hip-Abduction-(female)_Hips_180.gif",
+      "24601301-Resistance-Band-Lateral-Walk_Hips_180.gif",
+      "24211301-Resistance-Band-Lying-Abduction_Hips_180.gif",
+      "24171301-Resistance-Band-Duck-Walk_Hips_180.gif",
+      "29501201",
+      "15331201",
+      "29681201",
+      "33051201",
+      "Safety",
+      "49511201",
+      "53041201",
+      "57261201.mp4",
+      "51781201.mp4",
+      "f_s_f52",
+      "f_s_f70",
+      "f_s_f69",
+      "f_s_f74",
+      "f_s_f85",
+      "f_s_f110",
+      "f_s_f109",
+      "f_s_f125",
+      "f_s_f164",
+      "f_s_f171",
+      "f_s_f172",
+      "f_s_f194",
+      "f_s_f195",
+      "f_s_f199",
+      "f_s_f197",
+      "f_s_f292",
+      "f_s_f296",
+      "f_s_f293",
+      "f_s_f311",
+      "f_s_f300",
+      "f_s_f322",
+      "f_s_f341",
+      "f_s_f349",
+      "f_s_f348",
+      "f_s_f371",
+      "f_s_f401",
+      "f_s_f403",
+      "f_s_f405",
+      "f_s_f418",
+      "f_s_f426",
+      "f_s_f434",
+      "f_s_f460",
+      "f_s_f469",
+      "f_s_f471",
+      "f_s_f473",
+      "f_s_f474",
+      "f_s_f475",
+      "f_s_f482",
+      "f_s_f484",
+      "f_s_f486",
+      "f_s_f496",
+      "f_s_f497",
+      "f_s_f504",
+      "f_s_f505",
+      "f_s_f509",
+      "f_s_f510",
+      "f_s_f518",
+      "f_s_f536",
+      "f_s_f535",
+      "f_s_f547",
+      "f_s_f551",
+      "f_s_f552",
+      "f_s_f563",
+      "rear-foot-elevated-rotating-split-squat"
+    ],
+    "肩": [
+      "landmine-shoulder-press",
+      "cable-lying-upright-row-sz-bar",
+      "35411201-Dumbbell-Incline-Y-Raise_Shoulders_",
+      "35421201-Dumbbell-Incline-T-Raise_Shoulders_",
+      "24151201-Dumbbell-Single-arm-Leaning-Lateral-Raise-(female)",
+      "77471201-Dumbbell-Prone-W-Raise-(male)_Shoulders_",
+      "110411201-Cable-Upright-Row-(SZ-Bar)_Shoulders_",
+      "02041201-Cable-Rear-Drive_Upper-Arms_",
+      "Cable-Single-Arm-Side-Pull-Supported",
+      "36841201-Dumbbell-External-Rotation-Back",
+      "50651201-Dumbbell-Shoulder-External-Rotation-at-90-Abduction",
+      "61401201-Dumbbell-Seated-External-Rotation-(male)_Shoulders",
+      "105991201-Dumbbell-Seated-Single-Arm-External-Rotation-(male)_Shoulders",
+      "04041201-Dumbbell-Seated-Shoulder-Press-parallel-grip",
+      "03411201-Dumbbell-Lying-One-Arm-Deltoid-Rear_Shoulders_",
+      "66101201-Dumbbell-Incline-Reverse-Raise-With-Chest-Support_Shoulders_",
+      "shoulderpress",
+      "23971201-Dumbbell-Scott-Press_Shoulders_360-degrees.gif",
+      "21361301-Dumbbell-Cuban-Press-(version-2)_Shoulders_180",
+      "arnold_shoulderpress",
+      "30731201-Dumbbell-Alternate-Shoulder-Press-female_Shoulders",
+      "laderrow",
+      "dumbbell-overhead-lateral-raise",
+      "03231201-Dumbbell-Incline-One-Arm-Lateral-Raise_shoulders_small.mp4",
+      "Dumbbell-Standing-Bent-Arm-Lateral-raise-_Shoulders",
+      "05841201-Lever-Lateral-Raise_shoulder_small",
+      "frontraise",
+      "sideladerrow",
+      "Barbell-Front-Raise_Shoulders",
+      "Weighted-Round-Arm",
+      "Weighted-Front-Raise",
+      "barbell_showlderpress",
+      "01051301-Barbell-Standing-Bradford-Press_Shoulders_",
+      "Smith-Seated-Shoulder-Press",
+      "seatd_barbell_showlderpress",
+      "machineshoulderpress",
+      "hammer_machineshoulderpress",
+      "Lever-Seated-Reverse-Fly",
+      "benover_lader_row",
+      "01621301-Cable-Front-Raise_Shoulders",
+      "02151201-Cable-Seated-Rear-Lateral-Raise_",
+      "cable_lader_row",
+      "Lateral-Raise_Shoulders",
+      "37211201-Barbell-Bent-Over-Wide-Grip-Row_Back",
+      "dumbbell-seated-bent-over-rear-delt-row",
+      "dumbbell-chest-supported-rear-delt-row",
+      "Dumbbell-Rear-Delt-Row_shoulder",
+      "face-pullingg",
+      "trx-face-pull",
+      "10221301-Band-standing-rear-delt-row_Shoulders_180.gif",
+      "31331301-Resistance-Band-Seated-Shoulder-Press_Shoulders_180.gif",
+      "06981301-Shoulder-Press-_Shoulders_180.gif",
+      "07931301-Standing-Lateral-Raise-_Shoulders_180",
+      "09071301-Band-lateral-raise_Shoulders_180",
+      "15001301-Band-Upright-Row-_Shoulders_180",
+      "09211301-Band-standing-external-shoulder-rotation_Back_180.gif",
+      "10061301-Band-rear-delt-row_Shoulders_180.gif",
+      "trx-band-fly",
+      "v-push-up",
+      "v-middle-push-up",
+      "v-harder-push-up",
+      "tower-side-raise",
+      "tower-harder-side-raise",
+      "23831301-Handstand-Push-Up-(female)_Upper-Arms_180.gif",
+      "04711301-Handstand-Push-Up_Shoulders_180.gif",
+      "04371201",
+      "33431201",
+      "18761201",
+      "55271201",
+      "02251201",
+      "88471201",
+      "65171201.mp4",
+      "65161201.mp4",
+      "38801201.mp4",
+      "f_s_f11",
+      "f_s_f31",
+      "f_s_f30",
+      "f_s_f68",
+      "f_s_f83",
+      "f_s_f80",
+      "f_s_f88",
+      "f_s_f99",
+      "f_s_f100",
+      "f_s_f111",
+      "f_s_f118",
+      "f_s_f146",
+      "f_s_f187",
+      "f_s_f235",
+      "f_s_f239",
+      "Barbell-Upright-Row",
+      "f_s_f244",
+      "f_s_f290",
+      "f_s_f297",
+      "f_s_f301",
+      "f_s_f318",
+      "f_s_f333",
+      "f_s_f335",
+      "f_s_f343",
+      "f_s_f364",
+      "f_s_f363",
+      "f_s_f365",
+      "f_s_f366",
+      "f_s_f402",
+      "f_s_f410",
+      "f_s_f442",
+      "f_s_f445",
+      "f_s_f446",
+      "f_s_f451",
+      "f_s_f456",
+      "f_s_f457",
+      "f_s_f491",
+      "f_s_f493",
+      "f_s_f500",
+      "f_s_f559",
+      "f_s_f558",
+      "f_s_f576",
+      "cable-lying-face-pull"
+    ],
+    "斜方肌": [
+      "35411201-Dumbbell-Incline-Y-Raise_Shoulders_",
+      "35421201-Dumbbell-Incline-T-Raise_Shoulders_",
+      "77471201-Dumbbell-Prone-W-Raise-(male)_Shoulders_",
+      "110411201-Cable-Upright-Row-(SZ-Bar)_Shoulders_",
+      "00951301-Barbell-Shrug_Back_180.gif",
+      "02201301-Cable-Shrug_Back_180.gif",
+      "03051301-Dumbbell-Decline-Shrug_Back_180.gif",
+      "04061301-Dumbbell-Shrug_Back-FIX_180.gif",
+      "05801301-Lever-Gripless-Shrug_Back_180.gif",
+      "06041301-Lever-Shrug-(plate-loaded)_Back_180.gif",
+      "07671301-Smith-Shrug_Back_180.gif",
+      "07461301-Smith-Back-Shrug_Back_180.gif",
+      "10181301-Band-shrug_Back_180.gif",
+      "12211301-Lever-Shrug-(bench-press-machine)_Back_180.gif",
+      "29281301-Barbell-Overhead-Shrug_Back_180.gif"
+    ],
+    "二头": [
+      "dumbbellcurl",
+      "04281301-Dumbbell-Standing-Preacher-Curl_Upper-Arms_180",
+      "03721301-Dumbbell-Preacher-Curl_Upper-Arms_180.gif",
+      "dumbonesidebellcurl",
+      "dumbbellcurl_seated",
+      "prechercurl",
+      "reverse_prechercurl",
+      "03701201-Dumbbell-Peacher-Hammer-Curl_Forearms_sma",
+      "22941201-Dumbbell-Zottman-Preacher-Curl_Upper-Arms_small",
+      "barbellcrul",
+      "hammercurl",
+      "cablecurl",
+      "Cable-Reverse-Curl_Forearm_small",
+      "01561201-Cable-Curl_Upper-Arms_small",
+      "seated-cable-straight-bar-curl",
+      "consontrade_curl",
+      "incline_dumbell_curl",
+      "inclinehammer_dumbell_curl",
+      "machine_curl",
+      "preter_machine_curl",
+      "linedown_bench_curl",
+      "barbell_consontade_curl",
+      "tower-bicep-curl",
+      "tower-harder-curl.gif",
+      "trx-bicep-curl",
+      "trx-bicep-middle-curl",
+      "trx-harder-bicep-curl",
+      "09861301-Band-one-arm-overhead-biceps-curl_Upper-Arms_180",
+      "00051301-Alternate-Biceps-Curl-(with-band)_Upper-Arms_180",
+      "09761301-Band-concentration-curl_Upper-Arms_180.gif",
+      "08971301-Band-hammer-curl_Forearms_180.gif",
+      "31341301-Resistance-Band-Seated-Biceps-Curl-(female)_Upper-Arms_180.gif",
+      "26561201",
+      "04471201",
+      "43361201",
+      "05751201.mp4",
+      "52011201.mp4",
+      "f_s_f90",
+      "f_s_f159",
+      "f_s_f158",
+      "f_s_f160",
+      "f_s_f154",
+      "f_s_f161",
+      "f_s_f162",
+      "f_s_f233",
+      "f_s_f232",
+      "f_s_f246",
+      "f_s_f264",
+      "f_s_f307",
+      "f_s_f308",
+      "f_s_f317",
+      "f_s_f332",
+      "f_s_f339",
+      "f_s_f394",
+      "f_s_f433",
+      "f_s_f436",
+      "f_s_f492",
+      "f_s_f522",
+      "f_s_f555",
+      "f_s_f564",
+      "f_s_f566",
+      "cable-seated-braced-curl"
+    ],
+    "三头": [
+      "02041201-Cable-Rear-Drive_Upper-Arms_",
+      "53301201-Dumbbell-Pullover-(VERSION-2)_Back_",
+      "dumbbellbackpull",
+      "04231301-Dumbbell-Standing-One-Arm-Extension_Upper-Arms_180.gif",
+      "sitbarbell_backpull",
+      "Barbell-Lying-extension_Upper-arms",
+      "cablepulldowntrp",
+      "knee_pulldown",
+      "calble_overhead_pullup",
+      "kneeling_calble_overhead_pullup",
+      "machine_tricep_press",
+      "machine_tricep_press14511103-Lever-Seated-Dip_Upper-Arms_180.gif",
+      "machine_tricep_extendsion",
+      "machine_tricep_extendsionv2",
+      "bar_scullcrash",
+      "41511201-Dumbbell-Lying-Floor-Skullcrusher_Upper-Arms",
+      "vbar_pulldown",
+      "stragthhand_pulldown",
+      "one_arm_pull",
+      "twohand_kickback",
+      "kickback",
+      "closegrip_barbell_press",
+      "00521201-Barbell-JM-Bench-Press_Upper-Arms",
+      "reverse_grip_pushdown",
+      "30471301-Cable-High-Pulley-Overhead-Tricep-Extension-(female)_Upper-Arms_180.gif",
+      "reverse_grip_pushup",
+      "bench_dip_man",
+      "08121301-Triceps-Dip-(bench-leg)_Upper-Arms_180.gif",
+      "11911301-Triceps-Press-(Head-Below-Bench)_Upper-Arms_180.gif",
+      "Bench-Dipknees_Upper-arms",
+      "trx-tricep-extension",
+      "trx-tricep-midlle-extension",
+      "trx-tricep-harder-extension",
+      "15041301-Band-Skull-Crusher_Upper-Arms_180",
+      "09141301-Band-overhead-triceps-extension_Upper-Arms_180",
+      "09981301-Band-side-triceps-extension_Upper-Arms_180.gif",
+      "15021301-Band-Pushdown-(Male)_Upper-Arms_180.gif",
+      "50331201",
+      "f_s_f24",
+      "f_s_f26",
+      "f_s_f86",
+      "f_s_f84",
+      "f_s_f81",
+      "f_s_f153",
+      "f_s_f152",
+      "f_s_f156",
+      "f_s_f157",
+      "f_s_f166",
+      "f_s_f176",
+      "f_s_f188",
+      "f_s_f192",
+      "f_s_f245",
+      "f_s_f263",
+      "f_s_f289",
+      "f_s_f302",
+      "f_s_f305",
+      "f_s_f312",
+      "f_s_f319",
+      "f_s_f330",
+      "f_s_f191",
+      "f_s_f404",
+      "f_s_f414",
+      "f_s_f416",
+      "f_s_f435",
+      "f_s_f478",
+      "f_s_f550",
+      "f_s_f567",
+      "f_s_f565",
+      "f_s_f570"
+    ],
+    "小腿": [
+      "Barbell-Seated-Calf-Raise_Calves",
+      "Dumbbell-Standing-Calf-Raise",
+      "Lever-Seated-Calf-Raise",
+      "Lever-Rotary-Calf_Calves_",
+      "Lever-Standing-Calf-Raise_Calves",
+      "Sled-45-Calf-Press_Calves",
+      "Smith-Calf-Raise-v2_Calves",
+      "65591201.mp4",
+      "f_s_f92",
+      "f_s_f79",
+      "f_s_f78",
+      "f_s_f212",
+      "f_s_f214",
+      "f_s_f209",
+      "f_s_f210",
+      "f_s_f213",
+      "f_s_f206",
+      "f_s_f207",
+      "f_s_f211",
+      "f_s_f208",
+      "f_s_f258",
+      "f_s_f257",
+      "f_s_f259",
+      "f_s_f260",
+      "f_s_f261",
+      "f_s_f291",
+      "f_s_f299",
+      "f_s_f325",
+      "f_s_f375",
+      "f_s_f374",
+      "f_s_f376",
+      "f_s_f467",
+      "f_s_f553",
+      "f_s_f562"
+    ],
+    "前臂": [
+      "00791201-Barbell-Revers-Wrist-Curl-II_Forearms_small",
+      "00801201-Barbell-Reverse-Curl_Forearm_small.mp4",
+      "04511201-EZ-Barbell-Reverse-Grip-Curl_Forearms_small.mp4",
+      "00821201-Barbell-Reverse-Wrist-Curl_Forearm_small.mp4",
+      "14111201-Barbell-Palms-Down-Wrist-Curl-Over-A-Bench_Forearms_small.mp4",
+      "01041201-Barbell-Standing-Back-Wrist-Curl_Forearms_small.mp4",
+      "02471201-Cable-Wrist-Curl_Forearm_small.mp4",
+      "03641201-Dumbbell-One-arm-Wrist-Curl_Forearm_small.mp4",
+      "03581201-Dumbbell-One-arm-Revers-Wrist-Curl_Forearms_small.mp4",
+      "03971201-Dumbbell-Seated-Neutral-Wrist-Curl_Forearms_small.mp4",
+      "08531201-Weighted-Standing-Curl_Forearms_small.mp4",
+      "f_s_f82",
+      "f_s_f112",
+      "f_s_f165",
+      "f_s_f183",
+      "f_s_f391",
+      "f_s_f390",
+      "f_s_f545"
+    ],
+    "颈部": [
+      "posture-chin-tuck",
+      "24081201",
+      "24091201",
+      "08481201",
+      "50611201",
+      "51621201",
+      "24101201",
+      "24111201",
+      "24121201",
+      "10431201",
+      "50581201",
+      "f_s_f35",
+      "f_s_f119",
+      "f_s_f200",
+      "f_s_f201",
+      "f_s_f203",
+      "f_s_f265",
+      "f_s_f481"
+    ],
+    "臀部": [
+      "leg_spred",
+      "leg_press_in",
+      "55161201-Lever-Reverse-Vertical-Hack-Squat_Hips",
+      "10311301-Lever-Standing-Hip-Extension_Hips",
+      "good_morning",
+      "hiptrust",
+      "smith_hiptrust",
+      "33351201-Dumbbell-Glute-Bridge_Hip.gif",
+      "42911201-Dumbbell-Single-Leg-Glute-Bridge_Hip_withicon",
+      "26351201-Dumbbell-Single-Leg-Deadlift-female_Hips",
+      "Lever-Standing-Rear-Kick_Hips_small",
+      "Bent-Leg-Kickback-kneeling_Hips",
+      "Smith-kneeling-rear-kick_Hips_",
+      "12061201-Cable-pull-through_hips_small",
+      "bottombridge",
+      "09061301-Band-kneeling-rear-kick_Hips_180",
+      "47651301-Glute-Ham-Single-Leg-Hyperextension_Hips_180",
+      "09801301-Band-bent-over-hip-extension_Hips",
+      "09911301-Band-pull-through_Hips_180",
+      "44211201",
+      "07491201",
+      "15971201",
+      "21461201",
+      "22861201",
+      "40901201",
+      "42471201",
+      "35491201",
+      "08801201",
+      "21501201",
+      "27591201",
+      "08791201",
+      "23131201",
+      "22211201",
+      "25011201",
+      "66171201",
+      "67331201",
+      "87221201.mp4",
+      "97521201.mp4",
+      "60391201.mp4",
+      "33681201.mp4",
+      "66011201.mp4",
+      "30051201.mp4",
+      "76821201.mp4",
+      "36801201.mp4",
+      "58371201.mp4",
+      "57801201.mp4",
+      "67441201.mp4",
+      "32361201.mp4",
+      "21571201.mp4",
+      "31771201.mp4",
+      "87121201.mp4",
+      "98481201.mp4",
+      "25521201.mp4",
+      "25531201.mp4",
+      "27461201.mp4",
+      "27441201.mp4",
+      "99041201.mp4",
+      "99111201.mp4",
+      "40501201.mp4",
+      "101131201.mp4",
+      "95151201.mp4",
+      "f_s_f9",
+      "f_s_f13",
+      "f_s_f21",
+      "f_s_f23",
+      "f_s_f27",
+      "f_s_f28",
+      "f_s_f40",
+      "f_s_f45",
+      "f_s_f50",
+      "f_s_f91",
+      "f_s_f115",
+      "f_s_f124",
+      "f_s_f170",
+      "f_s_f181",
+      "f_s_f179",
+      "f_s_f186",
+      "f_s_f184",
+      "f_s_f204",
+      "f_s_f243",
+      "f_s_f256",
+      "f_s_f247",
+      "f_s_f286",
+      "f_s_f323",
+      "f_s_f242",
+      "f_s_f334",
+      "f_s_f383",
+      "f_s_f384",
+      "f_s_f385",
+      "f_s_f395",
+      "f_s_f408",
+      "f_s_f413",
+      "f_s_f417",
+      "f_s_f412",
+      "f_s_f411",
+      "f_s_f415",
+      "f_s_f448",
+      "f_s_f454",
+      "f_s_f458",
+      "f_s_f459",
+      "f_s_f472",
+      "f_s_f531",
+      "f_s_f537",
+      "f_s_f542",
+      "f_s_f554"
+    ],
+    "功能性": [
+      "tanlidai_xishenzhan",
+      "kaoqiangjingdun",
+      "danlidai_celagongbu",
+      "tanlidai_dantuiyingla",
+      "dantuikuabuceya",
+      "zhituikuayue",
+      "dongtaihudieshi",
+      "dunzizhuankua",
+      "frogtaitui",
+      "dongtaitianeshi",
+      "zuozidantuihuayuan",
+      "guizecekuayue",
+      "xiaquanshi",
+      "dantuicehouya",
+      "guizexigaihuayuan",
+      "78981201.mp4",
+      "02351201.mp4",
+      "02561201.mp4",
+      "02541201.mp4",
+      "09361201.mp4",
+      "06681201.mp4",
+      "67031201.mp4",
+      "53681201.mp4",
+      "31481201.mp4",
+      "58701201.mp4",
+      "38161201.mp4",
+      "25221201.mp4",
+      "62021201.mp4",
+      "25711201.mp4",
+      "48001201.mp4",
+      "48811201.mp4",
+      "f_s_f59",
+      "f_s_f61",
+      "f_s_f62",
+      "f_s_f65",
+      "f_s_f67",
+      "f_s_f66",
+      "f_s_f64",
+      "f_s_f288",
+      "f_s_f287",
+      "f_s_f327",
+      "f_s_f344",
+      "f_s_f367",
+      "f_s_f476",
+      "f_s_f512",
+      "f_s_f511",
+      "f_s_f572",
+      "f_s_f574",
+      "f_s_f575"
+    ],
+    "核心稳定": [
+      "48111201",
+      "05621201",
+      "49271201",
+      "55401201",
+      "50291201",
+      "51821201",
+      "35861201_.mp4",
+      "00061201",
+      "29791201",
+      "f_s_f17",
+      "f_s_f38",
+      "f_s_f33",
+      "f_s_f43",
+      "f_s_f49",
+      "f_s_f56",
+      "f_s_f53",
+      "f_s_f60",
+      "f_s_f58",
+      "f_s_f73",
+      "f_s_f75",
+      "f_s_f76",
+      "f_s_f77",
+      "f_s_f137",
+      "f_s_f136",
+      "f_s_f177",
+      "12021201.mp4",
+      "f_s_f180",
+      "f_s_f182",
+      "f_s_f189",
+      "f_s_f202",
+      "f_s_f221",
+      "f_s_f220",
+      "f_s_f238",
+      "f_s_f226",
+      "f_s_f240",
+      "f_s_f241",
+      "f_s_f277",
+      "f_s_f303",
+      "f_s_f310",
+      "f_s_f314",
+      "f_s_f315",
+      "f_s_f313",
+      "f_s_f320",
+      "f_s_f347",
+      "f_s_f346",
+      "f_s_f361",
+      "f_s_f356",
+      "f_s_f360",
+      "f_s_f357",
+      "f_s_f355",
+      "f_s_f359",
+      "f_s_f368",
+      "f_s_f378",
+      "f_s_f386",
+      "f_s_f392",
+      "f_s_f422",
+      "f_s_f427",
+      "f_s_f432",
+      "f_s_f444",
+      "f_s_f443",
+      "f_s_f441",
+      "f_s_f449",
+      "f_s_f470",
+      "f_s_f466",
+      "f_s_f468",
+      "f_s_f480",
+      "f_s_f477",
+      "f_s_f479",
+      "f_s_f499",
+      "f_s_f498",
+      "f_s_f507",
+      "f_s_f517",
+      "f_s_f516",
+      "f_s_f515",
+      "f_s_f532",
+      "f_s_f539",
+      "f_s_f538",
+      "f_s_f540",
+      "f_s_f543",
+      "f_s_f549"
+    ],
+    "腹部": [
+      "reverse-roman-chair-ab-crunch",
+      "3-4-Sit-up_Waist",
+      "02761201-Dead-Bug_Waist",
+      "12471301-Russian-Twist-(with-medicine-ball)_Waist_180",
+      "water-bottle-russia-twist.gif",
+      "weightabscurl",
+      "leg-rise",
+      "Captains-Chair-Straight-Leg-Raise_Waist_small",
+      "floor-butterfly-abs-curl",
+      "Seated-Leg-Raise_waist_small",
+      "Twisted-Leg-Raise-female_Waist_small",
+      "Lever-Seated-Crunch-hands-pad_Waist_small",
+      "05831201-Lever-Kneeling-Twist_Waist",
+      "air-bike-m_waist_small",
+      "Bycicle-Twisting-Crunch_Waist_small",
+      "Cable-Kneeling-Crunch_Waist_small",
+      "Bent-knee-Lying-Twist_Waist_small",
+      "02601201-Cocoons_waist_smallmp4",
+      "Alternate-Lying-Floor-Leg-Raise_Waist_small",
+      "Cable-Standing-Lift_waist_small",
+      "Cable-twist-up-downWaist_small",
+      "08571201-Wheel-Rollout_Waist_small",
+      "04741201-Hanging-Straight-Leg-Hip-Raise_Waist",
+      "Weighted-Hanging-leg-hip-raise_Waist_small",
+      "Incline-Twisting-Sit-up-version-2_Waist_small",
+      "Cable-Standing-Crunch-with-rope-attachment_waist_small",
+      "Smith-Hip-Raise_waist_small",
+      "abs-curl",
+      "plan-king",
+      "09041301-Band-kneeling-crunch_Waist_180",
+      "09101301-Band-lying-leg-and-hip-raise_Waist_180",
+      "09311301-Band-twist_Waist_180.gif",
+      "09321301-Band-twist_Waist_180.gif",
+      "09331301-Band-twist_Waist_180.gif",
+      "55831201",
+      "05051201",
+      "18571201",
+      "65081201.mp4",
+      "f_s_f12",
+      "f_s_f16",
+      "f_s_f18",
+      "f_s_f20",
+      "f_s_f36",
+      "f_s_f32",
+      "f_s_f34",
+      "f_s_f39",
+      "f_s_f37",
+      "f_s_f51",
+      "f_s_f57",
+      "f_s_f94",
+      "f_s_f95",
+      "f_s_f96",
+      "f_s_f108",
+      "f_s_f106",
+      "f_s_f113",
+      "f_s_f117",
+      "f_s_f116",
+      "f_s_f227",
+      "f_s_f229",
+      "f_s_f253",
+      "f_s_f321",
+      "f_s_f362",
+      "f_s_f407",
+      "f_s_f419",
+      "f_s_f438",
+      "f_s_f439",
+      "f_s_f440",
+      "f_s_f464",
+      "f_s_f465",
+      "f_s_f483",
+      "f_s_f490",
+      "f_s_f526",
+      "f_s_f529",
+      "f_s_f530",
+      "f_s_f556"
+    ],
+    "热身动作": [
+      "posture-short-foot",
+      "scapulaRetractionFlexibility",
+      "scapulaUpwardRotationFlexibility",
+      "scapulaDownwardRotationFlexibility",
+      "thoracicSpineStretchAndOpening",
+      "24711201-Glute-Bridge-Two-Legs-on-Floor-(female)_Hips",
+      "36391201-Bent-knee-Lying-Twist-(male)_Waist_withnewxunji",
+      "52121201-Cobra-Side-Ab-Stretch-(female)_Waist_",
+      "52791201-Chest-Raise-and-Rotate_Shoulders_.gif",
+      "27841201",
+      "27801201-Shoulder---Medial-Rotation",
+      "13461201",
+      "14051201-Back-Pec-Stretch_Back_withnewxunji",
+      "17961201-Standing-reach-up-back-rotation-stretch_Back",
+      "f_s_f48",
+      "f_s_f352",
+      "f_s_f351",
+      "f_s_f354",
+      "f_s_f353",
+      "f_s_f501",
+      "f_s_f533",
+      "f_s_f534"
+    ],
+    "拉伸": [
+      "50531201-Child-Pose-(male)_Stretching_",
+      "06431301-Overhead-Triceps-Stretch_Upper-Arms",
+      "06461301-Plyo-Side-Lunge-Stretch_Thighs",
+      "06691301-Rear-Deltoid-Stretch_Shoulders",
+      "06921301-Seated-Single-Leg-Hamstring-Stretch",
+      "07451301-Slopes-Towards-Stretch_Back",
+      "07941301-Standing-Lateral-Stretch_Back",
+      "10521301-Fixed-Bar-Back-Stretch",
+      "10531301-Kneeling-Hip-Flexor-Stretch",
+      "10581301-Standing-one-arm-chest-stretch",
+      "10591301-Standing-Quadriceps-Stretch",
+      "12711301-Chest-and-Front-of-Shoulder-Stretch",
+      "12591301-Behind-Head-Chest-Stretch",
+      "14051301-Back-Pec-Stretch_Back",
+      "14881301-Shoulder-Stretch-Behind-the-Back",
+      "15111301-Hamstring-Stretch_Thighs_180.gif",
+      "19111301-Raised-Leg-Knee-Flexor-Stretch",
+      "19801301-Across-Chest-Shoulder-Stretch_Back",
+      "22001301-Roll-Hip-Thrust_Hips_180.gif",
+      "02491301-Cat-Stretch_Waist_180.gif",
+      "22011301-Roll-Recumbent-Hip-External-Rotator-and-Hip-Extensor-Stretch-(CrossedLeg)_Hips_180.gif",
+      "f_s_f15",
+      "f_s_f14",
+      "f_s_f41",
+      "f_s_f44",
+      "f_s_f46",
+      "f_s_f47",
+      "f_s_f55",
+      "f_s_f97",
+      "f_s_f98",
+      "f_s_f101",
+      "f_s_f102",
+      "f_s_f107",
+      "f_s_f121",
+      "f_s_f122",
+      "f_s_f127",
+      "f_s_f126",
+      "f_s_f131",
+      "f_s_f130",
+      "f_s_f134",
+      "f_s_f135",
+      "f_s_f132",
+      "f_s_f133",
+      "f_s_f138",
+      "f_s_f147",
+      "f_s_f150",
+      "f_s_f148",
+      "f_s_f149",
+      "f_s_f151",
+      "f_s_f167",
+      "f_s_f169",
+      "f_s_f168",
+      "f_s_f174",
+      "f_s_f173",
+      "f_s_f175",
+      "f_s_f178",
+      "f_s_f205",
+      "f_s_f215",
+      "f_s_f237",
+      "f_s_f250",
+      "f_s_f248",
+      "f_s_f252",
+      "f_s_f255",
+      "f_s_f254",
+      "f_s_f251",
+      "f_s_f249",
+      "f_s_f266",
+      "f_s_f268",
+      "f_s_f267",
+      "f_s_f278",
+      "f_s_f281",
+      "f_s_f280",
+      "f_s_f272",
+      "f_s_f279",
+      "f_s_f285",
+      "f_s_f273",
+      "f_s_f283",
+      "f_s_f284",
+      "f_s_f271",
+      "f_s_f270",
+      "f_s_f275",
+      "f_s_f274",
+      "f_s_f269",
+      "f_s_f282",
+      "f_s_f276",
+      "f_s_f123",
+      "f_s_f337",
+      "f_s_f336",
+      "f_s_f338",
+      "f_s_f350",
+      "f_s_f372",
+      "f_s_f373",
+      "f_s_f377",
+      "f_s_f382",
+      "f_s_f527",
+      "f_s_f528"
+    ],
+    "有氧": [
+      "21411301-Walk-Elliptical-Cross-Trainer_Cardio_180",
+      "23111201-Walking-on-Stepmill_Cardio_time",
+      "running",
+      "bike",
+      "22621301-Rowing-machine",
+      "freestyle_swimming_cardio",
+      "jumping-rope",
+      "21421201",
+      "36661201221"
+    ],
+    "组合": [],
+    "全身": [
+      "berbbeee",
+      "f_s_f71",
+      "f_s_f105",
+      "f_s_f143",
+      "f_s_f142",
+      "f_s_f144",
+      "f_s_f329",
+      "f_s_f328",
+      "f_s_f389",
+      "f_s_f398",
+      "f_s_f421",
+      "f_s_f569"
+    ],
+    "计时动作": [
+      "plank_recorder",
+      "21411301-Walk-Elliptical-Cross-Trainer_Cardio_180",
+      "runningtimer_recorder",
+      "biketimer_recorder",
+      "battlerope_recorder",
+      "berbbeee_recorder"
+    ],
+    "Tabata": [
+      "high_knee_tabata",
+      "step_up_tabata",
+      "mount_climber_tabata",
+      "jumping_jack_tabata",
+      "jumping_left_right_tabata",
+      "medical_ball_tabata",
+      "runningtimer_tabata",
+      "16881201-Lunge-with-Twist_Thighs_Waist_",
+      "49561201-Skater-Hop-Tap-(male)_Plyometrics_.gif",
+      "23111201-Walking-on-Stepmill_Cardio",
+      "biketimer_tabata",
+      "battlerope_tabata",
+      "61981201-Skater-Arm-Swings-(male)_Plyometrics",
+      "61151201-Sitting-Punch-on-a-padded-stool-(female)_Chest__withnewxunji",
+      "dumbbell_swinggif",
+      "kettlebell_swinggif",
+      "berbbeee-tabata",
+      "21411301-Walk-Elliptical-Cross-Trainer_Cardio_180_tabata",
+      "05141201-Jump-Squat_Thighs_small_tabata.mp4",
+      "11661201-Jump-Split-m_Plyometrics_tabata"
+    ],
+    "自重": []
+  }
+}

@@ -1,0 +1,3 @@
+- insert:
+    - id: time-agent-native
+      name: /root/time-agent/index.mjs

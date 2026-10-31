@@ -1,0 +1,12 @@
+{
+  "source": "3Dbody 8.9.50 user-supplied APK",
+  "renderer": "Three.js 137dev",
+  "models": [
+    {
+      "sha256": "83ecd8552e97555f8f71ff517f79fd8413afcbf65fc84ebafe9329ab02d1ccb6",
+      "path": "xitong/obj/all.emg",
+      "textureFiles": 43,
+      "meshes": 3556
+    }
+  ]
+}

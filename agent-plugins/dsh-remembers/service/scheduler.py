@@ -1,0 +1,528 @@
+"""内置调度：把原来 cron 的「主动唤醒 + B 站浏览」搬进服务端。
+
+原来靠 proactive-inject.sh + cron 做：
+  1. 主动唤醒（到间隔就注入一条提示，让模型自己醒）
+  2. B 站浏览（独立节奏）
+
+现在放到服务端进程里跑（独立线程），Windows/Linux 通用。
+状态存 JSON 文件（跨平台），不依赖 cron/systemd。
+
+设计原则：
+  - 线程崩了不影响 HTTP 服务（顶层 try/except）
+  - 状态持久化（重启不丢）
+  - 没有 QQ 注入路径时降级为「只记日志，不注入」
+  - 环境变量 CMEM_SCHEDULER=0 可关闭
+
+游戏/日记/演化仍在 server.py 的 HTTP 接口里（/game/play、/diary/write、/evolve），
+由 cron 或外部触发；这个调度器只管唤醒和 B 站。
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import random
+import threading
+import time
+import datetime
+import urllib.request
+
+
+def _log(msg: str) -> None:
+    print(f"[scheduler] {msg}", flush=True)
+
+
+# 和 server.py 的 Handler.PROACTIVE_DEFAULTS 保持一致。旧配置文件里没有某个
+# 键时（例如 minChatBeforeWake 是 2026-10-25 才默认关掉的），必须回落到同一个
+# 默认值，否则调度器和设置页会各说各话：页面显示「不限制聊天数」，调度器却
+# 按 5 条聊天卡着永远不醒。
+DEFAULTS = {
+    "enabled": True,
+    "startHour": 8,
+    "endHour": 23,
+    "minGapMinutes": 30,
+    "maxGapMinutes": 180,
+    "silentRatio": 40,
+    "talkEnabled": True,
+    "minChatBeforeWake": 0,
+    "biliBrowseEnabled": False,
+    "biliMinGapMinutes": 60,
+    "biliMaxGapMinutes": 240,
+    "biliBrowseLimit": 3,
+    "biliBrowsePerDay": 3,
+}
+
+
+def _now() -> datetime.datetime:
+    """当前时间。单独抽出来是为了测试能固定整点，不用 sleep。"""
+    return datetime.datetime.now()
+
+
+def _flag(cfg: dict, key: str, default: bool) -> bool:
+    """读开关。旧文件里可能是 true / "true" / 1 / "off"，别让字符串 "false"
+    被 bool() 当成 True —— 那等于把「关」读成「开」。"""
+    value = cfg.get(key, default)
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+    if isinstance(value, str):
+        text = value.strip().lower()
+        if text in {"1", "true", "yes", "on"}:
+            return True
+        if text in {"0", "false", "no", "off", ""}:
+            return False
+    return default
+
+
+def _cfg_int(cfg: dict, key: str) -> int:
+    try:
+        return int(cfg.get(key, DEFAULTS[key]))
+    except (KeyError, TypeError, ValueError):
+        return int(DEFAULTS[key])
+
+
+def _hour_in_window(hour: int, start: int, end: int) -> bool:
+    """白天窗口判断。start==end 定义全天；start>end 表示跨午夜。
+
+    跨午夜原本是坏的：`hour < start or hour >= end` 在 22→6 下会把 0-6 点
+    判成窗口外（因为 0 < 22），半夜永远不醒。
+    """
+    start %= 24
+    end %= 24
+    if start == end:
+        return True
+    if start < end:
+        return start <= hour < end
+    return hour >= start or hour < end
+
+
+class Scheduler:
+    """服务端内置调度器。"""
+
+    def __init__(self, store, data_dir: str):
+        self.store = store
+        self.data_dir = data_dir
+        self.state_file = os.path.join(data_dir, "scheduler-state.json")
+        self.enabled = os.environ.get("CMEM_SCHEDULER", "1") not in ("0", "false", "False")
+        self.inject_path = os.environ.get("CMEM_INJECT_PATH", "")
+        # App 通道：主代理 host.mjs 在 TIME_AGENT_BRIDGE（127.0.0.1:随机端口）上
+        # 提供 POST /proactive，把主动内容送回 TIME_AGENT_SESSION_ID 对应的会话。
+        self.bridge = (os.environ.get("TIME_AGENT_BRIDGE") or "").strip()
+        self.token = (os.environ.get("TIME_AGENT_TOKEN") or "").strip()
+
+    # ---------- 状态 ----------
+    def _load_state(self) -> dict:
+        try:
+            with open(self.state_file, encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return {}
+
+    def _save_state(self, st: dict) -> None:
+        try:
+            tmp = self.state_file + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(st, f, ensure_ascii=False, indent=2)
+            os.replace(tmp, self.state_file)
+        except Exception as e:
+            _log(f"save state failed: {e}")
+
+    # ---------- 启动 ----------
+    def start(self) -> bool:
+        if not self.enabled:
+            _log("disabled (CMEM_SCHEDULER=0)")
+            return False
+        t = threading.Thread(target=self._loop, name="dsh-scheduler", daemon=True)
+        t.start()
+        _log(f"started (thread={t.name})")
+        return True
+
+    def _loop(self) -> None:
+        time.sleep(10)
+        while True:
+            try:
+                self._tick()
+            except Exception as e:
+                _log(f"tick error: {e}")
+            time.sleep(30)
+
+    def _tick(self) -> None:
+        cfg = self._proactive_cfg()
+        if not _flag(cfg, "enabled", DEFAULTS["enabled"]):
+            return
+        if not _hour_in_window(_now().hour, _cfg_int(cfg, "startHour"), _cfg_int(cfg, "endHour")):
+            return
+        now = time.time()
+        st = self._load_state()
+        changed = False
+
+        today = datetime.date.today().isoformat()
+        if st.get("date") != today:
+            st["date"] = today
+            st["bili_count"] = 0
+            changed = True
+
+        if self._tick_wake(st, now):
+            changed = True
+        if self._tick_bili(st, now):
+            changed = True
+        if self._tick_diary(st, now):
+            changed = True
+        if self._tick_evolve(st, now):
+            changed = True
+
+        if changed:
+            self._save_state(st)
+
+    # ---------- 读配置 ----------
+    def _proactive_cfg(self) -> dict:
+        """读 proactive.json（前端"主动消息"页配置的那个文件）。
+
+        之前用 self.store._load_proactive()，但 memory_core 里根本没这个方法，
+        hasattr 返回 False → 永远返回 {} → 所有配置（时间窗/间隔/静默/预设）全部失效，
+        一直用硬编码默认值。2026-10-26 修。
+        """
+        import json as _json
+        import os as _os
+        try:
+            # CMEM_DATA_DIR 优先（systemd 环境变量），否则用实例的 data_dir
+            data_dir = _os.environ.get("CMEM_DATA_DIR") or self.data_dir
+            p = _os.path.join(data_dir, "proactive.json")
+            with open(p, encoding="utf-8") as f:
+                cfg = _json.load(f)
+            return cfg if isinstance(cfg, dict) else {}
+        except Exception as e:
+            _log(f"proactive_cfg: read failed ({e})")
+            return {}
+
+    # ---------- 1. 唤醒 ----------
+    def _tick_wake(self, st: dict, now: float) -> bool:
+        cfg = self._proactive_cfg()
+        # 关闭开关必须真的生效（含 "false" / 0 这种字符串/数字写法）
+        if not _flag(cfg, "enabled", DEFAULTS["enabled"]):
+            return False
+
+        start = _cfg_int(cfg, "startHour")
+        end = _cfg_int(cfg, "endHour")
+        hour = _now().hour
+        if not _hour_in_window(hour, start, end):
+            return False
+
+        min_gap = max(5, _cfg_int(cfg, "minGapMinutes"))
+        max_gap = max(min_gap, _cfg_int(cfg, "maxGapMinutes"))
+
+        last = float(st.setdefault("last_wake", now))
+        interval = float(st.get("wake_interval", 0))
+        if interval <= 0:
+            interval = (min_gap + random.randint(0, max_gap - min_gap)) * 60
+            st["wake_interval"] = interval
+            _log(f"wake: next interval {int(interval // 60)} min")
+            return True
+        if now - last < interval:
+            return False
+
+        min_chat = _cfg_int(cfg, "minChatBeforeWake")
+        try:
+            chat_n = int(self.store.get_state().get("chat_since_wake", 0) or 0)
+        except Exception:
+            chat_n = 0
+        if chat_n < min_chat:
+            _log(f"wake: gate_chat chat={chat_n} < {min_chat}, skip")
+            return False
+
+        st["last_wake"] = now
+        st["wake_interval"] = 0
+
+        silent_ratio = max(0, min(100, _cfg_int(cfg, "silentRatio")))
+        talk_enabled = _flag(cfg, "talkEnabled", DEFAULTS["talkEnabled"])
+        silent = (not talk_enabled) or random.randint(1, 100) <= silent_ratio
+        count = int(cfg.get("wakeActionCount", 3) or 1)
+        actions = self._pick_actions("silent" if silent else "talk", count)
+        action = actions[0] if actions else "随便待会儿"
+        if len(actions) > 1:
+            menu = "\n".join(f"{i+1}. {a}" for i, a in enumerate(actions))
+            pick = f"抽到这几件事，想做几件做几件，也可以一件都不做：\n{menu}"
+        else:
+            pick = f"抽到：{action}"
+        if silent:
+            msg = f"（你自己待着，现在是 {hour} 点。{pick}。这只是你自己的时间，不用回消息。）"
+        else:
+            msg = f"（系统提醒：你醒着，现在是 {hour} 点。{pick}。看看用户在不在，想找他就发一句；不想也行。）"
+
+        self._inject(msg, silent=silent)
+        self._log_activity("proactive", f"被叫醒（{hour}点，{'静默' if silent else '可发言'}）：{action}")
+        try:
+            try:
+                self.store.conn.execute('UPDATE state SET chat_since_wake = 0')
+                self.store.conn.commit()
+            except Exception:
+                pass
+        except Exception:
+            pass
+        _log(f"wake: injected (hour={hour} silent={silent} action={action})")
+        return True
+
+    def _pick_actions(self, mode: str, n: int = 1) -> list:
+        """从配置里抽 n 条动作。
+
+        过滤掉「刷 B 站」这类动作：B 站有自己独立的节奏（_tick_bili），
+        受 biliBrowsePerDay 限制。唤醒动作里再抽一次就会重复刷 ——
+        今天 08:00 和 08:01 隔一分钟刷了两回，一天刷到 8 次远超上限 3 次，
+        API 读取量翻倍，直接撞上 B站的 IP 级 412。
+        """
+        """抽 n 条动作给她选（不重复）。"""
+        try:
+            cfg = self._proactive_cfg()
+            pool = cfg.get("silentActions" if mode == "silent" else "talkActions") or []
+            if not pool:
+                pool = cfg.get("silentActions") or ["随便待会儿"]
+            # 动作可以是字符串（= 启用），也可以是 {text, enabled} 对象
+            texts = []
+            for a in pool:
+                if isinstance(a, dict):
+                    if a.get("enabled", True):
+                        txt = str(a.get("text") or "").strip()
+                        # 「刷B站」类动作排除掉：B站有独立节奏（_tick_bili，受
+                        # biliBrowsePerDay 限制）。这里再抽一次就会重复刷 ——
+                        # 今天 08:00 和 08:01 隔一分钟刷两回，一天刷到 8 次，
+                        # API 读取翻倍，直接撞上 B站的 IP 级 412。
+                        if txt and "bili_feed" not in txt:
+                            texts.append(txt)
+                elif isinstance(a, str) and a.strip() and "bili_feed" not in a:
+                    texts.append(a)
+            if not texts:
+                return ["随便待会儿"]
+            k = max(1, min(int(n or 1), len(texts)))
+            if k == 1:
+                return [random.choice(texts)]
+            return random.sample(texts, k)
+        except Exception:
+            return ["随便待会儿"]
+
+    # ---------- 2. B 站 ----------
+    def _tick_bili(self, st: dict, now: float) -> bool:
+        cfg = self._proactive_cfg()
+        # 总开关和浏览开关都要认：关掉主动话题就不该再自己跑出去刷
+        if not _flag(cfg, "enabled", DEFAULTS["enabled"]):
+            return False
+        if not _flag(cfg, "biliBrowseEnabled", DEFAULTS["biliBrowseEnabled"]):
+            return False
+
+        # 探索和唤醒共用同一个白天窗口（原来这里硬编码 8-23，跨午夜配置对
+        # 唤醒生效、对 B 站不生效；安静窗口里照样会刷）
+        start = _cfg_int(cfg, "startHour")
+        end = _cfg_int(cfg, "endHour")
+        hour = _now().hour
+        if not _hour_in_window(hour, start, end):
+            return False
+
+        per_day = _cfg_int(cfg, "biliBrowsePerDay")
+        count = int(st.get("bili_count", 0))
+        if per_day <= 0 or count >= per_day:
+            return False
+
+        min_gap = max(5, _cfg_int(cfg, "biliMinGapMinutes"))
+        max_gap = max(min_gap, _cfg_int(cfg, "biliMaxGapMinutes"))
+
+        last = float(st.get("bili_last", 0))
+        interval = float(st.get("bili_interval", 0))
+        if interval <= 0:
+            interval = (min_gap + random.randint(0, max_gap - min_gap)) * 60
+            st["bili_interval"] = interval
+            _log(f"bili: next nudge in {int(interval // 60)} min")
+            return True
+        if now - last < interval:
+            return False
+
+        st["bili_last"] = now
+        st["bili_interval"] = 0
+        st["bili_count"] = count + 1
+        # 和唤醒一样的机制，但动作固定为「刷 B 站」
+        # 注意：这里只决定提示里说什么。能不能真的写（评论/分享）由 BILI 工具
+        # 白名单单独控制，默认全关；打开 biliBrowseEnabled 不等于给写权限。
+        hints = []
+        if _flag(cfg, "biliShareToOwner", True):
+            hints.append("看到有意思的，把链接和你的想法发给用户")
+        if _flag(cfg, "biliShareToGroup", False):
+            hints.append("也可以分享到群里")
+        if _flag(cfg, "biliComment", True):
+            hints.append("想评论就评论（bili_run comment）")
+        if _flag(cfg, "biliMentionOwner", True):
+            hints.append("评论或分享时提到用户")
+        hint_text = ("；".join(hints) + "。") if hints else ""
+        msg = (
+            f"（你自己待着，现在是 {hour} 点。"
+            "抽到：刷一会儿 B 站。用 bili_feed 刷，把你的真实想法写进 bili_feed 的 thought 参数。"
+            + hint_text
+            + "想做什么就做，也可以不刷——这只是你自己的时间。）"
+        )
+        self._inject(msg, silent=False)
+        _log(f"bili: nudged model ({count + 1}/{per_day} today)")
+        return True
+
+    # ---------- 3. 日记（23 点）----------
+    def _tick_diary(self, st: dict, now: float) -> bool:
+        today = datetime.date.today().isoformat()
+        if st.get("diary_date") == today:
+            return False
+        dt = datetime.datetime.now()
+        if dt.hour < 23:
+            return False
+        st["diary_date"] = today
+        # 读当天素材，让她写日记时有东西可写
+        extra = ""
+        try:
+            start = datetime.datetime.combine(datetime.date.today(), datetime.time.min).timestamp()
+            rows = self.store.conn.execute(
+                "SELECT kind, detail FROM activity_log WHERE ts >= ? ORDER BY ts", (start,)
+            ).fetchall()
+            kinds = {}
+            for k, d in rows:
+                kinds.setdefault(k, []).append(str(d or "")[:24])
+            parts = []
+            if kinds.get("bili"):
+                parts.append(f"刷了 {len(kinds['bili'])} 次 B 站：" + "、".join(kinds["bili"][-3:]))
+            if kinds.get("chat"):
+                parts.append(f"跟用户聊了 {len(kinds['chat'])} 次")
+            if kinds.get("proactive"):
+                parts.append(f"被叫醒 {len(kinds['proactive'])} 次")
+            if kinds.get("game"):
+                parts.append(f"玩了 {len(kinds['game'])} 次游戏")
+            if kinds.get("habit"):
+                parts.append(f"有 {len(kinds['habit'])} 次习惯动作")
+            # 顺便带上今天刷到的视频标题
+            try:
+                browsed = self.store.conn.execute(
+                    "SELECT title FROM browsed WHERE ts >= ? ORDER BY ts DESC LIMIT 5", (start,)
+                ).fetchall()
+                if browsed:
+                    parts.append("刷到的视频：" + "、".join(str(x[0])[:20] for x in browsed))
+            except Exception:
+                pass
+            if parts:
+                extra = "\n今天你：\n· " + "\n· ".join(parts) + "\n"
+        except Exception:
+            pass
+        msg = f"（该写日记了，今天是 {dt.month} 月 {dt.day} 日。{extra}记两句今天的事吧，写给你自己看。）"
+        self._inject(msg, silent=True)
+        _log("diary: nudged model to write")
+        return True
+
+    # ---------- 4. 自我认知演化（22 点）----------
+    def _tick_evolve(self, st: dict, now: float) -> bool:
+        today = datetime.date.today().isoformat()
+        if st.get("evolve_date") == today:
+            return False
+        dt = datetime.datetime.now()
+        if dt.hour < 22:
+            return False
+        st["evolve_date"] = today
+        msg = "（回头想想这段时间的自己。有什么变化、有什么新发现？想说就记一句，不用回消息。）"
+        self._inject(msg, silent=True)
+        _log("evolve: nudged model to reflect")
+        return True
+
+    # ---------- 工具 ----------
+    def _owner_qq(self) -> int | None:
+        """QQ 模式下的主人号。App 模式不需要，也不猜。
+
+        原版在找不到配置时硬编码了一个真实 QQ 号兜底 —— 那会把主动消息发给
+        无关的人。这里改成返回 None：拿不到号就不发，由调用方明确跳过。
+        """
+        cfg_home = os.environ.get("HOME", "/home/ubuntu")
+        if cfg_home.rstrip("/") == "/home/ubuntu":
+            cfg = "/home/ubuntu/.dsh/profiles/web/cordis.patch.yml"
+        else:
+            cfg = os.path.join(cfg_home, "profiles/qq2/cordis.patch.yml")
+        try:
+            import yaml
+            for item in (yaml.safe_load(open(cfg, encoding="utf-8")) or []):
+                if isinstance(item, dict) and item.get("id") == "dsh-onebot":
+                    for u in ((item.get("config") or {}).get("adminUsers") or []):
+                        s = str(u).strip()
+                        if s.isdigit() and len(s) >= 5:
+                            return int(s)
+        except Exception:
+            pass
+        env = os.environ.get("CMEM_OWNER_QQ", "").strip()
+        if env.isdigit() and len(env) >= 5:
+            return int(env)
+        return None
+
+    def _inject(self, msg: str, silent: bool = False, source_url: str = "") -> None:
+        # App 通道优先：主代理 host.mjs 收到后把内容送进 TIME_AGENT_SESSION_ID
+        # 对应的 DSH 会话，由同一个人格/模型自然生成回复。这里只负责"叫醒"，
+        # 不生成内容、不另开模型。
+        if self.bridge:
+            self._post_bridge(msg, source_url=source_url, silent=silent)
+            return
+        path = self.inject_path
+        if not path:
+            _log("inject: no TIME_AGENT_BRIDGE / CMEM_INJECT_PATH, skip")
+            return
+        try:
+            uid = self._owner_qq()
+            if not uid:
+                _log("inject: no owner QQ configured, skip")
+                return
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            ev = {
+                "post_type": "message",
+                "message_type": "private",
+                "sub_type": "friend",
+                "message_id": int(time.time() * 1000) % 1000000000,
+                "user_id": uid,
+                "message": msg,
+                "raw_message": msg,
+                "time": int(time.time()),
+                "self_id": 0,
+                "silent": silent,
+                # synthetic：这条是系统自己醒的，不是用户发的。onebot 会据此把
+                # source.kind 标成 system:nudge，dsh-remembers 就不会当成用户原话。
+                "synthetic": True,
+                # 昵称留空：写「系统」会被 _touch_profile 存进 profiles.name，
+                # 把用户真实的画像名字覆盖掉（2026-10-27 线上实测踩过）。
+                "sender": {"user_id": uid, "nickname": ""},
+            }
+            with open(path, "a", encoding="utf-8") as f:
+                f.write(json.dumps(ev, ensure_ascii=False) + "\n")
+        except Exception as e:
+            _log(f"inject failed: {e}")
+
+    def _post_bridge(self, msg: str, source_url: str = "", silent: bool = False) -> None:
+        """把主动内容送给 host.mjs 的 /proactive（Bearer TIME_AGENT_TOKEN）。"""
+        base = self.bridge if "://" in self.bridge else "http://" + self.bridge
+        url = base.rstrip("/") + "/proactive"
+        payload = {"text": str(msg), "source": "proactive", "silent": silent}
+        if source_url:
+            payload["sourceUrl"] = str(source_url)
+        headers = {"Content-Type": "application/json"}
+        if self.token:
+            headers["Authorization"] = f"Bearer {self.token}"
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
+            headers=headers,
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                resp.read()
+            _log(f"inject: sent via bridge {url}")
+        except Exception as e:
+            _log(f"inject: bridge failed ({url}): {e}")
+
+    def _log_activity(self, kind: str, detail: str, thought: str = "") -> None:
+        try:
+            self.store.log_activity(kind, detail, thought)
+        except Exception:
+            pass
+
+    # ---------- 调试 ----------
+    def run_once(self) -> dict:
+        before = self._load_state()
+        self._tick()
+        after = self._load_state()
+        diff = {k: v for k, v in after.items() if before.get(k) != v}
+        return {"ok": True, "changed": diff}

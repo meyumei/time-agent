@@ -1,0 +1,877 @@
+{
+  "schema": 1,
+  "generator": "built-in image_gen, reference-guided",
+  "references": {
+    "design/references/fish/微信图片_20261029223958_622_7.jpg": "f9fd067c65f59b601c7539eea669da88c2571295b7c2db65a73398edf41fc316",
+    "design/references/fish/微信图片_20261029224000_623_7.jpg": "5bcace85f16b8eaccbdb6454845c2c69e7f6059d2478c3cd0da2b664dc774cdd",
+    "design/references/fish/微信图片_20261029224016_631_7.jpg": "97300ac7776c3ea8ba42a731e466308168b24823a996fc86436373fcee518643",
+    "design/references/fish/Q版版本/微信图片_20261029224001_624_7.jpg": "7c2eb814076c569c6c91b3678e410ef775035201664c27b1a56f261364540e5a",
+    "design/references/fish/Q版版本/微信图片_20261029224006_626_7.png": "98194d0b2c5c98168404c99db5954b1826b346d0b08f3bf8a56cdd1058cfe786",
+    "design/references/fish/Q版版本/微信图片_20261029224011_628_7.jpg": "ac69ec9540678c1441edbf5dd67a94e2bdb9feda8c0416d9ee756cea2973ae14",
+    "design/references/fish/Q版版本/微信图片_20261029224013_629_7.jpg": "fd08d7af27c822aacc1c6aafcae87206beca5ac1eaba1236ced8d4f0932eb917",
+    "design/references/fish/Q版版本/微信图片_20261029224019_633_7.jpg": "fbe838f58a1268658724f5ebe352e4b59672d0f56a0f2c56ba8d21b80072d7fe",
+    "design/references/fish/Q版版本/微信图片_20261029224021_634_7.png": "278579a4e11b368ccce509a7fc4aa8fbff9bb1da627d13bae93b91094ad9c376",
+    "design/references/fish/Q版版本/微信图片_20261029224022_635_7.jpg": "6e8dbc1f94b4ac93dc89b00a82380bcb7d2860ae4f77a392b825e5959b5cfd6e",
+    "design/references/fish/Q版版本/微信图片_20261029224023_636_7.jpg": "1194f9d69f35ec7ebeadbc683f37910f619a321403bd001b6b2c161e879a37fd",
+    "design/references/fish/Q版版本/标准Q版.png": "d11815e8eeca2f9cfe9b079990ee47deeea0a584549e567ddde54df1bd9336b2",
+    "design/references/fish/御姐版本/微信图片_20261029223949_617_7.jpg": "ca7f00184a39a33cad8c80c5b7c3eaae1c0d58d40a24590410f5c8c27072b089",
+    "design/references/fish/御姐版本/微信图片_20261029223952_618_7.jpg": "fac93a4e3053615f0b8ec3a39de8de90c8830016e8e7314faec70df1df5892f7",
+    "design/references/fish/御姐版本/微信图片_20261029223954_619_7.jpg": "55222efe1fe771776642924892f6cee664a2e99c22f40dadf2e106a4b73e7685",
+    "design/references/fish/御姐版本/微信图片_20261029223955_620_7.jpg": "2d76ee173b223f7c7cdf1229fb788ff7b8180eabc90e26acbaa6cbe2af89dd36",
+    "design/references/fish/御姐版本/微信图片_20261029223956_621_7.jpg": "28d80b7d60fad604947ab1b55530b82b047c0b576f21fa8c957c589f598d5821",
+    "design/references/fish/御姐版本/微信图片_20261029224003_625_7.jpg": "0a2bf4c718971080173546cb0c8ad97a592c8ab835f43265b90ae7bff7035392",
+    "design/references/fish/御姐版本/微信图片_20261029224008_627_7.png": "abd19ee4a368bd429d3fe0b6cc0a6da95e07baf811691c9db3d4031221b027da",
+    "design/references/fish/御姐版本/标准御姐.jpg": "c7df0df605fb4fe568f8e0009abdd6babadd06258504e55c2f62bd8f7e95fdd8"
+  },
+  "cellSize": [
+    320,
+    320
+  ],
+  "columns": 4,
+  "rows": 4,
+  "styles": {
+    "chibi": {
+      "source": "design/fish-companion/atlases/chibi-v2.png",
+      "sourceSha256": "7ea84bcaf11d932577cb83d29695084ebaa18aa418c0d935c4b38c823759bd9a",
+      "nativeAtlas": "app/src/main/res/drawable-nodpi/fish_chibi_atlas.png",
+      "nativeSha256": "013cb3b2407f81e5e4992f9b8425ad2e578029173f44a774e777a5e8c40c2573",
+      "frames": [
+        {
+          "index": 0,
+          "name": "idle-open",
+          "sourceRect": [
+            0,
+            0,
+            314,
+            313
+          ],
+          "alphaBounds": [
+            58,
+            35,
+            271,
+            291
+          ],
+          "path": "design/fish-companion/frames/chibi/idle-open.png",
+          "sha256": "d3a0dbc89b5b9f521bbe0b5f3e89c3f6a4f107d478a370579f9e45fd7b0667de",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 1,
+          "name": "idle-half-blink",
+          "sourceRect": [
+            314,
+            0,
+            627,
+            313
+          ],
+          "alphaBounds": [
+            59,
+            38,
+            273,
+            291
+          ],
+          "path": "design/fish-companion/frames/chibi/idle-half-blink.png",
+          "sha256": "2de9de8ba861c4375fb0854383f66f0f066d5531627b5259ede50932da77d160",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 2,
+          "name": "idle-blink",
+          "sourceRect": [
+            627,
+            0,
+            940,
+            313
+          ],
+          "alphaBounds": [
+            58,
+            38,
+            271,
+            291
+          ],
+          "path": "design/fish-companion/frames/chibi/idle-blink.png",
+          "sha256": "d63f340d7502245f3fd3fc0d10a7949be1173700edd505f7f62e70da033c02f6",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 3,
+          "name": "idle-look",
+          "sourceRect": [
+            940,
+            0,
+            1254,
+            313
+          ],
+          "alphaBounds": [
+            74,
+            37,
+            279,
+            291
+          ],
+          "path": "design/fish-companion/frames/chibi/idle-look.png",
+          "sha256": "91aaad163a0c066d72a9cf2448809f7ea8d0bc02cdb1b3c69a9031694507f040",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 4,
+          "name": "wave-start",
+          "sourceRect": [
+            0,
+            313,
+            314,
+            627
+          ],
+          "alphaBounds": [
+            53,
+            31,
+            273,
+            292
+          ],
+          "path": "design/fish-companion/frames/chibi/wave-start.png",
+          "sha256": "04601c6f7214cf179c94c2128524e7a80df1a07ae42ffcda77ea1beb66a73fdd",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 5,
+          "name": "wave-high",
+          "sourceRect": [
+            314,
+            313,
+            627,
+            627
+          ],
+          "alphaBounds": [
+            59,
+            29,
+            279,
+            292
+          ],
+          "path": "design/fish-companion/frames/chibi/wave-high.png",
+          "sha256": "ed60703a5374232ced51f40f71c96f014e071c13a9757dbb93a7c9c684c5edfc",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 6,
+          "name": "wave-side",
+          "sourceRect": [
+            627,
+            313,
+            940,
+            627
+          ],
+          "alphaBounds": [
+            60,
+            33,
+            275,
+            292
+          ],
+          "path": "design/fish-companion/frames/chibi/wave-side.png",
+          "sha256": "0a9fc56fc368270209f56344d2f6f6bdab5003155df82595d60365cd36b8ab59",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 7,
+          "name": "delighted",
+          "sourceRect": [
+            940,
+            313,
+            1254,
+            627
+          ],
+          "alphaBounds": [
+            65,
+            38,
+            281,
+            292
+          ],
+          "path": "design/fish-companion/frames/chibi/delighted.png",
+          "sha256": "fffcf2235c9311cd08a7a2c79e4ef53c2436849de797b0d9eb1a0260e0599f48",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 8,
+          "name": "thinking",
+          "sourceRect": [
+            0,
+            627,
+            314,
+            940
+          ],
+          "alphaBounds": [
+            57,
+            28,
+            284,
+            288
+          ],
+          "path": "design/fish-companion/frames/chibi/thinking.png",
+          "sha256": "b0895079cfce5fe71a2f338e037c6f8ae1d4ec72f4bba084b3afceb9fe93f900",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 9,
+          "name": "curious",
+          "sourceRect": [
+            314,
+            627,
+            627,
+            940
+          ],
+          "alphaBounds": [
+            56,
+            28,
+            283,
+            289
+          ],
+          "path": "design/fish-companion/frames/chibi/curious.png",
+          "sha256": "f1e4367811ee7dee3268fc16bd7a81b936f220ae8aa5b31e310437dfac7310fc",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 10,
+          "name": "work-read",
+          "sourceRect": [
+            627,
+            627,
+            940,
+            940
+          ],
+          "alphaBounds": [
+            59,
+            28,
+            277,
+            290
+          ],
+          "path": "design/fish-companion/frames/chibi/work-read.png",
+          "sha256": "1d003b66554b1f39a1b3fb347d9f15341e68ba58b5a746708064c5df11880677",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 11,
+          "name": "work-write",
+          "sourceRect": [
+            940,
+            627,
+            1254,
+            940
+          ],
+          "alphaBounds": [
+            61,
+            31,
+            283,
+            290
+          ],
+          "path": "design/fish-companion/frames/chibi/work-write.png",
+          "sha256": "0215b6656a65ba917490d71d1dbea1dd420cb19ad5b14b1c30cbc7ba1028885f",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 12,
+          "name": "sleepy",
+          "sourceRect": [
+            0,
+            940,
+            314,
+            1254
+          ],
+          "alphaBounds": [
+            61,
+            26,
+            279,
+            283
+          ],
+          "path": "design/fish-companion/frames/chibi/sleepy.png",
+          "sha256": "875443c65c1761d80b285b5ca39118bedf2cea4f4b7456f09e8fdfc2590c4351",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 13,
+          "name": "sleeping",
+          "sourceRect": [
+            314,
+            940,
+            627,
+            1254
+          ],
+          "alphaBounds": [
+            71,
+            54,
+            294,
+            283
+          ],
+          "path": "design/fish-companion/frames/chibi/sleeping.png",
+          "sha256": "4b17ec5da7a158099072f160bc748acbae3ae2b6fdc6fa8020fc8f5105d29033",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 14,
+          "name": "concerned",
+          "sourceRect": [
+            627,
+            940,
+            940,
+            1254
+          ],
+          "alphaBounds": [
+            57,
+            26,
+            277,
+            283
+          ],
+          "path": "design/fish-companion/frames/chibi/concerned.png",
+          "sha256": "7c925bc45ae2b32d4644c2370a0b83b6cf7ecdc8cfb76ad9bfa2c6e530c07d91",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 15,
+          "name": "apologetic",
+          "sourceRect": [
+            940,
+            940,
+            1254,
+            1254
+          ],
+          "alphaBounds": [
+            66,
+            26,
+            281,
+            283
+          ],
+          "path": "design/fish-companion/frames/chibi/apologetic.png",
+          "sha256": "cb795fa3df7d8fe4e0a25b392c4ec79362066daf23257deb2583b63ca472df7c",
+          "outputSize": [
+            320,
+            320
+          ]
+        }
+      ],
+      "separateFrames": 16,
+      "animations": [
+        "idle",
+        "happy",
+        "thinking",
+        "working",
+        "concerned",
+        "rest"
+      ]
+    },
+    "elegant": {
+      "source": "design/fish-companion/atlases/elegant-v1.png",
+      "sourceSha256": "721fb2dd87a2ede3ee1c6dd21d4621118a2f3c96edcef1ca2e147399ec38a6d0",
+      "nativeAtlas": "app/src/main/res/drawable-nodpi/fish_elegant_atlas.png",
+      "nativeSha256": "4d44a759bc1877eda96439a378cb3969d1c2aa0d536f119ed51597ece1192f0c",
+      "frames": [
+        {
+          "index": 0,
+          "name": "idle-open",
+          "sourceRect": [
+            0,
+            0,
+            314,
+            314
+          ],
+          "alphaBounds": [
+            83,
+            5,
+            305,
+            314
+          ],
+          "path": "design/fish-companion/frames/elegant/idle-open.png",
+          "sha256": "98f633b69be95d81d71ca14fc825487c16e525784a1370e0d735d994b3b32968",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 1,
+          "name": "idle-half-blink",
+          "sourceRect": [
+            314,
+            0,
+            627,
+            314
+          ],
+          "alphaBounds": [
+            80,
+            5,
+            289,
+            314
+          ],
+          "path": "design/fish-companion/frames/elegant/idle-half-blink.png",
+          "sha256": "daa8d1b1f435603dba50efd3bc60f532107fe05a5f1fd57bf6bd181d6eec83fd",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 2,
+          "name": "idle-blink",
+          "sourceRect": [
+            627,
+            0,
+            940,
+            314
+          ],
+          "alphaBounds": [
+            46,
+            2,
+            266,
+            314
+          ],
+          "path": "design/fish-companion/frames/elegant/idle-blink.png",
+          "sha256": "4dbd9bb0366884de30b688507e82f8f625c420fd2965ec2277cc9daab1dbd4ff",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 3,
+          "name": "idle-look",
+          "sourceRect": [
+            940,
+            0,
+            1254,
+            313
+          ],
+          "alphaBounds": [
+            28,
+            4,
+            248,
+            313
+          ],
+          "path": "design/fish-companion/frames/elegant/idle-look.png",
+          "sha256": "81888cc15aadee68bdc960c74e8537bd1ea38daace72e901807502bb4ffef2c0",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 4,
+          "name": "wave-start",
+          "sourceRect": [
+            0,
+            314,
+            314,
+            625
+          ],
+          "alphaBounds": [
+            84,
+            0,
+            314,
+            311
+          ],
+          "path": "design/fish-companion/frames/elegant/wave-start.png",
+          "sha256": "a70ccd244cd883b3de55dba7513a99e61ebea61d31fde3b1f223ccbd70f53c7e",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 5,
+          "name": "wave-high",
+          "sourceRect": [
+            314,
+            314,
+            627,
+            627
+          ],
+          "alphaBounds": [
+            65,
+            1,
+            301,
+            311
+          ],
+          "path": "design/fish-companion/frames/elegant/wave-high.png",
+          "sha256": "2adbf9a37c0e27e54c253f2d3fb077a941358ab3b96889eb8f52745fea0620f0",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 6,
+          "name": "wave-side",
+          "sourceRect": [
+            627,
+            314,
+            940,
+            627
+          ],
+          "alphaBounds": [
+            42,
+            0,
+            288,
+            311
+          ],
+          "path": "design/fish-companion/frames/elegant/wave-side.png",
+          "sha256": "a0d99265408c47da83c1c6cd8420ae47182cbc9ca038d06bd46113f1b56d1382",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 7,
+          "name": "delighted",
+          "sourceRect": [
+            940,
+            313,
+            1254,
+            625
+          ],
+          "alphaBounds": [
+            42,
+            2,
+            264,
+            312
+          ],
+          "path": "design/fish-companion/frames/elegant/delighted.png",
+          "sha256": "c4a6429f63687889d8d74de04a668c5f3f0cc58ae763e3992f902723c5732bca",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 8,
+          "name": "thinking",
+          "sourceRect": [
+            0,
+            625,
+            314,
+            933
+          ],
+          "alphaBounds": [
+            96,
+            0,
+            311,
+            308
+          ],
+          "path": "design/fish-companion/frames/elegant/thinking.png",
+          "sha256": "fac7aba9cd636009b0313df0c6aa2c1545578b3ad7cef602928d305d7c815ef3",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 9,
+          "name": "curious",
+          "sourceRect": [
+            314,
+            627,
+            627,
+            940
+          ],
+          "alphaBounds": [
+            82,
+            2,
+            309,
+            306
+          ],
+          "path": "design/fish-companion/frames/elegant/curious.png",
+          "sha256": "274f2cc5c26d7264c03430221d138ba8163b7cdb8f5481e5b43c30526ba12f6a",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 10,
+          "name": "work-read",
+          "sourceRect": [
+            627,
+            627,
+            940,
+            933
+          ],
+          "alphaBounds": [
+            54,
+            1,
+            290,
+            306
+          ],
+          "path": "design/fish-companion/frames/elegant/work-read.png",
+          "sha256": "c7ebad762f8681028027363848501ff239c42ae15d355d8485c2b04fef2fcefc",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 11,
+          "name": "work-write",
+          "sourceRect": [
+            940,
+            625,
+            1254,
+            932
+          ],
+          "alphaBounds": [
+            55,
+            0,
+            275,
+            307
+          ],
+          "path": "design/fish-companion/frames/elegant/work-write.png",
+          "sha256": "7db7238e4ffb180e18e8b62d94d6de2e4a00665625773e848daf22580361c211",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 12,
+          "name": "sleepy",
+          "sourceRect": [
+            0,
+            933,
+            314,
+            1254
+          ],
+          "alphaBounds": [
+            91,
+            0,
+            314,
+            307
+          ],
+          "path": "design/fish-companion/frames/elegant/sleepy.png",
+          "sha256": "7d672c87bf23903e5d33b51a48b17b30b8a1896b18aa31946bbf35c0ab35b48c",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 13,
+          "name": "sleeping",
+          "sourceRect": [
+            314,
+            940,
+            627,
+            1254
+          ],
+          "alphaBounds": [
+            82,
+            1,
+            313,
+            294
+          ],
+          "path": "design/fish-companion/frames/elegant/sleeping.png",
+          "sha256": "e0757b3b26eb44681181d75987999fbe1ca6dfda291bc223b844150e90e8c63b",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 14,
+          "name": "concerned",
+          "sourceRect": [
+            627,
+            933,
+            940,
+            1254
+          ],
+          "alphaBounds": [
+            60,
+            0,
+            303,
+            308
+          ],
+          "path": "design/fish-companion/frames/elegant/concerned.png",
+          "sha256": "b66cb28baa711c800ade8b78424e7958ec856bcb9edbb3b785a45d0133157e20",
+          "outputSize": [
+            320,
+            320
+          ]
+        },
+        {
+          "index": 15,
+          "name": "apologetic",
+          "sourceRect": [
+            940,
+            932,
+            1254,
+            1254
+          ],
+          "alphaBounds": [
+            60,
+            0,
+            282,
+            309
+          ],
+          "path": "design/fish-companion/frames/elegant/apologetic.png",
+          "sha256": "2338b5a2431768234288132da257dd259c50920cb74087ce4995cb34b63b94ce",
+          "outputSize": [
+            320,
+            320
+          ]
+        }
+      ],
+      "separateFrames": 16,
+      "animations": [
+        "idle",
+        "happy",
+        "thinking",
+        "working",
+        "concerned",
+        "rest"
+      ]
+    }
+  },
+  "review": {
+    "transparent": true,
+    "textFree": true,
+    "nativeVisualVerified": true,
+    "all32FramesVisuallyReviewed": true,
+    "lightAndDarkEdgesReviewed": true,
+    "nativeVisualScope": "Desktop Robolectric Android native graphics; both appearances, seven rendered poses; no physical phone.",
+    "physicalDeviceVerified": false,
+    "evidence": "evidence/fish-companion-20261029/native-previews",
+    "reviewedAt": "2026-10-30T12:15:47.304369+08:00"
+  },
+  "sequences": {
+    "idle": [
+      [
+        0,
+        0,
+        0,
+        0,
+        1,
+        2,
+        1,
+        0,
+        3,
+        0
+      ],
+      [
+        600,
+        600,
+        600,
+        600,
+        90,
+        110,
+        90,
+        800,
+        700,
+        1000
+      ]
+    ],
+    "happy": [
+      [
+        4,
+        5,
+        6,
+        5,
+        4,
+        7
+      ],
+      [
+        220,
+        300,
+        300,
+        300,
+        260,
+        700
+      ]
+    ],
+    "thinking": [
+      [
+        8,
+        9,
+        8
+      ],
+      [
+        900,
+        800,
+        900
+      ]
+    ],
+    "working": [
+      [
+        10,
+        11,
+        10,
+        11
+      ],
+      [
+        650,
+        450,
+        650,
+        450
+      ]
+    ],
+    "concerned": [
+      [
+        14,
+        15,
+        14
+      ],
+      [
+        1100,
+        800,
+        1100
+      ]
+    ],
+    "rest": [
+      [
+        12,
+        13
+      ],
+      [
+        1400,
+        2200
+      ]
+    ]
+  }
+}

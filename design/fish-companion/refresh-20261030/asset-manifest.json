@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-30",
+  "originalsUnchanged": true,
+  "assets": [
+    {
+      "kind": "generated derivative of user supplied red work outfit reference",
+      "input": "design/references/fish/补充/微信图片_20261030144807_643_7.jpg",
+      "generator": "image_gen",
+      "generatedPath": "本地生成缓存（未纳入仓库）：call_lqegAhXk15UrokJZVdtBwxoq.png",
+      "motion": "single transparent pose with breathing; no new full outfit action sheet",
+      "packaged": "fish/wardrobe/red-work.png",
+      "bytes": 1207060,
+      "sha256": "eb14798ac9dc6aa8fbfbd1d0ffddbf6411bee60a27846a74e9c606350c682229"
+    },
+    {
+      "kind": "unmodified user image",
+      "input": "design/references/fish/补充/微信图片_20261030144814_651_7.png",
+      "packaged": "fish/references/pointing.png",
+      "bytes": 1226038,
+      "sha256": "a5ad0e48a443cfaf669f1cbb2adbc0a14145fa3dbd552e1b37696ccebce34a39"
+    },
+    {
+      "kind": "unmodified user image",
+      "input": "design/references/fish/补充/微信图片_20261030144812_650_7.jpg",
+      "packaged": "fish/references/rose.jpg",
+      "bytes": 820590,
+      "sha256": "23d81fc87d0cffd49b50fcb6b91e3138d8536a5fee5553ee026e611864740b42"
+    },
+    {
+      "kind": "unmodified user image",
+      "input": "design/references/fish/补充/微信图片_20261030144821_657_7.jpg",
+      "packaged": "fish/references/surprised.jpg",
+      "bytes": 200792,
+      "sha256": "a9c4dee0c8e88901ef01b0921c1d76d13c984b89b8f48615af1308ea08f12b14"
+    },
+    {
+      "kind": "unmodified user image",
+      "input": "design/references/fish/补充/微信图片_20261030144822_658_7.jpg",
+      "packaged": "fish/references/bedtime.jpg",
+      "bytes": 96419,
+      "sha256": "d1a9d62dfa47b6157f0c098a22e08dcd0aee3ce0ea18efa83d5c9771fce56a20"
+    }
+  ]
+}

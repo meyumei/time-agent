@@ -1,0 +1,233 @@
+{
+  "generator": "@adobe/leonardo-contrast-colors@1.1.0",
+  "reference": "https://github.com/adobe/leonardo/tree/main/packages/contrast-colors",
+  "colorspace": "CAM02",
+  "background": {
+    "light": "#FFFFFF",
+    "dark": "#10121A"
+  },
+  "targets": {
+    "light": {
+      "container": 1.2,
+      "content": 9,
+      "secondary": 6.4,
+      "accent": 3.2
+    },
+    "dark": {
+      "container": 1.8,
+      "content": 13,
+      "secondary": 9.6,
+      "accent": 4.8
+    }
+  },
+  "presets": [
+    {
+      "id": "pink",
+      "name": "樱粉",
+      "seed": "#E94383",
+      "pastelAnchor": "#FCE5EE",
+      "light": {
+        "container": "#fbe4ed",
+        "content": "#743449",
+        "secondary": "#9d3d5e",
+        "accent": "#eb5e90",
+        "contrast": {
+          "title": 7.477,
+          "secondary": 5.34
+        }
+      },
+      "dark": {
+        "container": "#642f40",
+        "content": "#f7ccda",
+        "secondary": "#f2a4bc",
+        "accent": "#e34380",
+        "contrast": {
+          "title": 7.221,
+          "secondary": 5.346
+        }
+      }
+    },
+    {
+      "id": "cyan",
+      "name": "湖青",
+      "seed": "#00A7B5",
+      "pastelAnchor": "#D8F1E5",
+      "light": {
+        "container": "#d7f0e4",
+        "content": "#2b4e53",
+        "secondary": "#2f676d",
+        "accent": "#169fab",
+        "contrast": {
+          "title": 7.54,
+          "secondary": 5.324
+        }
+      },
+      "dark": {
+        "container": "#284548",
+        "content": "#baded7",
+        "secondary": "#86c4c5",
+        "accent": "#278e98",
+        "contrast": {
+          "title": 7.134,
+          "secondary": 5.266
+        }
+      }
+    },
+    {
+      "id": "violet",
+      "name": "藤紫",
+      "seed": "#8B5CF6",
+      "pastelAnchor": "#EAE6FC",
+      "light": {
+        "container": "#eae7fb",
+        "content": "#4e4079",
+        "secondary": "#684eac",
+        "accent": "#997eeb",
+        "contrast": {
+          "title": 7.423,
+          "secondary": 5.291
+        }
+      },
+      "dark": {
+        "container": "#443968",
+        "content": "#d9d4f4",
+        "secondary": "#bdb2eb",
+        "accent": "#8e68f1",
+        "contrast": {
+          "title": 7.225,
+          "secondary": 5.284
+        }
+      }
+    },
+    {
+      "id": "gold",
+      "name": "麦金",
+      "seed": "#D79B16",
+      "pastelAnchor": "#F7EFD9",
+      "light": {
+        "container": "#f4e9ce",
+        "content": "#594622",
+        "secondary": "#755b26",
+        "accent": "#b98721",
+        "contrast": {
+          "title": 7.484,
+          "secondary": 5.302
+        }
+      },
+      "dark": {
+        "container": "#4e3e20",
+        "content": "#ebd5a6",
+        "secondary": "#dfb35d",
+        "accent": "#a47a25",
+        "contrast": {
+          "title": 7.179,
+          "secondary": 5.282
+        }
+      }
+    },
+    {
+      "id": "coral",
+      "name": "珊橙",
+      "seed": "#EF783E",
+      "pastelAnchor": "#FAEEE3",
+      "light": {
+        "container": "#f8e6d8",
+        "content": "#683f2b",
+        "secondary": "#8b4f33",
+        "accent": "#de713d",
+        "contrast": {
+          "title": 7.411,
+          "secondary": 5.301
+        }
+      },
+      "dark": {
+        "container": "#5a3827",
+        "content": "#f6cfb9",
+        "secondary": "#f3a882",
+        "accent": "#c4683b",
+        "contrast": {
+          "title": 7.166,
+          "secondary": 5.289
+        }
+      }
+    },
+    {
+      "id": "blue",
+      "name": "晴蓝",
+      "seed": "#3B91E1",
+      "pastelAnchor": "#E1EFFF",
+      "light": {
+        "container": "#dcebfd",
+        "content": "#324b66",
+        "secondary": "#3a618a",
+        "accent": "#4394e0",
+        "contrast": {
+          "title": 7.432,
+          "secondary": 5.326
+        }
+      },
+      "dark": {
+        "container": "#2d4258",
+        "content": "#c3d9f3",
+        "secondary": "#97bde7",
+        "accent": "#3d85ca",
+        "contrast": {
+          "title": 7.156,
+          "secondary": 5.29
+        }
+      }
+    },
+    {
+      "id": "green",
+      "name": "豆绿",
+      "seed": "#49A573",
+      "pastelAnchor": "#E9F3DF",
+      "light": {
+        "container": "#e1eed9",
+        "content": "#324f3d",
+        "secondary": "#3c684e",
+        "accent": "#48a070",
+        "contrast": {
+          "title": 7.51,
+          "secondary": 5.311
+        }
+      },
+      "dark": {
+        "container": "#2d4536",
+        "content": "#c5dec3",
+        "secondary": "#97c4a1",
+        "accent": "#468f66",
+        "contrast": {
+          "title": 7.247,
+          "secondary": 5.32
+        }
+      }
+    },
+    {
+      "id": "rose",
+      "name": "莓紫",
+      "seed": "#BE55AE",
+      "pastelAnchor": "#EFE2F4",
+      "light": {
+        "container": "#f1e7f5",
+        "content": "#663a5e",
+        "secondary": "#8a477e",
+        "accent": "#c573b9",
+        "contrast": {
+          "title": 7.5,
+          "secondary": 5.327
+        }
+      },
+      "dark": {
+        "container": "#593451",
+        "content": "#e6d0e9",
+        "secondary": "#d7acd4",
+        "accent": "#bf5db0",
+        "contrast": {
+          "title": 7.157,
+          "secondary": 5.279
+        }
+      }
+    }
+  ]
+}

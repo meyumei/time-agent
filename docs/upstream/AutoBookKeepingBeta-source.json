@@ -1,0 +1,15 @@
+{
+  "repo": "FuShengDuoBuYu/AutoBookKeepingBeta",
+  "download": "https://codeload.github.com/FuShengDuoBuYu/AutoBookKeepingBeta/zip/refs/heads/master",
+  "archiveSha256": "c7db767a542cffccf976ffe0dee6cbda8f823e230eab411837ae8c7973ccef3a",
+  "paths": [
+    "AutoBookKeepingBeta-master/AutoBookKeeping/app/src/debug/java/com/beta/autobookkeeping/service/DebugNotificationTestReceiver.java",
+    "AutoBookKeepingBeta-master/AutoBookKeeping/app/src/main/java/Util/NotificationBillParser.java",
+    "AutoBookKeepingBeta-master/AutoBookKeeping/app/src/main/java/com/beta/autobookkeeping/service/AutoBillNotificationActionReceiver.java",
+    "AutoBookKeepingBeta-master/AutoBookKeeping/app/src/main/java/com/beta/autobookkeeping/service/NotificationReceiver.java",
+    "AutoBookKeepingBeta-master/AutoBookKeeping/app/src/test/java/Util/NotificationBillParserTest.java",
+    "AutoBookKeepingBeta-master/LICENSE",
+    "AutoBookKeepingBeta-master/ReadmeImage/family_todo/todo_notification1.png",
+    "AutoBookKeepingBeta-master/ReadmeImage/family_todo/todo_notification2.png"
+  ]
+}

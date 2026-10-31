@@ -1,0 +1,47 @@
+{
+  "name": "dsh-remembers",
+  "version": "1.0.0",
+  "description": "情感陪伴向的 DSH 记忆插件：自动想起该想起的，宁可说想不起也不编。后端是 companion-memory 服务",
+  "type": "module",
+  "main": "index.mjs",
+  "exports": {
+    ".": "./index.mjs",
+    "./client": "./client.mjs",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.mjs",
+    "client.js",
+    "client.mjs",
+    "config.mjs",
+    "cordis.patch.yml",
+    "install.sh",
+    "README.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web"
+    }
+  },
+  "_peerRangeNote": "用 * 而不是版本范围：npm 的预发布匹配规则要求范围里存在同元组且带预发布标签的比较符，否则像 0.2.1-rc.2 这样的宿主版本会被静默排除（用户侧表现为 ERESOLVE）。本插件只用到 @deepseek-ai/dsh-llm 的 createUserMessage，DSH 加载插件时也会自己检查 peer，所以这里不设上界，把兼容判断交给宿主。",
+  "peerDependencies": {
+    "@deepseek-ai/dsh-llm": "*"
+  },
+  "engines": {
+    "node": "^22.19.0 || >=24"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "memory",
+    "long-term-memory",
+    "companion",
+    "bm25",
+    "rag"
+  ],
+  "license": "MIT"
+}
