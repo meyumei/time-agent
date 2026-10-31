@@ -1,0 +1,6 @@
+{
+  "exitCode": 0,
+  "endedAt": "2026-10-31T19:45:47.9910748+08:00",
+  "startedAt": "2026-10-31T19:44:01.7038613+08:00",
+  "command": "gradlew.bat :app:testDebugUnitTest :app:lintDebug --console=plain --no-parallel --max-workers=2 -Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK"
+}

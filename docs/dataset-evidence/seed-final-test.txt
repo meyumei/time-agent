@@ -1,0 +1,6 @@
+test_scale_relations_and_repeatable_bytes (test_seed_large_dataset.LargeDatasetTest.test_scale_relations_and_repeatable_bytes) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.005s
+
+OK

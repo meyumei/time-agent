@@ -1,0 +1,6 @@
+{
+  "exitCode": 1,
+  "command": "gradlew.bat :app:testDebugUnitTest --tests com.timeagent.data.V12SampleDatabaseTest --console=plain --no-parallel --max-workers=2 -Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+  "endedAt": "2026-10-31T19:41:04.0545746+08:00",
+  "startedAt": "2026-10-31T19:40:51.5818521+08:00"
+}
