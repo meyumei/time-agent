@@ -1,0 +1,19 @@
+{
+  "id": "L13",
+  "module": "收件箱",
+  "capabilities": "收集、分拣到任务/日程/记账",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L13-device.png",
+  "spec_code_references": [
+    "ui/InboxScreens.kt"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/ui/InboxScreens.kt",
+      "sha256": "d3008f8d7af91b432a4b5145ed9deb038ec14f9a1fdb309c2b643a6fff5d1407"
+    }
+  ]
+}

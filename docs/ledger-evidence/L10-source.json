@@ -1,0 +1,47 @@
+{
+  "id": "L10",
+  "module": "记账",
+  "capabilities": "支付通知监听（默认关）；草稿待确认；整数分；CSV；合并/拆分",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L10-device.png",
+  "spec_code_references": [
+    "ledger/*"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/ledger/LedgerActivity.kt",
+      "sha256": "925c08d34d363c88d955a0f18e062f29ca64ca70e4d1d8964f27bc725d9e7190"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ledger/LedgerDao.kt",
+      "sha256": "e3525cdc265c5def50ec4399a0d72fc2ec8c816471256790c0abbf72a746f54b"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ledger/LedgerEntities.kt",
+      "sha256": "42d8d70b3c4d85448b23ae359181334fc4f51ac141e8fabfc2f03e74835cd0ac"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ledger/LedgerRepository.kt",
+      "sha256": "46534de2dfac076f9793e23e2613bb4a769ba84504a83e174984320534c212a2"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ledger/LedgerSchema.kt",
+      "sha256": "41825929101d8d7ec791dc72d9071d17f782325b6aa3970c297c697d66022458"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ledger/PaymentNotificationListener.kt",
+      "sha256": "fe6be1f8163b592e988648523fd65df012416991eae2a3bb2d92a662a635102c"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ledger/PaymentParser.kt",
+      "sha256": "373a7a2ef111c076a95fcd8515e6f4b2f6ff75b5eba63efa5218f6412153f0c1"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/ledger/LedgerTest.kt",
+      "sha256": "0ccdb3ce4e67237b5ddc3b7a00dbbb8fbb06409f9313308b997c084b07774b10"
+    }
+  ]
+}

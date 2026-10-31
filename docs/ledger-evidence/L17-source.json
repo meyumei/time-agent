@@ -1,0 +1,28 @@
+{
+  "id": "L17",
+  "module": "历史问答",
+  "capabilities": "基于历史数据回答",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L17-device.png",
+  "spec_code_references": [
+    "history/*",
+    "ui/HistoryScreen.kt"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/history/LocalHistory.kt",
+      "sha256": "6dfc37536de61c35b56b80f0e447877a748affb46f36bfaef4ff2b78a88a7ff0"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ui/HistoryScreen.kt",
+      "sha256": "58a654fe7922fa53580f1c7ddfd505c158dea1a7e6e1889b34a3009540417899"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/history/LocalHistoryTest.kt",
+      "sha256": "f4c980e72484aca7a322cd97dd014ca06846ed898898c7887341ba127ec6c0b6"
+    }
+  ]
+}

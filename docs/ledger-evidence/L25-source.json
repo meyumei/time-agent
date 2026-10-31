@@ -1,0 +1,24 @@
+{
+  "id": "L25",
+  "module": "悬浮窗",
+  "capabilities": "悬浮鱼、交互、服务",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L25-device.png",
+  "spec_code_references": [
+    "fish/FishCompanionOverlay.kt",
+    "FishOverlayService.kt"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/fish/FishCompanionOverlay.kt",
+      "sha256": "2ae229c53cd404bce8a1430cf56ba208b1367e5326eb33bcc0f5b91718b607ff"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/fish/FishOverlayService.kt",
+      "sha256": "c5a504e4d6d0aa7cc20711694c301742985ce128ea6a59641e9a514ba2026718"
+    }
+  ]
+}

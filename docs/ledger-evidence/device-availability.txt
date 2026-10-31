@@ -1,0 +1,20 @@
+Date: 2026-10-31 (Asia/Shanghai)
+Baseline: 660d129b5986c94ffe704a4f181e2565f68d1bd8
+
+Command: .tools/android-sdk/platform-tools/adb.exe devices -l
+Exit: 0
+Output:
+List of devices attached
+
+Command: .tools/android-sdk/platform-tools/adb.exe mdns services
+Exit: 0
+Output:
+List of discovered mdns services
+
+Local SDK emulator/emulator.exe: absent.
+Configured phone SSH connection: attempted with the existing authorized
+identity and StrictHostKeyChecking=yes; timed out after 8 seconds.
+No device was rebooted, no system time zone was changed, no app installed,
+no personal database was exported or modified, and no screenshot was captured.
+
+All device acceptance: NOT_RUN_NO_DEVICE.

@@ -1,0 +1,52 @@
+{
+  "id": "L09",
+  "module": "健康",
+  "capabilities": "Health Connect、Gadgetbridge 导入；睡眠来源去重；缺失不当零",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L09-device.png",
+  "spec_code_references": [
+    "health/*",
+    "ui/HealthSyncScreen.kt"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/health/GadgetbridgeImporter.kt",
+      "sha256": "fd72e92e4d956e868ee92d63c2694a57c157ceedde37327a4f737d619694a46e"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/health/HealthConnect.kt",
+      "sha256": "f6b27be65f97dc80ae42440dc076581c776d14290f34ba7f03141b20dd59bc9a"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/health/HealthConnectReader.kt",
+      "sha256": "d0c08e2206ff7a8d9d64612565b7b662f77a6248fd690f8c572ecbf855ea39c8"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/health/HealthReadReport.kt",
+      "sha256": "a166c8ae95710a26d37c0eee31590f5c34a98e0f86c5051f673d11920be89d0d"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/health/HealthSyncSettings.kt",
+      "sha256": "c4b2ddaa0d90d8795fa16886952577dc72aae1aca5ef7bc6e52094006c8945f3"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/health/Nudge.kt",
+      "sha256": "e95096514a1a70135c1314f7dba12ccc0161356839fbfd53166c4f5fb4db596c"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ui/HealthSyncScreen.kt",
+      "sha256": "68a2561902ffd54eeb30bf39407d88c02e91437b84898e46ec6101b4a6e83c8f"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/health/GadgetbridgeImporterTest.kt",
+      "sha256": "f707e615e2bbb81933864e3df2f345840cae7233b379f8fe1913806cd8347710"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/health/HealthConnectReaderTest.kt",
+      "sha256": "fef7f0f517728cbd73b67caba7a8b7608d98161b83d6dbe3e75f40226cbd3fc5"
+    }
+  ]
+}

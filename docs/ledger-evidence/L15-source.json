@@ -1,0 +1,28 @@
+{
+  "id": "L15",
+  "module": "回复副驾",
+  "capabilities": "生成回复建议",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L15-device.png",
+  "spec_code_references": [
+    "reply/*",
+    "ui/ReplyCopilotScreen.kt"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/reply/ReplyCopilot.kt",
+      "sha256": "b98e23efd05a90dde252d5270f9ecc5e303174168dcb0c8e0ffa63a3b9041bda"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ui/ReplyCopilotScreen.kt",
+      "sha256": "b042bf50abde6bd30a3b90fdaa6df9df9508f7643f502fa603957530960cbf58"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/reply/ReplyCopilotTest.kt",
+      "sha256": "0bf91f8e24fcb97ec3eb68c9f974c5772a41bde54f98a1138882f9af1369b8c8"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "L04",
+  "module": "截止",
+  "capabilities": "截止列表、状态、提醒",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L04-device.png",
+  "spec_code_references": [
+    "ui/DeadlineScreen.kt",
+    "ui/DeadlineStatus.kt"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/ui/DeadlineScreen.kt",
+      "sha256": "90ee65b9833d855aeec7490f9f364a79f7e00c9b08d09dba5d33a5365a46212f"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ui/DeadlineStatus.kt",
+      "sha256": "de1409f26f84350b9e5a2bf50748d2695aa30274f3691c0fea655b0b8c8133c0"
+    }
+  ]
+}

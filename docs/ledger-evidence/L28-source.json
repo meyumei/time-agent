@@ -1,0 +1,19 @@
+{
+  "id": "L28",
+  "module": "主动关心",
+  "capabilities": "主动消息、频率与时段",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L28-device.png",
+  "spec_code_references": [
+    "fish/FishProactiveScreen.kt"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/fish/FishProactiveScreen.kt",
+      "sha256": "ecebea47939601399311da742b9ce1b0afa251feef3abe1fb726573ed2285db4"
+    }
+  ]
+}

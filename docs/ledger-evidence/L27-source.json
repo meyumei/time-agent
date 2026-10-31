@@ -1,0 +1,124 @@
+{
+  "id": "L27",
+  "module": "共同记忆",
+  "capabilities": "dsh-remembers 插件、记忆查看",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L27-device.png",
+  "spec_code_references": [
+    "fish/FishMemoryScreen.kt",
+    "agent-plugins/dsh-remembers"
+  ],
+  "sources": [
+    {
+      "path": "agent-plugins/dsh-remembers/client.mjs",
+      "sha256": "d60fc0a7aa447ea95c34619ba1f47e44606220ea2bbad660dc9527adc3115877"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/config.mjs",
+      "sha256": "94799e80c6c1b78759ff10fb90a81ab9b03fe95554156e3c273ca6d4bf1440a7"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/index.mjs",
+      "sha256": "645dc42d3b13a67d576e94d3186d4c8dfdee004b457240486a5effaad97ed6a7"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/persona-default.mjs",
+      "sha256": "d7750a10eace72a0f9b5177ff46bdc18beb5f1e5d1e078967039577ea896391b"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/service/backup.py",
+      "sha256": "2684d3dc3e13b7fb400c04614bd0c285c1a77cee425d33b0ed491d55296bfacc"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/service/bili_adapter.py",
+      "sha256": "ef3d4dd98c86ba63341af1e42310b0f40006c936199964665f3413eb0f640373"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/service/embedding.py",
+      "sha256": "3c00be6464b0199fde8cf529c0969ae79e8ab25ab21bd9dee5d06ddc7248ef01"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/service/extractor.py",
+      "sha256": "db164b286f568be378ae5fd5087c5ffcfe9fb8b583a9da99d047426362c54972"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/service/llm.py",
+      "sha256": "2e014efba0659e42b49b0a2a131b33a4ea214747a24d1da78c81086cb7686d33"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/service/mcp_server.py",
+      "sha256": "b7db52c01cc42c0086e97523b49a51f0de9ac94cf8a43c4e61b12d86cfa0e5af"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/service/memory_core.py",
+      "sha256": "26391dc84fbba2ca45bc5907dee8bdc5b7e9644f49ef4ae6240c2685f34ef635"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/service/netcfg.py",
+      "sha256": "8187dc7378cee05bcf3af7617c54074feda350641b24122ccf8876fd5a43ab90"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/service/paths.py",
+      "sha256": "539beb931ffbfd88cfd296761e0dfb0b7e6c3b29ed37ab3616df65d09bbb32d1"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/service/scheduler.py",
+      "sha256": "666462c244fe59db56042b2dca78c1a79b952757c861d4b91123d8efadbfe7b6"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/service/server.py",
+      "sha256": "2ac799d6befa49154049834a1b3e5239b35e9dcecaf4ec6fc011ff0288cd5663"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/service/surprisal.py",
+      "sha256": "571c9841707c45e605a4c3d91b40ee02bbfa1d7bef6879d909017fdf01538cc7"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/service/test_core.py",
+      "sha256": "a0ae7dbea697bd179c6341455061b26b99de96517973b344e6368a7bed27db98"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/service/test_gating.py",
+      "sha256": "9dab821079e0fd8071f28c67488158ba8f0fb5fa719c88ba9a24d47f3bc27d32"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/service/test_json_parse.py",
+      "sha256": "199b2c2325bd310eac158bc42ad789d8eb211fe66a551af85dff2e2930e0572b"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/service/test_slang.py",
+      "sha256": "e670e1381a1eafb6ef7cbb9398d4065ef98fe233c2fde0dcd8fe7f48bba584d0"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/service/test_transfer.py",
+      "sha256": "dac0ac9f8edbbcbb167db9ffd33a2f4a2f26d5fdef086dd1d1c945422159eaa0"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/tests/persona-default.test.mjs",
+      "sha256": "2fc11a231940eb5be2e469c543dac83fd0e3e660599c1c13f227867aa7f1a39f"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/tests/test_app_bridge.py",
+      "sha256": "e2767c863e3f573d6bca3a80701af38bfcd47d56a99e9880deb843404d1275f6"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/tests/test_bili_adapter.py",
+      "sha256": "e89d2cf71ea21c6eb9f59404a7c1233a052cf3d5f37501c92f7f0271119c7bba"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/tests/test_loopback.py",
+      "sha256": "fce4bf07d2813b77087b7618e27c58c1cb9fab3102108ae406840098c2dc2748"
+    },
+    {
+      "path": "agent-plugins/dsh-remembers/tests/test_proactive_settings.py",
+      "sha256": "5a2b2713043d87c4e9d73b45374cb1c8e675d1bf9c00ba3242a062d008513d00"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/fish/FishMemoryScreen.kt",
+      "sha256": "24663eb37d510d4552f5aad2485f607775f61edb8e2db490ae51bc70b72c66db"
+    }
+  ]
+}

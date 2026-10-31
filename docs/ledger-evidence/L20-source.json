@@ -1,0 +1,34 @@
+{
+  "id": "L20",
+  "module": "周目标",
+  "capabilities": "设定与追踪、与项目进度联动",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L20-device.png",
+  "spec_code_references": [
+    "data/ProjectEntities.kt",
+    "projects/ProjectProgress.kt",
+    "ui/ProjectReview.kt",
+    "ui/ButlerHomeScreens.kt"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/data/ProjectEntities.kt",
+      "sha256": "0cd2d4bee26598722e8c545951dc92fe209602133cab0722a8084b109856f55e"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/projects/ProjectProgress.kt",
+      "sha256": "72a60e4390fb74fc6018bc05fcf58605c5acbd0b4ad0383085172f8bb479055c"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ui/ButlerHomeScreens.kt",
+      "sha256": "5f11abc311166591a2353542b4fd867ac99fd572afda5ecbbb609ce317f8c4c7"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ui/ProjectReview.kt",
+      "sha256": "e8c2d99d2845db8f3ea2b782fb2cd04388cd450a01fd745589ee4a6847a2901c"
+    }
+  ]
+}

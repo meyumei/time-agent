@@ -1,0 +1,24 @@
+{
+  "id": "L22",
+  "module": "本地指令",
+  "capabilities": "查日程/任务/空闲、开始/停止计时、新建任务等",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L22-device.png",
+  "spec_code_references": [
+    "assistant/LocalAssistantParser.kt",
+    "NaturalRecordParser.kt"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/assistant/LocalAssistantParser.kt",
+      "sha256": "ee1df36192aa964477407e32218f7c118c75a319dc47046f85a07e66533d9888"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/assistant/NaturalRecordParser.kt",
+      "sha256": "5f33e6ce8f0f06b8d8cb5184888a9eb17f3c14e0dfc1e4f5f01934c7082622c1"
+    }
+  ]
+}

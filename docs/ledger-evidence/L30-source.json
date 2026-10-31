@@ -1,0 +1,232 @@
+{
+  "id": "L30",
+  "module": "B 站",
+  "capabilities": "bili-cli 插件、平台自主活动",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L30-device.png",
+  "spec_code_references": [
+    "fish/FishPlatformScreen.kt",
+    "agent-plugins/bili-cli"
+  ],
+  "sources": [
+    {
+      "path": "agent-plugins/bili-cli/tools/bili.mjs",
+      "sha256": "9b5da2b3f6a5bd6ecd1c29cde3d11421baa9697643909898edfb7452f45a1347"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/bili-watch.mjs",
+      "sha256": "b31f6035cab1fd5915c33bba40f86ebae72f4dce66e74555522408106015c782"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/comment-await.mjs",
+      "sha256": "555e5c9c0acdb46058f4a857b0fe6145c56fc8c767099432ca182a81917ed43a"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/comment-del.mjs",
+      "sha256": "f15209d61cb5b13c2646c363cf719c362bed0b76ab3f3284cf5768aa72ddb713"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/comment-digest.mjs",
+      "sha256": "8d3e3094c65518e2a4ef6ebe6c0a476fc51550fdc3eada47c6da61a414c28165"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/comment.mjs",
+      "sha256": "0d24249fa1318742904c292986d659a4aeaaf2d25d50d7a4b8dbb98a98d66e6a"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/comments.mjs",
+      "sha256": "4cc8e4dcc4b9d06f0ab20b8f1c9b0f6c5891d2839907749df958bd18a1cb07df"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/danmaku-await.mjs",
+      "sha256": "9bfd64f0309fab8a420d4f1f111beb00b2c41cfba981ec552e2d3a2ae80a25c5"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/danmaku.mjs",
+      "sha256": "dca6353be5bf9c9c5ab52f8c8aa882d6666a40c4798502471511b8a981bca72d"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/debrief.mjs",
+      "sha256": "9cda4dc69ae3e1d8c58ccf2adaae3136c9b40631cc7146026d7e2d2013d7ee72"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/deps.mjs",
+      "sha256": "bf03945a61f472e10af04f64e3a8be6af53c857f4b4f7a49fd589147c99c784a"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/diary.mjs",
+      "sha256": "175442488c32418ef7b2bab28cffaa9c2266d7c54398857b446292852d693dcf"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/dm-await.mjs",
+      "sha256": "24b4d726ce5f7adb69d1e0e59468103ec2d4432a33c17a0a8953f8e45e697e3a"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/dm.mjs",
+      "sha256": "36bcccaaa88788c3ee52edccae81b1b61509a7e700f2067bc067fe0c8eaf4618"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/dynamic-image.mjs",
+      "sha256": "16407bf3ddf81f4522c581a2eaa7faffbbd791793b4a18adb382c771cf53f053"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/dynamic.mjs",
+      "sha256": "9ec0336ba0db72eb38e985f85a32fa7877ee7e7d760a03da26d709cff7921ce7"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/edit-dynamic.mjs",
+      "sha256": "53a79570e0d0ffea3c7d9a95b47d5d647721dbb9c3c6bbf47bfea4d7caa8189d"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/fav.mjs",
+      "sha256": "e6410db5bb562baf0a5e63c080f811dd0c90d23da8cd3d22fcfa805d5184464f"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/feed.mjs",
+      "sha256": "8d15753584cc8f1535c5d0eb78201b4d4f98797e6f3c488c1c6cdf6a403d231c"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/likes.mjs",
+      "sha256": "10556d9c7433bbf917f36846f0c0d85815b1b5f221c541c05d43a40ba376ab1b"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/notify.mjs",
+      "sha256": "fc6c48bc7ef18cb88c844e38e23537739a4e70b6344701c3c294c95743f88908"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/quota.mjs",
+      "sha256": "bc84ddcf49fbf0374796b8dc77f4c921df257a1d4e5f02e7609ef8e2c5d82224"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/reply-draft.mjs",
+      "sha256": "2bcf7e64e46f6e93797e1e550e0ccd3b15108e86d2d4568794f8fd07bd366751"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/search.mjs",
+      "sha256": "2bb6f58aa044000d3f7a219f1ada69e2438202a7d2bcbc25f9be871cbce58b69"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/selftest.mjs",
+      "sha256": "6e2ba35344a6c02148acff2e55bb6007f3e907cbe811ad761c9aab462df22b2d"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/subtitles.mjs",
+      "sha256": "6b200f81d887cf622472b14fb9aac47f0cd52c1a4985db110bb315f4739a4451"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/video-content.mjs",
+      "sha256": "f756d3bebb5c12bc577ccd75031e3eae036c5b57e4d422423a15ff46714c8742"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/commands/whale-night.mjs",
+      "sha256": "a4ed759c9129fa8dc0a90398fe8d9653e84d759df5e6a0a742431ac32c850eb4"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/diagnostics/fetch-covers.mjs",
+      "sha256": "f14bce81fc42fe7fbbd6e938d3f87c67e27d41d4deee0beaf334abf1c7752be6"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/diagnostics/whois.mjs",
+      "sha256": "dfad6dc7901bd91aa3ea7b1f1adfd18ab946f852e74eddc0eeddbf8bb993d346"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/lib/bili-api.mjs",
+      "sha256": "57035ad23b6e251110dc0ded06df5ea5810e92106ed1df5d9ff33ad0afdb7add"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/lib/capture.mjs",
+      "sha256": "496f0da4dc2c492d67706ef56dd9122f771884767d9fa425d6cced9f0b9c3e7e"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/lib/cli-args.mjs",
+      "sha256": "5a04124965f7ccc576d91deb54eb8b87ff41449cc1f3d70abef2e2962fee88c8"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/lib/config.mjs",
+      "sha256": "819b273ace9029f3f3710f1fa06e4747d4ba9e5a82f175b02a3bf7673f02777c"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/lib/cred.mjs",
+      "sha256": "fa4ab268d3f24f7c76d4a8bfbcec9abdb996822e735f3fc9788135f5651dba5d"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/lib/feedback.mjs",
+      "sha256": "092e0cb77b31aab8363f73b1cb2db43cb602ed305695453f2ec3d1b0c5b9f562"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/lib/ffmpeg.mjs",
+      "sha256": "2285150545377bae608d0db0a9a427daa3824b161d9fab6eb67053eca7eab4f7"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/lib/msgfeed.mjs",
+      "sha256": "b1922d01dbdfb0cd3fa1d90c93d1585c50f06afc9a2353c22a3a5ef1cfbb53e8"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/lib/night-config.mjs",
+      "sha256": "cf9084e535ac6db028f1dc8c84acdf5bb6a6b28b60a13e6432d94d2cbb152879"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/lib/night-plan.mjs",
+      "sha256": "1b113a07a4033a10d7a99f72063ef735bb2d681790d978636973b9d4689b683d"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/lib/nodebin.mjs",
+      "sha256": "0484686dc805af8178a82a41639f87fff6bb82537395a40345c6a9344fc52263"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/lib/paths.mjs",
+      "sha256": "3a61af3e4e1ab66e48150db2523877adf55da72ae9ebc0ed59e03e195b29249c"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/lib/quota-gate.mjs",
+      "sha256": "87c0e45ede37b2ca3fb930008aa44a59bbaccba82fc61493ecf9e35c1fcf455f"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/lib/runtime.mjs",
+      "sha256": "f5bc6ac79d9ef73477739ff72be3418a1539fd3e668bed3b58c3a32166805d5b"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/lib/share-policy.mjs",
+      "sha256": "91d9f5d2ef541d9be3502c29317691db716a57924da4ce568f989b3a3ee937b9"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/selfcheck.mjs",
+      "sha256": "ba14907482ec0712da15da717a838e16362a3cc920067444656b1b67e1a9cf97"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/verify/comment-exists.mjs",
+      "sha256": "82f03b6c470176fb8234fd34be12423d31c9a16ba026d2d74e422ac3953dc5c8"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/verify/dryrun.mjs",
+      "sha256": "102dea182bc8763f93941c034af80a5061563a5d9197453bcab556dd1ba1f314"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/verify/dynamic-inspect.mjs",
+      "sha256": "a463e2eedf5be0ce864907d06029ce9ff47d914463581c96a3dec198a3c252e2"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/verify/mention-check.mjs",
+      "sha256": "b655b0359213ca439d30bd1441f47969ef6bb4892f8ac6de7aa50e126ff4e5a6"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/verify/session.mjs",
+      "sha256": "eae58a01a12aa9cd20c46ded0b98f0db312f810a97729e258900227b4585226c"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/verify/thread.mjs",
+      "sha256": "870257a4e5aaa5c8030806b7eb0352c1e6e70532b546cd74049c782cd6129ee8"
+    },
+    {
+      "path": "agent-plugins/bili-cli/tools/verify/watch-replies.mjs",
+      "sha256": "61265cdfe9e6fa91bf617d10cb9c248ebd1f45bd9a6b200454e265e990db7078"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/fish/FishPlatformScreen.kt",
+      "sha256": "fbcca5468f72ff2ed705c547179e8d0352ff021992d46d0e1c77b493146ee3b6"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "L19",
+  "module": "每日简报",
+  "capabilities": "简报生成与展示",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L19-device.png",
+  "spec_code_references": [
+    "ui/DailyBriefing.kt"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/ui/DailyBriefing.kt",
+      "sha256": "4fe2c407d275d1672b66a2c7c1fcbc4c4b3c4bebc8f28f4353caccbc38a6acd1"
+    }
+  ]
+}

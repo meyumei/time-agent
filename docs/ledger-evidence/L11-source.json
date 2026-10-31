@@ -1,0 +1,103 @@
+{
+  "id": "L11",
+  "module": "训练",
+  "capabilities": "动作库+GIF；3D 肌肉；8 种记录类型（WEIGHT_REPS、REPS、DURATION、BODYWEIGHT_REPS、ASSISTED_REPS、CARDIO、STRETCH、TABATA）；组类型 NORMAL/WARMUP/DROP/FAILURE；状态 ACTIVE/PAUSED/COMPLETED/DISCARDED；超级组；Tabata；模板；组间休息计时；训练通知",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L11-device.png",
+  "spec_code_references": [
+    "workout/*"
+  ],
+  "sources": [
+    {
+      "path": "app/src/androidTest/java/com/timeagent/workout/WorkoutAnatomyDeviceTest.kt",
+      "sha256": "d1f47583dc96bcb39615c7de1f2080a8812b5595480d71eda0353f5d2adfa1fa"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/workout/WorkoutActivity.kt",
+      "sha256": "e5d12dffb44eeedc96dbd4bef1b4b1c19258f0878a3e0110bc32e40106fe62d9"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/workout/WorkoutAnatomy.kt",
+      "sha256": "2ddf9f72424049e139eea2a6d0e416bb36c6c7d468e5a5e574caec9c0dfb789f"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/workout/WorkoutCatalog.kt",
+      "sha256": "78f855e09a26e4018012782dbcb8eb97df8bf808dc1e06b737bd9ac84aa1a2c9"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/workout/WorkoutGifDrawable.kt",
+      "sha256": "e6192c0528077ca707d4ff92b424675783886bbc14848e0035e45132e6139ce0"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/workout/WorkoutNotifications.kt",
+      "sha256": "722789ed0700d4d012fa46ed34384561bf2039f7cfcd62d49e8546effceca23b"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/workout/WorkoutPicker.kt",
+      "sha256": "6b730d1aae4a433cb9de6ad11720a0dc9799028f9522cb44b7d173b86f2cf328"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/workout/WorkoutScreens.kt",
+      "sha256": "91ad4c81b7963f61a07b33747a42da6d76ec46f805916957abba3eac0e6c9937"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/workout/WorkoutSessionScreen.kt",
+      "sha256": "45bfa0debc70d2d78e84a901b203c31a1f586afec7e47c4c11aae93be60d131c"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/workout/WorkoutTemplateEditor.kt",
+      "sha256": "c33a0d628484abede44c117f00018bb1fafc26433b4a83f039760215d452c36c"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/workout/WorkoutViewModel.kt",
+      "sha256": "456f586d9d765029cf5a0c82687d96c28a47ca622ecb2ba979381edc1612c151"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/workout/data/WorkoutDatabase.kt",
+      "sha256": "3fecd55eaae9f017031dd218237700ba9dcd6d3667fa23fb5127aae46942a9e2"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/workout/data/WorkoutRepository.kt",
+      "sha256": "1aff6a3cf695657c2b63221741ea5c4e188ffd8c68c4a3d564d16ce034c5f4b7"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/workout/WorkoutAssetsTest.kt",
+      "sha256": "ed7eeda801f926cf39bc700037004140d1e433a33e202890ed9442c30414aa66"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/workout/WorkoutDialogTest.kt",
+      "sha256": "93b3765276be82752579f5392f08ca52f022efaf25f936ec9d7595e88b9c1d66"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/workout/WorkoutFlowTest.kt",
+      "sha256": "31e741857fd7d1979611c4efdf4056466aa0995db79f18a09d51c686ac1248a0"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/workout/WorkoutRuntimeTest.kt",
+      "sha256": "dc4097ec3960dedc4b534bb50b1749d35ec5295965ccfb48933dd51c1b90def6"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/workout/data/WorkoutRepositoryTest.kt",
+      "sha256": "3d638599c7f4a19dc4f6244dbd18a1e8ba35ea648c65daec72bb545bcb0a7611"
+    },
+    {
+      "path": "core/src/main/kotlin/com/timeagent/core/workout/WorkoutModels.kt",
+      "sha256": "39896510e9226384a1bf0d635d46608e17443e672b997ce24aedd2396d129cdb"
+    },
+    {
+      "path": "core/src/main/kotlin/com/timeagent/core/workout/WorkoutRules.kt",
+      "sha256": "c7967e8bb3c022e912836fedb8389c5449319f53d8d64ea7b60d5b6a9c8855be"
+    },
+    {
+      "path": "core/src/test/kotlin/com/timeagent/core/workout/WorkoutExtendedRulesTest.kt",
+      "sha256": "cc3a4c8837062c41a90a2bd14dbab4918c9e73347f3c83ff181d72a0110f7c89"
+    },
+    {
+      "path": "core/src/test/kotlin/com/timeagent/core/workout/WorkoutRulesTest.kt",
+      "sha256": "bafe46d2062d10e6ac7a81a91edc3bc55112a71328f872f025a6662d34cc9f64"
+    }
+  ]
+}

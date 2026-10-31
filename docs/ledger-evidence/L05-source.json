@@ -1,0 +1,24 @@
+{
+  "id": "L05",
+  "module": "项目",
+  "capabilities": "项目列表、项目复盘",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L05-device.png",
+  "spec_code_references": [
+    "ui/ProjectScreens.kt",
+    "ui/ProjectReview.kt"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/ui/ProjectReview.kt",
+      "sha256": "e8c2d99d2845db8f3ea2b782fb2cd04388cd450a01fd745589ee4a6847a2901c"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ui/ProjectScreens.kt",
+      "sha256": "20442d1f80d85700cce622ab3dd3947aff7e0bbf2ce2db33d6e6ef84edf16899"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "id": "L24",
+  "module": "鱼角色",
+  "capabilities": "形象、精灵动画、状态、陪伴玩法",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L24-device.png",
+  "spec_code_references": [
+    "fish/FishCharacter*.kt",
+    "FishCompanionState.kt"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/fish/FishCharacter.kt",
+      "sha256": "132e29d88812fc927502376ae0956d4d1a15d6c9e99fc441b044a00f18a33fae"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/fish/FishCharacterScreens.kt",
+      "sha256": "f6144c57026c6d5a5585901f1e12995c948c40ea48c61c30be9e8d0399a7fead"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/fish/FishCharacterSprite.kt",
+      "sha256": "5cbf039c64ba04afaa57bd5e4af8738d37db18d08e6697e24e631190429f4fe9"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/fish/FishCompanionState.kt",
+      "sha256": "74cff2991ede0e4f65494957df1569c76da8322fb8719f60de30f63d2bf75453"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/fish/FishCharacterTest.kt",
+      "sha256": "03aeefa4df677c713126b04efe69e5adc7e90aaa2a56e10214026c73a4a5a8bd"
+    }
+  ]
+}

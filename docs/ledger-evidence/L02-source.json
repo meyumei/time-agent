@@ -1,0 +1,24 @@
+{
+  "id": "L02",
+  "module": "计时",
+  "capabilities": "开始/停止/切换；补录；跨天；进程重启恢复",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L02-device.png",
+  "spec_code_references": [
+    "TimeViewModel",
+    "TimeRepository"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/data/TimeRepository.kt",
+      "sha256": "38846d863b8d1b9a160a579c32019207e80b029cf932fd9fa3301f26cc6fb26e"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ui/TimeViewModel.kt",
+      "sha256": "a3e85249d5149f9750d0b642858c10463502bac7453ea120ab14acd8d0042f05"
+    }
+  ]
+}

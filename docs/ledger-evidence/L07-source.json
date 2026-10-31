@@ -1,0 +1,47 @@
+{
+  "id": "L07",
+  "module": "提醒",
+  "capabilities": "精确闹钟、通知、通知权限检测",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L07-device.png",
+  "spec_code_references": [
+    "reminders/*"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/reminders/NotificationAccess.kt",
+      "sha256": "73651ea7c3a2f339b9dee3838af0f2b2b4317768f5ecdf9781c8f3f7f3af4ae2"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/reminders/ReminderAlarms.kt",
+      "sha256": "b34043428a7e9dabda4f94e02901f92f670fe06c60f77f8d3a67f41d7398f8f8"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/reminders/ReminderNotifications.kt",
+      "sha256": "0ed661c25f9a5968772b431e5408fda18eea365b8e5abd0a16f08deb7673e5f8"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/reminders/ReminderReceivers.kt",
+      "sha256": "bb88b6997496560ba877abf9bafa7c0a59d93b067bc076eb2798b1a3a9b06eec"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/reminders/ReminderAppLaunchTest.kt",
+      "sha256": "e93e48cfb3f0c35a5ee3503d3b58451ed4dcdfb2f530ea5e342638e7798517d3"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/reminders/ReminderNotificationContractTest.kt",
+      "sha256": "90714df79e1664e5ada3e692c64216adabc375fb6c98167e6772758418b44040"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/reminders/ReminderSystemTest.kt",
+      "sha256": "2e8f1f65f05c4bab2e8ec37b19779f57bad3dacc1a2ab4f79969dfdc98a5ca42"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/reminders/ReminderTaskLifecycleTest.kt",
+      "sha256": "954d7330b8d076a0e38355e058192fca392f5230dd60edf601b051f050c4d3ab"
+    }
+  ]
+}
