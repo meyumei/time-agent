@@ -1,0 +1,31 @@
+{
+  "scannedAtEpoch": 1793522798.9334757,
+  "executedBy": "WorkBuddy DS",
+  "installedVersionCode": 28,
+  "scanScope": [
+    "/sdcard/",
+    "/data/local/tmp",
+    "app-private files/*.apk recursively",
+    "app-private cache/*.apk recursively"
+  ],
+  "candidates": 33,
+  "identified": 31,
+  "unidentified": 2,
+  "eligibleOldTimeAgent": [],
+  "deleted": 0,
+  "freedBytes": 0,
+  "deletionExecuted": true,
+  "removed": [],
+  "completedAtEpoch": 1793522800.811983,
+  "requestedModel": "deepseek-v4.1-flash",
+  "returnedModel": "deepseek-v4.1-flash",
+  "requestedEffort": "max",
+  "serverConfirmedEffort": null,
+  "actualChildCommands": [
+    "python .tmp/t0-phone/apk-cleanup.py scan",
+    "python .tmp/t0-phone/apk-cleanup.py delete-confirmed"
+  ],
+  "cliReportedTurns": 8,
+  "onlyTwoScopedCommands": true,
+  "postCleanupOriginalDataRestored": true
+}

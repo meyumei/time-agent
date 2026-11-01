@@ -131,5 +131,21 @@
     "CLI turn limit is not proof of enforcement; observed driver counts are recorded.",
     "DS reports are observations to verify, never acceptance by themselves.",
     "Workout dynamic completion label was hidden by the collection filter; no product defect inferred."
-  ]
+  ],
+  "additionalApkCleanup": {
+    "requestedModel": "deepseek-v4.1-flash",
+    "returnedModel": "deepseek-v4.1-flash",
+    "requestedEffort": "max",
+    "serverConfirmedEffort": null,
+    "actualBashCommands": [
+      "python .tmp/t0-phone/apk-cleanup.py scan",
+      "python .tmp/t0-phone/apk-cleanup.py delete-confirmed"
+    ],
+    "requestedMaxTurns": 6,
+    "cliReportedTurns": 8,
+    "maximumSeconds": 180,
+    "driverCommands": 2,
+    "deleted": 0,
+    "independentVerification": "manifest summary and final 39 file/36 table comparison"
+  }
 }
