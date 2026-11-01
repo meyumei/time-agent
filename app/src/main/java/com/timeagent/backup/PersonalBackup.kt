@@ -11,6 +11,7 @@ import com.timeagent.core.workout.ExerciseDefinition
 import com.timeagent.data.PersonalDataGate
 import com.timeagent.data.TimeAgentDatabase
 import com.timeagent.workout.data.WorkoutDatabase
+import com.timeagent.di.AppEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
@@ -26,7 +27,7 @@ private data class BackupEnvelope(val format: Int, val sha256: String, val paylo
 class PersonalBackup(
     context: Context,
     private val main: TimeAgentDatabase,
-    private val workout: WorkoutDatabase = WorkoutDatabase.open(context),
+    private val workout: WorkoutDatabase = AppEntryPoint.from(context).workoutDatabase(),
     private val rollbackFile: File = File(context.noBackupFilesDir, ROLLBACK_NAME),
 ) {
     private val context = context.applicationContext

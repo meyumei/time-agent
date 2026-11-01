@@ -22,6 +22,7 @@
         </intent>
     </queries>
     <application
+        android:name=".TimeAgentApplication"
         android:extractNativeLibs="true"
         android:allowBackup="false"
         android:fullBackupContent="@xml/backup_rules"

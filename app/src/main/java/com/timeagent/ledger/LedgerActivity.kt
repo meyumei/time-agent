@@ -28,7 +28,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.timeagent.data.TimeAgentDatabase
+import com.timeagent.backup.recoverPersonalDataBeforeOpen
 import com.timeagent.ui.TimeAgentTheme
+import dagger.Lazy
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
@@ -36,19 +40,19 @@ import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
+@AndroidEntryPoint
 class LedgerActivity : ComponentActivity() {
+    @Inject lateinit var database: Lazy<TimeAgentDatabase>
     companion object {
         const val EXTRA_CAPTURE_ID = "ledger_capture_id"
         const val EXTRA_ACTION = "ledger_action"
         const val ACTION_IGNORE = "ignore"
     }
 
-    private var repository: LedgerRepository? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val repo = LedgerRepository(TimeAgentDatabase.open(this))
-        repository = repo
+        if (!recoverPersonalDataBeforeOpen()) return
+        val repo = LedgerRepository(database.get())
         val captureId = intent?.getStringExtra(EXTRA_CAPTURE_ID)
         val ignore = intent?.getStringExtra(EXTRA_ACTION) == ACTION_IGNORE
         setContent {
@@ -69,11 +73,6 @@ class LedgerActivity : ComponentActivity() {
         recreate()
     }
 
-    override fun onDestroy() {
-        repository?.close()
-        repository = null
-        super.onDestroy()
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

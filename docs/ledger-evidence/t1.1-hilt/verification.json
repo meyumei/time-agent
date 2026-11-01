@@ -1,0 +1,55 @@
+{
+  "date": "2026-11-01T18:08:40.788204+08:00",
+  "modules": {
+    "core": {
+      "tests": 82,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 82
+    },
+    "agent-runtime": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 7
+    },
+    "app": {
+      "tests": 636,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2,
+      "passed": 634
+    }
+  },
+  "lint": {
+    "Warning": 73,
+    "Information": 2
+  },
+  "android": {
+    "compileSdk": 36,
+    "minSdk": 26,
+    "targetSdk": 35
+  },
+  "node": {
+    "tests": 19,
+    "passed": 19,
+    "failed": 0,
+    "skipped": 0
+  },
+  "apk": {
+    "bytes": 890156992,
+    "MiB": 848.92,
+    "sha256": "a82d3625f427c0870e5739a53dc43f032168f78bc301fb8bb8d70edb7c9e17fc",
+    "baselineBytes": 890073507,
+    "changePercent": 0.0094
+  },
+  "deviceTestsRun": false,
+  "installedOnUserPhone": false,
+  "databaseVersionsChanged": false,
+  "logFormatting": {
+    "tabsExpandedToSpaces": true,
+    "rawFullLogSha256": "18cf3f254d51b909bd5bbecc502504e69c9e26d2350c18ca199901f0d984ca31"
+  }
+}

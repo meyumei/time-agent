@@ -7,8 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import com.timeagent.core.workout.*
-import com.timeagent.data.TimeAgentDatabase
-import com.timeagent.data.TimeRepository
+import com.timeagent.di.AppEntryPoint
 import com.timeagent.workout.data.WorkoutRepository
 import kotlinx.coroutines.*
 
@@ -90,11 +89,10 @@ class WorkoutTimerReceiver : BroadcastReceiver() {
         val pending = goAsync()
         val app = context.applicationContext
         scope.launch {
-            var timeDb: TimeAgentDatabase? = null
             try {
                 withTimeout(8_000) {
-                    timeDb = TimeAgentDatabase.open(app)
-                    val repository = WorkoutRepository(app, TimeRepository(timeDb!!))
+                    val dependencies = AppEntryPoint.from(app)
+                    val repository = WorkoutRepository(dependencies.workoutDatabase(), dependencies.timeRepository())
                     val session = repository.activeSession()
                     val now = System.currentTimeMillis()
                     if (!restore && session != null && WorkoutNotifications.claimDue(app, session, now)) {
@@ -110,7 +108,7 @@ class WorkoutTimerReceiver : BroadcastReceiver() {
                     WorkoutNotifications.sync(app, session, now)
                 }
             } catch (error: Exception) { if (error is CancellationException && error !is TimeoutCancellationException) throw error; Log.e("WorkoutTimer", "Could not restore workout timer", error) }
-            finally { timeDb?.close(); pending?.finish() }
+            finally { pending?.finish() }
         }
     }
     companion object { private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO) }

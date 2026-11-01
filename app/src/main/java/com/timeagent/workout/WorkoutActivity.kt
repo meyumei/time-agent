@@ -12,13 +12,19 @@ import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.timeagent.data.TimeAgentDatabase
 import com.timeagent.data.TimeRepository
+import com.timeagent.workout.data.WorkoutDatabase
 import com.timeagent.ui.TimeAgentTheme
 import com.timeagent.workout.data.WorkoutRepository
 import com.timeagent.backup.recoverPersonalDataBeforeOpen
+import dagger.Lazy
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class WorkoutActivity : ComponentActivity() {
+    @Inject lateinit var timeRepository: Lazy<TimeRepository>
+    @Inject lateinit var workoutDatabase: Lazy<WorkoutDatabase>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!recoverPersonalDataBeforeOpen()) return
@@ -27,7 +33,7 @@ class WorkoutActivity : ComponentActivity() {
         setContent {
             val model: WorkoutViewModel = viewModel(factory = object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST") override fun <T : ViewModel> create(modelClass: Class<T>): T = WorkoutViewModel(
-                    WorkoutRepository(applicationContext, TimeRepository(TimeAgentDatabase.open(applicationContext))), WorkoutCatalog(applicationContext),
+                    WorkoutRepository(workoutDatabase.get(), timeRepository.get()), WorkoutCatalog(applicationContext),
                 ) as T
             })
             TimeAgentTheme(darkTheme = false) {

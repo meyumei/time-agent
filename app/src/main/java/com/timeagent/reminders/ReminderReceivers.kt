@@ -5,8 +5,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import com.timeagent.data.TimeAgentDatabase
 import com.timeagent.data.TimeRepository
+import com.timeagent.di.AppEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -18,14 +18,12 @@ import java.time.Clock
 internal object ReminderRuntime {
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     @Volatile private var attachedRepository: TimeRepository? = null
-    private var backgroundRepository: TimeRepository? = null
 
     fun attach(repository: TimeRepository) { attachedRepository = repository }
 
     @Synchronized
-    fun repository(context: Context): TimeRepository = attachedRepository ?: backgroundRepository ?: TimeRepository(
-        TimeAgentDatabase.open(context.applicationContext),
-    ).also { backgroundRepository = it }
+    fun repository(context: Context): TimeRepository =
+        attachedRepository ?: AppEntryPoint.from(context).timeRepository()
 }
 
 class ReminderReceiver : BroadcastReceiver() {

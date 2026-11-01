@@ -1,0 +1,48 @@
+{
+  "client": "WorkBuddy CLI 2.171.0",
+  "requestedModel": "deepseek-v4.1-flash",
+  "requestedEffort": "max",
+  "serverReportedEffort": null,
+  "phoneAccess": false,
+  "sourceWritesAllowed": false,
+  "runs": [
+    {
+      "phase": "audit",
+      "actualReadCalls": 13,
+      "allowedReadCalls": 18,
+      "timeoutSeconds": 240,
+      "cliReportedTurns": 36,
+      "durationMs": 91656,
+      "returnedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "exitCode": 0,
+      "scope": "13 named public Kotlin files",
+      "stopConditions": "Any permission denial or two failed reads; no edits or external actions"
+    },
+    {
+      "phase": "review",
+      "actualReadCalls": 16,
+      "allowedReadCalls": 20,
+      "timeoutSeconds": 240,
+      "cliReportedTurns": 41,
+      "durationMs": 166073,
+      "returnedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "exitCode": 0,
+      "scope": "16 named public Kotlin files",
+      "stopConditions": "Any permission denial or two failed reads; no edits or external actions"
+    }
+  ],
+  "reviewDisposition": [
+    {
+      "finding": "Same-process interrupted rollback can use raw SQLite while Room remains open",
+      "disposition": "Existing path, not introduced by this change; baseline MainActivity retained an open Room database and workouts already had a process cache. PersonalBackup recovery algorithm is unchanged. Recorded for backup work; not claimed fixed."
+    },
+    {
+      "finding": "Explicitly closing a Hilt singleton would leave the graph holding a closed reference",
+      "disposition": "All production consumer closes removed. Explicit close/reopen only retained for isolated factory tests. No speculative runtime guard added."
+    }
+  ]
+}
