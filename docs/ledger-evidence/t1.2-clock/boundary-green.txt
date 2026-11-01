@@ -1,0 +1,91 @@
+
+> Configure project :agent-runtime
+WARNING: The option setting 'android.overridePathCheck=true' is experimental.
+The current default is 'false'.
+
+> Task :core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:compileKotlin UP-TO-DATE
+> Task :core:compileJava NO-SOURCE
+> Task :core:processResources NO-SOURCE
+> Task :core:classes UP-TO-DATE
+> Task :core:jar UP-TO-DATE
+> Task :agent-runtime:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :agent-runtime:preBuild UP-TO-DATE
+> Task :agent-runtime:preDebugBuild UP-TO-DATE
+> Task :agent-runtime:generateDebugResValues UP-TO-DATE
+> Task :agent-runtime:generateDebugResources UP-TO-DATE
+> Task :agent-runtime:packageDebugResources UP-TO-DATE
+> Task :agent-runtime:parseDebugLocalResources UP-TO-DATE
+> Task :agent-runtime:generateDebugRFile UP-TO-DATE
+> Task :agent-runtime:compileDebugKotlin UP-TO-DATE
+> Task :agent-runtime:javaPreCompileDebug UP-TO-DATE
+> Task :agent-runtime:compileDebugJavaWithJavac NO-SOURCE
+> Task :agent-runtime:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :agent-runtime:processDebugJavaRes UP-TO-DATE
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :agent-runtime:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :agent-runtime:compileDebugLibraryResources UP-TO-DATE
+> Task :agent-runtime:writeDebugAarMetadata UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :agent-runtime:extractDeepLinksDebug UP-TO-DATE
+> Task :agent-runtime:processDebugManifest UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :agent-runtime:mergeDebugShaders UP-TO-DATE
+> Task :agent-runtime:compileDebugShaders NO-SOURCE
+> Task :agent-runtime:generateDebugAssets UP-TO-DATE
+> Task :agent-runtime:mergeDebugAssets UP-TO-DATE
+> Task :app:mergeDebugShaders UP-TO-DATE
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:packageDebugUnitTestForUnitTest UP-TO-DATE
+> Task :app:generateDebugUnitTestConfig UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :app:kspDebugKotlin
+
+> Task :app:compileDebugKotlin
+w: file:///F:/261019_时间agent/app/src/main/java/com/timeagent/ui/TimeAgentApp.kt:291:48 Condition is always 'false'.
+
+> Task :app:compileDebugJavaWithJavac UP-TO-DATE
+> Task :app:hiltAggregateDepsDebug UP-TO-DATE
+> Task :app:hiltJavaCompileDebug UP-TO-DATE
+> Task :app:processDebugJavaRes UP-TO-DATE
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:transformDebugClassesWithAsm
+> Task :app:kspDebugUnitTestKotlin
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:compileDebugUnitTestKotlin
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:hiltAggregateDepsDebugUnitTest UP-TO-DATE
+> Task :app:hiltJavaCompileDebugUnitTest NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes UP-TO-DATE
+> Task :app:transformDebugUnitTestClassesWithAsm
+
+> Task :app:testDebugUnitTest
+
+ClockRecompositionTest > midnight updates today and keeps the hourly recurring refresh PASSED
+
+ClockRecompositionTest > a minute boundary updates the timeline while the timer keeps its duration PASSED
+
+ClockRecompositionTest > five timer seconds cause zero timeline or root recompositions STANDARD_OUT
+    CLOCK_FIVE_SECONDS timeline=0 root=0
+
+ClockRecompositionTest > five timer seconds cause zero timeline or root recompositions PASSED
+
+BUILD SUCCESSFUL in 35s
+52 actionable tasks: 9 executed, 43 up-to-date

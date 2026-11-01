@@ -1,0 +1,64 @@
+## T1.2 code-quality review — findings
+
+Basis: read-only review of the eight listed files (8 Read calls). No tests executed; the Compose/ClockSource tests below were only read, not run. Compiler's test-only `CompositionTracer` is not questioned.
+
+No High-severity defects.
+
+---
+
+### 1. Medium — shared minute clock can freeze on a stale instant after device suspend, and the hot sharing strategy prevents self-healing
+
+`app/src/main/java/com/timeagent/ui/TimeViewModel.kt:57`, `:63-64`, `:76-86`; consumed at `app/src/main/java/com/timeagent/ui/ClockContent.kt:25`.
+
+- `now` is a `stateIn(..., WhileSubscribed(), ...)` over a **cold** tick flow. The cold flow's one genuinely useful property is "emit current wall time immediately on every new collection" (`ClockSource.kt:29-35`, asserted at `ClockSourceTest.kt:45-54`). That property is destroyed for UI consumers because:
+  - `week` (`TimeViewModel.kt:63`) is `SharingStarted.Eagerly`, and
+  - `init` (`TimeViewModel.kt:77-86`) collects `now` for the entire ViewModel lifetime.
+  So the upstream is never restarted, `WhileSubscribed` gates nothing, and `StateFlow` just replays its last value to every `MinuteClockContent`.
+- The tick loop's next resume is a coroutine `delay` (`ClockSource.kt:34`), which on `Dispatchers.Main` is scheduled against `uptimeMillis` — it does not advance during deep sleep.
+- **Concrete trigger:** app process survives overnight (plausible here because the fish overlay is a foreground service); device deep-sleeps with ≤60 s left on the pending `delay(60000 - floorMod(...))`. User unlocks and opens the app in the morning.
+- **Impact:** for up to that residual delay, `now` still holds the pre-sleep instant. `TimeAgentContent` tab 0 (`TimeAgentApp.kt:313`), review (`:348`), briefing (`:268`), project (`:399`, `:427`) and the editor (`:453`) all render with yesterday's `now`; a midnight crossing in that window shows "today" as yesterday, while `RunningTimerBar` (cold `secondTicks`, `ClockContent.kt:37`) is immediately correct. The `ClockRecompositionTest` midnight case (`:81-106`) cannot catch this because it advances the wall clock and the looper together (`advanceWallBy`, `:152-157`).
+- **Fix direction (minimal):** restore the "emit on subscribe" guarantee for the UI — either consume the cold `clock.minuteTicks` inside `MinuteClockContent` instead of the hot `model.now`, or re-read `clock.now()` into `now` on `ON_START/ON_RESUME`. If `now` is intentionally always-hot for the hourly maintenance loop, then `WhileSubscribed` on `:57` should be `Eagerly` so the sharing mode stops implying a gating/freshness behavior that does not exist.
+
+---
+
+### 2. Medium — recomposition-counter test does not actually prove "only RunningTimerBar collects seconds"
+
+`app/src/test/java/com/timeagent/ui/ClockRecompositionTest.kt:58-69`, `:165-174`.
+
+- The tracer counts only `TimelineScreen (` and `TimeAgentContent (` (`:170-171`), in a single scenario: the today tab with a running timer and no nested page/editor/sheet.
+- **Trigger:** any other composable that subscribes to seconds — `PlanHubScreen`, `ReviewScreen`, `ProjectScreen`, `WeeklyGoalsScreen`, the modal detail sheet, a nested `project:` page, `NoteEditorScreen`, `FishChatScreen` via `briefingContent` — would recompose once per second and every assertion here would still pass, because those subtrees are (a) never composed in this test and (b) not counted by name.
+- **Impact:** the core T1.2 invariant has only a spot-check, not a contract test. A regression that reintroduces a second-level subscription outside the timeline is invisible.
+- **Fix direction:** inject a counting `ClockSource` (the anonymous implementation at `:112-117` is already the pattern) whose `secondTicks` increments a subscription counter and delegates to a controllable flow; assert exactly one live subscription while a timer runs, zero after `repository.stopTimer`, and zero when switching to tab 1/2 and to a nested page. That directly tests the stated rule and is cheaper to maintain than name-matching trace strings.
+
+---
+
+### 3. Low — timer duration is computed from wall-clock subtraction while the new monotonic source is unused
+
+`app/src/main/java/com/timeagent/ui/ClockContent.kt:37-38`.
+
+- `seconds = Duration.between(record.startAt, now).seconds` where `now` comes from `secondTicks` (wall). `ClockSource.elapsedRealtime()` exists (`ClockSource.kt:12`, wired at `ClockModule.kt:17`) but has no consumer in the changed code.
+- **Trigger:** manual time change or a large backward NTP correction while a timer runs (and `TimeViewModel` is live across an activity recreate, so the bar can span such a change).
+- **Impact:** displayed duration freezes at `00:00:00` via `coerceAtLeast(0)` until real time catches up; a forward jump overstates it. This matches the pre-T1.2 behavior, so it is not a regression introduced here — flagging only because `elapsedRealtime()` was introduced specifically for elapsed measurement and is currently dead weight in the timer path.
+- **Fix direction:** if in scope, anchor an in-session monotonic start on first observation and fall back to `startAt` for the initial value; otherwise accept the parity and note it, rather than leaving `elapsedRealtime()` unused.
+
+---
+
+### 4. Low — tick-alignment realignment is only tested for forward jumps
+
+`core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:148-169`.
+
+- Only a forward jump (+1 h + 300 ms) is covered. The backward-jump path is untested even though it is the one that governs worst-case staleness: after a backward jump the pending `delay` still fires on the old schedule, so one emission is off-boundary before realignment (`ClockSource.kt:34`), and up to a full period elapses before the corrected wall time is shown.
+- **Impact:** low on its own (≤1 s for `secondTicks`), but for `minuteTicks` it is the same mechanism as finding #1 and has no regression protection.
+- **Fix direction:** add a `wallJumpMillis = -3_600_000` case mirroring `:148`, asserting the next emission reports the jumped-back wall time and the following one is minute-aligned again.
+
+---
+
+### Checked, no findings
+
+- Cold-flow independence and cancellation: `flows` are single instances built in the constructor, each `collect` gets its own loop, cancellation stops reads (`ClockSource.kt:22-36`; verified against `ClockSourceTest.kt:110-126`).
+- `floorMod` alignment arithmetic, including on-boundary start and fractional start (`ClockSource.kt:34`; verified by hand against `ClockSourceTest.kt:57-107` and `:148-169` — assertion values are internally consistent).
+- Root subscription actually removed: `TimeAgentContent` no longer reads any `now` state; every time-dependent consumer is wrapped individually (`TimeAgentApp.kt:268, 313, 348, 399, 403, 427, 453, 516`). `model.week` (`:98`) is a deduplicated `StateFlow` over `(today, selectedWeekStart)`, so it does not recompose the root per minute.
+- Editing/nested-page paths still get minutes and the bar disappears (and stops collecting seconds) when `editor != null || extraScreen != null` (`TimeAgentApp.kt:275`).
+- Hilt wiring and activity-provided clock: `ClockModule.kt:17` bound method reference is valid; `MainActivity.kt:43` passes the injected clock explicitly; factory re-creation per recomposition is harmless since `viewModel()` keys by the store.
+- Hourly refresh logic: `lastHour` seeding and equality check (`TimeViewModel.kt:77-84`) correctly fire once on the hour boundary crossed by the midnight tick; a large skip produces one catch-up refresh, which is acceptable for `RecurringService.refresh()`.
+- Timer text formatting, negative-duration coercion, and `%d` with `Long` (`ClockContent.kt:38, 47`).

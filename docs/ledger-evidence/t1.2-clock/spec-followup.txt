@@ -1,0 +1,22 @@
+## Verdict
+
+Earlier finding **resolved**. No blocking findings in the three files.
+
+**Evidence the week anchor now comes from the injected clock**
+
+- `TimeViewModel.kt:58` — `_weekStart` initial value is `WeekState.startOfWeek(clock.now().atZone(zone).toLocalDate())`; no `repository.now()` remains in any week-anchor path (`repository.now()` survives only at lines 30, 37, 47, 52, 122 — business/assistant/health, out of T1.2 scope, as stated).
+- `TimeViewModel.kt:95-99` — `currentWeek()` re-anchors on `clock.now()`.
+- `TimeViewModel.kt:63-64` — `week` combines `_weekStart` with the `minuteTicks`-derived `now` and is seeded from `clock.now()`, so initial, ticking and navigation paths agree.
+- `ClockRecompositionTest.kt:108-130` — the regression is a genuine discriminator: repository clock `2026-10-05T08:00:00Z` (also a Monday) vs injected `2026-11-02T08:00:00Z`. `expectedWeek` is `2026-11-02`, so any residual `repository.now()` anchor yields `2026-10-05` and fails both the initial assert (126) and the post-`currentWeek()` assert (129). Initial value, `changeWeek(-1)`/`currentWeek()` round trip are both exercised, matching the two call sites that were changed.
+
+**Scope / required behavior in these files**
+
+- `ClockModule.kt:15-17` — `@Provides @Singleton ClockSource` with `SystemClock::elapsedRealtime`; minimal, no wall-clock overriding, no extra bindings. Matches the "Hilt @Singleton clock" requirement.
+- `TimeViewModel.kt:57, 76-86` — minute subscription retained and still drives the hourly `RecurringService.refresh()` on `epochSecond/3600` change; no second-level subscription added in the VM.
+- `TimeViewModel.kt:63, 89-94` — midnight rollover via `now` and review-week navigation via `_visibleWeekStart` unaffected.
+
+**Non-blocking observation (outside the allowed read set, so unverified)**
+
+`TimeViewModel.kt:20` — the default `clock = SystemClockSource(repository::now, …)` silently makes wall time repository-bound for any constructor that does not pass the Hilt clock. That is intentional for the old fixed-`Clock` tests and MainActivity passes the Hilt clock explicitly, but it means the fixed anchor only holds on call sites that opt in. Worth a one-line check at PR review that no other production `TimeViewModel(` construction site relies on the default; I did not read those files, so this is a verification step, not a finding.
+
+I did not execute any tests; the "observed fail → pass" and "midnight + hourly regression running" status is taken from your report, not verified here.

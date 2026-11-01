@@ -14,6 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.gson.Gson
 import com.timeagent.core.*
 import com.timeagent.data.*
@@ -143,7 +144,7 @@ fun DeadlineScreen(
     onClose: () -> Unit,
 ) {
     val context = LocalContext.current
-    val now by model.now.collectAsState()
+    val now by model.now.collectAsStateWithLifecycle()
     val zone = model.repository.zone
     val today=now.atZone(zone).toLocalDate()
     val service = remember(model) { RecurringService(model.repository) }

@@ -1,0 +1,267 @@
+{
+  "date": "2026-11-01T19:08:10.956776+08:00",
+  "baseCommit": "072ae14",
+  "modules": {
+    "core": {
+      "tests": 90,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 90,
+      "actualExecution": "full-verification"
+    },
+    "agent-runtime": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 7,
+      "actualExecution": "full-verification"
+    },
+    "app": {
+      "tests": 642,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2,
+      "passed": 640,
+      "actualExecution": "final-verification"
+    }
+  },
+  "node": {
+    "tests": 19,
+    "pass": 19,
+    "fail": 0,
+    "skipped": 0
+  },
+  "lint": {
+    "Warning": 73,
+    "Information": 2
+  },
+  "commands": [
+    {
+      "label": "ui-red",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.ui.ClockRecompositionTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 37.73,
+      "evidenceLabel": "ui-red",
+      "rawLogSha256": "fdc8cd183531b6da4d4271ba91b0f879ecdef817db9e713042a85e316037f26f"
+    },
+    {
+      "label": "core-red",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":core:test",
+        "--tests",
+        "com.timeagent.core.ClockSourceTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 3.05,
+      "evidenceLabel": "core-red",
+      "rawLogSha256": "2205f82fd89bd95eb034a68de3afdac0f324006b682e5411a96efbfd72f069aa"
+    },
+    {
+      "label": "clock-green",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":core:test",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.core.ClockSourceTest",
+        "--tests",
+        "com.timeagent.ui.ClockRecompositionTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 82.58,
+      "evidenceLabel": "clock-green",
+      "rawLogSha256": "eb4475a2f4ef04a87718fa3a34e85d064b4543784b0ad74e1af9666fc8adb4ec"
+    },
+    {
+      "label": "boundary-green",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.ui.ClockRecompositionTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 36.06,
+      "evidenceLabel": "boundary-green",
+      "rawLogSha256": "0d9238d4812401b5b9564de0180f697e85b93123abfe650d779e486426d6150c"
+    },
+    {
+      "label": "full-verification",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":core:test",
+        ":agent-runtime:testDebugUnitTest",
+        ":app:testDebugUnitTest",
+        ":app:assembleDebug",
+        ":app:lintDebug",
+        "--rerun-tasks",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 377.22,
+      "evidenceLabel": "full-verification",
+      "rawLogSha256": "a8581b9c9baad27bba26760773fae15c4140a6d2ec9a681918b0ff8234d2165a"
+    },
+    {
+      "label": "injection-red",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "*injected clock*",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 24.96,
+      "evidenceLabel": "injection-red",
+      "rawLogSha256": "3110d4c3858b2bf5a1642e537d3864abe16c78eca594bcb6c6ab92755412dfec"
+    },
+    {
+      "label": "resume-red",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "*resume refreshes*",
+        "--tests",
+        "*visible timer*",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 35.55,
+      "evidenceLabel": "resume-initial",
+      "rawLogSha256": "a1a9d4373435cfca46624af49f3089a464f40c9068bde1c4f54d0f3e753a7cc4"
+    },
+    {
+      "label": "resume-red",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "*resume refreshes*",
+        "--tests",
+        "*visible timer*",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 35.38,
+      "evidenceLabel": "resume-red",
+      "rawLogSha256": "96df9d7b0bb15e40b521e5bdd5f7e024ee7baf56b6627abe8c2d7829cccd3d4a"
+    },
+    {
+      "label": "final-verification",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":core:test",
+        ":agent-runtime:testDebugUnitTest",
+        ":app:testDebugUnitTest",
+        ":app:assembleDebug",
+        ":app:lintDebug",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 191.26,
+      "evidenceLabel": "final-verification",
+      "rawLogSha256": "6423ddaaeaa4d13593098fa6e0db2efc0262b705cbeb61d00b7089c86614802e"
+    }
+  ],
+  "android": {
+    "compileSdk": 36,
+    "minSdk": 26,
+    "targetSdk": 35
+  },
+  "apk": {
+    "bytes": 891557078,
+    "MiB": 850.26,
+    "sha256": "02f0948fcc68ab5b0a6a915ef965362a307b9c51a0fee4bfd2a0052cd4cc9207",
+    "t1_1Bytes": 890156992,
+    "changeBytes": 1400086
+  },
+  "recompositions": {
+    "old": {
+      "timeline": 5,
+      "root": 5
+    },
+    "current": {
+      "timeline": 0,
+      "root": 0
+    },
+    "timerSeconds": 5,
+    "source": "Compose compiler CompositionTracer"
+  },
+  "newTests": {
+    "core": 8,
+    "app": 6
+  },
+  "deviceTestsRun": false,
+  "installedOnUserPhone": false,
+  "databaseVersionsChanged": false,
+  "phoneDataAccess": false,
+  "resultProvenance": "All modules actually ran in the forced full command. After the review fix, app tests/build/lint reran; unchanged core/runtime reuse this round's full execution."
+}

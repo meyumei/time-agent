@@ -1,0 +1,203 @@
+{
+  "client": "WorkBuddy CLI 2.171.0",
+  "requestedModel": "deepseek-v4.1-flash",
+  "requestedEffort": "max",
+  "serverReportedEffort": null,
+  "phoneAccess": false,
+  "sourceWritesAllowed": true,
+  "editableFiles": [
+    "core/src/main/kotlin/com/timeagent/core/ClockSource.kt",
+    "core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt"
+  ],
+  "primaryOwns": [
+    "build configuration",
+    "MainActivity",
+    "TimeViewModel",
+    "Compose UI",
+    "business entities",
+    "integration",
+    "verification",
+    "git/PR"
+  ],
+  "runs": [
+    {
+      "phase": "tests",
+      "actualToolCalls": 4,
+      "callsByTool": {
+        "Read": 3,
+        "Write": 1
+      },
+      "allowedToolCalls": 12,
+      "timeoutSeconds": 180,
+      "cliReportedTurns": 13,
+      "durationMs": 46677,
+      "returnedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "serverReportedEffort": null,
+      "exitCode": 0,
+      "files": [
+        "core/src/main/kotlin/com/timeagent/core/ClockSource.kt",
+        "core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt",
+        "core/build.gradle.kts"
+      ],
+      "rawStreamSha256": "3c468186079a07d96bb551a6414feabbdcecf9093906d996fde447f8e5e443e6",
+      "stopConditions": "Named files only; stop on permission denial, repeated failed read, call limit or time limit."
+    },
+    {
+      "phase": "implement",
+      "actualToolCalls": 3,
+      "callsByTool": {
+        "Read": 2,
+        "Write": 1
+      },
+      "allowedToolCalls": 16,
+      "timeoutSeconds": 180,
+      "cliReportedTurns": 11,
+      "durationMs": 29620,
+      "returnedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "serverReportedEffort": null,
+      "exitCode": 0,
+      "files": [
+        "core/src/main/kotlin/com/timeagent/core/ClockSource.kt",
+        "core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt"
+      ],
+      "rawStreamSha256": "2dec96492bef4d6df142f989be3d5736289404c8ddee8a304bff2d0daba5b7a2",
+      "stopConditions": "Named files only; stop on permission denial, repeated failed read, call limit or time limit."
+    },
+    {
+      "phase": "spec-review",
+      "actualToolCalls": 12,
+      "callsByTool": {
+        "Read": 12
+      },
+      "allowedToolCalls": 18,
+      "timeoutSeconds": 180,
+      "cliReportedTurns": 33,
+      "durationMs": 139489,
+      "returnedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "serverReportedEffort": null,
+      "exitCode": 0,
+      "files": [
+        "core/src/main/kotlin/com/timeagent/core/ClockSource.kt",
+        "core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt",
+        "core/build.gradle.kts",
+        "app/src/main/java/com/timeagent/di/ClockModule.kt",
+        "app/src/main/java/com/timeagent/MainActivity.kt",
+        "app/src/main/java/com/timeagent/ui/TimeViewModel.kt",
+        "app/src/main/java/com/timeagent/ui/ClockContent.kt",
+        "app/src/main/java/com/timeagent/ui/TimeAgentApp.kt",
+        "app/src/main/java/com/timeagent/ui/DeadlineScreen.kt",
+        "app/src/main/java/com/timeagent/ui/RecurringScreen.kt",
+        "app/src/main/java/com/timeagent/ui/PersonalMemoryScreen.kt",
+        "app/src/test/java/com/timeagent/ui/ClockRecompositionTest.kt"
+      ],
+      "rawStreamSha256": "914049784109464ad40bb4a42d63e251beff82c245ce5cf84901ff0f98705e5e",
+      "stopConditions": "Named files only; stop on permission denial, repeated failed read, call limit or time limit."
+    },
+    {
+      "phase": "spec-followup",
+      "actualToolCalls": 3,
+      "callsByTool": {
+        "Read": 3
+      },
+      "allowedToolCalls": 18,
+      "timeoutSeconds": 180,
+      "cliReportedTurns": 10,
+      "durationMs": 42193,
+      "returnedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "serverReportedEffort": null,
+      "exitCode": 0,
+      "files": [
+        "app/src/main/java/com/timeagent/ui/TimeViewModel.kt",
+        "app/src/test/java/com/timeagent/ui/ClockRecompositionTest.kt",
+        "app/src/main/java/com/timeagent/di/ClockModule.kt"
+      ],
+      "rawStreamSha256": "162a95d6bb9f81b893d860a3c91689010e498c56d4bed77e850d7c9e78caad3c",
+      "stopConditions": "Named files only; stop on permission denial, repeated failed read, call limit or time limit."
+    },
+    {
+      "phase": "quality-review",
+      "actualToolCalls": 8,
+      "callsByTool": {
+        "Read": 8
+      },
+      "allowedToolCalls": 18,
+      "timeoutSeconds": 180,
+      "cliReportedTurns": 22,
+      "durationMs": 141856,
+      "returnedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "serverReportedEffort": null,
+      "exitCode": 0,
+      "files": [
+        "core/src/main/kotlin/com/timeagent/core/ClockSource.kt",
+        "core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt",
+        "app/src/main/java/com/timeagent/di/ClockModule.kt",
+        "app/src/main/java/com/timeagent/MainActivity.kt",
+        "app/src/main/java/com/timeagent/ui/TimeViewModel.kt",
+        "app/src/main/java/com/timeagent/ui/ClockContent.kt",
+        "app/src/main/java/com/timeagent/ui/TimeAgentApp.kt",
+        "app/src/test/java/com/timeagent/ui/ClockRecompositionTest.kt"
+      ],
+      "rawStreamSha256": "ee9bdb3e6afbd19de3343454180aaea158ef002342386cfb84c2c78b624745b7",
+      "stopConditions": "Named files only; stop on permission denial, repeated failed read, call limit or time limit."
+    },
+    {
+      "phase": "quality-followup",
+      "actualToolCalls": 3,
+      "callsByTool": {
+        "Read": 3
+      },
+      "allowedToolCalls": 18,
+      "timeoutSeconds": 180,
+      "cliReportedTurns": 10,
+      "durationMs": 127089,
+      "returnedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "serverReportedEffort": null,
+      "exitCode": 0,
+      "files": [
+        "app/src/main/java/com/timeagent/ui/TimeViewModel.kt",
+        "app/src/main/java/com/timeagent/ui/TimeAgentApp.kt",
+        "app/src/test/java/com/timeagent/ui/ClockRecompositionTest.kt"
+      ],
+      "rawStreamSha256": "b470ef4e05b2b7c87c21010e8ef2686e96187c49f65caa1e43653fecd6fa307a",
+      "stopConditions": "Named files only; stop on permission denial, repeated failed read, call limit or time limit."
+    }
+  ],
+  "reviewDisposition": [
+    {
+      "finding": "Injected UI clock and repository clock could give different week anchors.",
+      "resolution": "Added explicit injected-clock regression, observed initial-week assertion fail, then used clock.now() for initial/current week. Focused spec re-review and final checks followed."
+    },
+    {
+      "finding": "Midnight test changes both the local day and UTC hour.",
+      "resolution": "Recorded its actual scope; it proves minute-driven midnight refresh, not every time-zone/hour combination. Existing UTC-hour trigger is retained."
+    },
+    {
+      "finding": "Hot minute clock replays stale time after deep sleep until the pending delay wakes.",
+      "resolution": "Reproduced with wall-only day jump while lifecycle paused, then added ON_RESUME clock refresh merged into the minute state. Sharing is explicitly eager for existing maintenance."
+    },
+    {
+      "finding": "Second-collector lifetime coverage outside the today tab.",
+      "resolution": "Added counting-clock test: exactly one live second collector across today/plan/review with global timer visible, zero in editor and after stop. Rejected suggested zero collectors on plan/review, where the existing global timer remains visible."
+    },
+    {
+      "finding": "Duration still uses wall time; backward-jump tick case is untested.",
+      "resolution": "Preserved existing timer semantics instead of introducing a monotonic anchor feature; recorded limits. No backward-jump result claimed."
+    },
+    {
+      "finding": "Resume-triggered recurring catch-up is not independently asserted; STARTED can precede ON_RESUME.",
+      "resolution": "Non-blocking review limits recorded. Midnight refresh and resumed date freshness are separately verified. Unfocused STARTED-only visibility can wait for the next minute. No additional lifecycle or product change made."
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+## Verdict
+
+No correctness defect found in the focused fix. The resume path is wired correctly end to end: `TimeViewModel.kt:57-59` merges the hot `clockRefreshes` into the cold minute ticks and only `TimeAgentApp.kt:150-151` calls `refreshClock()`; the root no longer reads `now` (`TimeAgentApp.kt:97-101` collects only `data/week/visibleWeekStart/navigationRevision`), so `stateIn(Eagerly)` is what keeps `now` alive without the root subscribing. Two low-severity items below; neither blocks.
+
+## Findings
+
+**1. Low (test gap) — the resume-time hourly `RecurringService` catch-up is asserted nowhere.**
+`ClockRecompositionTest.kt:143-158` asserts only `model.now.value` and `week.today`; the midnight test (`:92-117`) reaches the hourly branch through a *minute tick*, not through `refreshClock()`. Concrete mutation that survives the whole suite: change `now.collect` at `TimeViewModel.kt:80` to `clock.minuteTicks.collect`. Midnight/hourly (`:92`) still passes (the tick flow emits across the boundary), and all six tests go green, yet the stated guarantee "hourly catch-up updates immediately on resume" (`TimeViewModel.kt:79-88` fed by the manual refresh) would be broken.
+Fix: in the resume test, seed a `DAILY` rule as `:95-105` does, assert a new `recurringInstances` row appears after `owner.lifecycle.currentState = RESUMED` **without** any looper/`mainClock` advance, alongside the existing Oct-20 assertion.
+
+**2. Low (lifecycle asymmetry) — refresh is at `ON_RESUME`, but collection starts at `STARTED`.**
+`TimeAgentApp.kt:150-151` refreshes only on `ON_RESUME`, while `collectAsStateWithLifecycle` (and whatever `MinuteClockContent` uses) is live from `STARTED`. Trigger: multi-window/split-screen where the activity is visible but unfocused across a midnight or a long sleep — the visible timeline and the hourly catch-up stay on the old day until the next minute tick. Impact is bounded (≤60 s, self-healing) and does not contradict the spec, but it is the one window where the stated "immediately" invariant does not hold.
+Fix if you want it closed: `LifecycleEventEffect(ON_START) { model.refreshClock() }`, or swap the current effect to `ON_START` (the fish/overlay lines would stay on `ON_RESUME`).
+
+## Checked and found correct
+
+- `refreshClock()` firing on registration when the owner is already `RESUMED` (LifecycleRegistry catch-up) — so config-driven recomposition and first composition both get an initial refresh; no stale-first-frame hole on resume itself.
+- No second collector risk: `now`'s upstream merge is collected once by `stateIn(Eagerly)`; `init`'s maintenance loops over the resulting `StateFlow`, not over `clock.minuteTicks` (`TimeViewModel.kt:58, 80`).
+- Equal-instant refresh is conflated by `StateFlow`, so a normal resume with no time change costs no recomposition.
+- Backward jumps are not special-cased in the code and need none: `stateIn` accepts a lower `Instant`, and `lastHour` at `:79` recomputes from the emitted value.
+- `ClockRecompositionTest.kt:69-80` is discriminating: the `00:00:05` node assertion proves the bar *did* tick while `trace.timeline/root` delta is 0, so it fails a reintroduced root `now` subscription.
+- `:160-183` asserts the invariant the brief defined (1 on today/plan/review while the global bar is shown, 0 inside the editor, 0 after stop) and re-arms to 1 after cancel, so it also catches a collector leaked by editor teardown.
+- `:119-141` correctly separates the repository-bound business clock (`Clock.fixed` Oct 5) from the injected `ClockSource` (Nov 2), which is the only way to prove `now` comes from the injected clock rather than `repository.now()`.
+
+## Scope limit
+
+Only the three listed files were read; `ClockSource`/`SystemClockSource`, `MinuteClockContent`, `RunningTimerBar`, `WeekState`, `MainActivity` (Hilt clock) and `MainActivity`'s ON_RESUME wiring were not inspected, so their implementations are taken from your description. No tests, builds, devices, git, or DB were used — the pass/fail results above are yours as reported, not reproduced.

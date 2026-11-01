@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.timeagent.data.TimeRepository
+import com.timeagent.core.ClockSource
 import com.timeagent.reminders.ReminderIntents
 import com.timeagent.ui.*
 import com.timeagent.backup.recoverPersonalDataBeforeOpen
@@ -23,6 +24,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @Inject lateinit var repository: Lazy<TimeRepository>
+    @Inject lateinit var clock: ClockSource
     private var openReminderId by mutableStateOf<String?>(null)
     private var sharedText by mutableStateOf<String?>(null)
     private var fishDestination by mutableStateOf<String?>(null)
@@ -38,7 +40,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val model: TimeViewModel = viewModel(factory = object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T = TimeViewModel(repository.get(), applicationContext) as T
+                override fun <T : ViewModel> create(modelClass: Class<T>): T = TimeViewModel(repository.get(), applicationContext, clock) as T
             })
             TimeAgentTheme {
                 TimeAgentApp(

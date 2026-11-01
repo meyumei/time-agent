@@ -1,0 +1,10 @@
+[
+  {
+    "test": "resume refreshes minute time after sleep without waiting for the pending tick",
+    "message": "java.lang.AssertionError: Resume must not replay yesterday until the old minute delay wakes expected:<2026-10-20T08:00:10Z> but was:<2026-10-19T08:00:10Z>"
+  },
+  {
+    "test": "only the visible timer collects seconds across tabs editors and stop",
+    "message": "androidx.compose.ui.test.ComposeTimeoutException: Condition still not satisfied after 10000 ms"
+  }
+]

@@ -99,7 +99,6 @@ import java.util.UUID
     val visibleWeekStart by model.visibleWeekStart.collectAsStateWithLifecycle()
     val timelineNavigationRevision by model.timelineNavigationRevision.collectAsStateWithLifecycle()
     val reviewWeek = week.copy(selectedWeekStart = visibleWeekStart)
-    val now by model.now.collectAsStateWithLifecycle()
     val busy by model.busy.collectAsStateWithLifecycle()
     val error by model.error.collectAsStateWithLifecycle()
     val zone = model.zone
@@ -149,6 +148,7 @@ import java.util.UUID
     var voiceSuggestion by remember { mutableStateOf<String?>(null) }
     val fish = model.fish
     androidx.lifecycle.compose.LifecycleEventEffect(androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+        model.refreshClock()
         fish?.appForeground = true
         fish?.let {
             try { com.timeagent.fish.FishOverlayService.sync(context, it) }
@@ -223,7 +223,7 @@ import java.util.UUID
             "PROJECT" -> openScreen("project:$id")
             "ACTIVITY" -> openScreen("activities")
             "IDEA" -> openScreen("inbox")
-            else -> data.timeline(now).find { it.id == id }?.let { selected = it } ?: run { notice = "原记录已被删除，笔记原文仍保留" }
+            else -> data.timeline(model.clock.now()).find { it.id == id }?.let { selected = it } ?: run { notice = "原记录已被删除，笔记原文仍保留" }
         }
     }
     val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -265,11 +265,13 @@ import java.util.UUID
         }
     }
 
-    val briefingSync = briefingHealthStatus(healthSettings.enabled() && (healthSettings.sleepEnabled() || healthSettings.exerciseEnabled()), healthSettings.readReport(), zone, now)
     val briefingContent: @Composable () -> Unit = {
-        DailyBriefingCard(data, now, zone, briefingSync, workouts,
-            onOpen = { type, id -> if (type == "SUGGESTIONS") openScreen("inbox") else openOriginal(type, id) },
-            onHealth = { openScreen("health") })
+        MinuteClockContent(model) { now ->
+            val sync = briefingHealthStatus(healthSettings.enabled() && (healthSettings.sleepEnabled() || healthSettings.exerciseEnabled()), healthSettings.readReport(), zone, now)
+            DailyBriefingCard(data, now, zone, sync, workouts,
+                onOpen = { type, id -> if (type == "SUGGESTIONS") openScreen("inbox") else openOriginal(type, id) },
+                onHealth = { openScreen("health") })
+        }
     }
     if (editor == null && extraScreen == null) Scaffold(modifier = Modifier.imePadding(), topBar = {
         Column(Modifier.statusBarsPadding()) {
@@ -292,12 +294,8 @@ import java.util.UUID
             chat.localDestination?.let { destination -> TextButton(onClick = { openScreen(destination) }, modifier = Modifier.testTag("assistant-local-result")) { Text(if (destination == "history") "查看历史结果与原记录" else "查看个人记忆") } }
             if (tab == 2) WeekHeader(reviewWeek, data, { model.changeReviewWeek(-1) }, { model.changeReviewWeek(1) }, model::currentWeek)
             running?.let { item ->
-                Surface(color = MaterialTheme.colorScheme.secondaryContainer, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp), shape = RoundedCornerShape(14.dp)) {
-                    Row(Modifier.padding(start = 14.dp, end = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Column(Modifier.weight(1f)) { Text(data.tasks.firstOrNull { it.id == item.taskId }?.title ?: "自由计时", style = MaterialTheme.typography.labelLarge); Text("计时中 · ${java.time.Duration.between(Instant.ofEpochMilli(item.startAt), now).seconds.coerceAtLeast(0).let { "%02d:%02d:%02d".format(it / 3600, it / 60 % 60, it % 60) }}", style = MaterialTheme.typography.bodySmall) }
-                        TextButton(onClick = { model.perform { model.repository.stopTimer(item.id) } }, enabled = !busy) { Text("结束计时") }
-                    }
-                }
+                RunningTimerBar(item, data.tasks.firstOrNull { it.id == item.taskId }?.title ?: "自由计时",
+                    model.clock, busy, onStop = { model.perform { model.repository.stopTimer(item.id) } })
             }
         }
     }, bottomBar = {
@@ -313,30 +311,33 @@ import java.util.UUID
         Box(Modifier.padding(padding).consumeWindowInsets(padding).fillMaxSize()) {
             when (tab) {
                 0 -> screenState.SaveableStateProvider("timeline") {
-                    TimelineScreen(data, week, now, zone, { selected = it }, model::changeWeek,
-                        onCreate = { addMenu = true }, onAssistant = { if (fish != null) tab = 3; assistantExpanded = true },
-                        onUndo = { model.perform { model.repository.undoLastAction() } },
-                        canUndo = data.history.any { !it.undone }, busy = busy || data.loading,
-                        onVisibleDate = model::reportVisibleDate, navigationRevision = timelineNavigationRevision,
-                        onCreateAt = { model.dismissError(); editor = EditorRequest(EditorKind.PLAN, selection = it, scheduleRange = true) }, themeMode = themeMode, onThemeMode = onThemeMode,
-                        onRedo = { model.perform { model.repository.redoLastAction() } },
-                        canRedo = data.history.any { it.undone && it.redoable },
-                        onReminder = { reminderDetail = it },
-                        briefing = {
-                            if (fish != null) {
-                                val daily = remember(data, now.epochSecond / 60, zone, briefingSync, workouts) {
-                                    buildDailyBriefing(data, now, zone, briefingSync, workouts)
+                    MinuteClockContent(model) { now ->
+                        val briefingSync = briefingHealthStatus(healthSettings.enabled() && (healthSettings.sleepEnabled() || healthSettings.exerciseEnabled()), healthSettings.readReport(), zone, now)
+                        TimelineScreen(data, week, now, zone, { selected = it }, model::changeWeek,
+                            onCreate = { addMenu = true }, onAssistant = { if (fish != null) tab = 3; assistantExpanded = true },
+                            onUndo = { model.perform { model.repository.undoLastAction() } },
+                            canUndo = data.history.any { !it.undone }, busy = busy || data.loading,
+                            onVisibleDate = model::reportVisibleDate, navigationRevision = timelineNavigationRevision,
+                            onCreateAt = { model.dismissError(); editor = EditorRequest(EditorKind.PLAN, selection = it, scheduleRange = true) }, themeMode = themeMode, onThemeMode = onThemeMode,
+                            onRedo = { model.perform { model.repository.redoLastAction() } },
+                            canRedo = data.history.any { it.undone && it.redoable },
+                            onReminder = { reminderDetail = it },
+                            briefing = {
+                                if (fish != null) {
+                                    val daily = remember(data, now.epochSecond / 60, zone, briefingSync, workouts) {
+                                        buildDailyBriefing(data, now, zone, briefingSync, workouts)
+                                    }
+                                    FishButlerSummary(fish, if (data.loading) "正在读取今天的安排" else collapsedSummary(daily, zone), onOpen = { tab = 3 })
+                                } else briefingContent()
+                                Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+                                    TextButton(onClick = { editor = EditorRequest(EditorKind.RECORD) }, modifier = Modifier.testTag("today-record")) { Text("补记时间") }
+                                    TextButton(onClick = { openScreen("recurring") }, modifier = Modifier.testTag("today-recurring")) { Text("本次习惯") }
+                                    TextButton(onClick = { openScreen("deadlines") }, modifier = Modifier.testTag("today-deadlines")) { Text("处理期限") }
+                                    TextButton(onClick = { context.startActivity(WorkoutActivity.intent(context)) }, modifier = Modifier.testTag("today-workout")) { Text("训练") }
                                 }
-                                FishButlerSummary(fish, if (data.loading) "正在读取今天的安排" else collapsedSummary(daily, zone), onOpen = { tab = 3 })
-                            } else briefingContent()
-                            Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
-                                TextButton(onClick = { editor = EditorRequest(EditorKind.RECORD) }, modifier = Modifier.testTag("today-record")) { Text("补记时间") }
-                                TextButton(onClick = { openScreen("recurring") }, modifier = Modifier.testTag("today-recurring")) { Text("本次习惯") }
-                                TextButton(onClick = { openScreen("deadlines") }, modifier = Modifier.testTag("today-deadlines")) { Text("处理期限") }
-                                TextButton(onClick = { context.startActivity(WorkoutActivity.intent(context)) }, modifier = Modifier.testTag("today-workout")) { Text("训练") }
-                            }
-                            workoutReadError?.let { Text(it, Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.error) }
-                        })
+                                workoutReadError?.let { Text(it, Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.error) }
+                            })
+                    }
                 }
                 1 -> PlanHubScreen(data, zone, { selected = it }, { editor = EditorRequest(EditorKind.TASK) }, ::startTimer,
                     { if (it == "workout") context.startActivity(WorkoutActivity.intent(context)) else openScreen(it) })
@@ -345,7 +346,9 @@ import java.util.UUID
                         TextButton(onClick = { openScreen("health") }) { Text("健康与训练") }
                         TextButton(onClick = { openScreen("history") }) { Text("历史明细") }
                     }
-                    ReviewScreen(data, reviewWeek, now, zone, ::openOriginal, { openScreen("goals") })
+                    MinuteClockContent(model) { now ->
+                        ReviewScreen(data, reviewWeek, now, zone, ::openOriginal, { openScreen("goals") })
+                    }
                 }
                 3 -> if (fish != null) com.timeagent.fish.FishChatScreen(fish,
                     onSettings = { assistantSettingsOpen = true }, onCompanion = { openScreen("fish-companion") },
@@ -394,9 +397,11 @@ import java.util.UUID
         "calendar" -> CalendarHandoffScreen(calendarTitle, calendarStart, calendarEnd, onClose = ::closeScreen)
         "deadlines" -> DeadlineScreen(data,model,onTask={selected=it},onClose=::closeScreen)
         "recurring" -> RecurringScreen(data,model,onTask={selected=it},onClose=::closeScreen)
-        "projects" -> ProjectScreen(data, model, now, zone, onTask = { selected = it }, onClose = ::closeScreen,
-            onSchedule = { editor = EditorRequest(EditorKind.PLAN, taskId = it.id, scheduleRange = true) })
-        "goals" -> WeeklyGoalsScreen(data,model,now,zone,onClose=::closeScreen)
+        "projects" -> MinuteClockContent(model) { now ->
+            ProjectScreen(data, model, now, zone, onTask = { selected = it }, onClose = ::closeScreen,
+                onSchedule = { editor = EditorRequest(EditorKind.PLAN, taskId = it.id, scheduleRange = true) })
+        }
+        "goals" -> MinuteClockContent(model) { now -> WeeklyGoalsScreen(data,model,now,zone,onClose=::closeScreen) }
         "import" -> CourseImportScreen(model, onClose = ::closeScreen)
         "activities" -> ActivityTemplatesScreen(
             model,
@@ -420,9 +425,9 @@ import java.util.UUID
         "history" -> HistoryScreen(model, onClose = ::closeScreen, onOpen = ::openOriginal)
         "extract" -> ChatExtractionScreen(model, extractionText, onReply = { extractionText = it; openScreen("reply") }, onClose = ::closeScreen)
         "reply" -> ReplyCopilotScreen(model, extractionText, onClose = ::closeScreen)
-        else -> if (destination.startsWith("project:")) ProjectScreen(data, model, now, zone,
+        else -> if (destination.startsWith("project:")) MinuteClockContent(model) { now -> ProjectScreen(data, model, now, zone,
             onTask = { selected = it }, onClose = ::closeScreen, initialProjectId = destination.removePrefix("project:"),
-            onSchedule = { editor = EditorRequest(EditorKind.PLAN, taskId = it.id, scheduleRange = true) })
+            onSchedule = { editor = EditorRequest(EditorKind.PLAN, taskId = it.id, scheduleRange = true) }) }
     } } }
     if (assistantSettingsOpen) ConversationSettingsDialog(assistantSettings, runtimeMode = fish != null, onSaved = { fish?.settingsSaved() }) { assistantSettingsOpen = false }
 
@@ -446,120 +451,124 @@ import java.util.UUID
     }, confirmButton = { TextButton(onClick = { addMenu = false }) { Text("关闭") } })
 
     editor?.let { request ->
-        EditorScreen(request, data, now, zone, busy, { editor = null }, onSave = { values ->
-            model.perform(onSuccess = { editor = null; selected = null }) {
-                when (values.kind ?: request.kind) {
-                    EditorKind.TASK -> {
-                        val before = request.entity as? TaskEntity
-                        val candidate = (before ?: TaskEntity(request.id, values.title)).copy(title = values.title, description = values.notes, estimatedMinutes = values.estimatedMinutes, priority = values.priority, dueAt = values.dueAt, categoryId = values.categoryId, activityId = values.activityId)
-                        if (request.scheduleNewTask) model.repository.saveTaskAndPlan(candidate, "${request.id}:plan", TimeSpan(Instant.ofEpochMilli(values.start), Instant.ofEpochMilli(values.end)))
-                        else model.repository.saveTask(candidate, before?.version)
-                    }
-                    EditorKind.PLAN -> {
-                        if (values.scheduleNewTask) {
-                            val task = TaskEntity(request.id, values.title, description = values.notes, estimatedMinutes = values.estimatedMinutes,
-                                priority = values.priority, dueAt = values.dueAt, categoryId = values.categoryId, activityId = values.activityId)
-                            model.repository.saveTaskAndPlan(task, "${request.id}:plan", TimeSpan(Instant.ofEpochMilli(values.start), Instant.ofEpochMilli(values.end)))
-                        } else {
-                            val before = request.entity as? ScheduleBlockEntity
-                            model.repository.savePlan((before ?: ScheduleBlockEntity(request.id, requireNotNull(values.taskId), values.start, values.end)).copy(taskId = requireNotNull(values.taskId), startAt = values.start, endAt = values.end), before?.version)
+        MinuteClockContent(model) { now ->
+            EditorScreen(request, data, now, zone, busy, { editor = null }, onSave = { values ->
+                model.perform(onSuccess = { editor = null; selected = null }) {
+                    when (values.kind ?: request.kind) {
+                        EditorKind.TASK -> {
+                            val before = request.entity as? TaskEntity
+                            val candidate = (before ?: TaskEntity(request.id, values.title)).copy(title = values.title, description = values.notes, estimatedMinutes = values.estimatedMinutes, priority = values.priority, dueAt = values.dueAt, categoryId = values.categoryId, activityId = values.activityId)
+                            if (request.scheduleNewTask) model.repository.saveTaskAndPlan(candidate, "${request.id}:plan", TimeSpan(Instant.ofEpochMilli(values.start), Instant.ofEpochMilli(values.end)))
+                            else model.repository.saveTask(candidate, before?.version)
+                        }
+                        EditorKind.PLAN -> {
+                            if (values.scheduleNewTask) {
+                                val task = TaskEntity(request.id, values.title, description = values.notes, estimatedMinutes = values.estimatedMinutes,
+                                    priority = values.priority, dueAt = values.dueAt, categoryId = values.categoryId, activityId = values.activityId)
+                                model.repository.saveTaskAndPlan(task, "${request.id}:plan", TimeSpan(Instant.ofEpochMilli(values.start), Instant.ofEpochMilli(values.end)))
+                            } else {
+                                val before = request.entity as? ScheduleBlockEntity
+                                model.repository.savePlan((before ?: ScheduleBlockEntity(request.id, requireNotNull(values.taskId), values.start, values.end)).copy(taskId = requireNotNull(values.taskId), startAt = values.start, endAt = values.end), before?.version)
+                            }
+                        }
+                        EditorKind.RECORD -> {
+                            val before = request.entity as? TimeRecordEntity
+                            val notes = if (request.selection != null && values.title.isNotBlank() && values.notes.lineSequence().firstOrNull()?.trim() != values.title)
+                                listOf(values.title, values.notes.trim()).filter { it.isNotBlank() }.joinToString("\n") else values.notes
+                            model.repository.saveRecord((before ?: TimeRecordEntity(request.id, values.taskId, values.start, values.end)).copy(taskId = values.taskId, startAt = values.start, endAt = values.end, title = values.title, notes = if (request.selection == null) values.notes else notes, categoryId = values.categoryId), values.allowFuture, before?.version)
+                        }
+                        EditorKind.COURSE -> {
+                            val before = request.entity as CourseOccurrenceEntity
+                            model.repository.saveOccurrence(before.copy(date = Instant.ofEpochMilli(values.start).atZone(zone).toLocalDate().toString(), startAt = values.start, endAt = values.end, locationOverride = values.location, teacherOverride = values.teacher), before.version)
+                        }
+                        EditorKind.REMINDER -> {
+                            val before = request.entity as? ReminderEntity
+                            model.repository.saveReminder((before ?: ReminderEntity(request.id, values.title, values.start)).copy(title = values.title, remindAt = values.start), before?.version)
                         }
                     }
-                    EditorKind.RECORD -> {
-                        val before = request.entity as? TimeRecordEntity
-                        val notes = if (request.selection != null && values.title.isNotBlank() && values.notes.lineSequence().firstOrNull()?.trim() != values.title)
-                            listOf(values.title, values.notes.trim()).filter { it.isNotBlank() }.joinToString("\n") else values.notes
-                        model.repository.saveRecord((before ?: TimeRecordEntity(request.id, values.taskId, values.start, values.end)).copy(taskId = values.taskId, startAt = values.start, endAt = values.end, title = values.title, notes = if (request.selection == null) values.notes else notes, categoryId = values.categoryId), values.allowFuture, before?.version)
-                    }
-                    EditorKind.COURSE -> {
-                        val before = request.entity as CourseOccurrenceEntity
-                        model.repository.saveOccurrence(before.copy(date = Instant.ofEpochMilli(values.start).atZone(zone).toLocalDate().toString(), startAt = values.start, endAt = values.end, locationOverride = values.location, teacherOverride = values.teacher), before.version)
-                    }
-                    EditorKind.REMINDER -> {
-                        val before = request.entity as? ReminderEntity
-                        model.repository.saveReminder((before ?: ReminderEntity(request.id, values.title, values.start)).copy(title = values.title, remindAt = values.start), before?.version)
+                }
+            }, onSaveReminder = { before, title, at ->
+                val newReminder = before == null
+                model.perform(onSuccess = {
+                    editor = null
+                    selected = null
+                    reminderDetail = null
+                    if (newReminder) askNotificationPermission()
+                }) {
+                    val ideaId = request.ideaId
+                    if (ideaId != null) {
+                        model.repository.scheduleIdeaAsReminder(
+                            ideaId,
+                            requireNotNull(request.ideaVersion) { "想法版本已失效，请重新打开" },
+                            ReminderEntity(request.id, title, at),
+                        )
+                    } else {
+                        model.repository.saveReminder(
+                            (before ?: ReminderEntity(request.id, title, at)).copy(title = title, remindAt = at),
+                            before?.version,
+                        )
                     }
                 }
-            }
-        }, onSaveReminder = { before, title, at ->
-            val newReminder = before == null
-            model.perform(onSuccess = {
-                editor = null
-                selected = null
-                reminderDetail = null
-                if (newReminder) askNotificationPermission()
-            }) {
-                val ideaId = request.ideaId
-                if (ideaId != null) {
-                    model.repository.scheduleIdeaAsReminder(
-                        ideaId,
-                        requireNotNull(request.ideaVersion) { "想法版本已失效，请重新打开" },
-                        ReminderEntity(request.id, title, at),
-                    )
-                } else {
-                    model.repository.saveReminder(
-                        (before ?: ReminderEntity(request.id, title, at)).copy(title = title, remindAt = at),
-                        before?.version,
-                    )
-                }
-            }
-        }, saveError = error)
+            }, saveError = error)
+        }
     }
 
     selected?.let { selection ->
-        ModalBottomSheet(onDismissRequest = { if (!busy) selected = null }) {
-            Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp).padding(bottom = 32.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                when (selection) {
-                    is TaskEntity -> {
-                        Text(selection.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, modifier = Modifier.testTag("task-detail-title"))
-                        Text("预计 ${selection.estimatedMinutes.toLong().minutesLabel()} · ${listOf("低", "中", "高")[selection.priority]}优先级 · ${if (selection.status == "COMPLETED") "已完成" else "待完成"}")
-                        TimelineColorChoice(selection.timelineColorSubject(), selection.title)
-                        selection.dueAt?.let { Text("截止 ${Instant.ofEpochMilli(it).label(zone)}") }
-                        if (selection.description.isNotBlank()) Text(selection.description)
-                        TextButton(onClick = { selected = null; openScreen("attachments") }) { Text("附件收件箱 · 查看或关联资料") }
-                        Text("${data.plans.count { it.taskId == selection.id }} 个计划块 · ${data.records.count { it.taskId == selection.id }} 条实际记录", style = MaterialTheme.typography.bodySmall)
-                        data.plans.filter { it.taskId == selection.id }.forEach { item -> TextButton(onClick = { selected = data.timeline(now).first { it.id == item.id } }) { Text("计划 ${Instant.ofEpochMilli(item.startAt).label(zone)}") } }
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button(onClick = { startTimer(selection.id); selected = null }, enabled = !busy) { Text("开始计时") }
-                            OutlinedButton(onClick = { editor = EditorRequest(EditorKind.PLAN, taskId = selection.id, scheduleRange = true); selected = null }) { Text("安排时间") }
+        MinuteClockContent(model) { now ->
+            ModalBottomSheet(onDismissRequest = { if (!busy) selected = null }) {
+                Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp).padding(bottom = 32.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    when (selection) {
+                        is TaskEntity -> {
+                            Text(selection.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, modifier = Modifier.testTag("task-detail-title"))
+                            Text("预计 ${selection.estimatedMinutes.toLong().minutesLabel()} · ${listOf("低", "中", "高")[selection.priority]}优先级 · ${if (selection.status == "COMPLETED") "已完成" else "待完成"}")
+                            TimelineColorChoice(selection.timelineColorSubject(), selection.title)
+                            selection.dueAt?.let { Text("截止 ${Instant.ofEpochMilli(it).label(zone)}") }
+                            if (selection.description.isNotBlank()) Text(selection.description)
+                            TextButton(onClick = { selected = null; openScreen("attachments") }) { Text("附件收件箱 · 查看或关联资料") }
+                            Text("${data.plans.count { it.taskId == selection.id }} 个计划块 · ${data.records.count { it.taskId == selection.id }} 条实际记录", style = MaterialTheme.typography.bodySmall)
+                            data.plans.filter { it.taskId == selection.id }.forEach { item -> TextButton(onClick = { selected = data.timeline(now).first { it.id == item.id } }) { Text("计划 ${Instant.ofEpochMilli(item.startAt).label(zone)}") } }
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Button(onClick = { startTimer(selection.id); selected = null }, enabled = !busy) { Text("开始计时") }
+                                OutlinedButton(onClick = { editor = EditorRequest(EditorKind.PLAN, taskId = selection.id, scheduleRange = true); selected = null }) { Text("安排时间") }
+                            }
+                            Row {
+                                TextButton(onClick = { editor = EditorRequest(EditorKind.TASK, selection); selected = null }) { Text("编辑任务") }
+                                TextButton(onClick = { openNote("TASK", selection.id, selection.title) }, modifier = Modifier.testTag("task-note-entry")) { Text("记笔记") }
+                                TextButton(onClick = { model.perform(onSuccess = { selected = null }) { model.repository.saveTask(selection.copy(status = if (selection.status == "COMPLETED") "TODO" else "COMPLETED"), selection.version) } }, enabled = !busy) { Text(if (selection.status == "COMPLETED") "重新打开" else "标记完成") }
+                                TextButton(onClick = { confirmation = "删除后保留实际记录，计划将隐藏，可撤销恢复。" to { model.perform(onSuccess = { selected = null }) { model.repository.deleteTask(selection.id) } } }) { Text("删除") }
+                            }
                         }
-                        Row {
-                            TextButton(onClick = { editor = EditorRequest(EditorKind.TASK, selection); selected = null }) { Text("编辑任务") }
-                            TextButton(onClick = { openNote("TASK", selection.id, selection.title) }, modifier = Modifier.testTag("task-note-entry")) { Text("记笔记") }
-                            TextButton(onClick = { model.perform(onSuccess = { selected = null }) { model.repository.saveTask(selection.copy(status = if (selection.status == "COMPLETED") "TODO" else "COMPLETED"), selection.version) } }, enabled = !busy) { Text(if (selection.status == "COMPLETED") "重新打开" else "标记完成") }
-                            TextButton(onClick = { confirmation = "删除后保留实际记录，计划将隐藏，可撤销恢复。" to { model.perform(onSuccess = { selected = null }) { model.repository.deleteTask(selection.id) } } }) { Text("删除") }
-                        }
-                    }
-                    is TimelineItem -> {
-                        Text(selection.kind.label, color = selection.kind.color(), style = MaterialTheme.typography.labelLarge)
-                        Text(selection.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                        Text("${selection.span.start.label(zone)} — ${selection.span.end.label(zone)}")
-                        TimelineColorChoice(selection.colorSubject, selection.title)
-                        Text("时长 ${java.time.Duration.between(selection.span.start, selection.span.end).toMinutes().minutesLabel()}")
-                        if (selection.subtitle.isNotBlank()) Text(selection.subtitle)
-                        if (selection.kind == ItemKind.PLAN || selection.kind == ItemKind.COURSE) OutlinedButton(onClick = {
-                            calendarTitle = selection.title; calendarStart = selection.span.start.toEpochMilli(); calendarEnd = selection.span.end.toEpochMilli()
-                            selected = null; openScreen("calendar")
-                        }) { Text("交给系统日历确认添加") }
-                        (selection.entity as? TimeRecordEntity)?.takeIf { it.source == "WORKOUT" && it.id.startsWith("workout:") }?.let { record ->
-                            Button(onClick = { selected = null; context.startActivity(WorkoutActivity.intent(context, record.id.removePrefix("workout:"))) }) { Text("查看完整训练记录") }
-                        }
-                        val overlaps = data.timeline(now).filter { it.id != selection.id && (it.kind == ItemKind.RECORD) == (selection.kind == ItemKind.RECORD) && selection.span.overlaps(it.span) }
-                        if (overlaps.isNotEmpty()) Text((if (selection.kind == ItemKind.RECORD) "与实际记录重叠：" else "时间冲突：") + overlaps.joinToString("、") { it.title }, color = MaterialTheme.colorScheme.error)
-                        if (selection.entity is CourseOccurrenceEntity) {
-                            val item = selection.entity
-                            val definition = data.courses.firstOrNull { it.id == item.courseId }
-                            Text("教师：${item.teacherOverride ?: definition?.teacher.orEmpty()}")
-                            Text("来源：${definition?.sourceId.orEmpty()}${if (item.isManuallyModified) " · 已手工修改" else ""}", style = MaterialTheme.typography.bodySmall)
-                        }
-                        Row {
-                            val editable = (selection.entity as? TimeRecordEntity)?.endAt != null || selection.kind != ItemKind.RECORD
-                            val noteType = when (selection.entity) { is ScheduleBlockEntity -> "PLAN"; is TimeRecordEntity -> "RECORD"; is CourseOccurrenceEntity -> "OCCURRENCE"; else -> null }
-                            if (noteType != null) TextButton(onClick = { openNote(noteType, selection.id, selection.title) }) { Text("记笔记") }
-                            TextButton(onClick = { editor = EditorRequest(when (selection.kind) { ItemKind.COURSE -> EditorKind.COURSE; ItemKind.PLAN -> EditorKind.PLAN; ItemKind.RECORD -> EditorKind.RECORD }, selection.entity); selected = null }, enabled = editable) { Text("修改") }
-                            TextButton(onClick = { confirmation = "确认${if (selection.kind == ItemKind.COURSE) "取消这一次课程" else "删除此时间块"}？可以撤销恢复。" to {
-                                model.perform(onSuccess = { selected = null }) { when (val item = selection.entity) { is ScheduleBlockEntity -> model.repository.deletePlan(item.id); is TimeRecordEntity -> model.repository.deleteRecord(item.id); is CourseOccurrenceEntity -> model.repository.saveOccurrence(item.copy(status = "CANCELLED"), item.version) } }
-                            } }, enabled = editable && !busy) { Text(if (selection.kind == ItemKind.COURSE) "取消本次课程" else "删除") }
+                        is TimelineItem -> {
+                            Text(selection.kind.label, color = selection.kind.color(), style = MaterialTheme.typography.labelLarge)
+                            Text(selection.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                            Text("${selection.span.start.label(zone)} — ${selection.span.end.label(zone)}")
+                            TimelineColorChoice(selection.colorSubject, selection.title)
+                            Text("时长 ${java.time.Duration.between(selection.span.start, selection.span.end).toMinutes().minutesLabel()}")
+                            if (selection.subtitle.isNotBlank()) Text(selection.subtitle)
+                            if (selection.kind == ItemKind.PLAN || selection.kind == ItemKind.COURSE) OutlinedButton(onClick = {
+                                calendarTitle = selection.title; calendarStart = selection.span.start.toEpochMilli(); calendarEnd = selection.span.end.toEpochMilli()
+                                selected = null; openScreen("calendar")
+                            }) { Text("交给系统日历确认添加") }
+                            (selection.entity as? TimeRecordEntity)?.takeIf { it.source == "WORKOUT" && it.id.startsWith("workout:") }?.let { record ->
+                                Button(onClick = { selected = null; context.startActivity(WorkoutActivity.intent(context, record.id.removePrefix("workout:"))) }) { Text("查看完整训练记录") }
+                            }
+                            val overlaps = data.timeline(now).filter { it.id != selection.id && (it.kind == ItemKind.RECORD) == (selection.kind == ItemKind.RECORD) && selection.span.overlaps(it.span) }
+                            if (overlaps.isNotEmpty()) Text((if (selection.kind == ItemKind.RECORD) "与实际记录重叠：" else "时间冲突：") + overlaps.joinToString("、") { it.title }, color = MaterialTheme.colorScheme.error)
+                            if (selection.entity is CourseOccurrenceEntity) {
+                                val item = selection.entity
+                                val definition = data.courses.firstOrNull { it.id == item.courseId }
+                                Text("教师：${item.teacherOverride ?: definition?.teacher.orEmpty()}")
+                                Text("来源：${definition?.sourceId.orEmpty()}${if (item.isManuallyModified) " · 已手工修改" else ""}", style = MaterialTheme.typography.bodySmall)
+                            }
+                            Row {
+                                val editable = (selection.entity as? TimeRecordEntity)?.endAt != null || selection.kind != ItemKind.RECORD
+                                val noteType = when (selection.entity) { is ScheduleBlockEntity -> "PLAN"; is TimeRecordEntity -> "RECORD"; is CourseOccurrenceEntity -> "OCCURRENCE"; else -> null }
+                                if (noteType != null) TextButton(onClick = { openNote(noteType, selection.id, selection.title) }) { Text("记笔记") }
+                                TextButton(onClick = { editor = EditorRequest(when (selection.kind) { ItemKind.COURSE -> EditorKind.COURSE; ItemKind.PLAN -> EditorKind.PLAN; ItemKind.RECORD -> EditorKind.RECORD }, selection.entity); selected = null }, enabled = editable) { Text("修改") }
+                                TextButton(onClick = { confirmation = "确认${if (selection.kind == ItemKind.COURSE) "取消这一次课程" else "删除此时间块"}？可以撤销恢复。" to {
+                                    model.perform(onSuccess = { selected = null }) { when (val item = selection.entity) { is ScheduleBlockEntity -> model.repository.deletePlan(item.id); is TimeRecordEntity -> model.repository.deleteRecord(item.id); is CourseOccurrenceEntity -> model.repository.saveOccurrence(item.copy(status = "CANCELLED"), item.version) } }
+                                } }, enabled = editable && !busy) { Text(if (selection.kind == ItemKind.COURSE) "取消本次课程" else "删除") }
+                            }
                         }
                     }
                 }
