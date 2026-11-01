@@ -1,0 +1,19 @@
+[
+  {
+    "class": "com.timeagent.ui.AppFlowTest",
+    "test": "empty timeline tap creates a task and its selected plan atomically",
+    "message": "java.lang.IllegalStateException: Cannot perform this operation because there is no current transaction.",
+    "stack": [
+      "java.lang.IllegalStateException: Cannot perform this operation because there is no current transaction.",
+      "\tat android.database.sqlite.SQLiteSession.throwIfNoTransaction(SQLiteSession.java:915)",
+      "\tat android.database.sqlite.SQLiteSession.endTransaction(SQLiteSession.java:398)",
+      "\tat android.database.sqlite.SQLiteDatabase.endTransaction(SQLiteDatabase.java:566)",
+      "\tat androidx.sqlite.db.framework.FrameworkSQLiteDatabase.endTransaction(FrameworkSQLiteDatabase.android.kt:100)",
+      "\tat androidx.room.RoomDatabase.internalEndTransaction(RoomDatabase.android.kt:700)",
+      "\tat androidx.room.RoomDatabase.endTransaction(RoomDatabase.android.kt:693)",
+      "\tat androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invokeSuspend(RoomDatabase.android.kt:2005)",
+      "\tat androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invoke(RoomDatabase.android.kt)",
+      "\tat androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invokeSuspend(RoomDatabase.android.kt:2015)"
+    ]
+  }
+]

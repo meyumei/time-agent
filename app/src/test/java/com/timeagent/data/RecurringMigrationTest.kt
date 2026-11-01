@@ -30,7 +30,7 @@ class RecurringMigrationTest {
         }
         val db=TimeAgentDatabase.open(context)
         try {
-            assertEquals(12,db.openHelper.readableDatabase.version);assertEquals("旧项目",db.dao().project("p")!!.name)
+            assertEquals(13,db.openHelper.readableDatabase.version);assertEquals("旧项目",db.dao().project("p")!!.name)
             assertEquals(4L,db.dao().placement("t")!!.version);assertEquals(90,db.dao().weeklyGoal("g")!!.targetMinutes)
             assertTrue(db.dao().record("r")!!.isManuallyEdited);assertEquals(6L,db.dao().record("r")!!.version)
             assertTrue(db.dao().attachments().isEmpty());assertTrue(db.dao().recurringRules().isEmpty());assertTrue(db.dao().recurringInstances().isEmpty())

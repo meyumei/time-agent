@@ -31,7 +31,7 @@ class ProjectsMigrationTest {
         }
         val db=TimeAgentDatabase.open(context)
         try {
-            assertEquals(12,db.openHelper.readableDatabase.version)
+            assertEquals(13,db.openHelper.readableDatabase.version)
             assertEquals(7L,db.dao().task("old")!!.version);assertEquals("备注",db.dao().task("old")!!.description)
             assertEquals("running",db.dao().runningTimer()!!.id);assertTrue(db.dao().runningTimer()!!.isManuallyEdited)
             assertEquals("old",db.dao().reminder("rem")!!.taskId)

@@ -20,4 +20,4 @@ python -B -m unittest discover -s scripts -p 'test_*.py' -v
 
 `V12SampleDatabaseTest` 在 Robolectric 私有目录分别打开两组夹具，核对领域数据。`T0BaselineDeviceTest.anonymizedExportsOpenOnDeviceWithoutTouchingUserDatabase` 把真实脱敏样本复制到具名临时数据库后用当前 Room 打开，不覆盖用户库。真实导出中一条训练关联的实际记录已不在主库；样本如实保留该状态，测试分别核对一条空关联、一条有效关联和一条缺失目标的关联。
 
-当前主库仍为 v12，没有添加迁移。后续 T1.3 还必须添加 `MigrationTestHelper` 验证 v12→v13；当前版本打开成功不代表未来迁移已验收。结果、数据来源和限制见 `docs/dataset-report.md`。
+当前主库已在 T1.3 升至 v13；本目录的两组主库夹具继续冻结在 v12，不覆盖、不改写。`ScheduleMigrationContract` 通过 `MigrationTestHelper` 从真实脱敏样本验证 v12→v13 的全部旧行/字段、默认值、外键、索引及完整性；`ScheduleMigrationTest` 在主机执行同一契约，`ScheduleMigrationDeviceTest` 提供设备入口。主机迁移与升级前 format1 快照恢复已通过，设备测试包已构建，但尚未执行真机升级/恢复。来源见 `docs/dataset-report.md`；本轮结果、恢复边界和待验收步骤见 `docs/t1.3-independent-schedules.md`。

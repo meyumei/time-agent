@@ -25,7 +25,7 @@ fun ProjectReviewSection(data: LocalSnapshot, weekStart: LocalDate, now: Instant
                     Text(project.name + if(project.deletedAt != null) "（已删除，历史保留）" else "")
                     project.dueAt?.let { Text("截止 ${Instant.ofEpochMilli(it).atZone(zone).toLocalDate()}",style=MaterialTheme.typography.bodySmall) }
                     TextButton(onClick={ sources="本周完成任务" to p.completedTasks.map { Triple("TASK",it.id,it.title) } }) { Text("本周完成 ${p.completedTasks.size} 项") }
-                    TextButton(onClick={ sources="计划投入来源" to p.plans.map { Triple("PLAN",it.id,"${data.tasks.find{t->t.id==it.taskId}?.title ?: "任务"} · ${Instant.ofEpochMilli(it.startAt).label(zone)}") } }) { Text("计划投入 ${p.plannedMinutes} 分钟") }
+                    TextButton(onClick={ sources="计划投入来源" to p.plans.map { Triple("PLAN",it.id,"${it.displayTitle(data.tasks.find{t->t.id==it.taskId})} · ${Instant.ofEpochMilli(it.startAt).label(zone)}") } }) { Text("计划投入 ${p.plannedMinutes} 分钟") }
                     val actual = p.records.map { Triple("RECORD",it.id,"${it.title.ifBlank{data.tasks.find{t->t.id==it.taskId}?.title ?: "实际记录"}} · ${Instant.ofEpochMilli(it.startAt).label(zone)}") }
                     TextButton(onClick={ sources="累计实际投入来源（逐条相加）" to actual }) { Text("累计实际投入 ${p.recordedMinutes} 分钟") }
                     TextButton(onClick={ sources="去重时间来源（合并重叠区间）" to actual }) { Text("去重时间 ${p.elapsedMinutes} 分钟") }

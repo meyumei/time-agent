@@ -38,6 +38,7 @@ fun GridBlockEditorScreen(
     var kindName by rememberSaveable(request.id) { mutableStateOf(if (request.kind == EditorKind.RECORD) EditorKind.RECORD.name else EditorKind.PLAN.name) }
     val kind = EditorKind.valueOf(kindName)
     var newTask by rememberSaveable(request.id) { mutableStateOf(request.taskId == null) }
+    var independent by rememberSaveable(request.id) { mutableStateOf(false) }
     var selectedTask by rememberSaveable(request.id) { mutableStateOf(request.taskId) }
     var title by rememberSaveable(request.id) { mutableStateOf(request.title.orEmpty()) }
     var notes by rememberSaveable(request.id) { mutableStateOf("") }
@@ -59,7 +60,7 @@ fun GridBlockEditorScreen(
     val future = kind == EditorKind.RECORD && candidate?.end?.isAfter(now) == true
     val overlaps = candidate?.let { span ->
         data.timeline(now).filter { item ->
-            (if (kind == EditorKind.RECORD) item.kind == ItemKind.RECORD else item.kind != ItemKind.RECORD) && span.overlaps(item.span)
+            !item.isPoint && (if (kind == EditorKind.RECORD) item.kind == ItemKind.RECORD else item.kind != ItemKind.RECORD) && span.overlaps(item.span)
         }
     }.orEmpty()
     val save: () -> Unit = {
@@ -67,15 +68,15 @@ fun GridBlockEditorScreen(
             try {
                 val span = TimeSpan(TimeInput.parse(startDate, startTime, zone), TimeInput.parse(endDate, endTime, zone))
                 val createTask = kind == EditorKind.PLAN && newTask
-                if (createTask) require(title.isNotBlank()) { "任务名称不能为空" }
-                if (kind == EditorKind.PLAN && !newTask) require(tasks.any { it.id == selectedTask }) { "请选择关联任务" }
+                if (createTask || kind == EditorKind.PLAN && independent) require(title.isNotBlank()) { "日程名称不能为空" }
+                if (kind == EditorKind.PLAN && !newTask && !independent) require(tasks.any { it.id == selectedTask }) { "请选择关联任务" }
                 if (kind == EditorKind.RECORD && span.end.isAfter(now)) require(futureConfirmed) { "请确认仍作为实际记录保存" }
                 submitted = true
                 validation = null
                 onSave(
                     EditValues(
                         title = title.trim(), notes = notes, estimatedMinutes = (span.seconds / 60).toInt().coerceIn(1, 10080),
-                        priority = 1, dueAt = null, taskId = selectedTask, categoryId = category,
+                        priority = 1, dueAt = null, taskId = if (kind == EditorKind.PLAN && independent) null else selectedTask, categoryId = category,
                         start = span.start.toEpochMilli(), end = span.end.toEpochMilli(), allowFuture = futureConfirmed,
                         location = "", teacher = "", activityId = request.activityId, kind = kind, scheduleNewTask = createTask,
                     ),
@@ -107,14 +108,16 @@ fun GridBlockEditorScreen(
             }
             if (kind == EditorKind.PLAN) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(newTask, { newTask = true; validation = null }, enabled = !saving,
+                    FilterChip(newTask, { newTask = true; independent = false; validation = null }, enabled = !saving,
                         label = { Text("新建任务") }, modifier = Modifier.testTag("grid-new-task"))
-                    FilterChip(!newTask, { newTask = false; validation = null }, enabled = !saving,
+                    FilterChip(!newTask && !independent, { newTask = false; independent = false; validation = null }, enabled = !saving,
                         label = { Text("关联已有任务") }, modifier = Modifier.testTag("grid-existing-task"))
+                    FilterChip(independent, { newTask = false; independent = true; validation = null }, enabled = !saving,
+                        label = { Text("独立日程") }, modifier = Modifier.testTag("grid-independent-plan"))
                 }
             }
-            if (kind == EditorKind.RECORD || newTask) {
-                OutlinedTextField(title, { title = it }, enabled = !saving, label = { Text(if (kind == EditorKind.PLAN) "任务名称" else "记录标题（可选）") },
+            if (kind == EditorKind.RECORD || newTask || independent) {
+                OutlinedTextField(title, { title = it }, enabled = !saving, label = { Text(if (kind == EditorKind.PLAN) (if (newTask) "任务名称" else "日程名称") else "记录标题（可选）") },
                     singleLine = true, modifier = Modifier.fillMaxWidth().testTag("grid-title"))
             }
             Text("时间以 ${zone.id} 显示", style = MaterialTheme.typography.bodySmall)
@@ -126,7 +129,7 @@ fun GridBlockEditorScreen(
                 singleLine = true, modifier = Modifier.fillMaxWidth().testTag("grid-end-date"))
             OutlinedTextField(endTime, { endTime = it; futureConfirmed = false }, enabled = !saving, label = { Text("结束时间 HH:mm") },
                 singleLine = true, modifier = Modifier.fillMaxWidth().testTag("grid-end-time"))
-            if (kind == EditorKind.RECORD || !newTask) {
+            if (kind == EditorKind.RECORD || !newTask && !independent) {
                 Text(if (kind == EditorKind.PLAN) "关联任务（必选）" else "关联任务（可选）", style = MaterialTheme.typography.labelLarge)
                 if (kind == EditorKind.RECORD) {
                     FilterChip(selectedTask == null, { selectedTask = null }, enabled = !saving,
@@ -138,7 +141,7 @@ fun GridBlockEditorScreen(
                 }
                 if (kind == EditorKind.PLAN && tasks.isEmpty()) Text("还没有可关联的任务，可以切换为新建任务。", style = MaterialTheme.typography.bodySmall)
             }
-            if (kind == EditorKind.RECORD || newTask) {
+            if (kind == EditorKind.RECORD || newTask || independent) {
                 Text("分类", style = MaterialTheme.typography.labelLarge)
                 Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     FilterChip(category == null, { category = null }, enabled = !saving, label = { Text("未分类") })

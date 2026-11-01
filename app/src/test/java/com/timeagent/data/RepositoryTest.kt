@@ -69,7 +69,7 @@ class RepositoryTest {
         task()
         repo.savePlan(ScheduleBlockEntity("p1", "task-1", now.toEpochMilli(), now.plusSeconds(3600).toEpochMilli()))
         repo.saveRecord(TimeRecordEntity("r1", "task-1", now.minusSeconds(3600).toEpochMilli(), now.toEpochMilli()))
-        repo.deleteTask("task-1")
+        repo.deleteTask("task-1", LinkedScheduleAction.DELETE)
         assertNotNull(db.dao().task("task-1")!!.deletedAt)
         assertEquals(0, db.dao().activePlans().size)
         assertEquals(1, db.dao().records().size)
@@ -157,7 +157,7 @@ class RepositoryTest {
     @Test fun `editing retained history preserves its deleted task association`() = runBlocking {
         task()
         repo.saveRecord(TimeRecordEntity("history", "task-1", now.minusSeconds(3600).toEpochMilli(), now.toEpochMilli()))
-        repo.deleteTask("task-1")
+        repo.deleteTask("task-1", LinkedScheduleAction.DELETE)
         val existing = db.dao().record("history")!!
         repo.saveRecord(existing.copy(notes = "补充说明"), expectedVersion = existing.version)
         assertEquals("task-1", db.dao().record("history")!!.taskId)

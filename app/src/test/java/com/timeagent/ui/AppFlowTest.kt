@@ -393,7 +393,7 @@ class AppFlowTest {
         compose.onNodeWithText("14:00").assertExists()
         compose.onNodeWithText("任务名称").performSemanticsAction(SemanticsActions.SetText) { it(AnnotatedString("时间轴新任务")) }
         compose.onNodeWithText("保存").performClick()
-        compose.waitUntil(10000) { Shadows.shadowOf(Looper.getMainLooper()).idle(); runBlocking { db.dao().plans().size == 1 } }
+        compose.waitUntil(10000) { Shadows.shadowOf(Looper.getMainLooper()).idle(); !viewModel.busy.value && viewModel.data.value.plans.size == 1 }
         val task = runBlocking { db.dao().tasks().single() }
         val plan = runBlocking { db.dao().plans().single() }
         assertEquals("时间轴新任务", task.title)

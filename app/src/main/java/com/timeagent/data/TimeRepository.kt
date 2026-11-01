@@ -19,6 +19,7 @@ import java.util.UUID
 
 class TimerAlreadyRunning : IllegalStateException("已有计时正在进行，请确认切换后再开始")
 class StaleChange : IllegalStateException("数据已经发生变化，请关闭后重新打开再操作")
+enum class LinkedScheduleAction { DELETE, KEEP_INDEPENDENT }
 data class Conflict(val id: String, val title: String, val span: TimeSpan)
 data class ImportPreview(val bundle: ImportBundle, val newCount: Int, val duplicateCount: Int, val protectedCount: Int)
 data class LocalSnapshot(
@@ -300,7 +301,7 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
     private data class AssistantBatch(val entries: List<OperationEntity>)
 
     /** Local typed writes share one transaction and one undo; a replayed request never writes twice. */
-    suspend fun assistantTransaction(requestId: String, block: suspend () -> Unit): Boolean = transaction {
+    suspend fun assistantTransaction(requestId: String, actionLabel: String? = null, block: suspend () -> Unit): Boolean = transaction {
         require(requestId.isNotBlank())
         if (dao.actionFor("ASSISTANT_BATCH", requestId) != null) return@transaction false
         check(currentCoroutineContext()[AssistantJournal] == null)
@@ -308,7 +309,7 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         withContext(collector) { block() }
         if (collector.entries.isNotEmpty()) {
             dao.clearRedo()
-            dao.putAction(OperationEntity(actionType = "助手 · ${collector.entries.first().actionType}", entityType = "ASSISTANT_BATCH", entityId = requestId, beforeSnapshot = null,
+            dao.putAction(OperationEntity(actionType = actionLabel ?: "助手 · ${collector.entries.first().actionType}", entityType = "ASSISTANT_BATCH", entityId = requestId, beforeSnapshot = null,
                 afterSnapshot = gson.toJson(AssistantBatch(collector.entries)), createdAt = now().toEpochMilli()))
         }
         true
@@ -390,32 +391,62 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         savePlan(plan, expectedTaskVersion = saved.version, expectedConflicts = expectedConflicts)
     }
 
-    suspend fun deleteTask(id: String) = transaction {
+    suspend fun deleteTask(id: String, linkedSchedules: LinkedScheduleAction? = null) = transaction {
         val before = activeTask(id)
         require(dao.runningTimer()?.taskId != id) { "请先结束此任务的计时，再删除任务" }
-        val after = before.copy(deletedAt = now().toEpochMilli(), updatedAt = now().toEpochMilli(), version = nextVersion("TASK", id, before.version))
-        dao.putTask(after)
-        journal("TASK", id, before, after, "删除任务")
+        val plans = dao.plans().filter { it.taskId == id && it.deletedAt == null }
+        require(plans.isEmpty() || linkedSchedules != null) { "请选择同时删除关联日程，或保留为独立日程" }
+        assistantTransaction("delete-task:${UUID.randomUUID()}", actionLabel = "删除任务") {
+            plans.forEach { plan ->
+                if (linkedSchedules == LinkedScheduleAction.DELETE) deletePlan(plan.id)
+                else {
+                    val detached = plan.copy(taskId = null, title = plan.displayTitle(before), updatedAt = now().toEpochMilli(),
+                        version = nextVersion("PLAN", plan.id, plan.version))
+                    dao.putPlan(detached)
+                    journal("PLAN", plan.id, plan, detached, "保留为独立日程")
+                }
+            }
+            val after = before.copy(deletedAt = now().toEpochMilli(), updatedAt = now().toEpochMilli(), version = nextVersion("TASK", id, before.version))
+            dao.putTask(after)
+            journal("TASK", id, before, after, "删除任务")
+        }
     }
 
     suspend fun conflicts(span: TimeSpan, excluding: String? = null): List<Conflict> {
         val tasks = dao.tasks().associateBy { it.id }
         val courses = dao.courses().associateBy { it.id }
-        return dao.activePlans().filter { it.id != excluding }.map { Conflict(it.id, tasks[it.taskId]?.title ?: "计划", TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(it.endAt))) }
+        return dao.activePlans().filter { it.id != excluding && it.kind != "POINT" }.map { Conflict(it.id, it.displayTitle(tasks[it.taskId]), TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(it.endAt))) }
             .plus(dao.occurrences().filter { it.status != "CANCELLED" && it.id != excluding }.map { Conflict(it.id, courses[it.courseId]?.name ?: "课程", TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(it.endAt))) })
             .filter { span.overlaps(it.span) }
     }
 
     suspend fun savePlan(plan: ScheduleBlockEntity, expectedVersion: Long? = null, expectedTaskVersion: Long? = null, expectedConflicts: List<Conflict>? = null): List<Conflict> = transaction {
-        val span = TimeSpan(Instant.ofEpochMilli(plan.startAt), Instant.ofEpochMilli(plan.endAt))
-        val task = activeTask(plan.taskId)
-        PersonalMemoryRules.violation(dao.memories(), task, span.start, span.end, zone)?.let { throw IllegalArgumentException("与个人约定冲突：${it.text}。请调整时段或在个人记忆中停用该约定。") }
-        checkVersion(task.version, expectedTaskVersion)
+        val task = plan.taskId?.let { activeTask(it) }
+        require(plan.title.trim().length <= 200 && (task != null || plan.title.isNotBlank())) { "日程名称不能为空，最多200字" }
+        require(plan.source in setOf("MANUAL", "FISH", "VOICE", "CALENDAR", "TEMPLATE", "RECURRING", "SAMPLE")) { "日程来源无效" }
+        val creationZone = ZoneId.of(plan.timezoneId)
+        val normalized = when (plan.kind) {
+            "TIMED" -> { TimeSpan(Instant.ofEpochMilli(plan.startAt), Instant.ofEpochMilli(plan.endAt)); plan }
+            "POINT" -> { require(plan.endAt == plan.startAt) { "提醒点只需一个时刻" }; plan }
+            "ALL_DAY" -> {
+                val start = LocalDate.parse(requireNotNull(plan.allDayStartDate))
+                val end = LocalDate.parse(requireNotNull(plan.allDayEndDate))
+                require(end >= start) { "结束日期早于开始日期" }
+                plan.copy(startAt = start.atStartOfDay(creationZone).toInstant().toEpochMilli(),
+                    endAt = end.plusDays(1).atStartOfDay(creationZone).toInstant().toEpochMilli())
+            }
+            else -> throw IllegalArgumentException("日程类型无效")
+        }
+        val span = if (normalized.kind == "POINT") null else TimeSpan(Instant.ofEpochMilli(normalized.startAt), Instant.ofEpochMilli(normalized.endAt))
+        if (span != null) PersonalMemoryRules.violation(dao.memories(), task ?: TaskEntity(plan.id, plan.title), span.start, span.end, zone)?.let {
+            throw IllegalArgumentException("与个人约定冲突：${it.text}。请调整时段或在个人记忆中停用该约定。")
+        }
+        checkVersion(task?.version, expectedTaskVersion)
         val before = dao.plan(plan.id)
         checkVersion(before?.version, expectedVersion)
-        val warnings = conflicts(span, plan.id)
+        val warnings = span?.let { conflicts(it, plan.id) }.orEmpty()
         if (expectedConflicts != null && warnings.sortedBy { it.id } != expectedConflicts.sortedBy { it.id }) throw StaleChange()
-        val saved = plan.copy(createdAt = before?.createdAt ?: now().toEpochMilli(), updatedAt = now().toEpochMilli(), version = nextVersion("PLAN", plan.id, before?.version))
+        val saved = normalized.copy(title = plan.title.trim(), createdAt = before?.createdAt ?: now().toEpochMilli(), updatedAt = now().toEpochMilli(), version = nextVersion("PLAN", plan.id, before?.version))
         dao.putPlan(saved)
         journal("PLAN", saved.id, before, saved, "保存计划")
         warnings // A warning never prevents saving a valid plan.
@@ -647,8 +678,8 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
 
     suspend fun deletePlan(id: String) = transaction {
         val before = requireNotNull(dao.plan(id)) { "计划不存在" }
-        nextVersion("PLAN", id, before.version)
-        dao.removePlan(id); journal("PLAN", id, before, null, "删除计划")
+        val after = before.copy(deletedAt = now().toEpochMilli(), updatedAt = now().toEpochMilli(), version = nextVersion("PLAN", id, before.version))
+        dao.putPlan(after); journal("PLAN", id, before, after, "删除计划")
     }
     suspend fun deleteRecord(id: String, expectedVersion: Long? = null) = transaction {
         val before = requireNotNull(dao.record(id)) { "记录不存在" }
@@ -746,6 +777,10 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
                 if (action.entityType == "ATTACHMENT") remove("purgedAt")
                 if (action.entityType == "RECURRING_INSTANCE") { remove("taskVersion");remove("planVersion");remove("placementVersion") }
                 if (action.entityType == "RECORD" && (!has("title") || get("title").isJsonNull)) addProperty("title", "")
+                if (action.entityType == "PLAN") {
+                    val defaults = mapOf("title" to "", "kind" to "TIMED", "timezoneId" to ((current as? ScheduleBlockEntity)?.timezoneId ?: zone.id), "notes" to "", "source" to "MANUAL")
+                    defaults.forEach { (key, value) -> if (!has(key) || get(key).isJsonNull) addProperty(key, value) }
+                }
             } }
             if (payload(current?.let { gson.toJson(it) }) != payload(against)) throw StaleChange()
         }
@@ -835,7 +870,12 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
                 val current = dao.plan(action.entityId); matches(current)
                 val version = nextVersion("PLAN", action.entityId, current?.version)
                 if (target == null) { if (hasNotes("PLAN")) throw StaleChange(); dao.removePlan(action.entityId) }
-                else dao.putPlan(gson.fromJson(target, ScheduleBlockEntity::class.java).copy(version = version, updatedAt = now().toEpochMilli()))
+                else {
+                    val raw = JsonParser.parseString(target).asJsonObject
+                    mapOf("title" to "", "kind" to "TIMED", "timezoneId" to (current?.timezoneId ?: zone.id), "notes" to "", "source" to "MANUAL")
+                        .forEach { (key, value) -> if (!raw.has(key) || raw[key].isJsonNull) raw.addProperty(key, value) }
+                    dao.putPlan(gson.fromJson(raw, ScheduleBlockEntity::class.java).copy(version = version, updatedAt = now().toEpochMilli()))
+                }
             }
             "RECORD" -> {
                 val current = dao.record(action.entityId); matches(current)

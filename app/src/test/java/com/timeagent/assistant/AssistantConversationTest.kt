@@ -51,9 +51,11 @@ class AssistantConversationTest {
         say("删除刚才的记录"); assertNull(db.dao().record(id))
         say("撤销"); assertEquals(changed.notes, db.dao().record(id)!!.notes)
     }
-    @Test fun `new scheduled activity creates task and plan with one undo`() = runBlocking {
+    @Test fun `new scheduled activity creates an independent plan with one undo`() = runBlocking {
         say("安排 明天 19:00 到 20:00 健身")
-        assertEquals("健身", db.dao().tasks().single().title)
+        assertTrue(db.dao().tasks().isEmpty())
+        assertEquals("健身", db.dao().plans().single().title)
+        assertNull(db.dao().plans().single().taskId)
         assertEquals(1, db.dao().plans().size); assertEquals(1, db.dao().history().size)
         say("撤销"); assertTrue(db.dao().plans().isEmpty()); assertTrue(db.dao().tasks().isEmpty())
     }

@@ -202,6 +202,7 @@ import java.util.UUID
     }
     LaunchedEffect(voiceMessage) { if (voiceMessage != null) { delay(6000); voiceMessage = null } }
     var confirmation by remember { mutableStateOf<Pair<String, () -> Unit>?>(null) }
+    var deletingTask by remember { mutableStateOf<TaskEntity?>(null) }
     var preview by remember { mutableStateOf<ImportPreview?>(null) }
     var switchTask by remember { mutableStateOf<Pair<String?, String>?>(null) }
     var reminderDetail by remember { mutableStateOf<ReminderEntity?>(null) }
@@ -468,7 +469,9 @@ import java.util.UUID
                                 model.repository.saveTaskAndPlan(task, "${request.id}:plan", TimeSpan(Instant.ofEpochMilli(values.start), Instant.ofEpochMilli(values.end)))
                             } else {
                                 val before = request.entity as? ScheduleBlockEntity
-                                model.repository.savePlan((before ?: ScheduleBlockEntity(request.id, requireNotNull(values.taskId), values.start, values.end)).copy(taskId = requireNotNull(values.taskId), startAt = values.start, endAt = values.end), before?.version)
+                                val title = if (before?.title == "" && values.taskId != null && values.taskId == before.taskId && values.title == data.tasks.firstOrNull { it.id == before.taskId }?.title) "" else values.title
+                                model.repository.savePlan((before ?: ScheduleBlockEntity(request.id, values.taskId, values.start, values.end)).copy(taskId = values.taskId, title = title, notes = values.notes, startAt = values.start, endAt = values.end,
+                                    allDayStartDate = values.allDayStartDate, allDayEndDate = values.allDayEndDate), before?.version)
                             }
                         }
                         EditorKind.RECORD -> {
@@ -535,7 +538,7 @@ import java.util.UUID
                                 TextButton(onClick = { editor = EditorRequest(EditorKind.TASK, selection); selected = null }) { Text("编辑任务") }
                                 TextButton(onClick = { openNote("TASK", selection.id, selection.title) }, modifier = Modifier.testTag("task-note-entry")) { Text("记笔记") }
                                 TextButton(onClick = { model.perform(onSuccess = { selected = null }) { model.repository.saveTask(selection.copy(status = if (selection.status == "COMPLETED") "TODO" else "COMPLETED"), selection.version) } }, enabled = !busy) { Text(if (selection.status == "COMPLETED") "重新打开" else "标记完成") }
-                                TextButton(onClick = { confirmation = "删除后保留实际记录，计划将隐藏，可撤销恢复。" to { model.perform(onSuccess = { selected = null }) { model.repository.deleteTask(selection.id) } } }) { Text("删除") }
+                                TextButton(onClick = { deletingTask = selection }) { Text("删除") }
                             }
                         }
                         is TimelineItem -> {
@@ -587,6 +590,17 @@ import java.util.UUID
         }, confirmButton = { TextButton(onClick = { model.perform(onSuccess = { preview = null; tab = 0 }) { model.repository.commitImport(value, requestId) } }, enabled = !busy) { Text("确认导入") } }, dismissButton = { TextButton(onClick = { preview = null }, enabled = !busy) { Text("取消") } })
     }
     switchTask?.let { target -> AlertDialog(onDismissRequest = { switchTask = null }, title = { Text("切换计时任务？") }, text = { Text("先结束当前计时，再开始新任务。已有记录会保留。") }, confirmButton = { TextButton(onClick = { model.perform(onSuccess = { switchTask = null }) { model.repository.startTimer(target.first, target.second, switchExisting = true) } }, enabled = !busy) { Text("结束并开始") } }, dismissButton = { TextButton(onClick = { switchTask = null }) { Text("取消") } }) }
+    deletingTask?.let { task ->
+        fun delete(action: LinkedScheduleAction) {
+            model.perform(onSuccess = { deletingTask = null; selected = null }) { model.repository.deleteTask(task.id, action) }
+        }
+        AlertDialog(onDismissRequest = { if (!busy) deletingTask = null }, title = { Text("删除任务") },
+            text = { Text("关联日程如何处理？实际记录始终保留，删除操作可撤销。") },
+            confirmButton = { Column {
+                TextButton(onClick = { delete(LinkedScheduleAction.KEEP_INDEPENDENT) }, enabled = !busy) { Text("保留为独立日程") }
+                TextButton(onClick = { delete(LinkedScheduleAction.DELETE) }, enabled = !busy) { Text("同时删除关联日程") }
+            } }, dismissButton = { TextButton(onClick = { deletingTask = null }, enabled = !busy) { Text("取消") } })
+    }
     confirmation?.let { (message, action) -> AlertDialog(onDismissRequest = { confirmation = null }, title = { Text("确认操作") }, text = { Text(message) }, confirmButton = { TextButton(onClick = { confirmation = null; action() }, enabled = !busy) { Text("确认") } }, dismissButton = { TextButton(onClick = { confirmation = null }) { Text("取消") } }) }
     error?.let { message -> AlertDialog(onDismissRequest = model::dismissError, title = { Text("操作未完成") }, text = { Text(message) }, confirmButton = { TextButton(onClick = model::dismissError) { Text("知道了") } }) }
 
@@ -667,7 +681,7 @@ import java.util.UUID
     val window = week.window(zone)
     val records = data.timeline(now).filter { it.kind == ItemKind.RECORD }
     val stats = TimeStatistics.calculate(records.map { it.span }, window)
-    val planned = data.plans.sumOf { TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(it.endAt)).clip(window)?.seconds ?: 0 } / 60
+    val planned = data.plans.filter { it.deletedAt == null && it.kind != "POINT" }.sumOf { TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(it.endAt)).clip(window)?.seconds ?: 0 } / 60
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Text("时间留下的痕迹", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
         listOf("计划投入" to planned, "累计记录投入" to stats.recordedMinutes, "去重时间跨度" to stats.elapsedMinutes).forEach { (title, value) ->

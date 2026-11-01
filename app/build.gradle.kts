@@ -18,6 +18,11 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildFeatures { compose = true }
+    sourceSets {
+        getByName("test").java.srcDir("src/migrationTest/java")
+        getByName("androidTest").java.srcDir("src/migrationTest/java")
+        getByName("androidTest").assets.srcDir("schemas")
+    }
     androidResources { noCompress += listOf("zip", "bin", "gz", "onnx") }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -79,9 +84,11 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.robolectric:robolectric:4.15.1")
     testImplementation("androidx.test:core:1.6.1")
+    testImplementation("androidx.room:room-testing:2.7.1")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
     testImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation("androidx.test:runner:1.5.0")
+    androidTestImplementation("androidx.room:room-testing:2.7.1")
     androidTestImplementation("junit:junit:4.13.2")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

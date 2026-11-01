@@ -17,10 +17,10 @@ internal fun SupportSQLiteDatabase.backupSql() = BackupSql(version, { query(it) 
 internal fun SQLiteDatabase.backupSql() = BackupSql(version, { rawQuery(it, null) }, { sql, args -> if (args.isEmpty()) execSQL(sql) else execSQL(sql, args) })
 
 internal object BackupTables {
-    val main = listOf("categories", "tags", "academic_terms", "activity_templates", "tasks", "courses", "course_occurrences", "schedule_blocks", "time_records", "task_tags", "record_tags", "reminders", "ideas", "notes", "import_batches", "health_sync_items", "agent_suggestions", "entity_revisions", "operation_history", "personal_memories", "projects", "task_placements", "weekly_goals", "recurring_rules", "recurring_instances", "attachments", "ledger_accounts", "ledger_categories", "payment_captures", "ledger_transactions")
+    val main = listOf("categories", "tags", "academic_terms", "activity_templates", "tasks", "courses", "course_occurrences", "schedule_blocks", "time_records", "task_tags", "record_tags", "reminders", "ideas", "notes", "import_batches", "health_sync_items", "agent_suggestions", "entity_revisions", "operation_history", "personal_memories", "projects", "task_placements", "weekly_goals", "recurring_rules", "recurring_instances", "attachments", "ledger_accounts", "ledger_categories", "payment_captures", "ledger_transactions", "command_log")
     fun mainForVersion(version: Int): List<String> {
-        require(version in 7..12) { "备份数据库版本不受支持" }
-        return main.filterNot { (version < 12 && it in setOf("ledger_accounts", "ledger_categories", "payment_captures", "ledger_transactions")) || (version < 11 && it == "attachments") || (version < 8 && it == "personal_memories") || (version < 9 && it in setOf("projects","task_placements","weekly_goals")) || (version < 10 && it in setOf("recurring_rules","recurring_instances")) }
+        require(version in 7..13) { "备份数据库版本不受支持" }
+        return main.filterNot { (version < 13 && it == "command_log") || (version < 12 && it in setOf("ledger_accounts", "ledger_categories", "payment_captures", "ledger_transactions")) || (version < 11 && it == "attachments") || (version < 8 && it == "personal_memories") || (version < 9 && it in setOf("projects","task_placements","weekly_goals")) || (version < 10 && it in setOf("recurring_rules","recurring_instances")) }
     }
     val workout = listOf("workout_sessions", "workout_templates")
     private val gson = Gson()
@@ -145,7 +145,11 @@ internal object BackupTables {
     private fun validateMain(db: SQLiteDatabase) {
         fun rejectIf(sql: String, message: String) = db.rawQuery(sql, null).use { require(!it.moveToFirst()) { message } }
         rejectIf("SELECT 1 FROM tasks WHERE trim(title)='' OR estimatedMinutes NOT BETWEEN 1 AND 10080 OR priority NOT BETWEEN 0 AND 2 OR status NOT IN ('TODO','IN_PROGRESS','COMPLETED','CANCELLED') LIMIT 1", "备份含无效任务内容")
-        rejectIf("SELECT 1 FROM schedule_blocks WHERE endAt<=startAt OR isLocked NOT IN (0,1) LIMIT 1", "备份计划时段无效")
+        if (db.version >= 13) {
+            rejectIf("SELECT 1 FROM schedule_blocks WHERE kind NOT IN ('TIMED','POINT','ALL_DAY') OR (kind='POINT' AND endAt!=startAt) OR (kind!='POINT' AND endAt<=startAt) OR isLocked NOT IN (0,1) OR (taskId IS NULL AND trim(title)='') LIMIT 1", "备份日程时段或标题无效")
+        } else {
+            rejectIf("SELECT 1 FROM schedule_blocks WHERE endAt<=startAt OR isLocked NOT IN (0,1) LIMIT 1", "备份计划时段无效")
+        }
         rejectIf("SELECT 1 FROM time_records WHERE (endAt IS NOT NULL AND endAt<=startAt) OR isManuallyEdited NOT IN (0,1) LIMIT 1", "备份实际记录时段或手工保护标记无效")
         rejectIf("SELECT 1 FROM time_records WHERE endAt IS NULL LIMIT 1 OFFSET 1", "备份包含多个进行中的计时")
         rejectIf("SELECT 1 FROM course_occurrences WHERE endAt<=startAt OR isManuallyModified NOT IN (0,1) LIMIT 1", "备份课程时段或保护标记无效")

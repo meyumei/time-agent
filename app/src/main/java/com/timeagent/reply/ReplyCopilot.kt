@@ -27,7 +27,7 @@ object ReplyCopilot {
         val extracted = ChatTextExtractor.extract(source, now, zone)
         val candidate = candidateId?.let { id -> requireNotNull(extracted.items.find { it.id == id }) { "候选事项已变化，请重新提取" } }
         val window = TimeSpan(day.atTime(from).atZone(zone).toInstant(), day.atTime(until).atZone(zone).toInstant())
-        val busy = data.plans.filter { it.status == "SCHEDULED" }.map { TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(it.endAt)) } +
+        val busy = data.plans.filter { it.status == "SCHEDULED" && it.deletedAt == null && it.kind != "POINT" }.map { TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(it.endAt)) } +
             data.occurrences.filter { it.status != "CANCELLED" }.map { TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(it.endAt)) } +
             data.records.mapNotNull { record ->
                 val end = record.endAt?.let(Instant::ofEpochMilli) ?: window.end

@@ -1,0 +1,91 @@
+red-upgrade
+ScheduleUpgradeTest > real v12 upgrade saves a pre migration backup and can restore it FAILED
+> Task :app:testDebugUnitTest FAILED
+BUILD FAILED in 19s
+
+integration-red
+ScheduleMigrationTest > realV12SampleRetainsEveryOldRowAndValidatesV13Schema PASSED
+AssistantRepositoryIntegrationTest > creating a titled schedule does not implicitly create a task FAILED
+ScheduleUpgradeTest > real v12 upgrade saves a pre migration backup and can restore it FAILED
+24 tests completed, 2 failed
+> Task :app:testDebugUnitTest FAILED
+BUILD FAILED in 46s
+
+full-regression
+ScheduleUpgradeTest > real v12 upgrade saves a pre migration backup and can restore it PASSED
+ScheduleUpgradeTest > snapshot failure aborts before changing the v12 schema PASSED
+ScheduleUpgradeTest > migration snapshots retain only the newest two complete backups PASSED
+AssistantConversationTest > new scheduled activity creates task and plan with one undo FAILED
+AssistantInboxIntegrationTest > same page saves idea and point reminder while explicit window stays task and plan FAILED
+ScheduleBackupTest > v13 backup round trips standalone points metadata and command results PASSED
+ScheduleHistoryTest > pre v13 plan history still supports undo and redo PASSED
+ScheduleMigrationTest > realV12SampleRetainsEveryOldRowAndValidatesV13Schema PASSED
+AppFlowTest > empty timeline tap creates a task and its selected plan atomically FAILED
+661 tests completed, 3 failed, 2 skipped
+> Task :app:testDebugUnitTest FAILED
+BUILD FAILED in 2m 45s
+
+final-verification
+AppFlowTest > empty timeline tap creates a task and its selected plan atomically FAILED
+ScheduleBackupTest > v13 backup round trips standalone points metadata and command results PASSED
+ScheduleHistoryTest > pre v13 plan history still supports undo and redo PASSED
+ScheduleMigrationTest > realV12SampleRetainsEveryOldRowAndValidatesV13Schema PASSED
+ScheduleUpgradeTest > real v12 upgrade saves a pre migration backup and can restore it PASSED
+ScheduleUpgradeTest > snapshot failure aborts before changing the v12 schema PASSED
+ScheduleUpgradeTest > migration snapshots retain only the newest two complete backups PASSED
+661 tests completed, 1 failed, 2 skipped
+> Task :app:testDebugUnitTest FAILED
+BUILD FAILED in 4m 46s
+
+appflow-reproduce
+AppFlowTest > empty timeline tap creates a task and its selected plan atomically FAILED
+> Task :app:testDebugUnitTest FAILED
+BUILD FAILED in 17s
+
+appflow-green
+AppFlowTest > empty timeline tap creates a task and its selected plan atomically PASSED
+ScheduleUpgradeTest > real v12 upgrade saves a pre migration backup and can restore it PASSED
+ScheduleUpgradeTest > snapshot failure aborts before changing the v12 schema PASSED
+ScheduleUpgradeTest > migration snapshots retain only the newest two complete backups PASSED
+BUILD SUCCESSFUL in 54s
+
+acceptance-regression
+ScheduleBackupTest > v13 backup round trips standalone points metadata and command results PASSED
+ScheduleHistoryTest > pre v13 plan history still supports undo and redo PASSED
+ScheduleMigrationTest > realV12SampleRetainsEveryOldRowAndValidatesV13Schema PASSED
+ScheduleUpgradeTest > real v12 upgrade saves a pre migration backup and can restore it PASSED
+ScheduleUpgradeTest > snapshot failure aborts before changing the v12 schema PASSED
+ScheduleUpgradeTest > migration snapshots retain only the newest two complete backups PASSED
+AppFlowTest > empty timeline tap creates a task and its selected plan atomically PASSED
+ScheduleEditorTest > editing a point writes equal instants rather than the timeline display anchor PASSED
+ScheduleEditorTest > editing all day preserves inclusive dates rather than adding an extra day PASSED
+BUILD SUCCESSFUL in 3m 44s
+
+node --test test/*.test.mjs
+✔ speech speaks readable text without fish markers, code, or URLs (1.38ms)
+✔ character editing preserves existing agreements and only replaces its managed card (1.5051ms)
+✔ character card v1 imports the same fields and has bounded combined persona size (2.8596ms)
+✔ an autonomous topic waits for its own turn instead of steering a user reply (55.2292ms)
+✔ history uses durable user and assistant events and excludes reasoning and tool payloads (2.545ms)
+✔ input rejects empty and excessive messages while preserving ordinary text (0.5552ms)
+✔ a persisted DSH transport failure reaches the chat error path (1.6466ms)
+✔ proactive context preserves a real source and marks quiet internal time (0.6324ms)
+✔ discovery shares only returned metadata and does not invent an empty feed (0.7155ms)
+✔ mentions, self messages, quiet hours, cooldown and smart addressing are meaningful (22.6426ms)
+✔ QQ smart addressing follows the shared profile name after customization (0.5523ms)
+✔ OneBot actions feed a group session and never send without the saved switch (16.5524ms)
+✔ changing QQ accounts clears old context and cancels an already generated reply (4.9584ms)
+✔ empty or failed QQ turns finish presence and a failed group does not starve the next group (4.9817ms)
+✔ fresh voice transcripts enter the same group context and smart addressing, with no old voice replay (5.0626ms)
+✔ a WAV voice is passed to the native recognizer without using the microphone or an LLM (1.9085ms)
+✔ inline SILK is converted by OneBot and its returned WAV base64 is recognized (27.0181ms)
+✔ NapCat remote file paths are downloaded as converted WAV chunks, never read as phone paths (1.2364ms)
+✔ an incomplete or failed voice download never reaches recognition (1.1666ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 696.1154

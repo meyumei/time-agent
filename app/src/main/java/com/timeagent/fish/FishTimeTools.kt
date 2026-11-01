@@ -50,8 +50,8 @@ class FishTimeTools(private val repository: TimeRepository) {
             val tasks = data.tasks.filter { it.deletedAt == null }.associateBy { it.id }
             fun local(time: Long) = Instant.ofEpochMilli(time).atZone(zone).toOffsetDateTime().toString()
             return json(mapOf("date" to date.toString(), "zone" to zone.id, "now" to now.toString(),
-                "plans" to data.plans.filter { it.status == "SCHEDULED" && it.startAt < end && it.endAt > start && tasks[it.taskId] != null }.map {
-                    mapOf("id" to it.id,"taskId" to it.taskId,"title" to tasks[it.taskId]?.title,"start" to local(it.startAt),"end" to local(it.endAt)) },
+                "plans" to data.plans.filter { it.status == "SCHEDULED" && it.deletedAt == null && it.startAt < end && (if (it.kind == "POINT") it.startAt >= start else it.endAt > start) && (it.taskId == null || tasks[it.taskId] != null) }.map {
+                    mapOf("id" to it.id,"taskId" to it.taskId,"title" to it.displayTitle(tasks[it.taskId]),"start" to local(it.startAt),"end" to local(it.endAt)) },
                 "courses" to data.occurrences.filter { it.status != "CANCELLED" && it.startAt < end && it.endAt > start }.map {
                     mapOf("id" to it.id,"title" to data.courses.find { c -> c.id == it.courseId }?.name,"start" to local(it.startAt),"end" to local(it.endAt)) },
                 "tasks" to tasks.values.filter { it.status in setOf("TODO","IN_PROGRESS") && (it.dueAt == null || it.dueAt < end) }.map {

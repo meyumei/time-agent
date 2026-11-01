@@ -86,7 +86,7 @@ class AssistantInboxIntegrationTest {
         assertTrue(planner.prepare(AssistantCommand.CreateReminder(" ", remindAt), context()) is AssistantReply.Clarification)
     }
 
-    @Test fun `same page saves idea and point reminder while explicit window stays task and plan`() = runBlocking {
+    @Test fun `same page saves idea point reminder and independent timed schedule`() = runBlocking {
         val sentence = "灵感来了想做一个番茄钟小程序"
         say(sentence)
         val idea = db.dao().ideas().single()
@@ -108,10 +108,10 @@ class AssistantInboxIntegrationTest {
         assertTrue(db.dao().plans().isEmpty())
 
         say("安排明天19点到20点阅读")
-        val task = db.dao().tasks().single()
-        assertTrue(task.title.contains("阅读"))
+        assertTrue(db.dao().tasks().isEmpty())
         val plan = db.dao().plans().single()
-        assertEquals(task.id, plan.taskId)
+        assertTrue(plan.title.contains("阅读"))
+        assertNull(plan.taskId)
         assertEquals(at(22, 19), plan.startAt)
         assertEquals(at(22, 20), plan.endAt)
         assertEquals("SCHEDULED", plan.status)

@@ -84,7 +84,7 @@ class RecurringServiceTest {
     }
     @Test fun `manual deletion is not recreated by refresh or edited rule`()=runBlocking<Unit>{
         service.saveRule(rule(),null,LocalDate.parse("2026-10-26"),"create")
-        val task=repo.snapshot().tasks.single{it.id=="recurring-task:r:d:2026-10-28"};repo.deleteTask(task.id)
+        val task=repo.snapshot().tasks.single{it.id=="recurring-task:r:d:2026-10-28"};repo.deleteTask(task.id, com.timeagent.data.LinkedScheduleAction.DELETE)
         val current=repo.snapshot().recurringRules.single();service.saveRule(current.copy(title="更新"),current.version,today,"edit")
         service.refresh();assertEquals(4,repo.snapshot().tasks.size);assertNotNull(repo.snapshot().tasks.single{it.id==task.id}.deletedAt)
     }

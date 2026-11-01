@@ -42,7 +42,9 @@ interface TimeDao {
     @Query("SELECT * FROM tasks WHERE id=:id") suspend fun task(id: String): TaskEntity?
     @Query("SELECT * FROM schedule_blocks ORDER BY startAt") suspend fun plans(): List<ScheduleBlockEntity>
     @Query("SELECT * FROM schedule_blocks WHERE id=:id") suspend fun plan(id: String): ScheduleBlockEntity?
-    @Query("SELECT schedule_blocks.* FROM schedule_blocks INNER JOIN tasks ON taskId=tasks.id WHERE tasks.deletedAt IS NULL AND tasks.status != 'CANCELLED' AND schedule_blocks.status='SCHEDULED' ORDER BY startAt") suspend fun activePlans(): List<ScheduleBlockEntity>
+    @Query("SELECT schedule_blocks.* FROM schedule_blocks LEFT JOIN tasks ON taskId=tasks.id WHERE schedule_blocks.deletedAt IS NULL AND (schedule_blocks.taskId IS NULL OR (tasks.deletedAt IS NULL AND tasks.status != 'CANCELLED')) AND schedule_blocks.status='SCHEDULED' ORDER BY startAt") suspend fun activePlans(): List<ScheduleBlockEntity>
+    @Query("SELECT * FROM command_log WHERE requestId=:requestId") suspend fun commandResult(requestId: String): CommandLogEntity?
+    @Insert suspend fun putCommandResult(item: CommandLogEntity)
     @Query("SELECT * FROM time_records ORDER BY startAt DESC") suspend fun records(): List<TimeRecordEntity>
     @Query("SELECT * FROM time_records WHERE id=:id") suspend fun record(id: String): TimeRecordEntity?
     @Query("SELECT * FROM time_records WHERE endAt IS NULL LIMIT 1") suspend fun runningTimer(): TimeRecordEntity?
@@ -104,7 +106,7 @@ interface TimeDao {
     @Query("UPDATE agent_suggestions SET status=:status, decidedAt=:decidedAt WHERE id=:id") suspend fun updateSuggestionStatus(id: String, status: String, decidedAt: Long?)
 }
 
-@Database(entities = [TaskEntity::class, ScheduleBlockEntity::class, TimeRecordEntity::class, CategoryEntity::class, TagEntity::class, TaskTagEntity::class, RecordTagEntity::class, AcademicTermEntity::class, CourseEntity::class, CourseOccurrenceEntity::class, OperationEntity::class, ImportBatchEntity::class, EntityRevision::class, ActivityTemplateEntity::class, ReminderEntity::class, IdeaEntity::class, NoteEntity::class, HealthSyncItemEntity::class, AgentSuggestionEntity::class, PersonalMemoryEntity::class, ProjectEntity::class, TaskPlacementEntity::class, WeeklyGoalEntity::class, RecurringRuleEntity::class, RecurringInstanceEntity::class, AttachmentEntity::class, LedgerAccountEntity::class, LedgerCategoryEntity::class, PaymentCaptureEntity::class, LedgerTransactionEntity::class], version = 12, exportSchema = true)
+@Database(entities = [TaskEntity::class, ScheduleBlockEntity::class, CommandLogEntity::class, TimeRecordEntity::class, CategoryEntity::class, TagEntity::class, TaskTagEntity::class, RecordTagEntity::class, AcademicTermEntity::class, CourseEntity::class, CourseOccurrenceEntity::class, OperationEntity::class, ImportBatchEntity::class, EntityRevision::class, ActivityTemplateEntity::class, ReminderEntity::class, IdeaEntity::class, NoteEntity::class, HealthSyncItemEntity::class, AgentSuggestionEntity::class, PersonalMemoryEntity::class, ProjectEntity::class, TaskPlacementEntity::class, WeeklyGoalEntity::class, RecurringRuleEntity::class, RecurringInstanceEntity::class, AttachmentEntity::class, LedgerAccountEntity::class, LedgerCategoryEntity::class, PaymentCaptureEntity::class, LedgerTransactionEntity::class], version = 13, exportSchema = true)
 abstract class TimeAgentDatabase : RoomDatabase() {
     abstract fun dao(): TimeDao
     abstract fun organizationDao(): OrganizationDao
@@ -201,7 +203,7 @@ abstract class TimeAgentDatabase : RoomDatabase() {
             return instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(context.applicationContext, TimeAgentDatabase::class.java, "time-agent.db")
                     // Never use fallbackToDestructiveMigration: future versions must supply explicit migrations.
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, LedgerSchema.MIGRATION_11_12)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, LedgerSchema.MIGRATION_11_12, ScheduleMigration.withBackup(context.applicationContext))
                     .enableMultiInstanceInvalidation()
                     .apply { singleThreadedTransactions() }
                     .build().also { instance = it }

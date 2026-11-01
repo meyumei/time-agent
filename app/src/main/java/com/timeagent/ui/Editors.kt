@@ -35,7 +35,7 @@ data class EditorRequest(
     val ideaVersion: Long? = null,
     val title: String? = null,
 )
-data class EditValues(val title: String, val notes: String, val estimatedMinutes: Int, val priority: Int, val dueAt: Long?, val taskId: String?, val categoryId: String?, val start: Long, val end: Long, val allowFuture: Boolean, val location: String, val teacher: String, val activityId: String? = null, val kind: EditorKind? = null, val scheduleNewTask: Boolean = false)
+data class EditValues(val title: String, val notes: String, val estimatedMinutes: Int, val priority: Int, val dueAt: Long?, val taskId: String?, val categoryId: String?, val start: Long, val end: Long, val allowFuture: Boolean, val location: String, val teacher: String, val activityId: String? = null, val kind: EditorKind? = null, val scheduleNewTask: Boolean = false, val allDayStartDate: String? = null, val allDayEndDate: String? = null)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun EditorScreen(
@@ -55,6 +55,8 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
     }
     val task = request.entity as? TaskEntity
     val plan = request.entity as? ScheduleBlockEntity
+    val schedulePoint = plan?.kind == "POINT"
+    val scheduleAllDay = plan?.kind == "ALL_DAY"
     val record = request.entity as? TimeRecordEntity
     val course = request.entity as? CourseOccurrenceEntity
     val reminder = request.entity as? ReminderEntity
@@ -71,16 +73,16 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
     val initialEnd = plan?.endAt ?: record?.endAt ?: course?.endAt ?: reminder?.remindAt?.plus(1_800_000L)
         ?: selectedSpan?.end?.toEpochMilli() ?: if (request.kind == EditorKind.RECORD) now.toEpochMilli() else now.plusSeconds(1800).toEpochMilli()
     val timeFormat = DateTimeFormatter.ofPattern("HH:mm")
-    val initialTitle = record?.title?.takeIf(String::isNotBlank) ?: task?.title ?: activity?.fullName(data.activities).orEmpty().takeIf { it.isNotBlank() }
+    val initialTitle = plan?.displayTitle(data.tasks.firstOrNull { it.id == plan.taskId }) ?: record?.title?.takeIf(String::isNotBlank) ?: task?.title ?: activity?.fullName(data.activities).orEmpty().takeIf { it.isNotBlank() }
         ?: reminder?.title ?: request.title.orEmpty()
     var title by rememberSaveable(request.id) { mutableStateOf(initialTitle) }
-    var notes by rememberSaveable(request.id) { mutableStateOf(task?.description ?: record?.notes.orEmpty()) }
+    var notes by rememberSaveable(request.id) { mutableStateOf(plan?.notes ?: task?.description ?: record?.notes.orEmpty()) }
     var estimated by rememberSaveable(request.id) { mutableStateOf((task?.estimatedMinutes ?: activity?.defaultMinutes ?: if (request.scheduleNewTask) ((initialEnd - initialStart) / 60000).toInt() else 30).toString()) }
     var priority by rememberSaveable(request.id) { mutableIntStateOf(task?.priority ?: 1) }
     var dueDate by rememberSaveable(request.id) { mutableStateOf(task?.dueAt?.let { Instant.ofEpochMilli(it).atZone(zone).toLocalDate().toString() }.orEmpty()) }
     var dueTime by rememberSaveable(request.id) { mutableStateOf(task?.dueAt?.let { Instant.ofEpochMilli(it).atZone(zone).format(timeFormat) } ?: "23:59") }
-    var date by rememberSaveable(request.id) { mutableStateOf(Instant.ofEpochMilli(initialStart).atZone(zone).toLocalDate().toString()) }
-    var endDate by rememberSaveable(request.id) { mutableStateOf(Instant.ofEpochMilli(initialEnd).atZone(zone).toLocalDate().toString()) }
+    var date by rememberSaveable(request.id) { mutableStateOf(plan?.allDayStartDate ?: Instant.ofEpochMilli(initialStart).atZone(zone).toLocalDate().toString()) }
+    var endDate by rememberSaveable(request.id) { mutableStateOf(plan?.allDayEndDate ?: Instant.ofEpochMilli(initialEnd).atZone(zone).toLocalDate().toString()) }
     var startTime by rememberSaveable(request.id) { mutableStateOf(Instant.ofEpochMilli(initialStart).atZone(zone).format(timeFormat)) }
     var endTime by rememberSaveable(request.id) { mutableStateOf(Instant.ofEpochMilli(initialEnd).atZone(zone).format(timeFormat)) }
     var selectedTask by rememberSaveable(request.id) { mutableStateOf(plan?.taskId ?: record?.taskId ?: request.taskId) }
@@ -93,18 +95,23 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
     fun point(day: String, time: String, original: Long? = null) = TimeInput.parse(day, time, zone, original?.let(Instant::ofEpochMilli)).toEpochMilli()
     val originalStart = initialStart.takeIf { request.entity != null }
     val originalEnd = initialEnd.takeIf { request.entity != null }
-    val candidate = if (pointMode) null else runCatching { TimeSpan(Instant.ofEpochMilli(point(date, startTime, originalStart)), Instant.ofEpochMilli(point(endDate, endTime, originalEnd))) }.getOrNull()
+    val candidate = if (pointMode || schedulePoint) null else runCatching {
+        if (scheduleAllDay) TimeSpan(LocalDate.parse(date).atStartOfDay(ZoneId.of(plan!!.timezoneId)).toInstant(), LocalDate.parse(endDate).plusDays(1).atStartOfDay(ZoneId.of(plan.timezoneId)).toInstant())
+        else TimeSpan(Instant.ofEpochMilli(point(date, startTime, originalStart)), Instant.ofEpochMilli(point(endDate, endTime, originalEnd)))
+    }.getOrNull()
     val entityId = plan?.id ?: record?.id ?: course?.id
-    val overlaps = candidate?.let { span -> data.timeline(now).filter { it.id != entityId && (if (request.kind == EditorKind.RECORD) it.kind == ItemKind.RECORD else it.kind != ItemKind.RECORD) && span.overlaps(it.span) } }.orEmpty()
+    val overlaps = candidate?.let { span -> data.timeline(now).filter { it.id != entityId && !it.isPoint && (if (request.kind == EditorKind.RECORD) it.kind == ItemKind.RECORD else it.kind != ItemKind.RECORD) && span.overlaps(it.span) } }.orEmpty()
     val future = request.kind == EditorKind.RECORD && candidate?.end?.isAfter(now) == true
     val save: () -> Unit = {
         try {
             val start = if (!hasTime) 0 else point(date, startTime, originalStart)
-            val end = if (!hasTime) 0 else point(endDate, endTime, originalEnd)
-            if (hasTime) TimeSpan(Instant.ofEpochMilli(start), Instant.ofEpochMilli(end))
-            if (request.kind == EditorKind.PLAN) require(selectedTask != null) { "请选择关联任务" }
+            val end = if (!hasTime) 0 else if (schedulePoint) start else point(endDate, endTime, originalEnd)
+            if (hasTime && !schedulePoint && !scheduleAllDay) TimeSpan(Instant.ofEpochMilli(start), Instant.ofEpochMilli(end))
+            if (scheduleAllDay) require(LocalDate.parse(endDate) >= LocalDate.parse(date)) { "结束日期早于开始日期" }
+            if (request.kind == EditorKind.PLAN) require(title.isNotBlank() || selectedTask != null) { "日程名称不能为空" }
             if (request.kind == EditorKind.TASK) require(title.isNotBlank()) { "任务名称不能为空" }
-            onSave(EditValues(title.trim(), notes, if (request.kind == EditorKind.TASK) estimated.toIntOrNull() ?: error("预计耗时须为整数") else 30, priority, if (dueDate.isBlank()) null else point(dueDate, dueTime, task?.dueAt), selectedTask, category, start, end, futureConfirmed, location, teacher, activityId))
+            onSave(EditValues(title.trim(), notes, if (request.kind == EditorKind.TASK) estimated.toIntOrNull() ?: error("预计耗时须为整数") else 30, priority, if (dueDate.isBlank()) null else point(dueDate, dueTime, task?.dueAt), selectedTask, category, start, end, futureConfirmed, location, teacher, activityId,
+                allDayStartDate = if (scheduleAllDay) date else null, allDayEndDate = if (scheduleAllDay) endDate else null))
         } catch (e: Exception) { validation = e.message?.takeIf { it.contains("必须") || it.contains("请选择") || it.contains("名称") || it.contains("整数") } ?: "请检查日期、时间和时长格式" }
     }
     val savePoint: () -> Unit = {
@@ -154,6 +161,10 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
                 if (reminder?.deliveredAt != null) Text("这条提醒已经向系统提交过通知。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
             }
             if (!pointMode) {
+                if (request.kind == EditorKind.PLAN) {
+                    OutlinedTextField(title, { title = it }, label = { Text("日程名称") }, singleLine = true, modifier = Modifier.fillMaxWidth().testTag("plan-title"))
+                    OutlinedTextField(notes, { notes = it }, label = { Text("备注") }, modifier = Modifier.fillMaxWidth())
+                }
                 if (request.kind == EditorKind.TASK) {
                     if (activityId != null) {
                         Text("活动：${data.activities.firstOrNull { it.id == activityId }?.fullName(data.activities).orEmpty()}", style = MaterialTheme.typography.labelLarge)
@@ -168,18 +179,17 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
                 if (hasTime) {
                     Text("时间以 ${zone.id} 显示", style = MaterialTheme.typography.bodySmall)
                     OutlinedTextField(date, { date = it }, label = { Text("开始日期 YYYY-MM-DD") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                    OutlinedTextField(startTime, { startTime = it }, label = { Text("开始时间 HH:mm") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                    OutlinedTextField(endDate, { endDate = it }, label = { Text("结束日期 YYYY-MM-DD") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                    OutlinedTextField(endTime, { endTime = it }, label = { Text("结束时间 HH:mm") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                    if (!scheduleAllDay) OutlinedTextField(startTime, { startTime = it }, label = { Text("开始时间 HH:mm") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                    if (!schedulePoint) OutlinedTextField(endDate, { endDate = it }, label = { Text("结束日期 YYYY-MM-DD") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                    if (!schedulePoint && !scheduleAllDay) OutlinedTextField(endTime, { endTime = it }, label = { Text("结束时间 HH:mm") }, singleLine = true, modifier = Modifier.fillMaxWidth())
                     if (request.kind == EditorKind.PLAN || request.kind == EditorKind.RECORD) {
-                        Text(if (request.kind == EditorKind.PLAN) "关联任务（必选）" else "关联任务（可选）", style = MaterialTheme.typography.labelLarge)
+                        Text("关联任务（可选）", style = MaterialTheme.typography.labelLarge)
                         Column {
-                            if (request.kind == EditorKind.RECORD) FilterChip(selected = selectedTask == null, onClick = { selectedTask = null }, label = { Text("不关联任务") })
+                            FilterChip(selected = selectedTask == null, onClick = { selectedTask = null }, label = { Text("不关联任务") })
                             if (request.kind == EditorKind.RECORD) data.tasks.firstOrNull { it.id == record?.taskId && (it.deletedAt != null || it.status == "CANCELLED") }?.let { historical ->
                                 FilterChip(selected = selectedTask == historical.id, onClick = { selectedTask = historical.id }, label = { Text("${historical.title}（历史任务）") })
                             }
                             data.tasks.filter { it.deletedAt == null && it.status != "CANCELLED" }.forEach { item -> FilterChip(selected = selectedTask == item.id, onClick = { selectedTask = item.id }, label = { Text(item.title) }) }
-                            if (request.kind == EditorKind.PLAN && data.tasks.none { it.deletedAt == null }) Text("请先创建一个任务", color = MaterialTheme.colorScheme.error)
                         }
                     }
                     if (request.kind == EditorKind.COURSE) {

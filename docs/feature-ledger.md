@@ -155,3 +155,15 @@
 完整结果：**JUnit 739 项，737 通过、2 项原有跳过，0 失败；Node 19/19；Debug 构建成功；Lint 0 错误、73 警告、2 信息**。core/runtime 来自本轮强制重跑，app 在最后审查修正后重新执行；不是历史数字。已修复本任务发现的假时钟周导航来源不一致和休眠恢复分钟时间过期问题。未将 DS 审查描述或源码推断当作实测。
 
 本版本仍未安装到手机；L01/L02 的真实触控、后台/锁屏恢复，以及这些页面的逐项真机功能验收仍待补。T0 的缺口保持不变，不续做基线采集，不操作手机记录。PR 保持 Draft；[完整文件清单、命令、失败摘要与验收步骤](t1.2-clock-source.md)、[本轮机器结果](ledger-evidence/t1.2-clock/verification.json)、[DS 协作和审查处置](ledger-evidence/t1.2-clock/collaboration.json)。下一任务为 **T1.3 v13 独立日程与 command_log 迁移**。
+
+## 2026-11-01 T1.3 开发跟进
+
+在 `codex/t1.3-independent-schedules` 完成主库 v12→v13 的独立日程、command_log 和迁移前 format1 快照。原有“新建任务并安排”和“关联已有任务”保留，新增“独立日程”；删除任务时必须选择同时删除日程或保留为独立日程。独立日程不隐式创建任务/实际；POINT 保存同一时刻并排除时长/冲突；全天按创建时区及包含结束日归一化。
+
+直接影响 **L01、L03、L05、L06、L07、L13、L15、L16、L18、L19、L20、L22、L32、L34**，共享数据库间接涉及 L02/L08/L09/L11。验证包括真实脱敏 v12 副本的 MigrationTestHelper、全部旧行/字段/外键/索引、独立 CRUD/版本/撤销重做、任务删除两选择、旧 PLAN JSON、49 小时跨夏令时全天、真实 Compose 编辑器/网格和 format1 恢复。冻结 v12 资产未改，主 APK 不含测试数据库。
+
+本轮 **JUnit 760 项，758 通过、2 项原有跳过，0 失败；Node 19/19；Debug APK 与设备测试包构建成功；Lint 0 错误、75 警告、2 信息**。core/runtime 来自本轮强制重跑，app 来自最后完整回归。WorkBuddy DS 编写 11 项测试，由主代理独立运行；两轮 DS 审查超时，不作为通过证据，另有独立 Codex 只读审查在限定范围返回 0 项可操作问题。
+
+D-T0-03 中 `time_create_plan` 无关联分支的隐式任务及返回任务 ID 已在本轮取消，当前返回日程 ID；周期完成返回结构差异仍在。此处与前文 T0 的历史接口快照区分。其余 T0 缺陷未在本任务修复，command_log 存在不代表 T1.4/T1.5 的统一协议已经落地。
+
+本轮 ADB 无设备，模拟器包两次下载无效，**未安装、未动手机记录、未恢复旧备份**。真实升级安装后旧日程保留，以及迁移前快照在设备上的恢复仍待验收。已通过的恢复测试是把数据恢复到 v13，不声称降级 APK/schema；format1 限制继续存在。L01–L36 原有截图与待补证项不因主机回归改记为通过。PR 保持 Draft；[改动文件、命令、失败摘要与设备步骤](t1.3-independent-schedules.md)、[机器结果](ledger-evidence/t1.3-schedules/verification.json)、[协作记录](ledger-evidence/t1.3-schedules/collaboration.json)。下一开发任务为 **T1.4 CommandExecutor**。
