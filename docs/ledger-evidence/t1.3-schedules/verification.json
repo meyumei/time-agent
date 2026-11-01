@@ -1,0 +1,381 @@
+{
+  "generatedAt": "2026-11-01T20:26:11.059036+08:00",
+  "baseCommit": "8ee782376cf90eeabcf234999c031fb3f815a38e",
+  "branch": "codex/t1.3-independent-schedules",
+  "automatedAcceptance": "passed",
+  "deviceAcceptance": "pending",
+  "modules": {
+    "core": {
+      "tests": 90,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 90,
+      "actualExecution": "final-verification (--rerun-tasks)"
+    },
+    "agent-runtime": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 7,
+      "actualExecution": "final-verification (--rerun-tasks)"
+    },
+    "app": {
+      "tests": 663,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2,
+      "passed": 661,
+      "actualExecution": "acceptance-regression"
+    }
+  },
+  "node": {
+    "tests": 19,
+    "pass": 19,
+    "fail": 0,
+    "skipped": 0
+  },
+  "lint": {
+    "Warning": 75,
+    "Information": 2
+  },
+  "commands": [
+    {
+      "label": "acceptance-regression",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":core:test",
+        ":agent-runtime:testDebugUnitTest",
+        ":app:testDebugUnitTest",
+        ":app:assembleDebug",
+        ":app:lintDebug",
+        ":app:assembleDebugAndroidTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 224.62,
+      "rawLogSha256": "801442108eb443bc406a5e50ac300c01b4fd64239c48c0932841cdc3c3c826c7"
+    },
+    {
+      "label": "appflow-green",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.ui.AppFlowTest.empty timeline tap creates a task and its selected plan atomically",
+        "--tests",
+        "com.timeagent.data.ScheduleUpgradeTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 55.17,
+      "rawLogSha256": "85e754a66ef7a593bb5d93296029c7de9fef97b5a8363b1a2ce57a796205a027"
+    },
+    {
+      "label": "appflow-reproduce",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.ui.AppFlowTest.empty timeline tap creates a task and its selected plan atomically",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 17.4,
+      "rawLogSha256": "8ccf434d1228b2a7eea96f692492d6e0126cfd18b36831dad736253ca311db3d"
+    },
+    {
+      "label": "final-verification",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":core:test",
+        ":agent-runtime:testDebugUnitTest",
+        ":app:testDebugUnitTest",
+        ":app:assembleDebug",
+        ":app:lintDebug",
+        "--rerun-tasks",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 286.99,
+      "rawLogSha256": "3bfc09862260fc108947c33a0c01c8c6656a028b995c8de61c85a5991f0b44db"
+    },
+    {
+      "label": "first-green",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.data.IndependentScheduleTest",
+        "--tests",
+        "com.timeagent.data.ScheduleUpgradeTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 100.99,
+      "rawLogSha256": "2d42a464ded1afd8b17b34c0a4cf59552583b73deda665f4c4ce23522e66951f"
+    },
+    {
+      "label": "full-regression",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":core:test",
+        ":agent-runtime:testDebugUnitTest",
+        ":app:testDebugUnitTest",
+        ":app:assembleDebug",
+        ":app:lintDebug",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 166.26,
+      "rawLogSha256": "6b51836d9dc846e7c5117b42708859ec5833360ddb087e83f29aa6019a2e3cf7"
+    },
+    {
+      "label": "helper-green",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.data.ScheduleMigrationTest",
+        "--tests",
+        "com.timeagent.data.ScheduleUpgradeTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 24.77,
+      "rawLogSha256": "280df03834b9eebb71f0f1595f7395064fef63ea1f590ccec277dd85ab4ca184"
+    },
+    {
+      "label": "integration-red",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.data.ScheduleMigrationTest",
+        "--tests",
+        "com.timeagent.data.ScheduleUpgradeTest",
+        "--tests",
+        "com.timeagent.data.ScheduleBehaviorTest",
+        "--tests",
+        "com.timeagent.assistant.AssistantRepositoryIntegrationTest",
+        "--tests",
+        "com.timeagent.ui.GridBlockEditorFlowTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 46.54,
+      "rawLogSha256": "814df53aef784620e785fd3674dc8bd247dd8570131f106b367123eb89b551af"
+    },
+    {
+      "label": "migration-green",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.data.IndependentScheduleTest",
+        "--tests",
+        "com.timeagent.data.ScheduleUpgradeTest",
+        "--tests",
+        "com.timeagent.data.ScheduleMigrationTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 42.68,
+      "rawLogSha256": "73396684f21684fb59253c595527ce4309c98db1fceec21c9c8864cadc2d9f1a"
+    },
+    {
+      "command": "node --test test/*.test.mjs",
+      "exitCode": 0,
+      "elapsedSeconds": 0.81,
+      "label": "node-tests",
+      "rawLogSha256": "3549a1d5b25e123ebcbb1b243ab6389a2bb7bcec751db44085a34eaff156c36e"
+    },
+    {
+      "label": "red-contracts",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.data.IndependentScheduleTest",
+        "--tests",
+        "com.timeagent.data.ScheduleUpgradeTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 15.91,
+      "rawLogSha256": "8da73937efb51b11614d11a8fda6bc6e53299dddd8174d800ce267ee53dc162c"
+    },
+    {
+      "label": "red-upgrade",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.data.ScheduleUpgradeTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 19.38,
+      "rawLogSha256": "557a64014db1d982741c81067c0af9fa390e07a48594e883736937f9b43b1ba2"
+    }
+  ],
+  "newTestClasses": {
+    "data.IndependentScheduleTest": "6",
+    "data.ScheduleBehaviorTest": "5",
+    "data.ScheduleMigrationTest": "1",
+    "data.ScheduleUpgradeTest": "3",
+    "data.ScheduleHistoryTest": "1",
+    "backup.ScheduleBackupTest": "1",
+    "ui.ScheduleEditorTest": "2"
+  },
+  "android": {
+    "compileSdk": 36,
+    "minSdk": 26,
+    "targetSdk": 35,
+    "schemaBefore": 12,
+    "schemaAfter": 13,
+    "schemaTables": 31
+  },
+  "schemaSha256": "ac8a4ba462531821d923688db316a6940737280da857d8f31c2ca47ecd25af92",
+  "realV12Sample": {
+    "sha256": "57645b16d0f69d1f5f2358ed12a139db8cedd48f03297aa8deccbf9e287372e9",
+    "frozenFixtureUnchanged": true,
+    "tasks": 30,
+    "schedule_blocks": 13,
+    "time_records": 48,
+    "operation_history": 106
+  },
+  "apk": {
+    "bytes": 891563792,
+    "MiB": 850.26,
+    "sha256": "0338a4a35aa44f7e541f5f3b6af7c4a3730e8e92a44aa6b7f2f4c8bdc43ba2d2",
+    "groups": {
+      "other": {
+        "compressedBytes": 229044694,
+        "apkPercent": 25.6902
+      },
+      "nativeLibraries": {
+        "compressedBytes": 87246474,
+        "apkPercent": 9.7858
+      },
+      "models": {
+        "compressedBytes": 285241363,
+        "apkPercent": 31.9934
+      },
+      "rootfs": {
+        "compressedBytes": 85783057,
+        "apkPercent": 9.6216
+      },
+      "gif": {
+        "compressedBytes": 202426773,
+        "apkPercent": 22.7047
+      }
+    },
+    "abis": {
+      "arm64-v8a": {
+        "compressedBytes": 21209838,
+        "apkPercent": 2.3789
+      },
+      "armeabi-v7a": {
+        "compressedBytes": 18585552,
+        "apkPercent": 2.0846
+      },
+      "x86": {
+        "compressedBytes": 24034035,
+        "apkPercent": 2.6957
+      },
+      "x86_64": {
+        "compressedBytes": 23417049,
+        "apkPercent": 2.6265
+      }
+    }
+  },
+  "instrumentationApk": {
+    "bytes": 1652881,
+    "sha256": "c6569579d7b6ea2a6dd9ebbdb8108692316342df12fb0463e8f2a5a9c9f3cbe5",
+    "built": true,
+    "executed": false
+  },
+  "device": {
+    "checkedAt": "2026-11-01T20:09:39.869733+08:00",
+    "adbExitCode": 0,
+    "adbDevices": "List of devices attached\n\n",
+    "deviceTestsRun": false,
+    "installedOnUserPhone": false,
+    "phoneDataAccess": false,
+    "emulatorSetup": "two attempts failed: Archive is not a ZIP archive"
+  },
+  "limitations": [
+    "No device/emulator acceptance: adb has no devices; emulator package download was not a ZIP archive.",
+    "Restore tests roll back user data into v13; they do not claim APK/schema downgrade to v12.",
+    "Pre-v13 snapshots are existing format1 with its original size/cell/attachment limits; DSH backup remains T6.2.",
+    "Full point/all-day creation pickers and dedicated timeline presentation remain later T3 tasks."
+  ]
+}

@@ -33,9 +33,25 @@ data class TaskEntity(
 
 @Entity(tableName = "schedule_blocks", foreignKeys = [ForeignKey(entity = TaskEntity::class, parentColumns = ["id"], childColumns = ["taskId"], onDelete = ForeignKey.RESTRICT)], indices = [Index("taskId"), Index("startAt")])
 data class ScheduleBlockEntity(
-    @PrimaryKey val id: String, val taskId: String, val startAt: Long, val endAt: Long,
+    @PrimaryKey val id: String, val taskId: String?, val startAt: Long, val endAt: Long,
     val status: String = "SCHEDULED", val isLocked: Boolean = false,
     val createdAt: Long = 0, val updatedAt: Long = 0, val version: Long = 0,
+    @ColumnInfo(defaultValue = "''") val title: String = "",
+    @ColumnInfo(defaultValue = "'TIMED'") val kind: String = "TIMED",
+    val allDayStartDate: String? = null, val allDayEndDate: String? = null,
+    val timezoneId: String = java.time.ZoneId.systemDefault().id,
+    @ColumnInfo(defaultValue = "''") val notes: String = "",
+    val colorOverride: String? = null,
+    @ColumnInfo(defaultValue = "'MANUAL'") val source: String = "MANUAL",
+    val sourceRef: String? = null, val deletedAt: Long? = null,
+) {
+    fun displayTitle(task: TaskEntity?) = title.ifBlank { task?.title ?: "日程" }
+}
+
+@Entity(tableName = "command_log")
+data class CommandLogEntity(
+    @PrimaryKey val requestId: String, val commandType: String,
+    val resultJson: String, val createdAt: Long,
 )
 
 @Entity(tableName = "time_records", foreignKeys = [

@@ -32,7 +32,7 @@ class V12SampleDatabaseTest {
         runBlocking(Dispatchers.IO) {
             withSamples("v12-large.db", "workouts-large.db") { db, workoutDb ->
                 val clock = Clock.fixed(Instant.parse("2026-10-31T04:00:00Z"), ZoneId.of("Asia/Shanghai"))
-                assertEquals(12, db.openHelper.readableDatabase.version)
+                assertEquals(13, db.openHelper.readableDatabase.version)
                 assertEquals(1, workoutDb.openHelper.readableDatabase.version)
                 db.openHelper.readableDatabase.query("PRAGMA foreign_key_check").use {
                     assertFalse(it.moveToFirst())
@@ -71,7 +71,7 @@ class V12SampleDatabaseTest {
     fun `anonymized device export opens with current Room and keeps original relationships`() =
         runBlocking(Dispatchers.IO) {
             withSamples("v12-sample.db", "workouts-sample.db") { db, workoutDb ->
-                assertEquals(12, db.openHelper.readableDatabase.version)
+                assertEquals(13, db.openHelper.readableDatabase.version)
                 assertEquals(1, workoutDb.openHelper.readableDatabase.version)
                 for (sql in listOf(db.openHelper.readableDatabase, workoutDb.openHelper.readableDatabase)) {
                     sql.query("PRAGMA integrity_check").use {

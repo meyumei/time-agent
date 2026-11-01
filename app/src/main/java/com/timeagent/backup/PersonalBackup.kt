@@ -93,7 +93,24 @@ class PersonalBackup(
             val columns = live.query("PRAGMA table_info(`$name`)").use { c -> buildList { while(c.moveToNext()) add(c.getString(1)) } }
             BackupTable(columns,emptyList())
         }
-        return payload.copy(main=BackupDatabase(live.version,payload.main.tables+added))
+        var tables = payload.main.tables + added
+        if (payload.main.version < 13) {
+            val old = tables.getValue("schedule_blocks")
+            val columns = live.query("PRAGMA table_info(schedule_blocks)").use { c -> buildList { while (c.moveToNext()) add(c.getString(1)) } }
+            val defaults = mapOf(
+                "title" to "", "kind" to "TIMED", "timezoneId" to java.time.ZoneId.systemDefault().id,
+                "notes" to "", "source" to "MANUAL",
+            )
+            tables = tables + ("schedule_blocks" to BackupTable(columns, old.rows.map { row ->
+                columns.map { name ->
+                    val index = old.columns.indexOf(name)
+                    if (index >= 0) row[index]
+                    else defaults[name]?.let { BackupCell(android.database.Cursor.FIELD_TYPE_STRING, it) }
+                        ?: BackupCell(android.database.Cursor.FIELD_TYPE_NULL)
+                }
+            }))
+        }
+        return payload.copy(main=BackupDatabase(live.version,tables))
     }
 
     private suspend fun applyLive(payload: BackupPayload, privateSettings: Boolean, injectFailure: Boolean) {
@@ -112,6 +129,33 @@ class PersonalBackup(
         private val gson = Gson()
         @Volatile private var liveRestoreInProgress = false
         private val recoveryLock = Any()
+        /** The caller holds the old main database's migration transaction; Room is not opened recursively. */
+        internal fun createBeforeMigration(context: Context, main: androidx.sqlite.db.SupportSQLiteDatabase) {
+            val sql = main.backupSql()
+            // Earlier migrations in the same open may have run while user_version is still below 12.
+            val oldMain = BackupTables.capture(BackupSql(12, sql.query, sql.exec), BackupTables.mainForVersion(12))
+            val workoutPath = context.getDatabasePath("workouts.db")
+            val oldWorkout = if (workoutPath.isFile) {
+                SQLiteDatabase.openDatabase(workoutPath.path, null, SQLiteDatabase.OPEN_READWRITE).use { workout ->
+                    workout.beginTransactionNonExclusive()
+                    try { BackupTables.capture(workout.backupSql(), BackupTables.workout) }
+                    finally { workout.endTransaction() }
+                }
+            } else BackupDatabase(1, mapOf(
+                "workout_sessions" to BackupTable(listOf("id", "startedAt", "activeSlot", "payload"), emptyList()),
+                "workout_templates" to BackupTable(listOf("id", "updatedAt", "payload"), emptyList()),
+            ))
+            val payload = BackupPayload(
+                System.currentTimeMillis(), context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "unknown",
+                File(requireNotNull(main.path)).name, "workouts.db", oldMain, oldWorkout, readPreferences(context, false),
+                readCustom(context), AttachmentBackup.capture(File(context.filesDir, "attachments"), oldMain, false),
+            )
+            val bytes = encode(payload)
+            val directory = File(context.noBackupFilesDir, "migration-snapshots").apply { check(isDirectory || mkdirs()) }
+            atomicWrite(File(directory, "v12-before-v13-${payload.createdAt}-${java.util.UUID.randomUUID()}.json"), bytes)
+            directory.listFiles { f -> f.name.startsWith("v12-before-v13-") && f.extension == "json" }
+                ?.sortedByDescending { it.lastModified() }?.drop(2)?.forEach { it.delete() }
+        }
         private val publicKeys = mapOf(
             "appearance" to setOf("theme"), "timeline_colors_v1" to emptySet(),
             "workout" to setOf("pinned", "sound", "keepAwake"),

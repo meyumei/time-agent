@@ -67,7 +67,7 @@ fun TaskEntity.timelineColorSubject(): String = activityId?.let { "activity:$it"
 val TimelineItem.colorSubject: String get() = colorKey.ifBlank {
     when (val value = entity) {
         is CourseOccurrenceEntity -> "course:${title.filterNot(Char::isWhitespace)}"
-        is ScheduleBlockEntity -> "task:${value.taskId}"
+        is ScheduleBlockEntity -> value.taskId?.let { "task:$it" } ?: "schedule:${value.id}"
         is TimeRecordEntity -> value.taskId?.let { "task:$it" } ?: "activity-title:${title.filterNot(Char::isWhitespace)}"
         else -> "${kind.name}:${title.filterNot(Char::isWhitespace)}"
     }

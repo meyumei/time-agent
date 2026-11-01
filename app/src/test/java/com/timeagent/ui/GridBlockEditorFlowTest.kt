@@ -137,6 +137,21 @@ class GridBlockEditorFlowTest {
         assertTrue(runBlocking { db.dao().reminders().isEmpty() })
     }
 
+    @Test fun `independent plan saves its own title and notes without creating a task`() {
+        openAt13()
+        compose.onNodeWithTag("grid-independent-plan").performScrollTo().performClick()
+        field("grid-title", "独立阅读")
+        field("grid-notes", "第三章")
+        compose.onNodeWithTag("grid-save").performClick()
+        await { model.data.value.plans.size == 1 }
+        val plan = runBlocking { db.dao().plans().single() }
+        assertNull(plan.taskId)
+        assertEquals("独立阅读", plan.title)
+        assertEquals("第三章", plan.notes)
+        assertTrue(runBlocking { db.dao().tasks().isEmpty() })
+        assertTrue(runBlocking { db.dao().records().isEmpty() })
+    }
+
     @Test fun `actual title identical to notes is stored once`() {
         openAt13()
         chooseRecord()

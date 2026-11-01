@@ -74,10 +74,9 @@ class AssistantPlanner {
             is AssistantCommand.Query -> query(command, context)
             is AssistantCommand.CreateEvent -> {
                 validateTitle(command.title); validateSpan(command.startAt, command.endAt)
-                val task = TaskEntity("$id:task", command.title.trim(), estimatedMinutes = ((command.endAt - command.startAt) / 60000).toInt().coerceAtLeast(1), source = "ASSISTANT")
-                val plan = ScheduleBlockEntity(id, task.id, command.startAt, command.endAt)
-                preview("安排 · ${task.title}", "尚无此日程", "${task.title}\n${range(plan.startAt, plan.endAt, context)}",
-                    AssistantMutation.SaveEvent(task, plan, conflictValues(plan.startAt, plan.endAt, null, context)), conflicts(plan.startAt, plan.endAt, null, context))
+                val plan = ScheduleBlockEntity(id, null, command.startAt, command.endAt, title = command.title.trim(), timezoneId = context.zone.id)
+                preview("安排 · ${plan.title}", "尚无此日程", "${plan.title}\n${range(plan.startAt, plan.endAt, context)}",
+                    AssistantMutation.SavePlan(plan, expectedConflicts = conflictValues(plan.startAt, plan.endAt, null, context)), conflicts(plan.startAt, plan.endAt, null, context))
             }
             is AssistantCommand.EditRecord -> {
                 val record = data.records.singleOrNull { it.id == command.recordId } ?: throw NeedClarification("这条记录不存在，请重新选择。")
@@ -184,20 +183,28 @@ class AssistantPlanner {
                     listOf("取消后该任务的 $count 项计划会从日历隐藏；实际记录保留，可在操作历史中撤销。"))
             }
             is AssistantCommand.MovePlan -> {
-                validateSpan(command.startAt, command.endAt)
                 val plan = findPlan(command.planId, command.taskTitle, data, context)
+                if (plan.kind == "POINT") validateTimestamp(command.startAt) else validateSpan(command.startAt, command.endAt)
                 if (plan.isLocked) throw NeedClarification("这项计划已锁定，请先在计划编辑器中解锁。")
-                val task = findTask(plan.taskId, null, data)
-                val changed = plan.copy(startAt = command.startAt, endAt = command.endAt)
-                preview("移动计划 · ${task.title}", "${task.title}\n${range(plan.startAt, plan.endAt, context)}\n计划 #${plan.id}",
-                    "${task.title}\n${range(changed.startAt, changed.endAt, context)}\n计划 #${plan.id}", AssistantMutation.SavePlan(changed, plan.version, task.version, conflictValues(changed.startAt, changed.endAt, plan.id, context)), conflicts(changed.startAt, changed.endAt, plan.id, context))
+                val task = plan.taskId?.let { findTask(it, null, data) }
+                val title = plan.displayTitle(task)
+                val planZone = ZoneId.of(plan.timezoneId)
+                val changed = plan.copy(startAt = command.startAt, endAt = if (plan.kind == "POINT") command.startAt else command.endAt,
+                    allDayStartDate = if (plan.kind == "ALL_DAY") Instant.ofEpochMilli(command.startAt).atZone(planZone).toLocalDate().toString() else plan.allDayStartDate,
+                    allDayEndDate = if (plan.kind == "ALL_DAY") Instant.ofEpochMilli(command.endAt - 1).atZone(planZone).toLocalDate().toString() else plan.allDayEndDate)
+                val clashes = if (plan.kind == "POINT") emptyList() else conflictValues(changed.startAt, changed.endAt, plan.id, context)
+                preview("移动计划 · $title", "$title\n${range(plan.startAt, plan.endAt, context)}\n计划 #${plan.id}",
+                    "$title\n${range(changed.startAt, changed.endAt, context)}\n计划 #${plan.id}", AssistantMutation.SavePlan(changed, plan.version, task?.version, clashes),
+                    if (plan.kind == "POINT") emptyList() else conflicts(changed.startAt, changed.endAt, plan.id, context))
             }
             is AssistantCommand.CancelPlan -> {
                 val plan = findPlan(command.planId, command.taskTitle, data, context)
                 if (plan.isLocked) throw NeedClarification("这项计划已锁定，请先在计划编辑器中解锁。")
-                val task = findTask(plan.taskId, null, data)
-                preview("取消计划 · ${task.title}", "${task.title}\n${range(plan.startAt, plan.endAt, context)}\n计划 #${plan.id}",
-                    "状态：已取消\n任务保留\n计划 #${plan.id}", AssistantMutation.SavePlan(plan.copy(status = "CANCELLED"), plan.version, task.version, conflictValues(plan.startAt, plan.endAt, plan.id, context)))
+                val task = plan.taskId?.let { findTask(it, null, data) }
+                val title = plan.displayTitle(task)
+                preview("取消计划 · $title", "$title\n${range(plan.startAt, plan.endAt, context)}\n计划 #${plan.id}",
+                    "状态：已取消\n计划 #${plan.id}", AssistantMutation.SavePlan(plan.copy(status = "CANCELLED"), plan.version, task?.version,
+                        if (plan.kind == "POINT") emptyList() else conflictValues(plan.startAt, plan.endAt, plan.id, context)))
             }
             is AssistantCommand.StartTimer -> {
                 val running = data.records.firstOrNull { it.endAt == null }
@@ -231,7 +238,7 @@ class AssistantPlanner {
         if (command.scope == QueryScope.FREE_TIME) {
             require(command.minMinutes in 1..10080)
             val waking = TimeSpan(start.atTime(8, 0).atZone(context.zone).toInstant(), start.atTime(22, 0).atZone(context.zone).toInstant())
-            val slots = Scheduling.findFreeSlots(waking, busy.map { it.span }, command.minMinutes)
+            val slots = Scheduling.findFreeSlots(waking, busy.filter { it.occupiesTime }.map { it.span }, command.minMinutes)
             return AssistantReply.Answer("$start 空闲（08:00–22:00，至少 ${command.minMinutes} 分钟；按课程和计划计算）\n" +
                 if (slots.isEmpty()) "没有满足条件的空档。" else slots.joinToString("\n") { range(it.start.toEpochMilli(), it.end.toEpochMilli(), context) })
         }
@@ -240,10 +247,12 @@ class AssistantPlanner {
         return AssistantReply.Answer("$label 的安排（${events.size} 项）\n" + if (events.isEmpty()) "没有课程或计划。" else events.joinToString("\n\n") { "${it.kind} · ${it.title}\n${range(it.span.start.toEpochMilli(), it.span.end.toEpochMilli(), context)}\n#${it.id}" })
     }
 
-    private data class Event(val id: String, val title: String, val kind: String, val span: TimeSpan)
+    private data class Event(val id: String, val title: String, val kind: String, val span: TimeSpan, val occupiesTime: Boolean = true)
     private fun scheduledEvents(data: LocalSnapshot): List<Event> {
         val tasks = activeTasks(data).associateBy { it.id }
-        return data.plans.filter { it.status == "SCHEDULED" && it.taskId in tasks }.map { Event(it.id, tasks.getValue(it.taskId).title, "计划", TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(it.endAt))) } +
+        return data.plans.filter { it.status == "SCHEDULED" && it.deletedAt == null && (it.taskId == null || it.taskId in tasks) }.map {
+            Event(it.id, it.displayTitle(tasks[it.taskId]), "计划", TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(if (it.kind == "POINT") it.startAt + 1 else it.endAt)), it.kind != "POINT")
+        } +
             data.occurrences.filter { it.status != "CANCELLED" }.map { Event(it.id, data.courses.find { c -> c.id == it.courseId }?.name ?: "课程", "课程", TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(it.endAt))) }
     }
     private fun conflicts(start: Long, end: Long, excluding: String?, context: AssistantContext): List<String> {
@@ -253,7 +262,7 @@ class AssistantPlanner {
     }
     private fun conflictValues(start: Long, end: Long, excluding: String?, context: AssistantContext): List<Conflict> {
         val target = TimeSpan(Instant.ofEpochMilli(start), Instant.ofEpochMilli(end))
-        return scheduledEvents(context.snapshot).filter { it.id != excluding && target.overlaps(it.span) }.map { Conflict(it.id, it.title, it.span) }
+        return scheduledEvents(context.snapshot).filter { it.occupiesTime && it.id != excluding && target.overlaps(it.span) }.map { Conflict(it.id, it.title, it.span) }
     }
     private fun activeTasks(data: LocalSnapshot) = data.tasks.filter { it.deletedAt == null && it.status != "CANCELLED" }
     private fun findTask(id: String?, title: String?, data: LocalSnapshot, forPlan: Boolean = false): TaskEntity {
@@ -273,7 +282,7 @@ class AssistantPlanner {
     private fun findPlan(id: String?, title: String?, data: LocalSnapshot, context: AssistantContext): ScheduleBlockEntity {
         if (id.isNullOrBlank() && title.isNullOrBlank()) throw NeedClarification("请提供计划关联的任务名称或 #计划ID。")
         val taskIds = activeTasks(data).filter { it.title == title?.trim() }.map { it.id }.toSet()
-        val candidates = data.plans.filter { it.status == "SCHEDULED" && if (id != null) it.id == id else it.taskId in taskIds }
+        val candidates = data.plans.filter { it.deletedAt == null && it.status == "SCHEDULED" && if (id != null) it.id == id else it.title == title?.trim() || it.taskId in taskIds }
         if (candidates.isEmpty()) throw NeedClarification("没有找到对应计划，请查询日程并使用 #计划ID。")
         if (candidates.size != 1) throw NeedClarification("有多项计划，请使用 #计划ID 明确选择：\n" + candidates.joinToString("\n") { "${range(it.startAt, it.endAt, context)} #${it.id}" })
         return candidates.single()

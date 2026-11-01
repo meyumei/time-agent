@@ -47,10 +47,12 @@ import kotlin.math.roundToInt
 
 enum class ItemKind(val label: String) { COURSE("课程"), PLAN("计划"), RECORD("实际") }
 data class TimelineItem(val id: String, val kind: ItemKind, val title: String, val span: TimeSpan, val subtitle: String = "", val entity: Any, val colorKey: String = "")
+val TimelineItem.isPoint: Boolean get() = (entity as? ScheduleBlockEntity)?.kind == "POINT"
 fun LocalSnapshot.timeline(now: Instant): List<TimelineItem> {
     val taskNames = tasks.associateBy { it.id }
     val courseNames = courses.associateBy { it.id }
-    return plans.map { TimelineItem(it.id, ItemKind.PLAN, taskNames[it.taskId]?.title ?: "计划", TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(it.endAt)), entity = it, colorKey = taskNames[it.taskId]?.timelineColorSubject() ?: "task:${it.taskId}") } +
+    // TimeSpan requires positive duration; POINT uses a display anchor and never enters duration/conflict calculations.
+    return plans.filter { it.deletedAt == null }.map { TimelineItem(it.id, ItemKind.PLAN, it.displayTitle(taskNames[it.taskId]), TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(if (it.kind == "POINT") it.startAt + 1 else it.endAt)), subtitle = it.notes, entity = it, colorKey = taskNames[it.taskId]?.timelineColorSubject() ?: "schedule:${it.id}") } +
         records.map { TimelineItem(it.id, ItemKind.RECORD, it.title.takeIf(String::isNotBlank) ?: taskNames[it.taskId]?.title ?: it.notes.takeIf(String::isNotBlank)?.lineSequence()?.firstOrNull() ?: "自由记录", TimeSpan(Instant.ofEpochMilli(it.startAt), maxOf(Instant.ofEpochMilli(it.startAt).plusMillis(1), it.endAt?.let(Instant::ofEpochMilli) ?: now)), if (it.endAt == null) "计时中" else it.notes, it, colorKey = taskNames[it.taskId]?.timelineColorSubject().orEmpty()) } +
         occurrences.filter { it.status != "CANCELLED" }.map {
             val definition = courseNames[it.courseId]

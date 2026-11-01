@@ -22,6 +22,16 @@ class AssistantRepositoryIntegrationTest {
     @Before fun setup() { db = Room.inMemoryDatabaseBuilder(ApplicationProvider.getApplicationContext<Context>(), TimeAgentDatabase::class.java).allowMainThreadQueries().build(); repo = TimeRepository(db, Clock.fixed(now, zone)) }
     @After fun cleanup() { db.close() }
     private suspend fun context() = AssistantContext(now, zone, LocalDate.of(2026, 10, 19), LocalSnapshot(tasks = db.dao().tasks(), plans = db.dao().activePlans(), records = db.dao().records(), loading = false))
+    @Test fun `creating a titled schedule does not implicitly create a task`() = runBlocking {
+        val preview = (AssistantPlanner().prepare(AssistantCommand.CreateEvent("独立阅读", now.toEpochMilli(), now.plusSeconds(3600).toEpochMilli()), context()) as AssistantReply.Preview).value
+        RepositoryAssistantWriter(repo).commit(preview, false)
+        assertTrue(db.dao().tasks().isEmpty())
+        val plan = db.dao().activePlans().single()
+        assertNull(plan.taskId)
+        assertEquals("独立阅读", plan.title)
+        repo.undoLastAction()
+        assertTrue(db.dao().activePlans().isEmpty())
+    }
     @Test fun `cancelled preview leaves Room untouched and repeat confirmation journals once`() = runBlocking {
         val gate = AssistantConfirmation(RepositoryAssistantWriter(repo))
         val preview = (AssistantPlanner().prepare(AssistantCommand.CreateTask("阅读", 30), context()) as AssistantReply.Preview).value

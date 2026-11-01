@@ -1,0 +1,438 @@
+{
+  "date": "2026-11-01",
+  "client": "WorkBuddy CLI 2.171.0",
+  "requestedModel": "deepseek-v4.1-flash",
+  "requestedEffort": "max",
+  "serverReportedEffort": null,
+  "effortEvidence": "Response streams report the model but do not report the actual backend effort; max is the requested value only.",
+  "phoneAccess": false,
+  "businessDataAccess": false,
+  "sourceWritesAllowed": true,
+  "primaryOwns": [
+    "production/shared entities",
+    "Room schema and migrations",
+    "backup",
+    "UI and shared entry points",
+    "build configuration",
+    "integration",
+    "independent test execution",
+    "Git/PR"
+  ],
+  "runs": [
+    {
+      "phase": "contracts",
+      "allowedReadFiles": [
+        "app/src/main/java/com/timeagent/data/Entities.kt",
+        "app/src/main/java/com/timeagent/data/TimeRepository.kt",
+        "app/src/main/java/com/timeagent/data/TimeAgentDatabase.kt",
+        "app/src/test/java/com/timeagent/data/IndependentScheduleTest.kt"
+      ],
+      "allowedWriteFiles": [
+        "app/src/test/java/com/timeagent/data/IndependentScheduleTest.kt"
+      ],
+      "tools": "Read,Edit,Write",
+      "deniedTools": [
+        "Agent",
+        "Bash"
+      ],
+      "permissionMode": "dontAsk",
+      "mcpServers": [],
+      "toolCallLimit": 12,
+      "timeoutSeconds": 180,
+      "stopConditions": "Named files only; stop at call/time limit, permission denial, or two failed reads.",
+      "stopConditionsEnforcement": "Named file allow rules/dontAsk and available tools configured in CLI, but actual streams show those rules did not exclude all off-list Read calls. Call cap and failed-read stop were prompt instructions, not a primary-side hard counter. CLI max-turns is not interpreted as tool-call count.",
+      "actualToolCalls": 5,
+      "actualCallsByTool": {
+        "Read": 4,
+        "Write": 1
+      },
+      "actualWrites": [
+        "app/src/test/java/com/timeagent/data/IndependentScheduleTest.kt"
+      ],
+      "failedReads": [
+        {
+          "tool": "Read",
+          "file": "app/src/test/java/com/timeagent/data/IndependentScheduleTest.kt",
+          "summary": "File does not exist. Did you mean app\\src\\test\\java\\com\\timeagent\\data\\InboxNotesRedoTest.kt?"
+        }
+      ],
+      "outOfAllowListAttempts": [],
+      "returnedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "serverReportedEffort": null,
+      "cliResults": [
+        {
+          "subtype": "success",
+          "is_error": false,
+          "duration_ms": 53439,
+          "num_turns": 17
+        }
+      ],
+      "runnerExitCode": 0,
+      "toolCallLimitExceeded": false,
+      "rawStreamPath": "evidence/t1.3-schedules/ds-contracts.stream.jsonl",
+      "rawStreamSha256": "2fb1baa4b020222fb378263c4d248ee329fb820abe7ebd5de650cb6031633511",
+      "settingsSha256": "d56e9c1c2ddf6df8ec7e733aaf4753116f3ddf0af640c2328d4969b45670b75e",
+      "promptSha256": "cb1158ff71068369b196f8ae63b8a49220638a689326b192ce47dcf351d6870f",
+      "disposition": "Wrote six standalone schedule tests; one initial Read targeted the not-yet-created allowed output file. Primary independently compiled and executed tests."
+    },
+    {
+      "phase": "behavior",
+      "allowedReadFiles": [
+        "app/src/main/java/com/timeagent/data/Entities.kt",
+        "app/src/main/java/com/timeagent/data/TimeRepository.kt",
+        "app/src/main/java/com/timeagent/data/TimeAgentDatabase.kt",
+        "app/src/main/java/com/timeagent/ui/Timeline.kt",
+        "app/src/main/java/com/timeagent/ui/TimelineConflicts.kt",
+        "app/src/test/java/com/timeagent/data/IndependentScheduleTest.kt",
+        "app/src/test/java/com/timeagent/data/ScheduleBehaviorTest.kt"
+      ],
+      "allowedWriteFiles": [
+        "app/src/test/java/com/timeagent/data/ScheduleBehaviorTest.kt"
+      ],
+      "tools": "Read,Edit,Write",
+      "deniedTools": [
+        "Agent",
+        "Bash"
+      ],
+      "permissionMode": "dontAsk",
+      "mcpServers": [],
+      "toolCallLimit": 12,
+      "timeoutSeconds": 180,
+      "stopConditions": "Named files only; stop at call/time limit, permission denial, or two failed reads.",
+      "stopConditionsEnforcement": "Named file allow rules/dontAsk and available tools configured in CLI, but actual streams show those rules did not exclude all off-list Read calls. Call cap and failed-read stop were prompt instructions, not a primary-side hard counter. CLI max-turns is not interpreted as tool-call count.",
+      "actualToolCalls": 8,
+      "actualCallsByTool": {
+        "Read": 7,
+        "Write": 1
+      },
+      "actualWrites": [
+        "app/src/test/java/com/timeagent/data/ScheduleBehaviorTest.kt"
+      ],
+      "failedReads": [
+        {
+          "tool": "Read",
+          "file": "app/src/test/java/com/timeagent/data/ScheduleBehaviorTest.kt",
+          "summary": "File does not exist. Did you mean app\\src\\test\\java\\com\\timeagent\\data\\ScheduleMigrationTest.kt?"
+        }
+      ],
+      "outOfAllowListAttempts": [],
+      "returnedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "serverReportedEffort": null,
+      "cliResults": [
+        {
+          "subtype": "success",
+          "is_error": false,
+          "duration_ms": 84510,
+          "num_turns": 24
+        }
+      ],
+      "runnerExitCode": 0,
+      "toolCallLimitExceeded": false,
+      "rawStreamPath": "evidence/t1.3-schedules/ds-behavior.stream.jsonl",
+      "rawStreamSha256": "a4467464d48edf2f79f7941c0f5aeaeae70fef481f88acc6ee7fb295e46f3300",
+      "settingsSha256": "9d071456e7b0ede6665a46b468113a211a18980e17d0b6d20f87b1db5b3048f7",
+      "promptSha256": "7d3584c664aad1329f7238f95359a59bdbeba50669068150edddbed1accffc1e",
+      "disposition": "Wrote five task-delete/all-day/point tests; one initial Read targeted the not-yet-created allowed output file. Primary independently compiled and executed tests."
+    },
+    {
+      "phase": "spec-review",
+      "allowedReadFiles": [
+        ".tmp/t1-schedules/review.diff",
+        "app/src/main/java/com/timeagent/data/Entities.kt",
+        "app/src/main/java/com/timeagent/data/ScheduleMigration.kt",
+        "app/src/main/java/com/timeagent/data/TimeAgentDatabase.kt",
+        "app/src/main/java/com/timeagent/data/TimeRepository.kt",
+        "app/src/main/java/com/timeagent/backup/PersonalBackup.kt",
+        "app/src/main/java/com/timeagent/backup/BackupSql.kt",
+        "app/src/main/java/com/timeagent/assistant/AssistantPlanner.kt",
+        "app/src/main/java/com/timeagent/ui/Editors.kt",
+        "app/src/main/java/com/timeagent/ui/GridBlockEditor.kt",
+        "app/src/main/java/com/timeagent/ui/TimeAgentApp.kt",
+        "app/src/migrationTest/java/com/timeagent/data/ScheduleMigrationContract.kt",
+        "app/src/test/java/com/timeagent/data/ScheduleUpgradeTest.kt",
+        "app/src/test/java/com/timeagent/data/ScheduleHistoryTest.kt",
+        "app/src/test/java/com/timeagent/data/ScheduleBehaviorTest.kt",
+        "app/src/test/java/com/timeagent/backup/ScheduleBackupTest.kt"
+      ],
+      "allowedWriteFiles": [],
+      "tools": "Read",
+      "deniedTools": [
+        "Agent",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "permissionMode": "dontAsk",
+      "mcpServers": [],
+      "toolCallLimit": 18,
+      "timeoutSeconds": 180,
+      "stopConditions": "Named files only; stop at call/time limit, permission denial, or two failed reads.",
+      "stopConditionsEnforcement": "Named file allow rules/dontAsk and available tools configured in CLI, but actual streams show those rules did not exclude all off-list Read calls. Call cap and failed-read stop were prompt instructions, not a primary-side hard counter. CLI max-turns is not interpreted as tool-call count.",
+      "actualToolCalls": 19,
+      "actualCallsByTool": {
+        "Read": 19
+      },
+      "actualWrites": [],
+      "failedReads": [
+        {
+          "tool": "Read",
+          "file": ".tmp/t1-schedules/review.diff",
+          "summary": "File content (estimated 22644 tokens) exceeds maximum allowed tokens (20000). Please use offset and limit parameters to read specific portions of the file, or use the GrepTool to search for specific content."
+        },
+        {
+          "tool": "Read",
+          "file": "app/src/main/java/com/timeagent/data/TimeRepository.kt",
+          "summary": "Offset 960 is beyond file end (total lines: 934)"
+        }
+      ],
+      "outOfAllowListAttempts": [],
+      "returnedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "serverReportedEffort": null,
+      "cliResults": [
+        {
+          "subtype": "success",
+          "is_error": false,
+          "duration_ms": 247214,
+          "num_turns": 53
+        }
+      ],
+      "runnerExitCode": 124,
+      "toolCallLimitExceeded": true,
+      "rawStreamPath": "evidence/t1.3-schedules/ds-spec-review.stream.jsonl",
+      "rawStreamSha256": "58dc73732931ec3a368871f400a8d32285cda4df0f582a3969bc910840915963",
+      "settingsSha256": "44dfef92a0d90f5dcab1ea935d23f24a48be2230accbc08135f93abe509264b9",
+      "promptSha256": "e5d86016005b24789f8d3ac301a482000d9d43f875617fd493f9e63d1b5fa357",
+      "disposition": "INVALID as completed review: timed out, old runner stopped only parent CMD and child Node continued; eventual result after 247214ms, 19 calls > 18 and continued after two failed reads. Primary subsequently stopped the exact review process. Not acceptance/approval evidence."
+    },
+    {
+      "phase": "spec-focused",
+      "allowedReadFiles": [
+        ".tmp/t1-schedules/spec-source.txt",
+        "app/src/migrationTest/java/com/timeagent/data/ScheduleMigrationContract.kt",
+        "app/src/test/java/com/timeagent/data/ScheduleUpgradeTest.kt"
+      ],
+      "allowedWriteFiles": [],
+      "tools": "Read",
+      "deniedTools": [
+        "Agent",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "permissionMode": "dontAsk",
+      "mcpServers": [],
+      "toolCallLimit": 18,
+      "timeoutSeconds": 180,
+      "stopConditions": "Named files only; stop at call/time limit, permission denial, or two failed reads.",
+      "stopConditionsEnforcement": "Named file allow rules/dontAsk and available tools configured in CLI, but actual streams show those rules did not exclude all off-list Read calls. Call cap and failed-read stop were prompt instructions, not a primary-side hard counter. CLI max-turns is not interpreted as tool-call count.",
+      "actualToolCalls": 3,
+      "actualCallsByTool": {
+        "Read": 3
+      },
+      "actualWrites": [],
+      "failedReads": [],
+      "outOfAllowListAttempts": [],
+      "returnedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "serverReportedEffort": null,
+      "cliResults": [
+        {
+          "subtype": "success",
+          "is_error": false,
+          "duration_ms": 129135,
+          "num_turns": 12
+        }
+      ],
+      "runnerExitCode": 0,
+      "toolCallLimitExceeded": false,
+      "rawStreamPath": "evidence/t1.3-schedules/ds-spec-focused.stream.jsonl",
+      "rawStreamSha256": "273e11701c8c6ad670f35aaa216082831e5848ea0beb557e4ffcf3c856718b02",
+      "settingsSha256": "3e37c87b5d240316f5e29c9fe4ef53dc4d7667365d5306cc2dbd1c929780c498",
+      "promptSha256": "9bb65990535b3332f84847599538ff3d938f390d2b409c7b08162d6b8199c5af",
+      "disposition": "Completed focused review with findings; primary dispositions recorded below. Not a post-fix approval or test execution."
+    },
+    {
+      "phase": "spec-followup",
+      "allowedReadFiles": [
+        ".tmp/t1-schedules/spec-source.txt",
+        "app/src/migrationTest/java/com/timeagent/data/ScheduleMigrationContract.kt",
+        "app/src/test/java/com/timeagent/data/ScheduleUpgradeTest.kt"
+      ],
+      "allowedWriteFiles": [],
+      "tools": "Read",
+      "deniedTools": [
+        "Agent",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "permissionMode": "dontAsk",
+      "mcpServers": [],
+      "toolCallLimit": 18,
+      "timeoutSeconds": 180,
+      "stopConditions": "Named files only; stop at call/time limit, permission denial, or two failed reads.",
+      "stopConditionsEnforcement": "Named file allow rules/dontAsk and available tools configured in CLI, but actual streams show those rules did not exclude all off-list Read calls. Call cap and failed-read stop were prompt instructions, not a primary-side hard counter. CLI max-turns is not interpreted as tool-call count.",
+      "actualToolCalls": 17,
+      "actualCallsByTool": {
+        "Read": 17
+      },
+      "actualWrites": [],
+      "failedReads": [
+        {
+          "tool": "Read",
+          "file": "review.diff",
+          "summary": "File does not exist."
+        }
+      ],
+      "outOfAllowListAttempts": [
+        {
+          "tool": "Read",
+          "file": "review.diff",
+          "outcome": "error"
+        },
+        {
+          "tool": "Read",
+          "file": "app/src/main/java/com/timeagent/data/TimeAgentDatabase.kt",
+          "outcome": "success"
+        },
+        {
+          "tool": "Read",
+          "file": "app/src/main/java/com/timeagent/backup/PersonalBackup.kt",
+          "outcome": "success"
+        },
+        {
+          "tool": "Read",
+          "file": "app/src/main/java/com/timeagent/data/TimeAgentDatabase.kt",
+          "outcome": "success"
+        },
+        {
+          "tool": "Read",
+          "file": "app/src/main/java/com/timeagent/data/TimeRepository.kt",
+          "outcome": "success"
+        },
+        {
+          "tool": "Read",
+          "file": "app/src/main/java/com/timeagent/data/TimeRepository.kt",
+          "outcome": "success"
+        },
+        {
+          "tool": "Read",
+          "file": "app/src/main/java/com/timeagent/data/TimeAgentDatabase.kt",
+          "outcome": "success"
+        },
+        {
+          "tool": "Read",
+          "file": "app/src/main/java/com/timeagent/data/TimeRepository.kt",
+          "outcome": "success"
+        },
+        {
+          "tool": "Read",
+          "file": "app/src/main/java/com/timeagent/data/TimeRepository.kt",
+          "outcome": "success"
+        },
+        {
+          "tool": "Read",
+          "file": "app/src/main/java/com/timeagent/data/TimeRepository.kt",
+          "outcome": "success"
+        },
+        {
+          "tool": "Read",
+          "file": "app/src/main/java/com/timeagent/data/TimeRepository.kt",
+          "outcome": "success"
+        },
+        {
+          "tool": "Read",
+          "file": "app/src/main/java/com/timeagent/data/TimeRepository.kt",
+          "outcome": "success"
+        },
+        {
+          "tool": "Read",
+          "file": "app/src/main/java/com/timeagent/data/TimeRepository.kt",
+          "outcome": "success"
+        },
+        {
+          "tool": "Read",
+          "file": "app/src/main/java/com/timeagent/data/TimeRepository.kt",
+          "outcome": "success"
+        }
+      ],
+      "returnedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "serverReportedEffort": null,
+      "cliResults": [],
+      "runnerExitCode": 124,
+      "toolCallLimitExceeded": false,
+      "rawStreamPath": "evidence/t1.3-schedules/ds-spec-followup.stream.jsonl",
+      "rawStreamSha256": "a1ec1d09a5b5c4e3fff14b6ae76f78f1107c4d1c3c1b15008ba10428711ca401",
+      "settingsSha256": "3e37c87b5d240316f5e29c9fe4ef53dc4d7667365d5306cc2dbd1c929780c498",
+      "promptSha256": "9f3a980c84e478f9c4f075bcaecfa9655a2c132ac3af3a17b3965cbbf60d59c8",
+      "disposition": "INVALID as compliant review: 180s timeout; updated runner killed own process tree; no final result. A missing root review.diff read was off-list and failed. Additional off-list reads of TimeAgentDatabase.kt, PersonalBackup.kt and TimeRepository.kt succeeded despite configured named allow rules. These are task source files, not phone/user databases or credentials. No source writes occurred. Do not claim read-scope enforcement or review approval."
+    }
+  ],
+  "reviewDisposition": [
+    {
+      "finding": "The positive timeline display anchor might be persisted for POINT.",
+      "resolution": "Not confirmed: editor reads the entity and saves end=start. Added real Compose regression; both point and all-day editor tests pass. No domain normalization of arbitrary nonzero point durations added."
+    },
+    {
+      "finding": "POINT might be included in statistics/occupancy.",
+      "resolution": "Checked concrete readers and filters in timeline conflicts, planner free time, project progress, review, suggestions and briefing; point exclusion retained and behavior tests pass."
+    },
+    {
+      "finding": "Pruning an old snapshot can abort an upgrade even after writing a complete new snapshot.",
+      "resolution": "Accepted: pruning is best effort; failure to write a new complete snapshot still aborts before DDL. Retention and failure tests pass."
+    },
+    {
+      "finding": "Snapshot metadata for an older multi-step upgrade says v12.",
+      "resolution": "Documented logical v12 boundary, not original low-version binary snapshot or APK/schema downgrade. Existing format1 data restore to v13 tested; general backup v2 remains T6."
+    },
+    {
+      "finding": "Migration should test a legal v12 null taskId.",
+      "resolution": "Rejected: frozen v12 schema requires NOT NULL taskId. Test newly legal null taskId after v13 instead."
+    },
+    {
+      "finding": "Pre-migration backup/restoration coverage did not assert all retained content.",
+      "resolution": "Accepted: tests now assert workout sessions, synthetic attachment, public preferences, Key exclusion, empty command_log on old restore, and old schema/indices/no temporary table on failed snapshot."
+    },
+    {
+      "finding": "Bare Migration could be registered incorrectly in future.",
+      "resolution": "No speculative wrapper added. Current sole production registration uses withBackup; bare Migration is deliberately used for isolated sample/schema contracts."
+    }
+  ],
+  "independentIntegrationReview": {
+    "agentId": "01a19714-588c-7970-bce8-6f4b90474fe6",
+    "nickname": "Ampere",
+    "provider": "Codex sub-agent, separate from WorkBuddy DS",
+    "modelOverride": null,
+    "readOnly": true,
+    "scope": "Limited source excerpts/files: concrete data loss, null taskId readers, legacy JSON undo, v12-v13 migration and format1 restoration.",
+    "result": "0 actionable findings in the reviewed scope",
+    "testsExecuted": false,
+    "deviceAcceptance": false,
+    "closedAfterCompletion": true
+  },
+  "primaryVerification": {
+    "evidence": "docs/ledger-evidence/t1.3-schedules/verification.json",
+    "junit": {
+      "total": 760,
+      "passed": 758,
+      "skipped": 2,
+      "failed": 0
+    },
+    "node": {
+      "total": 19,
+      "passed": 19,
+      "failed": 0
+    },
+    "dsCompletionTextUsedAsAcceptance": false,
+    "deviceAcceptance": "pending"
+  }
+}

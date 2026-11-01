@@ -144,13 +144,13 @@ object DeepSeekProtocol {
         val start = minOf(context.selectedWeekStart, context.now.atZone(context.zone).toLocalDate()).atStartOfDay(context.zone).toInstant().toEpochMilli()
         val end = maxOf(context.selectedWeekStart.plusDays(7), context.now.atZone(context.zone).toLocalDate().plusDays(3)).atStartOfDay(context.zone).toInstant().toEpochMilli()
         fun instant(value: Long) = Instant.ofEpochMilli(value).atZone(context.zone).toOffsetDateTime().toString()
-        val plans = data.plans.filter { it.status == "SCHEDULED" && it.taskId in taskIds && it.startAt < end && it.endAt > start }.take(70)
+        val plans = data.plans.filter { it.status == "SCHEDULED" && it.deletedAt == null && (it.taskId == null || it.taskId in taskIds) && it.startAt < end && (if (it.kind == "POINT") it.startAt >= start else it.endAt > start) }.take(70)
         val occurrences = data.occurrences.filter { it.status != "CANCELLED" && it.startAt < end && it.endAt > start }.take(70)
         return Gson().toJson(linkedMapOf(
             "now" to context.now.atZone(context.zone).toOffsetDateTime().toString(), "timezone" to context.zone.id,
             "selectedWeekStart" to context.selectedWeekStart.toString(),
             "tasks" to tasks.map { mapOf("id" to it.id, "title" to it.title.take(120), "estimatedMinutes" to it.estimatedMinutes, "status" to it.status, "dueAt" to it.dueAt?.let(::instant)) },
-            "plans" to plans.map { mapOf("id" to it.id, "taskId" to it.taskId, "startAt" to instant(it.startAt), "endAt" to instant(it.endAt)) },
+            "plans" to plans.map { mapOf("id" to it.id, "taskId" to it.taskId, "title" to it.displayTitle(data.tasks.find { task -> task.id == it.taskId }), "kind" to it.kind, "startAt" to instant(it.startAt), "endAt" to instant(it.endAt)) },
             "courses" to occurrences.map { item -> mapOf("id" to item.id, "title" to data.courses.find { it.id == item.courseId }?.name?.take(120), "startAt" to instant(item.startAt), "endAt" to instant(item.endAt)) },
             "records" to data.records.filter { it.endAt != null && it.startAt < end && it.endAt > start }.sortedByDescending { it.startAt }.take(50).map { record -> mapOf("id" to record.id, "taskId" to record.taskId, "label" to record.title.ifBlank { data.tasks.find { it.id == record.taskId }?.title ?: data.categories.find { it.id == record.categoryId }?.name.orEmpty() }.take(120), "startAt" to instant(record.startAt), "endAt" to instant(requireNotNull(record.endAt))) },
             // Reminders and ideas are shared as short summaries only: stored idea/note bodies never leave the device.

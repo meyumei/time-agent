@@ -18,7 +18,7 @@ fun goalProgress(data: LocalSnapshot, goal: WeeklyGoalEntity, now: Instant, zone
 private fun progress(data: LocalSnapshot, ids: Set<String>, week: LocalDate, now: Instant, zone: ZoneId): ProjectProgress {
     val window = TimeSpan(week.atStartOfDay(zone).toInstant(), week.plusWeeks(1).atStartOfDay(zone).toInstant())
     val tasks = data.tasks.filter { it.id in ids }
-    val plans = data.plans.filter { it.taskId in ids && it.status == "SCHEDULED" && it.endAt > it.startAt && TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(it.endAt)).clip(window) != null }
+    val plans = data.plans.filter { it.taskId in ids && it.status == "SCHEDULED" && it.deletedAt == null && it.kind != "POINT" && it.endAt > it.startAt && TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(it.endAt)).clip(window) != null }
     fun actualSpan(r: TimeRecordEntity): TimeSpan? {
         val start = Instant.ofEpochMilli(r.startAt)
         val end = minOf(r.endAt?.let(Instant::ofEpochMilli) ?: now, now)

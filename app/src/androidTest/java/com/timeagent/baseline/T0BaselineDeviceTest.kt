@@ -102,10 +102,10 @@ class T0BaselineDeviceTest {
                 }
             }
         }
-        val main = Room.databaseBuilder(context, TimeAgentDatabase::class.java, mainName).build()
+        val main = Room.databaseBuilder(context, TimeAgentDatabase::class.java, mainName).addMigrations(com.timeagent.data.ScheduleMigration).build()
         val workouts = Room.databaseBuilder(context, WorkoutDatabase::class.java, workoutName).build()
         try {
-            assertEquals(12, main.openHelper.readableDatabase.version)
+            assertEquals(13, main.openHelper.readableDatabase.version)
             assertEquals(1, workouts.openHelper.readableDatabase.version)
             val counts = JSONObject()
             for ((table, expected) in listOf("tasks" to 30, "time_records" to 48, "schedule_blocks" to 13)) {

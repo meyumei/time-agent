@@ -79,6 +79,7 @@ private fun Instant.clockText(zone: ZoneId): String = atZone(zone).format(ClockF
 
 private fun TimelineItem.timeText(zone: ZoneId): String {
     val start = span.start.clockText(zone)
+    if (isPoint) return "$start 提醒点"
     return if (isRunningRecord()) "$start 起" else "$start – ${span.end.clockText(zone)}"
 }
 
@@ -414,7 +415,7 @@ fun TimelineAgendaCard(
                 Spacer(Modifier.width(8.dp))
             }
             Text(
-                text = if (running) "● 计时中" else duration.readableMinutes(),
+                text = if (running) "● 计时中" else if (item.isPoint) "提醒点" else duration.readableMinutes(),
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = if (running) FontWeight.SemiBold else FontWeight.Medium,
                 color = secondary,

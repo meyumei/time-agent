@@ -42,7 +42,7 @@ fun suggestionFreeSlots(data: LocalSnapshot, zone: ZoneId, now: Instant, require
     val nextMinute = Instant.ofEpochMilli((now.toEpochMilli() / 60_000 + 1) * 60_000)
     val start = maxOf(today.atTime(8, 0).atZone(zone).toInstant(), nextMinute)
     if (start >= end) return emptyList()
-    val busy = data.plans.filter { it.status == "SCHEDULED" }.map { TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(it.endAt)) } +
+    val busy = data.plans.filter { it.status == "SCHEDULED" && it.deletedAt == null && it.kind != "POINT" }.map { TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(it.endAt)) } +
         data.occurrences.filter { it.status != "CANCELLED" }.map { TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(it.endAt)) } +
         data.records.mapNotNull { record ->
             val recordEnd = record.endAt?.let(Instant::ofEpochMilli) ?: end

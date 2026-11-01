@@ -18,7 +18,7 @@ data class TimelineConflict(val first: TimelineItem, val second: TimelineItem, v
 
 /** Connected scheduled overlaps within the day supplied by the caller. */
 fun timelineConflictGroups(items: List<TimelineItem>): List<List<TimelineItem>> {
-    val scheduled = items.filter { it.kind == ItemKind.COURSE || it.kind == ItemKind.PLAN }
+    val scheduled = items.filter { !it.isPoint && (it.kind == ItemKind.COURSE || it.kind == ItemKind.PLAN) }
         .distinctBy { it.kind to it.id }
         .sortedWith(compareBy<TimelineItem> { it.span.start }.thenBy { it.span.end })
     if (scheduled.size < 2) return emptyList()
@@ -44,7 +44,7 @@ fun timelineConflictGroups(items: List<TimelineItem>): List<List<TimelineItem>> 
 
 /** Actual records describe what happened; they are not scheduling conflicts. */
 fun timelineConflicts(items: List<TimelineItem>): List<TimelineConflict> {
-    val scheduled = items.filter { it.kind != ItemKind.RECORD }.distinctBy { "${it.kind}:${it.id}" }.sortedBy { it.span.start }
+    val scheduled = items.filter { it.kind != ItemKind.RECORD && !it.isPoint }.distinctBy { "${it.kind}:${it.id}" }.sortedBy { it.span.start }
     return buildList {
         scheduled.forEachIndexed { index, first ->
             for (next in (index + 1) until scheduled.size) {

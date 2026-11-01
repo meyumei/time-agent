@@ -71,7 +71,7 @@ class DatabaseMigrationTest {
             assertEquals("计时备注", upgraded.dao().runningTimer()!!.notes)
             assertEquals(1, upgraded.dao().history().size)
             assertTrue(upgraded.dao().activities().isEmpty())
-            assertEquals(12, upgraded.openHelper.readableDatabase.version)
+            assertEquals(13, upgraded.openHelper.readableDatabase.version)
             assertEquals("", upgraded.dao().runningTimer()!!.title)
             assertFalse(upgraded.dao().history().single().redoable)
             assertTrue(upgraded.dao().reminders().isEmpty())
@@ -97,7 +97,7 @@ class DatabaseMigrationTest {
         }
         val upgraded = TimeAgentDatabase.open(context)
         try {
-            assertEquals(12, upgraded.openHelper.readableDatabase.version)
+            assertEquals(13, upgraded.openHelper.readableDatabase.version)
             assertEquals("旧任务", upgraded.dao().task("v4-task")!!.title)
             val record = upgraded.dao().record("v4-record")!!
             assertEquals("睡眠", record.title)

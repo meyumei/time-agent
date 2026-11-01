@@ -83,7 +83,7 @@ class RecurringService(private val repository: TimeRepository) {
                 if(owned.remindAt!=expected || owned.title!=task.title)return false
             }
         }
-        return dao().plans().none{it.taskId==task.id && it.id!="recurring-plan:${item.id}" && it.status=="SCHEDULED"}
+        return dao().plans().none{it.taskId==task.id && it.id!="recurring-plan:${item.id}" && it.status=="SCHEDULED" && it.deletedAt==null}
     }
     private suspend fun retire(item:RecurringInstanceEntity,status:String,note:String) {
         val task=requireNotNull(dao().task(item.taskId))
@@ -106,7 +106,7 @@ class RecurringService(private val repository: TimeRepository) {
                 }
                 "SKIP" -> {
                     val saved = repository.saveTask(task.copy(status = "CANCELLED"), task.version)
-                    dao().plans().filter{it.taskId==task.id && it.status=="SCHEDULED"}.forEach{repository.deletePlan(it.id)}
+                    dao().plans().filter{it.taskId==task.id && it.status=="SCHEDULED" && it.deletedAt==null}.forEach{repository.deletePlan(it.id)}
                     repository.saveRecurringInstance(instance.copy(status = "SKIPPED", manualOverride = true, scheduledAt=null, taskVersion = saved.version, planVersion = null, scheduleNote="本次已跳过，计划已移出；未补打卡", version = instance.version), instance.version)
                 }
                 "REOPEN" -> {
@@ -124,7 +124,7 @@ class RecurringService(private val repository: TimeRepository) {
         val task=dao().task(item.taskId)?:throw StaleChange()
         require(task.deletedAt==null && task.status in setOf("TODO","IN_PROGRESS")) { "请先重新打开本次事项再改期" }
         require(dao().runningTimer()?.taskId!=task.id) { "请先结束计时再改期" }
-        require(dao().plans().none{it.taskId==task.id && it.id!="recurring-plan:$id" && it.status=="SCHEDULED"}) { "存在其他手动计划，请在任务详情编辑" }
+        require(dao().plans().none{it.taskId==task.id && it.id!="recurring-plan:$id" && it.status=="SCHEDULED" && it.deletedAt==null}) { "存在其他手动计划，请在任务详情编辑" }
         return item to task
     }
     private fun sorted(items:List<Conflict>)=items.sortedBy{it.id}

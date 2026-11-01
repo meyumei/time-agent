@@ -194,10 +194,10 @@ fun buildDailyBriefing(
 
     for (plan in data.plans) {
         if (excludedBlockStatuses.contains(plan.status.uppercase(Locale.ROOT))) continue
-        if (plan.endAt <= nowMs) continue
+        if (plan.deletedAt != null || (if (plan.kind == "POINT") plan.startAt < nowMs else plan.endAt <= nowMs)) continue
         val task = tasksById[plan.taskId]
         if (task != null && (task.deletedAt != null || task.status !in openTaskStatuses)) continue
-        val title = tasksById[plan.taskId]?.title?.takeIf { it.isNotBlank() } ?: "日程安排"
+        val title = plan.displayTitle(task)
         candidates += BriefingItem("PLAN", plan.id, title, plan.startAt, plan.endAt)
     }
     for (occurrence in data.occurrences) {

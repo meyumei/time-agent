@@ -1,0 +1,44 @@
+[
+  {
+    "class": "com.timeagent.assistant.AssistantConversationTest",
+    "test": "new scheduled activity creates task and plan with one undo",
+    "message": "java.util.NoSuchElementException: List is empty.",
+    "stack": [
+      "java.util.NoSuchElementException: List is empty.",
+      "\tat kotlin.collections.CollectionsKt___CollectionsKt.single(_Collections.kt:616)",
+      "\tat com.timeagent.assistant.AssistantConversationTest$new scheduled activity creates task and plan with one undo$1.invokeSuspend(AssistantConversationTest.kt:56)",
+      "\tat kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)",
+      "\tat kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)",
+      "\tat kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:263)",
+      "\tat kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:94)"
+    ]
+  },
+  {
+    "class": "com.timeagent.assistant.AssistantInboxIntegrationTest",
+    "test": "same page saves idea and point reminder while explicit window stays task and plan",
+    "message": "java.util.NoSuchElementException: List is empty.",
+    "stack": [
+      "java.util.NoSuchElementException: List is empty.",
+      "\tat kotlin.collections.CollectionsKt___CollectionsKt.single(_Collections.kt:616)",
+      "\tat com.timeagent.assistant.AssistantInboxIntegrationTest$same page saves idea and point reminder while explicit window stays task and plan$1.invokeSuspend(AssistantInboxIntegrationTest.kt:111)",
+      "\tat kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)",
+      "\tat kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)",
+      "\tat kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:263)",
+      "\tat kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:94)"
+    ]
+  },
+  {
+    "class": "com.timeagent.ui.AppFlowTest",
+    "test": "empty timeline tap creates a task and its selected plan atomically",
+    "message": "java.lang.AssertionError: Failed to perform SetText action.\nReason: Expected exactly '1' node but could not find any node that satisfies: (Text + InputText + EditableText contains '\u4efb\u52a1\u540d\u79f0' (ignoreCase: false))\n",
+    "stack": [
+      "java.lang.AssertionError: Failed to perform SetText action.",
+      "Reason: Expected exactly '1' node but could not find any node that satisfies: (Text + InputText + EditableText contains '\u4efb\u52a1\u540d\u79f0' (ignoreCase: false))",
+      "",
+      "\tat androidx.compose.ui.test.SemanticsNodeInteraction.fetchOneOrThrow(SemanticsNodeInteraction.kt:178)",
+      "\tat androidx.compose.ui.test.SemanticsNodeInteraction.fetchOneOrThrow$default(SemanticsNodeInteraction.kt:150)",
+      "\tat androidx.compose.ui.test.SemanticsNodeInteraction.fetchSemanticsNode(SemanticsNodeInteraction.kt:84)",
+      "\tat androidx.compose.ui.test.ActionsKt.performSemanticsAction(Actions.kt:578)"
+    ]
+  }
+]
