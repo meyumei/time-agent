@@ -28,25 +28,10 @@ import org.robolectric.annotation.Config
 @Config(sdk = [28])
 class V12SampleDatabaseTest {
     @Test
-    fun `generated v12 and workout samples open with current Room and preserve domain data`() =
+    fun `generated large databases open with current Room and preserve domain data`() =
         runBlocking(Dispatchers.IO) {
-            val context = ApplicationProvider.getApplicationContext<Context>()
-            val assets = File("src/androidTest/assets/db")
-            for ((asset, name) in listOf(
-                "v12-sample.db" to "time-agent.db",
-                "workouts-sample.db" to "workouts.db",
-            )) {
-                assertTrue("Missing $asset", File(assets, asset).isFile)
-                context.deleteDatabase(name)
-                context.getDatabasePath(name).apply {
-                    parentFile!!.mkdirs()
-                    File(assets, asset).copyTo(this, overwrite = true)
-                }
-            }
-            val db = TimeAgentDatabase.open(context)
-            val workoutDb = WorkoutDatabase.open(context)
-            val clock = Clock.fixed(Instant.parse("2026-10-31T04:00:00Z"), ZoneId.of("Asia/Shanghai"))
-            try {
+            withSamples("v12-large.db", "workouts-large.db") { db, workoutDb ->
+                val clock = Clock.fixed(Instant.parse("2026-10-31T04:00:00Z"), ZoneId.of("Asia/Shanghai"))
                 assertEquals(12, db.openHelper.readableDatabase.version)
                 assertEquals(1, workoutDb.openHelper.readableDatabase.version)
                 db.openHelper.readableDatabase.query("PRAGMA foreign_key_check").use {
@@ -79,11 +64,69 @@ class V12SampleDatabaseTest {
                 assertEquals(before.tasks.size, after.tasks.size)
                 assertEquals(before.records.size, after.records.size)
                 assertEquals(exceptions, after.recurringInstances.filter { it.manualOverride })
-            } finally {
-                workoutDb.close()
-                db.close()
-                context.deleteDatabase("workouts.db")
-                context.deleteDatabase("time-agent.db")
             }
         }
+
+    @Test
+    fun `anonymized device export opens with current Room and keeps original relationships`() =
+        runBlocking(Dispatchers.IO) {
+            withSamples("v12-sample.db", "workouts-sample.db") { db, workoutDb ->
+                assertEquals(12, db.openHelper.readableDatabase.version)
+                assertEquals(1, workoutDb.openHelper.readableDatabase.version)
+                for (sql in listOf(db.openHelper.readableDatabase, workoutDb.openHelper.readableDatabase)) {
+                    sql.query("PRAGMA integrity_check").use {
+                        assertTrue(it.moveToFirst())
+                        assertEquals("ok", it.getString(0))
+                    }
+                    sql.query("PRAGMA foreign_key_check").use { assertFalse(it.moveToFirst()) }
+                }
+                val clock = Clock.fixed(Instant.parse("2020-01-06T04:00:00Z"), ZoneId.of("Asia/Shanghai"))
+                val repository = TimeRepository(db, clock)
+                val snapshot = repository.snapshot()
+                assertEquals(30, snapshot.tasks.size)
+                assertEquals(48, snapshot.records.size)
+                assertEquals(13, db.dao().plans().size)
+                db.openHelper.readableDatabase.query("SELECT count(*) FROM operation_history").use {
+                    assertTrue(it.moveToFirst())
+                    assertEquals(106, it.getInt(0))
+                }
+                snapshot.recurringRules.forEach { RecurringValidation.pattern(it) }
+                snapshot.recurringInstances.forEach { RecurringValidation.instance(it) }
+                val sessions = WorkoutRepository(workoutDb, repository, clock).observeSessions().first()
+                assertEquals(3, sessions.size)
+                sessions.forEach { WorkoutRules.validateSession(it) }
+                val records = snapshot.records.map { it.id }.toSet()
+                // Preserve the source export's link state, including a previously removed timeline record.
+                assertEquals(1, sessions.count { it.timelineRecordId == null })
+                assertEquals(1, sessions.count { it.timelineRecordId in records })
+                assertEquals(1, sessions.count { it.timelineRecordId != null && it.timelineRecordId !in records })
+            }
+        }
+
+    private suspend fun withSamples(
+        mainAsset: String,
+        workoutAsset: String,
+        block: suspend (TimeAgentDatabase, WorkoutDatabase) -> Unit,
+    ) {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val assets = File("src/androidTest/assets/db")
+        for ((asset, name) in listOf(mainAsset to "time-agent.db", workoutAsset to "workouts.db")) {
+            assertTrue("Missing $asset", File(assets, asset).isFile)
+            context.deleteDatabase(name)
+            context.getDatabasePath(name).apply {
+                parentFile!!.mkdirs()
+                File(assets, asset).copyTo(this, overwrite = true)
+            }
+        }
+        val db = TimeAgentDatabase.open(context)
+        val workoutDb = WorkoutDatabase.open(context)
+        try {
+            block(db, workoutDb)
+        } finally {
+            workoutDb.close()
+            db.close()
+            context.deleteDatabase("workouts.db")
+            context.deleteDatabase("time-agent.db")
+        }
+    }
 }

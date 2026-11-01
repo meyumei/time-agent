@@ -1,12 +1,16 @@
 {
+  "assetPackaging": {
+    "v12-sample.db": "v12-large.db",
+    "workouts-sample.db": "workouts-large.db"
+  },
   "containsRealUserData": false,
   "derivedFromRealExport": false,
   "files": {
-    "v12-sample.db": {
+    "v12-large.db": {
       "bytes": 3858432,
       "sha256": "14aefab54070d419cfd86c69eed417ab07aacbb1e3b531d38ec4be217aaaeba0"
     },
-    "workouts-sample.db": {
+    "workouts-large.db": {
       "bytes": 856064,
       "sha256": "2c7b71d47b554befeba3ecbc2488e6b7aa67ee61f1ef919b47c503962d8ea51d"
     }
