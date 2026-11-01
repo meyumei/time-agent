@@ -1,0 +1,29 @@
+
+com.timeagent.baseline.T0BaselineDeviceTest:
+Error in actualTimezoneBroadcastRestoresExistingAndRecurringReminders(com.timeagent.baseline.T0BaselineDeviceTest):
+kotlinx.coroutines.TimeoutCancellationException: Timed out waiting for 8000 ms
+	at kotlinx.coroutines.TimeoutKt.TimeoutCancellationException(Timeout.kt:189)
+	at kotlinx.coroutines.TimeoutCoroutine.run(Timeout.kt:157)
+	at kotlinx.coroutines.EventLoopImplBase$DelayedRunnableTask.run(EventLoop.common.kt:505)
+	at kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:263)
+	at kotlinx.coroutines.DefaultExecutor.run(DefaultExecutor.kt:105)
+	at java.lang.Thread.run(Thread.java:1119)
+INSTRUMENTATION_STATUS: t0_evidence={"check":"anonymized-device-export-open","result":{"tasks":30,"time_records":48,"schedule_blocks":13,"workout_sessions":3}}
+INSTRUMENTATION_STATUS_CODE: 0
+.INSTRUMENTATION_STATUS: t0_evidence={"check":"ten-native-time-tools","result":{"calls":[{"tool":"time_create_task","args":{"title":"T0_DEVICE_TASK","projectId":"t0-project"},"return":{"id":"c179f26f-e151-4b07-af17-d39c2ba6053e","message":"T0_DEVICE_TASK\n预计 30 分钟 · 待办\n未设截止时间\n任务 #c179f26f-e151-4b07-af17-d39c2ba6053e","undoAvailable":true}},{"tool":"time_create_plan","args":{"title":"T0_DEVICE_PLAN","taskId":"c179f26f-e151-4b07-af17-d39c2ba6053e","start":"2026-11-01T11:00:00+08:00","end":"2026-11-01T11:30:00+08:00"},"return":{"id":"6a3b6945-132a-486b-9306-aa8f6a66d22f","message":"T0_DEVICE_TASK\n2026-11-01 11:00–11:30\n任务 #c179f26f-e151-4b07-af17-d39c2ba6053e","undoAvailable":true}},{"tool":"time_record","args":{"title":"T0_DEVICE_RECORD","taskId":"c179f26f-e151-4b07-af17-d39c2ba6053e","start":"2026-11-01T08:00:00+08:00","end":"2026-11-01T08:30:00+08:00"},"return":{"id":"1718996c-67d1-4fcf-9ea0-e58d39097f4f","message":"T0_DEVICE_TASK\n备注：T0_DEVICE_RECORD\n2026-11-01 08:00–08:30\n任务 #c179f26f-e151-4b07-af17-d39c2ba6053e","undoAvailable":true}},{"tool":"time_tasks","args":{},"return":{"tasks":[{"id":"c179f26f-e151-4b07-af17-d39c2ba6053e","title":"T0_DEVICE_TASK","status":"TODO","estimatedMinutes":30}]}},{"tool":"time_projects","args":{},"return":{"projects":[{"id":"t0-project","name":"T0_DEVICE_PROJECT","status":"ACTIVE","tasks":[{"id":"c179f26f-e151-4b07-af17-d39c2ba6053e","title":"T0_DEVICE_TASK","status":"TODO"}]}]}},{"tool":"time_today","args":{},"return":{"date":"2026-11-01","zone":"Asia\/Shanghai","now":"2026-11-01T02:00:00Z","plans":[{"id":"6a3b6945-132a-486b-9306-aa8f6a66d22f","taskId":"c179f26f-e151-4b07-af17-d39c2ba6053e","title":"T0_DEVICE_TASK","start":"2026-11-01T11:00+08:00","end":"2026-11-01T11:30+08:00"}],"courses":[],"tasks":[{"id":"c179f26f-e151-4b07-af17-d39c2ba6053e","title":"T0_DEVICE_TASK","status":"TODO"}],"actual":[{"id":"1718996c-67d1-4fcf-9ea0-e58d39097f4f","title":"T0_DEVICE_TASK","start":"2026-11-01T08:00+08:00","end":"2026-11-01T08:30+08:00"}]}},{"tool":"time_schedule","args":{"date":"2026-11-01"},"return":{"date":"2026-11-01","zone":"Asia\/Shanghai","now":"2026-11-01T02:00:00Z","plans":[{"id":"6a3b6945-132a-486b-9306-aa8f6a66d22f","taskId":"c179f26f-e151-4b07-af17-d39c2ba6053e","title":"T0_DEVICE_TASK","start":"2026-11-01T11:00+08:00","end":"2026-11-01T11:30+08:00"}],"courses":[],"tasks":[{"id":"c179f26f-e151-4b07-af17-d39c2ba6053e","title":"T0_DEVICE_TASK","status":"TODO"}],"actual":[{"id":"1718996c-67d1-4fcf-9ea0-e58d39097f4f","title":"T0_DEVICE_TASK","start":"2026-11-01T08:00+08:00","end":"2026-11-01T08:30+08:00"}]}},{"tool":"time_complete_task","args":{"taskId":"c179f26f-e151-4b07-af17-d39c2ba6053e"},"return":{"id":"c179f26f-e151-4b07-af17-d39c2ba6053e","message":"T0_DEVICE_TASK · 已完成","undoAvailable":true}},{"tool":"time_undo","args":{},"return":{"message":"已撤销最近一次业务操作"}},{"tool":"time_quick_action","args":{"text":"查看任务"},"return":{"message":"任务清单（1 项）\nT0_DEVICE_TASK\n预计 30 分钟 · 待办\n未设截止时间\n任务 #c179f26f-e151-4b07-af17-d39c2ba6053e","needsConfirmation":false,"undoAvailable":false}}],"invalidDateRejected":true,"runtimeRpcCovered":false}}
+INSTRUMENTATION_STATUS_CODE: 0
+.
+
+Time: 8.831
+There was 1 failure:
+1) actualTimezoneBroadcastRestoresExistingAndRecurringReminders(com.timeagent.baseline.T0BaselineDeviceTest)
+kotlinx.coroutines.TimeoutCancellationException: Timed out waiting for 8000 ms
+	at kotlinx.coroutines.TimeoutKt.TimeoutCancellationException(Timeout.kt:189)
+	at kotlinx.coroutines.TimeoutCoroutine.run(Timeout.kt:157)
+	at kotlinx.coroutines.EventLoopImplBase$DelayedRunnableTask.run(EventLoop.common.kt:505)
+	at kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:263)
+	at kotlinx.coroutines.DefaultExecutor.run(DefaultExecutor.kt:105)
+	at java.lang.Thread.run(Thread.java:1119)
+
+FAILURES!!!
+Tests run: 3,  Failures: 1

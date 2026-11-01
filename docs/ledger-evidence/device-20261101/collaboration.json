@@ -1,0 +1,151 @@
+{
+  "cli": "WorkBuddy/codebuddy.cmd",
+  "cliVersion": "2.171.0",
+  "requestedModel": "deepseek-v4.1-flash",
+  "requestedEffort": "max",
+  "serverConfirmedEffort": null,
+  "modules": [
+    {
+      "phase": "business",
+      "returnedModel": [
+        "deepseek-v4.1-flash"
+      ],
+      "driverActions": 23,
+      "driverErrors": 6,
+      "cliReportedTurns": 62,
+      "cliResult": "success",
+      "durationMillis": 213594,
+      "requestedEffort": "max",
+      "serverConfirmedEffort": null,
+      "onlyScopedDriverUsed": true,
+      "acceptance": "invalidated"
+    },
+    {
+      "phase": "business2",
+      "returnedModel": [
+        "deepseek-v4.1-flash"
+      ],
+      "driverActions": 82,
+      "driverErrors": 6,
+      "cliReportedTurns": 204,
+      "cliResult": "success",
+      "durationMillis": 400372,
+      "requestedEffort": "max",
+      "serverConfirmedEffort": null,
+      "onlyScopedDriverUsed": true,
+      "acceptance": "partial-independent-checks"
+    },
+    {
+      "phase": "native2",
+      "returnedModel": [
+        "deepseek-v4.1-flash"
+      ],
+      "driverActions": 82,
+      "driverErrors": 5,
+      "cliReportedTurns": 200,
+      "cliResult": "success",
+      "durationMillis": 370992,
+      "requestedEffort": "max",
+      "serverConfirmedEffort": null,
+      "onlyScopedDriverUsed": true,
+      "acceptance": "partial-independent-checks"
+    },
+    {
+      "phase": "fish",
+      "returnedModel": [
+        "deepseek-v4.1-flash"
+      ],
+      "driverActions": 72,
+      "driverErrors": 4,
+      "cliReportedTurns": 183,
+      "cliResult": "success",
+      "durationMillis": 304422,
+      "requestedEffort": "max",
+      "serverConfirmedEffort": null,
+      "onlyScopedDriverUsed": true,
+      "acceptance": "partial-independent-checks"
+    },
+    {
+      "phase": "workout",
+      "returnedModel": [
+        "deepseek-v4.1-flash"
+      ],
+      "driverActions": 93,
+      "driverErrors": 5,
+      "cliReportedTurns": 244,
+      "cliResult": "success",
+      "durationMillis": 451956,
+      "requestedEffort": "max",
+      "serverConfirmedEffort": null,
+      "onlyScopedDriverUsed": true,
+      "acceptance": "partial-independent-checks"
+    }
+  ],
+  "maximumDriverActionsPerModule": 110,
+  "maximumSecondsPerModule": 900,
+  "toolAllowlist": [
+    "Bash(python .tmp/t0-phone/device.py PHASE ACTION ...)"
+  ],
+  "deniedTools": [
+    "Agent",
+    "Read",
+    "Edit",
+    "Write"
+  ],
+  "phoneUiOwnersAtOnce": 1,
+  "readableContent": "public control labels and synthetic test strings only",
+  "writableFiles": "No repository files; only driver-managed redacted evidence and temporary phone data",
+  "forbidden": [
+    "private exports",
+    "Key",
+    "real contacts/messages",
+    "business/UI/schema files"
+  ],
+  "stopConditions": [
+    "driver limit",
+    "900 seconds",
+    "permission error",
+    "two unsuccessful entry attempts"
+  ],
+  "originalFirstRoundInvalidated": true,
+  "independentAcceptance": [
+    "screenshots inspected",
+    "task completion database comparison",
+    "timer/workout database comparison",
+    "runtime process observation",
+    "3 instrumented checks",
+    "exact original file/table restoration"
+  ],
+  "secondaryContributor": {
+    "kind": "Codex subagent",
+    "name": "Anscombe",
+    "scope": [
+      "scripts/anonymize-v12-sample.py",
+      "scripts/test_anonymize_v12_sample.py"
+    ],
+    "phoneAccess": false,
+    "privateSourceAccess": false,
+    "integrationAndAcceptance": "main agent"
+  },
+  "notes": [
+    "CLI turn limit is not proof of enforcement; observed driver counts are recorded.",
+    "DS reports are observations to verify, never acceptance by themselves.",
+    "Workout dynamic completion label was hidden by the collection filter; no product defect inferred."
+  ],
+  "additionalApkCleanup": {
+    "requestedModel": "deepseek-v4.1-flash",
+    "returnedModel": "deepseek-v4.1-flash",
+    "requestedEffort": "max",
+    "serverConfirmedEffort": null,
+    "actualBashCommands": [
+      "python .tmp/t0-phone/apk-cleanup.py scan",
+      "python .tmp/t0-phone/apk-cleanup.py delete-confirmed"
+    ],
+    "requestedMaxTurns": 6,
+    "cliReportedTurns": 8,
+    "maximumSeconds": 180,
+    "driverCommands": 2,
+    "deleted": 0,
+    "independentVerification": "manifest summary and final 39 file/36 table comparison"
+  }
+}

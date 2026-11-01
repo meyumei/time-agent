@@ -1,0 +1,29 @@
+{
+  "id": "L01",
+  "module": "时间轴",
+  "capabilities": "计划/实际双轨；实际可重叠；冲突可保存并提示；撤销/重做；乐观锁版本；历史",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L01-device.png",
+  "spec_code_references": [
+    "ui/Timeline.kt",
+    "ui/TimelineConflicts.kt",
+    "core/TimelineViewport.kt"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/ui/Timeline.kt",
+      "sha256": "24e75f30bc8c891b3625bb0daaf9c205ef92708a8579a80e67d171e7ee283577"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ui/TimelineConflicts.kt",
+      "sha256": "b2ee1722f8d5bcd5dea7c420c637dfde0ed60159ab9adcada463a394d5be07af"
+    },
+    {
+      "path": "core/src/main/kotlin/com/timeagent/core/TimelineViewport.kt",
+      "sha256": "fbb48ddbcb639c4f106cac4a31b9932f9fdde14ac53d67a68389ca4c45597c90"
+    }
+  ]
+}

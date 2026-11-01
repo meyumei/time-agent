@@ -1,0 +1,31 @@
+{
+  "id": "L35",
+  "module": "主题",
+  "capabilities": "主题偏好、切换",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L35-device.png",
+  "spec_code_references": [
+    "ui/Theme*.kt"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/ui/Theme.kt",
+      "sha256": "48e875b4f9afc67d8d1c0e7b403a5dd37a70c883007a0818c8089f64b15139ff"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ui/ThemePreference.kt",
+      "sha256": "1c4bf96b24f595321cc1eba22b5008dd370bcb550ff70edd3a46a3512fae1111"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ui/ThemeSwitch.kt",
+      "sha256": "055c3e071e41452c55921d07cded35c6c9073ff220fdfd6bdffb0b079b3c1251"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/ui/ThemePreferenceTest.kt",
+      "sha256": "bc61a255e0b5c9f1fa7bf4daef47832e325a574354cc28f6b89110a15ee22475"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "id": "L18",
+  "module": "建议",
+  "capabilities": "建议生成与一键执行",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L18-device.png",
+  "spec_code_references": [
+    "suggestions/*",
+    "ui/SuggestionActions.kt"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/suggestions/SuggestionAction.kt",
+      "sha256": "0a15ffe8e9cc79a3e96537d2a5a0e208c30f34118abfc7f0ec4c6a37ebe1c6ea"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/suggestions/SuggestionCoordinator.kt",
+      "sha256": "6053b5356afc3c3d63e962f160e96d166a9096e7c67385a4ec2a261f8af2ee6d"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/suggestions/SuggestionEngine.kt",
+      "sha256": "9d1b8d0ff1ad0fcc625c6cc65a6420b4e74cee16a1c836d2a0ec5f2ed273c865"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ui/SuggestionActions.kt",
+      "sha256": "d3a4b246e338ac7d43330555237ac815c97343d20a67d7a106e395af15df7a36"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/suggestions/SuggestionEngineTest.kt",
+      "sha256": "087a8fe8649ca80e5d2c89e0fcafcc767fae427e8b2305ff46438be674356752"
+    }
+  ]
+}

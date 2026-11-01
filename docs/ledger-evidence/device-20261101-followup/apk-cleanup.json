@@ -1,0 +1,26 @@
+{
+  "scannedAtEpoch": 1793523707.9521055,
+  "executedBy": "WorkBuddy DS",
+  "installedVersionCode": 28,
+  "scanScope": [
+    "/sdcard/",
+    "/data/local/tmp",
+    "app-private files/*.apk recursively",
+    "app-private cache/*.apk recursively"
+  ],
+  "candidates": 33,
+  "identified": 32,
+  "unidentified": 1,
+  "eligibleOldTimeAgent": [],
+  "deleted": 0,
+  "freedBytes": 0,
+  "deletionExecuted": true,
+  "removed": [],
+  "completedAtEpoch": 1793523710.0719278,
+  "requestedModel": "deepseek-v4.1-flash",
+  "returnedModel": "deepseek-v4.1-flash",
+  "requestedEffort": "max",
+  "actualEffort": null,
+  "unidentifiedReason": "Android SDK aapt2: failed opening zip: Invalid file",
+  "independentAcceptance": "No confirmed old Time Agent installers in readable scan scopes; actual removal count is zero. One invalid APK remains unclassified and was retained."
+}

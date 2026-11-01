@@ -1,0 +1,52 @@
+{
+  "id": "L34",
+  "module": "备份恢复",
+  "capabilities": "主库+训练库+附件+部分偏好；跨库失败回滚；PersonalDataGate",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L34-device.png",
+  "spec_code_references": [
+    "backup/*",
+    "ui/BackupScreen.kt"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/backup/AttachmentBackup.kt",
+      "sha256": "6e893908d92b1e028be3e90567ee76809f7198c63af52f06cd90d29a45582116"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/backup/BackupRecoveryUi.kt",
+      "sha256": "25f1fbfcccd51481398e5e7b8a328f3cda2108f340892dee87eefbf453bdae17"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/backup/BackupSql.kt",
+      "sha256": "6711fa9e070fbc6ed041566ad0dfd80b83d00740285c6a01c2e993f45755f767"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/backup/PersonalBackup.kt",
+      "sha256": "182a1dfe2ce88cd95900b4a5fe4177f6ec41fda0173333226529ccbd0801e28f"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ui/BackupScreen.kt",
+      "sha256": "db6a8d0be2179189c1c6d147b9bafa27fd6dd3734df583b43b1e631fbe442845"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/backup/AttachmentBackupTest.kt",
+      "sha256": "184086a003f951bb261aa2bf1b2456d6afec1a57173004387f007dab59c600e4"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/backup/PersonalBackupTest.kt",
+      "sha256": "796059c95481342b16af9bcf87d13c49345d03cc6dbf8eeabf2fbfce1007e06f"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/backup/ProjectsBackupTest.kt",
+      "sha256": "d8254a585f2eed8adda9b1cda2ba1c4d21f2492c21cb110d4f690f8433c1699e"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/backup/RecurringBackupTest.kt",
+      "sha256": "1abf283dc0fad4d41185c64f86c1d3f81fb53de2e35742e5c328d2c5c2740276"
+    }
+  ]
+}

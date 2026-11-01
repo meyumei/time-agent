@@ -1,0 +1,62 @@
+{
+  "assetPackaging": {
+    "v12-sample.db": "v12-large.db",
+    "workouts-sample.db": "workouts-large.db"
+  },
+  "containsRealUserData": false,
+  "derivedFromRealExport": false,
+  "files": {
+    "v12-large.db": {
+      "bytes": 3858432,
+      "sha256": "14aefab54070d419cfd86c69eed417ab07aacbb1e3b531d38ec4be217aaaeba0"
+    },
+    "workouts-large.db": {
+      "bytes": 856064,
+      "sha256": "2c7b71d47b554befeba3ecbc2488e6b7aa67ee61f1ef919b47c503962d8ea51d"
+    }
+  },
+  "generator": "scripts/seed-large-dataset",
+  "mainTableCounts": {
+    "academic_terms": 0,
+    "activity_templates": 6,
+    "agent_suggestions": 0,
+    "attachments": 0,
+    "categories": 6,
+    "course_occurrences": 0,
+    "courses": 0,
+    "entity_revisions": 0,
+    "health_sync_items": 0,
+    "ideas": 0,
+    "import_batches": 0,
+    "ledger_accounts": 5,
+    "ledger_categories": 3,
+    "ledger_transactions": 2000,
+    "notes": 0,
+    "operation_history": 0,
+    "payment_captures": 200,
+    "personal_memories": 0,
+    "projects": 4,
+    "record_tags": 100,
+    "recurring_instances": 100,
+    "recurring_rules": 10,
+    "reminders": 0,
+    "schedule_blocks": 2000,
+    "tags": 3,
+    "task_placements": 500,
+    "task_tags": 50,
+    "tasks": 500,
+    "time_records": 10000,
+    "weekly_goals": 4
+  },
+  "manualExceptions": 30,
+  "provenance": "synthetic",
+  "referenceTime": "2026-10-31T12:00:00+08:00",
+  "schemaIdentityHash": "9f8125fa4618be68edd274dc29c9e8c2",
+  "schemaSha256": "275ff52038966f28fe6df745b0250f42a727c4f6158951f3d2b2ba114d59e8d5",
+  "schemaVersion": 12,
+  "seed": 20261031,
+  "workoutTableCounts": {
+    "workout_sessions": 200,
+    "workout_templates": 0
+  }
+}

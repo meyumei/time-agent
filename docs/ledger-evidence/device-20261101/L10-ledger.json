@@ -1,0 +1,171 @@
+{
+  "file": "L10-ledger.png",
+  "redactedTextRegions": 6,
+  "ui": [
+    {
+      "node": 11,
+      "text": "待确认",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[139,394][268,453]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 14,
+      "text": "账本",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[566,394][652,453]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 17,
+      "text": "账户与分类",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[908,394][1123,453]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 21,
+      "text": "支付自动捕获",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[91,593][380,658]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 22,
+      "text": "已关闭（默认）",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[91,678][388,734]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 23,
+      "text": "只读取微信、支付宝的支付完成通知，先形成待确认草稿，不直接入账。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[91,734][960,840]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 27,
+      "text": "打开系统通知使用权设置",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[130,982][597,1039]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 32,
+      "text": "导入账单 CSV",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[169,1302][438,1359]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 35,
+      "text": "手动记一笔",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[620,1302][833,1359]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 37,
+      "text": "未开启通知使用权时仍可手动记账；开启后不会回放历史通知。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[91,1428][1129,1534]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 38,
+      "text": "暂无待确认支付。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,1606][396,1664]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 41,
+      "text": "返回",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[65,214][151,271]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 43,
+      "text": "账本",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[215,199][338,284]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 45,
+      "text": "撤销",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[881,214][967,271]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 48,
+      "text": "重做",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[1070,214][1156,271]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

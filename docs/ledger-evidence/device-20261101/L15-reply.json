@@ -1,0 +1,73 @@
+{
+  "file": "L15-reply.png",
+  "redactedTextRegions": 3,
+  "ui": [
+    {
+      "node": 10,
+      "text": "文字在本机处理。空档仅依据本应用的计划、课程、实际记录和个人约定；外部日历未同步。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,398][1168,542]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 11,
+      "text": "",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,575][1168,921]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 0
+    },
+    {
+      "node": 12,
+      "text": "粘贴或分享的原文",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,656][488,728]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 14,
+      "text": "提取候选",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[130,1004][300,1061]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 18,
+      "text": "返回",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[65,214][151,271]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 20,
+      "text": "回复副驾",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[215,199][459,284]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

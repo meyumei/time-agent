@@ -1,0 +1,149 @@
+{
+  "file": "L05-projects-list.png",
+  "redactedTextRegions": 7,
+  "ui": [
+    {
+      "node": 11,
+      "text": "新建项目",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[117,396][287,453]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 15,
+      "text": "Synthetic project 0",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[78,574][519,639]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 17,
+      "text": "查看",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[1062,607][1142,659]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 20,
+      "text": "Synthetic project 1",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[78,802][509,867]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 22,
+      "text": "查看",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[1062,835][1142,887]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 25,
+      "text": "Synthetic project 2",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[78,1030][516,1095]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 27,
+      "text": "查看",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[1062,1063][1142,1115]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 30,
+      "text": "Synthetic project 3",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[78,1258][517,1323]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 32,
+      "text": "查看",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[1062,1291][1142,1343]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 35,
+      "text": "返回",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[65,214][151,271]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 37,
+      "text": "项目",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[215,199][338,284]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 39,
+      "text": "撤销",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[881,214][967,271]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 42,
+      "text": "重做",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[1070,214][1156,271]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

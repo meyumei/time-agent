@@ -1,0 +1,105 @@
+{
+  "file": "L30-bilibili.png",
+  "redactedTextRegions": 3,
+  "ui": [
+    {
+      "node": 10,
+      "text": "返回",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,240][190,297]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 12,
+      "text": "平台连接",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,385][335,480]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 13,
+      "text": "B站",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,519][163,600]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 14,
+      "text": "同一个角色把发现的内容自然带回聊天。会尝试读取简介、可用字幕和评论；画面理解尚未接入。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,639][1168,745]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 15,
+      "text": "本机未保存登录信息，可以读取公开内容",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,784][916,856]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 17,
+      "text": "生成登录二维码",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[130,945][427,1002]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 20,
+      "text": "刷新状态",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[570,945][740,1002]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 23,
+      "text": "看看公开内容，和我聊聊",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[130,1140][597,1197]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 25,
+      "text": "允许主动看看 B站",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,1285][999,1357]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

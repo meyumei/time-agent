@@ -1,0 +1,49 @@
+{
+  "id": "L06",
+  "module": "周期事务",
+  "capabilities": "规则编辑、实例生成、手工例外、规则版本、历史快照",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L06-device.png",
+  "spec_code_references": [
+    "recurring/*",
+    "ui/RecurringScreen.kt",
+    "data/RecurringEntities.kt"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/data/RecurringEntities.kt",
+      "sha256": "5e20b5d5121e28cff81d001179857ced46cdb08de1dd1c472525dee04a8be265"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/recurring/RecurringService.kt",
+      "sha256": "6174e20854754259bbc2318e5f7e10eca97f4424f6a10f0d0232df5fd6a58af7"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/recurring/RecurringState.kt",
+      "sha256": "5844db8b9f7742a12dcb63349765a9a278f2d661c4a6d263eb37c445ba0ebcdc"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/recurring/RecurringValidation.kt",
+      "sha256": "3ead5d9271923005162152966d28e3cde8f2dfd7d8c4d883d4aa3372b898279b"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ui/RecurringScreen.kt",
+      "sha256": "04e90a5286745afc2b769590b8f0b0c44491989c7173beb930a9538d0c2ba2e1"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/recurring/DeadlineServiceTest.kt",
+      "sha256": "28f59d84f5c087bf28419cecc1355c64fc35925ee92e0383384b8d7d493a356d"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/recurring/RecurringServiceTest.kt",
+      "sha256": "eae0e133091c05aeceaea13c4d1fc21812cf88e5a6bf6828744b9a5f5c4192b6"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/recurring/RecurringStateTest.kt",
+      "sha256": "6814984c35882dba28229f2990c35a911004ade49f93ac0a153732e72c5a0dd6"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "command": [
+    "F:\\261019_时间agent\\gradlew.bat",
+    ":core:test",
+    ":agent-runtime:testDebugUnitTest",
+    ":app:testDebugUnitTest",
+    ":app:assembleDebug",
+    ":app:lintDebug",
+    ":app:assembleDebugAndroidTest",
+    "--rerun-tasks",
+    "--console=plain",
+    "--no-parallel",
+    "--max-workers=2",
+    "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK"
+  ],
+  "startedEpoch": 1793520510.4999728,
+  "finishedEpoch": 1793520815.5489824,
+  "exitCode": 1,
+  "encoding": "GBK",
+  "testsRerun": true
+}

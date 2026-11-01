@@ -1,0 +1,149 @@
+{
+  "file": "L08-import-settings-entry.png",
+  "redactedTextRegions": 5,
+  "ui": [
+    {
+      "node": 9,
+      "text": "返回管家",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[39,188][209,245]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 12,
+      "text": "分类、标签与记录整理",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[196,344][620,401]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 15,
+      "text": "支付记账",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[854,344][1024,401]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 19,
+      "text": "时间 Agent",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[130,580][493,675]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 22,
+      "text": "课程管理",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[65,946][258,1011]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 24,
+      "text": "导入 PDF / 官方教务",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[413,1107][807,1164]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 27,
+      "text": "导入 JSON 课表",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[456,1309][764,1366]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 29,
+      "text": "PDF 先解析预览，可修正学期、节次和课程行后确认。官方教务入口由你自行登录，读取课表后走同一预览流程。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[65,1461][1155,1567]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 31,
+      "text": "管理活动模板",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[483,1712][738,1769]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 34,
+      "text": "健身训练 · 动作库 / 3D 肌群",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[339,1914][881,1971]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 37,
+      "text": "健康数据同步（睡眠 / 健身）",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[334,2116][886,2173]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 40,
+      "text": "语音助手与 DeepSeek 设置",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[347,2318][874,2375]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 43,
+      "text": "完整本地备份 / 恢复",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[419,2520][802,2577]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "databases": {
+    "v12-sample.db": {
+      "tables": 32,
+      "rowOrNullCountMismatches": [],
+      "integrity": "ok",
+      "foreignKeyViolations": 0,
+      "version": 12
+    },
+    "workouts-sample.db": {
+      "tables": 4,
+      "rowOrNullCountMismatches": [],
+      "integrity": "ok",
+      "foreignKeyViolations": 0,
+      "version": 1
+    }
+  },
+  "sensitiveOriginalStringsChecked": 769,
+  "sensitiveOriginalStringMatches": 0,
+  "fixedPublicActionLabelsExcluded": true,
+  "rebuiltIntoNewFiles": true,
+  "originalAttachmentsOrKeysCopied": false
+}

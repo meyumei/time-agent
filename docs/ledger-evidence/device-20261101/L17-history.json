@@ -1,0 +1,219 @@
+{
+  "file": "L17-history.png",
+  "redactedTextRegions": 5,
+  "ui": [
+    {
+      "node": 10,
+      "text": "只查询本机的实际记录、已完成训练和笔记；结果与记忆不会作为后续云端对话的上下文。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,398][1168,504]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 11,
+      "text": "",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,537][1168,745]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 0
+    },
+    {
+      "node": 12,
+      "text": "直接问历史，或用下方筛选",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,618][680,690]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 20,
+      "text": "上周",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[590,828][676,885]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 22,
+      "text": "2026-10-26",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,967][1168,1175]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 1
+    },
+    {
+      "node": 23,
+      "text": "起始日期 yyyy-MM-dd，空表示不限",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,966][743,1020]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 24,
+      "text": "2026-11-01",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,1208][1168,1416]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 2
+    },
+    {
+      "node": 25,
+      "text": "结束日期，含当天；空表示截至当前",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,1207][734,1261]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 26,
+      "text": "",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,1449][1168,1657]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 3
+    },
+    {
+      "node": 27,
+      "text": "关键词：标题、活动、备注、笔记",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,1530][824,1602]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 29,
+      "text": "全部",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,1740][190,1796]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 32,
+      "text": "实际",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[307,1740][393,1796]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 35,
+      "text": "训练",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[510,1740][596,1796]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 38,
+      "text": "笔记",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[713,1740][799,1796]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 41,
+      "text": "选择任务（可选）",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[91,1929][431,1986]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 44,
+      "text": "选择活动（可选）",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[509,1929][849,1986]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 47,
+      "text": "查询本机记录",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[483,2118][738,2175]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 51,
+      "text": "",
+      "description": "返回",
+      "kind": "View",
+      "bounds": "[52,203][130,281]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 53,
+      "text": "历史问答 · 本地查询",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[182,199][734,284]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

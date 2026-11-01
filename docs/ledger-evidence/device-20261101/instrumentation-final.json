@@ -1,0 +1,15 @@
+{
+  "command": [
+    "shell",
+    "am",
+    "instrument",
+    "-w",
+    "-e",
+    "class",
+    "com.timeagent.baseline.T0BaselineDeviceTest",
+    "com.timeagent.test/androidx.test.runner.AndroidJUnitRunner"
+  ],
+  "startedEpoch": 1793521588.9117756,
+  "finishedEpoch": 1793521592.8039637,
+  "adbExitCode": 0
+}

@@ -1,0 +1,45 @@
+{
+  "id": "L21",
+  "module": "语音",
+  "capabilities": "Vosk 实时预览＋SenseVoice 终稿；按住说话；Android 语音输入；终稿只提交一次；迟到结果不覆盖用户编辑",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L21-device.png",
+  "spec_code_references": [
+    "assistant/*Speech*",
+    "ui/HoldToTalkButton.kt",
+    "ui/HomeVoiceDock.kt"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/assistant/AndroidSpeechInput.kt",
+      "sha256": "88462125f135d2832b63d0c716b554adf55e5b46e8f11e2aefd74370b1a6e42f"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/assistant/OfflineSpeechInput.kt",
+      "sha256": "867466606b4a90961fe4251edcaafc6e643a9ca7c8c948ff5e4fd1d82b01054c"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/assistant/SenseVoiceSpeech.kt",
+      "sha256": "20644aacbcd341e12ba69aad2791ce14d88d9edcefba3ecf0cf653025c6cac6f"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/assistant/SpeechInput.kt",
+      "sha256": "c04f083a33c37fd919e4de115e111bf3fb13cb13864396f8a1fc3e32a40ff2b6"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ui/HoldToTalkButton.kt",
+      "sha256": "60cc1f526fa3030ba624fb1cf92080711e6296dbc60ccc879b9f773a0b5e092f"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ui/HomeVoiceDock.kt",
+      "sha256": "bbe7397f4cc1739c59a76c014b5e8cd71d227bd482fe6c998cfc45bb18fb06c7"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/assistant/OfflineSpeechInputTest.kt",
+      "sha256": "445505de2043cf716029bb919f72ca5e3de490a360957d2c7f4af3e455e82e16"
+    }
+  ]
+}

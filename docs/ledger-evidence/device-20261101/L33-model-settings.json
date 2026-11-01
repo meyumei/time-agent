@@ -1,0 +1,107 @@
+{
+  "file": "L33-model-settings.png",
+  "redactedTextRegions": 3,
+  "ui": [
+    {
+      "node": 11,
+      "text": "角色的模型设置",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[168,848][661,943]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 13,
+      "text": "语音在本机识别。与内置角色交流时，文字、相关共同记忆和它按需查询的业务结果会用于模型回复。修改运行中的模型设置后，需要重新启动角色，历史会保留。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[168,995][1052,1209]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 14,
+      "text": "",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[168,1242][1052,1450]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 0
+    },
+    {
+      "node": 15,
+      "text": "替换 Key（留空保留）",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[220,1323][700,1395]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 16,
+      "text": "deepseek-flash",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[168,1483][1052,1691]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 1
+    },
+    {
+      "node": 17,
+      "text": "模型名",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[220,1482][339,1536]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 18,
+      "text": "密钥保存在本机，供内置运行环境连接模型服务。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[168,1724][890,1767]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 20,
+      "text": "关闭",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[700,1895][786,1952]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 23,
+      "text": "保存",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[915,1895][1001,1952]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

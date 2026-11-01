@@ -1,0 +1,206 @@
+{
+  "restoredAtEpoch": 1793522925.6993885,
+  "originalBackupSha256Verified": true,
+  "originalFiles": 39,
+  "restoredFiles": 39,
+  "fileContentMismatches": [],
+  "databases": {
+    "time-agent.db": {
+      "tables": {
+        "academic_terms": {
+          "rows": 2,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "activity_templates": {
+          "rows": 6,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "agent_suggestions": {
+          "rows": 24,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "android_metadata": {
+          "rows": 1,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "attachments": {
+          "rows": 1,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "categories": {
+          "rows": 3,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "course_occurrences": {
+          "rows": 177,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "courses": {
+          "rows": 15,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "entity_revisions": {
+          "rows": 175,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "health_sync_items": {
+          "rows": 31,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "ideas": {
+          "rows": 1,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "import_batches": {
+          "rows": 3,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "ledger_accounts": {
+          "rows": 0,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "ledger_categories": {
+          "rows": 0,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "ledger_transactions": {
+          "rows": 0,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "notes": {
+          "rows": 0,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "operation_history": {
+          "rows": 106,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "payment_captures": {
+          "rows": 0,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "personal_memories": {
+          "rows": 0,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "projects": {
+          "rows": 1,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "record_tags": {
+          "rows": 0,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "recurring_instances": {
+          "rows": 12,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "recurring_rules": {
+          "rows": 3,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "reminders": {
+          "rows": 3,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "room_master_table": {
+          "rows": 1,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "schedule_blocks": {
+          "rows": 13,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "tags": {
+          "rows": 0,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "task_placements": {
+          "rows": 2,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "task_tags": {
+          "rows": 0,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "tasks": {
+          "rows": 30,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "time_records": {
+          "rows": 48,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "weekly_goals": {
+          "rows": 1,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        }
+      },
+      "integrity": "ok",
+      "foreignKeyViolations": 0
+    },
+    "workouts.db": {
+      "tables": {
+        "android_metadata": {
+          "rows": 1,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "room_master_table": {
+          "rows": 1,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "workout_sessions": {
+          "rows": 3,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        },
+        "workout_templates": {
+          "rows": 0,
+          "rowsMatch": true,
+          "contentDigestMatch": true
+        }
+      },
+      "integrity": "ok",
+      "foreignKeyViolations": 0
+    }
+  },
+  "timezone": "Asia/Shanghai",
+  "automaticTimezone": "1",
+  "applicationStoppedForExactComparison": true,
+  "noBackupDirectoryTouched": false,
+  "allOriginalContentRestored": true
+}

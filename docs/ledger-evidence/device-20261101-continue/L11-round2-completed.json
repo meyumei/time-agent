@@ -1,0 +1,195 @@
+{
+  "file": "L11-round2-completed.png",
+  "redactedTextRegions": 7,
+  "ui": [
+    {
+      "node": 11,
+      "text": "已关联时间轴实际记录",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[98,957][578,1029]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 13,
+      "text": "再练一次",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[176,1105][346,1162]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 17,
+      "text": "",
+      "description": "杠铃卧推",
+      "kind": "ImageView",
+      "bounds": "[85,1355][306,1576]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 18,
+      "text": "杠铃卧推",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[332,1408][524,1480]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 20,
+      "text": "重量 × 次数",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[85,1656][946,1699]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 25,
+      "text": "1",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[149,1874][166,1931]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 27,
+      "text": "20",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[228,1798][640,2006]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 0
+    },
+    {
+      "node": 28,
+      "text": "kg",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[280,1797][317,1851]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 29,
+      "text": "8",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[656,1798][986,2006]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 1
+    },
+    {
+      "node": 30,
+      "text": "次数",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[708,1797][774,1851]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 32,
+      "text": "",
+      "description": "取消完成第 1 组",
+      "kind": "View",
+      "bounds": "[1023,1865][1101,1943]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 38,
+      "text": "本组心得",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[319,2063][451,2106]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 41,
+      "text": "",
+      "description": "返回训练中心",
+      "kind": "View",
+      "bounds": "[98,210][176,288]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 43,
+      "text": "训练记录",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[215,221][913,277]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 45,
+      "text": "存为模板",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[952,221][1122,278]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 47,
+      "text": "01:25",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[59,327][465,506]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 49,
+      "text": "自由训练",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[59,506][1161,662]",
+      "enabled": "false",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

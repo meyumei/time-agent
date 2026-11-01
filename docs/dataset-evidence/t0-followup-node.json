@@ -1,0 +1,14 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "test/character-voice.test.mjs",
+    "test/nudge.test.mjs",
+    "test/projection.test.mjs",
+    "test/qq-channel.test.mjs",
+    "test/qq-voice.test.mjs"
+  ],
+  "startedEpoch": 1793520510.5291224,
+  "finishedEpoch": 1793520511.327016,
+  "exitCode": 0
+}

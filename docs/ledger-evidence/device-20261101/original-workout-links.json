@@ -1,0 +1,16 @@
+[
+  {
+    "dataset": "original",
+    "sessions": 3,
+    "nullLinks": 1,
+    "resolvedLinks": 1,
+    "unresolvedNonNullLinks": 1
+  },
+  {
+    "dataset": "anonymized",
+    "sessions": 3,
+    "nullLinks": 1,
+    "resolvedLinks": 1,
+    "unresolvedNonNullLinks": 1
+  }
+]

@@ -1,0 +1,2121 @@
+
+> Configure project :agent-runtime
+WARNING: The option setting 'android.overridePathCheck=true' is experimental.
+The current default is 'false'.
+
+> Task :core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:compileKotlin UP-TO-DATE
+> Task :core:compileJava NO-SOURCE
+> Task :core:processResources NO-SOURCE
+> Task :core:classes UP-TO-DATE
+> Task :core:jar UP-TO-DATE
+> Task :core:compileTestKotlin UP-TO-DATE
+> Task :core:compileTestJava NO-SOURCE
+> Task :core:processTestResources NO-SOURCE
+> Task :core:testClasses UP-TO-DATE
+> Task :core:test UP-TO-DATE
+> Task :agent-runtime:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :agent-runtime:preBuild UP-TO-DATE
+> Task :agent-runtime:preDebugBuild UP-TO-DATE
+> Task :agent-runtime:generateDebugResValues UP-TO-DATE
+> Task :agent-runtime:generateDebugResources UP-TO-DATE
+> Task :agent-runtime:packageDebugResources UP-TO-DATE
+> Task :agent-runtime:parseDebugLocalResources UP-TO-DATE
+> Task :agent-runtime:generateDebugRFile UP-TO-DATE
+> Task :agent-runtime:compileDebugKotlin UP-TO-DATE
+> Task :agent-runtime:javaPreCompileDebug UP-TO-DATE
+> Task :agent-runtime:compileDebugJavaWithJavac NO-SOURCE
+> Task :agent-runtime:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :agent-runtime:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :agent-runtime:preDebugUnitTestBuild UP-TO-DATE
+> Task :agent-runtime:generateDebugUnitTestStubRFile UP-TO-DATE
+> Task :agent-runtime:compileDebugUnitTestKotlin UP-TO-DATE
+> Task :agent-runtime:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :agent-runtime:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :agent-runtime:processDebugJavaRes UP-TO-DATE
+> Task :agent-runtime:processDebugUnitTestJavaRes UP-TO-DATE
+> Task :agent-runtime:testDebugUnitTest UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :agent-runtime:compileDebugLibraryResources UP-TO-DATE
+> Task :agent-runtime:writeDebugAarMetadata UP-TO-DATE
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :agent-runtime:extractDeepLinksDebug UP-TO-DATE
+> Task :agent-runtime:processDebugManifest UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:kspDebugKotlin UP-TO-DATE
+> Task :app:compileDebugKotlin UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:compileDebugJavaWithJavac NO-SOURCE
+> Task :app:bundleDebugClassesToRuntimeJar UP-TO-DATE
+> Task :app:bundleDebugClassesToCompileJar UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :agent-runtime:mergeDebugShaders UP-TO-DATE
+> Task :agent-runtime:compileDebugShaders NO-SOURCE
+> Task :agent-runtime:generateDebugAssets UP-TO-DATE
+> Task :agent-runtime:mergeDebugAssets UP-TO-DATE
+> Task :app:mergeDebugShaders UP-TO-DATE
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:packageDebugUnitTestForUnitTest UP-TO-DATE
+> Task :app:generateDebugUnitTestConfig UP-TO-DATE
+> Task :app:processDebugJavaRes UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:compressDebugAssets UP-TO-DATE
+> Task :app:desugarDebugFileDependencies UP-TO-DATE
+> Task :app:dexBuilderDebug UP-TO-DATE
+> Task :app:mergeDebugGlobalSynthetics UP-TO-DATE
+> Task :app:mergeDebugJavaResource UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :app:mergeExtDexDebug UP-TO-DATE
+> Task :agent-runtime:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :app:mergeLibDexDebug UP-TO-DATE
+> Task :app:mergeProjectDexDebug UP-TO-DATE
+> Task :agent-runtime:mergeDebugJniLibFolders UP-TO-DATE
+> Task :agent-runtime:mergeDebugNativeLibs UP-TO-DATE
+> Task :agent-runtime:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :app:mergeDebugNativeLibs UP-TO-DATE
+> Task :app:stripDebugDebugSymbols UP-TO-DATE
+> Task :app:validateSigningDebug UP-TO-DATE
+> Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :app:packageDebug UP-TO-DATE
+> Task :app:createDebugApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleDebug UP-TO-DATE
+> Task :agent-runtime:stripDebugDebugSymbols UP-TO-DATE
+> Task :agent-runtime:copyDebugJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :agent-runtime:extractDebugAnnotations UP-TO-DATE
+> Task :agent-runtime:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :agent-runtime:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :agent-runtime:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :agent-runtime:prepareDebugArtProfile UP-TO-DATE
+> Task :agent-runtime:prepareLintJarForPublish UP-TO-DATE
+> Task :agent-runtime:mergeDebugJavaResource UP-TO-DATE
+> Task :agent-runtime:syncDebugLibJars UP-TO-DATE
+> Task :agent-runtime:bundleDebugLocalLintAar UP-TO-DATE
+> Task :agent-runtime:createFullJarDebug UP-TO-DATE
+> Task :agent-runtime:preDebugAndroidTestBuild UP-TO-DATE
+> Task :agent-runtime:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :agent-runtime:writeDebugLintModelMetadata UP-TO-DATE
+> Task :agent-runtime:generateDebugAndroidTestLintModel UP-TO-DATE
+> Task :agent-runtime:extractProguardFiles UP-TO-DATE
+> Task :agent-runtime:generateDebugLintModel UP-TO-DATE
+> Task :agent-runtime:generateDebugUnitTestLintModel UP-TO-DATE
+> Task :agent-runtime:lintAnalyzeDebug UP-TO-DATE
+> Task :agent-runtime:lintAnalyzeDebugAndroidTest UP-TO-DATE
+> Task :agent-runtime:lintAnalyzeDebugUnitTest UP-TO-DATE
+> Task :app:preDebugAndroidTestBuild SKIPPED
+> Task :app:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :app:generateDebugAndroidTestLintModel UP-TO-DATE
+> Task :app:extractProguardFiles UP-TO-DATE
+> Task :app:generateDebugLintReportModel UP-TO-DATE
+> Task :app:generateDebugUnitTestLintModel
+> Task :app:lintAnalyzeDebug UP-TO-DATE
+> Task :app:kspDebugUnitTestKotlin
+> Task :app:compileDebugUnitTestKotlin
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes UP-TO-DATE
+
+> Task :app:testDebugUnitTest
+
+V12SampleDatabaseTest > anonymized device export opens with current Room and keeps original relationships FAILED
+    java.lang.AssertionError at Assert.java:87
+
+V12SampleDatabaseTest > generated large databases open with current Room and preserve domain data PASSED
+
+AssistantConfirmationTest > save failures keep preview available and never fake success PASSED
+
+AssistantConfirmationTest > future actual cannot save without future approval PASSED
+
+AssistantConfirmationTest > repeat confirm writes once PASSED
+
+AssistantConfirmationTest > stale expected version is carried to writer and refused PASSED
+
+AssistantConfirmationTest > preview and cancel have no write effect PASSED
+
+AssistantConversationTest > do not save cancels the pending action so a later confirmation cannot execute it PASSED
+
+AssistantConversationTest > cloud receives conversation and clear typed action executes locally PASSED
+
+AssistantConversationTest > questions about yesterday never create a record or invoke cloud writes PASSED
+
+AssistantConversationTest > bare last night sleep actually saves this mornings exact interval PASSED
+
+AssistantConversationTest > explicit no save and questions never write even with cloud enabled PASSED
+
+AssistantConversationTest > undo this action cannot undo someone elses newer edit PASSED
+
+AssistantConversationTest > repeating undo this action does not undo an unrelated manual operation PASSED
+
+AssistantConversationTest > explicit task target cannot delete similarly named sleep record PASSED
+
+AssistantConversationTest > same page followup supplies missing time and writes once PASSED
+
+AssistantConversationTest > same words next morning record a different night PASSED
+
+AssistantConversationTest > repository request replay is idempotent even after undo PASSED
+
+AssistantConversationTest > future actual stays pending until explicit confirmation PASSED
+
+AssistantConversationTest > followup modifies and deletes the actual saved record PASSED
+
+AssistantConversationTest > sleep is actually saved without preview and duplicate speech does not add twice PASSED
+
+AssistantConversationTest > new conflict invalidates pending course move PASSED
+
+AssistantConversationTest > spoken study keeps subject in notes with an independent timeline title and one undo PASSED
+
+AssistantConversationTest > stale conflict confirmation rolls back newly created task and plan PASSED
+
+AssistantConversationTest > spoken schedule query with a question mark still answers without writes PASSED
+
+AssistantConversationTest > task identity followup selects existing task instead of making a title containing the id PASSED
+
+AssistantConversationTest > new scheduled activity creates task and plan with one undo PASSED
+
+AssistantInboxIntegrationTest > reminder without a concrete time is clarified and not saved PASSED
+
+AssistantInboxIntegrationTest > point reminder preview creates no task or plan and one undo restores PASSED
+
+AssistantInboxIntegrationTest > idea preview is actionable and one undo restores the inbox PASSED
+
+AssistantInboxIntegrationTest > same page redo after undo restores without writing a new record PASSED
+
+AssistantInboxIntegrationTest > natural followup edits then cancels the same reminder PASSED
+
+AssistantInboxIntegrationTest > same page saves idea and point reminder while explicit window stays task and plan PASSED
+
+AssistantInboxIntegrationTest > natural followup deletes the just saved idea PASSED
+
+AssistantInboxProtocolTest > missing or unsafe reminder fields stay a clarification PASSED
+
+AssistantInboxProtocolTest > bounded context excludes idea content and note body PASSED
+
+AssistantInboxProtocolTest > system prompt advertises idea and point reminder actions PASSED
+
+AssistantInboxProtocolTest > typed protocol decodes idea and point reminder PASSED
+
+AssistantParserTest > record preview shows exact notes even when linked task has another title PASSED
+
+AssistantParserTest > free time excludes both courses and planned tasks PASSED
+
+AssistantParserTest > conflicting and decimal durations are clarified without truncating task name PASSED
+
+AssistantParserTest > task duration understands Chinese hours and minutes PASSED
+
+AssistantParserTest > missing date and conflicting intervals require clarification PASSED
+
+AssistantParserTest > weekday uses selected week and duration understands half hour PASSED
+
+AssistantParserTest > duplicate task names ask for identity PASSED
+
+AssistantParserTest > plan for absent task does not invent or partially create a task PASSED
+
+AssistantParserTest > multiple operations and vague commands never silently execute PASSED
+
+AssistantParserTest > manual future actual needs additional explicit approval PASSED
+
+AssistantParserTest > explicit sample course cleanup produces an actionable local command PASSED
+
+AssistantParserTest > one and half Chinese hour has exact ninety minute duration PASSED
+
+AssistantParserTest > plan dates and explicit clock preserve timezone PASSED
+
+AssistantParserTest > night twelve is ambiguous between calendar dates and requires clarification PASSED
+
+AssistantParserTest > tomorrow query uses local date PASSED
+
+AssistantProtocolTest > schema accepts only known typed single operation PASSED
+
+AssistantProtocolTest > cloud record preserves an activity name and separate study notes PASSED
+
+AssistantProtocolTest > cloud can return a record correction and a subsequent record together PASSED
+
+AssistantProtocolTest > missing key avoids transport and truncated response is rejected PASSED
+
+AssistantProtocolTest > cloud payload contains bounded inventory without notes descriptions or history PASSED
+
+AssistantProtocolTest > transport failure never reports or stages success PASSED
+
+AssistantProtocolTest > missing and invented task identifiers cannot stage writes PASSED
+
+AssistantProtocolTest > fake response is validated and refusal does not become a mutation PASSED
+
+AssistantProtocolTest > malformed truncated null and multi-action output is rejected PASSED
+
+AssistantRepositoryIntegrationTest > cancelled preview leaves Room untouched and repeat confirmation journals once PASSED
+
+AssistantRepositoryIntegrationTest > stale task cancellation cannot overwrite later Room edit PASSED
+
+AssistantRepositoryIntegrationTest > plan conflicts appear in preview and cancellation uses versioned write PASSED
+
+AssistantRequestCancellationTest > old cancelled delayed request cannot clear busy state of newer request PASSED
+
+AssistantRequestCancellationTest > cancelling official transport disconnects blocked connection before response arrives PASSED
+
+AssistantScreenFlowTest > text preview cancel and confirm change real Room only after confirmation PASSED
+
+AssistantSettingsTest > tampered ciphertext fails closed without exposing key PASSED
+
+AssistantSettingsTest > key is encrypted on disk and roundtrips after settings recreation PASSED
+
+AssistantVoiceResultTest > recognized command writes only after explicit confirmation PASSED
+
+AssistantVoiceResultTest > recognized text prepares a preview without writing and cancellation preserves input PASSED
+
+ConversationIntentGuardTest > completed reminder question never becomes a fresh reminder PASSED
+
+ConversationIntentGuardTest > spoken refusals cover reminders ideas and intervening courtesy words PASSED
+
+ConversationIntentGuardTest > polite requests and meaningful title words remain executable PASSED
+
+ConversationInterpreterTest > stacked spoken request prefixes and filler words preserve the activity PASSED
+
+ConversationInterpreterTest > bare weekday reminder uses the next weekday from now instead of the selected calendar week PASSED
+
+ConversationInterpreterTest > free time wish does not become a free time query or a one hour plan PASSED
+
+ConversationInterpreterTest > spoken quarter hours and short tomorrow morning are explicit clock times PASSED
+
+ConversationInterpreterTest > weekend wish without a decided time stays an idea PASSED
+
+ConversationInterpreterTest > reminder may follow a clear date and time phrase PASSED
+
+ConversationInterpreterTest > one explicit future point creates a reminder PASSED
+
+ConversationInterpreterTest > spontaneous inspiration becomes an unscheduled idea with original content PASSED
+
+ConversationInterpreterTest > sleep inference and record reference still use the saved record PASSED
+
+ConversationInterpreterTest > a stated range remains an event and a stated duration remains an explicit interval PASSED
+
+ConversationInterpreterTest > vague time past dates and ambiguous midnight require clarification PASSED
+
+ConversationInterpreterTest > homophone clock errors are never silently executed PASSED
+
+ConversationInterpreterTest > a title alone is not silently turned into an idea PASSED
+
+ConversationInterpreterTest > reminder activity keeps name characters and internal courtesy words PASSED
+
+ConversationInterpreterTest > negated requests questions and two independent actions never write PASSED
+
+ConversationInterpreterTest > a point without a date uses its next occurrence PASSED
+
+HoldToTalkSessionTest > swipe cancel discards both queued and late results PASSED
+
+HoldToTalkSessionTest > early recognition stays private until release PASSED
+
+HoldToTalkSessionTest > release waits for final text and delivers only once PASSED
+
+HoldToTalkSessionTest > cancelling after release prevents a late result from opening the assistant PASSED
+
+LanguageSafetyRegressionTest > 明晚八点 is the evening of the next day PASSED
+
+LanguageSafetyRegressionTest > only the connector between the two clocks is grammar PASSED
+
+LanguageSafetyRegressionTest > a wish whose title contains 明天 is still an idea PASSED
+
+LanguageSafetyRegressionTest > the first word of a reminder body is not a polite filler PASSED
+
+LanguageSafetyRegressionTest > record without a date prefers the latest finished interval and keeps a name containing 明天 PASSED
+
+LanguageSafetyRegressionTest > preview request is not an immediate write PASSED
+
+LanguageSafetyRegressionTest > a title merely containing 睡眠 is not replaced by a sleep record PASSED
+
+LocalHistoryPrivacyTest > local private answers and memory never enter cloud request PASSED
+
+NaturalRecordParserTest > temporal separators are removed without deleting characters inside names or content PASSED
+
+NaturalRecordParserTest > record connector before dates does not leak into its label PASSED
+
+OfflineModelFilesTest > model extractor rejects path traversal before writing outside its directory PASSED
+
+OfflineModelFilesTest > actual bundled archive passes checksum extraction and subsequent opens reuse complete model PASSED
+
+> Task :app:lintAnalyzeDebugAndroidTest
+
+> Task :app:testDebugUnitTest
+
+OfflineSpeechInputTest > final offline recognition uses the complete real recording rather than the preview words PASSED
+
+OfflineSpeechInputTest > offline capture emits live partials and one complete result after release PASSED
+
+OfflineSpeechInputTest > runtime permission denial never opens audio hardware PASSED
+
+OfflineSpeechInputTest > release drains captured PCM that was queued while native decoder was busy PASSED
+
+OfflineSpeechInputTest > asynchronous audio security failure clears starting state without pretending permission was absent PASSED
+
+OfflineSpeechInputTest > cancel discards partial and late final result while releasing microphone PASSED
+
+RecordNarrationIntegrationTest > correct training and record subsequent research from original narration with one undo PASSED
+
+SampleCourseCleanupTest > changed occurrence rejects entire old preview without partial cancellation PASSED
+
+SampleCourseCleanupTest > cloud batch action accepts no broadened selector and never executes on decode PASSED
+
+SampleCourseCleanupTest > cancelled preview never changes data and a fresh preview after cleanup is a read-only answer PASSED
+
+SampleCourseCleanupTest > stale batch undo restores none of the courses when even one saved item differs PASSED
+
+SampleCourseCleanupTest > all bundled examples cancel atomically after confirmation and one undo restores the entire batch PASSED
+
+SleepInferenceTest > night twelve means midnight sleep rather than twenty hours from noon PASSED
+
+SleepInferenceTest > morning sleep request infers most recent night and repairs repeated spoken end time PASSED
+
+SleepInferenceTest > explicit date takes precedence over the usual most recent sleep inference PASSED
+
+SleepInferenceTest > last nights sleep crosses midnight without asking a date the user did not need to give PASSED
+
+SleepInferenceTest > negated and question requests never turn into sleep writes PASSED
+
+VoiceCommandHintsTest > negation questions unknown speech and unrelated requests get no forced command PASSED
+
+VoiceCommandHintsTest > homophone correction is offered as a suggestion without overwriting original speech PASSED
+
+VoiceCommandHintsTest > clock homophones can be offered as a candidate while numbers and date stay fixed PASSED
+
+VoiceNBestTranscriptTest > alternatives only result keeps first candidate text not later domain command PASSED
+
+VoiceNBestTranscriptTest > empty or non string alternatives never promote a later executable candidate PASSED
+
+VoiceNBestTranscriptTest > hold across pauses accumulates text and alternatives segments before partial update PASSED
+
+VoiceNBestTranscriptTest > first candidate negation and date digits survive a more confident alternative PASSED
+
+VoiceNBestTranscriptTest > standard text stays primary when alternatives are also present PASSED
+
+VoiceTranscriptTest > English word spaces survive and malformed result never becomes executable text PASSED
+
+VoiceTranscriptTest > raw transcript keeps homophones name characters and negative instructions PASSED
+
+VoiceTranscriptTest > partial text is replaced while final segments survive pauses PASSED
+
+VoiceUnderstandingRegressionTest > edit preview includes the changed activity and preserved subject notes PASSED
+
+VoiceUnderstandingRegressionTest > last week record resolves weekday against real time PASSED
+
+VoiceUnderstandingRegressionTest > time first reminder removes only the request frame PASSED
+
+VoiceUnderstandingRegressionTest > location and activity words beginning with zai keep their first character PASSED
+
+VoiceUnderstandingRegressionTest > last nights eleven pm sleep still starts yesterday PASSED
+
+VoiceUnderstandingRegressionTest > record with a matching stated duration does not put that duration into activity notes PASSED
+
+VoiceUnderstandingRegressionTest > a date mentioned in study material stays in the notes and never changes the interval PASSED
+
+VoiceUnderstandingRegressionTest > narration questions refusals future intentions and invalid clocks do not create records PASSED
+
+VoiceUnderstandingRegressionTest > afternoon qualifier carries through an abbreviated record range PASSED
+
+VoiceUnderstandingRegressionTest > user study narration becomes yesterday morning with a separate activity and subject PASSED
+
+VoiceUnderstandingRegressionTest > question punctuation still permits read only queries PASSED
+
+VoiceUnderstandingRegressionTest > afternoon qualifier carries through an abbreviated plan range PASSED
+
+VoiceUnderstandingRegressionTest > narration punctuation questions why questions and unperformed activities never write PASSED
+
+VoiceUnderstandingRegressionTest > relative reminder duration is measured from now instead of becoming a clock or a plan PASSED
+
+VoiceUnderstandingRegressionTest > explicit noon after last nights start is never mistaken for midnight PASSED
+
+VoiceUnderstandingRegressionTest > explicit dawn overrides night context for a study session too PASSED
+
+VoiceUnderstandingRegressionTest > an explicit new end date prevents inherited evening hours PASSED
+
+VoiceUnderstandingRegressionTest > last nights two am sleep belongs to this morning regardless of word order PASSED
+
+VoiceUnderstandingRegressionTest > spoken month day zero minutes and quarters are exact PASSED
+
+VoiceUnderstandingRegressionTest > natural plan weekday uses the real current week PASSED
+
+AttachmentOcrTest > ocr only accepts image mime types PASSED
+
+AttachmentStoreTest > private copy has safe path verifies bytes and rejects oversized files PASSED
+
+AttachmentBackupTest > attachment bytes and editable text survive restore with missing preview and file rollback PASSED
+
+PersonalBackupTest > valid checksum with broken foreign key or unsupported schema is rejected PASSED
+
+PersonalBackupTest > full round trip keeps hidden rows relations protection and paused training PASSED
+
+PersonalBackupTest > memory cards and scheduling fields round trip with full backup PASSED
+
+PersonalBackupTest > failure after first database commit rolls back both databases and device preferences PASSED
+
+PersonalBackupTest > corrupt or truncated bundle is rejected before any live write PASSED
+
+PersonalBackupTest > notes awaiting undo survive export restore and reconnect when record is undone PASSED
+
+PersonalBackupTest > interrupted rollback is recovered from durable original pair before reopen PASSED
+
+PersonalBackupTest > v7 backup upgrades into current schema without inventing memory and keeps all old user data PASSED
+
+ProjectsBackupTest > restore preflight rejects deeper or cross project family without touching live tables PASSED
+
+ProjectsBackupTest > project relations and goals roundtrip and legacy v7 v8 stay explicitly unassigned PASSED
+
+ProjectsBackupTest > failure after replacing main rolls back new project relations and goals PASSED
+
+ProjectsBackupTest > restore rejects child whose parent has no explicit placement PASSED
+
+RecurringBackupTest > rules instance snapshots and suppression ledger roundtrip while v9 stays empty PASSED
+
+RecurringBackupTest > malformed recurring pattern is rejected by export and preflight without modifying tasks PASSED
+
+CalendarHandoffTest > only user supplied description is handed off PASSED
+
+CalendarHandoffTest > handoff uses insert editor with exact times and no private description by default PASSED
+
+ActivityTemplatesTest > invalid hierarchy and duplicate sibling names are rejected without writes PASSED
+
+ActivityTemplatesTest > user can add hierarchy and task retains its activity association PASSED
+
+ActivityTemplatesTest > stale template editor cannot overwrite a later edit PASSED
+
+ActivityTemplatesTest > initial templates contain sleep and fitness with four children without duplicate seeding PASSED
+
+ActivityTemplatesTest > archive preserves historical tasks and can be undone without reseeding PASSED
+
+AssistantAtomicityTest > new conflicts after preview require another confirmation PASSED
+
+AssistantAtomicityTest > stale stop preview cannot overwrite a later edit to running timer PASSED
+
+AssistantAtomicityTest > stale linked task preview cannot commit a new plan or timer or record PASSED
+
+BusinessMigrationTest > v11 upgrade keeps records classifications and adds empty ledger tables PASSED
+
+DatabaseMigrationTest > upgrade actual exported v4 schema preserves records and starts empty health sync PASSED
+
+DatabaseMigrationTest > v6 upgrade retains old suggestions and generates revision bound actionable cards PASSED
+
+DatabaseMigrationTest > upgrade actual exported v1 schema preserves task plan running timer and operation history PASSED
+
+GridCreationTest > a failed plan insert rolls back task and operation history PASSED
+
+GridCreationTest > task and selected plan save together with a stable request id PASSED
+
+HealthSyncRepositoryTest > preferred origin never displaces manually edited sleep PASSED
+
+HealthSyncRepositoryTest > snapshot exposes synced items for the settings screen PASSED
+
+HealthSyncRepositoryTest > non overlapping sleeps from different sources are both kept PASSED
+
+HealthSyncRepositoryTest > manual edits win over later source changes PASSED
+
+HealthSyncRepositoryTest > preferred origin sample wins within one mixed batch PASSED
+
+HealthSyncRepositoryTest > deleted synced record is tombstoned and not resurrected PASSED
+
+HealthSyncRepositoryTest > in-progress sessions are skipped until they close PASSED
+
+HealthSyncRepositoryTest > two preferred fragments replace two non preferred segments PASSED
+
+HealthSyncRepositoryTest > sync writes do not journal or retire redo PASSED
+
+HealthSyncRepositoryTest > source changes follow through when record not manually edited PASSED
+
+HealthSyncRepositoryTest > first sync creates records with source category and link PASSED
+
+HealthSyncRepositoryTest > repeated sync is idempotent PASSED
+
+HealthSyncRepositoryTest > preferred origin displaces stored sleep from another origin PASSED
+
+HealthSyncRepositoryTest > undo of a delete relinks the restored record instead of duplicating PASSED
+
+HealthSyncRepositoryTest > new sample overlapping stored sleep is deduplicated and never displaces it PASSED
+
+HealthSyncRepositoryTest > overlapping sleep from another source in one batch is deduplicated PASSED
+
+InboxNotesPersistenceTest > exported v2 schema upgrades without losing tasks activities blocks or history PASSED
+
+InboxNotesPersistenceTest > scheduling an idea as a reminder is one batched undo and redo PASSED
+
+InboxNotesPersistenceTest > delivery ledger survives reopen and undo redo PASSED
+
+InboxNotesPersistenceTest > the schedule idea convenience API stays one undo and one redo PASSED
+
+InboxNotesPersistenceTest > undo survives closing the database and redo restores every inbox record PASSED
+
+InboxNotesPersistenceTest > completed or cancelled parent task blocks reminder delivery PASSED
+
+InboxNotesRedoTest > delivery validates the exact current point and is claimed once PASSED
+
+InboxNotesRedoTest > multiple undo and redo steps use the correct order PASSED
+
+InboxNotesRedoTest > assistant task and plan undo and redo as one atomic action PASSED
+
+InboxNotesRedoTest > note can be undone and redone while retaining its module association PASSED
+
+InboxNotesRedoTest > redo recreates an undone task with a fresh version PASSED
+
+InboxNotesRedoTest > an idea enters the inbox without creating tasks reminders or time blocks PASSED
+
+InboxNotesRedoTest > idea and point reminder support undo and redo without inventing spans PASSED
+
+InboxNotesRedoTest > a new edit invalidates the previous redo branch PASSED
+
+InboxNotesRedoTest > a point reminder creates no hour long plan and supports stale edit protection PASSED
+
+InboxNotesRedoTest > future and disabled reminders cannot be marked delivered PASSED
+
+InboxNotesRedoTest > notes cannot reference a missing target PASSED
+
+InboxNotesRedoTest > module note is associated and versioned without changing its activity template PASSED
+
+InboxNotesRedoTest > redo refuses an external later edit instead of overwriting it PASSED
+
+JsonCourseAdapterTest > empty malformed and oversized input are rejected before import PASSED
+
+JsonCourseAdapterTest > bundled synthetic example produces complete normalized occurrences PASSED
+
+PersonalMemoryRepositoryTest > single behavior creates only an unconfirmed candidate and deleted candidates stay rejected PASSED
+
+PersonalMemoryRepositoryTest > explicit memory is one undo and restored edits cannot reuse old versions PASSED
+
+PersonalMemoryRepositoryTest > stale generated card cannot reactivate after new rule invalidates it PASSED
+
+PersonalMemoryRepositoryTest > effective memory changes suggestions and schedule commits while deactivation is undoable PASSED
+
+PersonalMemoryRepositoryTest > memory candidate button moves to next eligible actual record PASSED
+
+ProjectsMigrationTest > actual exported v8 migrates preserving running actual reminders history and no guessed membership PASSED
+
+ProjectsRepositoryTest > new child task and placement undo together without completing parent PASSED
+
+ProjectsRepositoryTest > parent must be explicitly placed before creating child even without project PASSED
+
+ProjectsRepositoryTest > only one child level and one project per family with atomic rejection PASSED
+
+ProjectsRepositoryTest > project and goal edit undo redo preserve versions and source tasks PASSED
+
+ProjectsRepositoryTest > weekly goals require one valid target monday and no duplicate PASSED
+
+ProjectsSchemaTest > project tables exist while old unassigned tasks remain unchanged PASSED
+
+RecordTitleMigrationTest > real v3 record and old history survive upgrade undo and redo without inventing a title PASSED
+
+RecurringMigrationTest > v9 projects goals and original actual survive explicit recurring migration PASSED
+
+RecurringSchemaTest > recurring rules and instances have separate persistence from actual records PASSED
+
+RepositoryTest > cross batch meetings preserve effective room and teacher against stored definition PASSED
+
+RepositoryTest > failed import rolls back term course occurrence and batch together PASSED
+
+RepositoryTest > task plans and overlapping actuals persist independently after reopen PASSED
+
+RepositoryTest > import rechecks duplicates in transaction and preserves manual occurrence changes PASSED
+
+RepositoryTest > editing retained history preserves its deleted task association PASSED
+
+RepositoryTest > stale plan edits cannot overwrite later changes PASSED
+
+RepositoryTest > undo can walk multiple edits while keeping revisions monotonic PASSED
+
+RepositoryTest > undo does not recycle a version that a stale editor can reuse PASSED
+
+RepositoryTest > plan conflicts warn and allow explicit save PASSED
+
+RepositoryTest > soft deleted tasks hide future plans but retain actual history and undo restores them PASSED
+
+RepositoryTest > undo refuses to clobber an external later edit PASSED
+
+RepositoryTest > invalid and unconfirmed future records leave database unchanged PASSED
+
+RepositoryTest > starting another timer requires explicit switch and survives recreation PASSED
+
+RepositoryTest > timer state survives closing and reopening the file database PASSED
+
+RepositoryTest > double save and double start are idempotent PASSED
+
+SuggestionActionsTest > schedule is exactly once and undo restores both card and plan PASSED
+
+SuggestionActionsTest > legacy text only and expired suggestions cannot mutate tasks PASSED
+
+SuggestionActionsTest > snooze can be undone without losing suggestion PASSED
+
+SuggestionActionsTest > updated task invalidates saved action without changing any plan PASSED
+
+SuggestionActionsTest > regeneration expires obsolete object revisions instead of stacking broken cards PASSED
+
+SuggestionActionsTest > postpone changes deadline and undo keeps restored card bound to latest version PASSED
+
+SuggestionActionsTest > occupied or undersized replacement slot fails atomically PASSED
+
+SuggestionRepositoryTest > dismissed suggestion never comes back PASSED
+
+SuggestionRepositoryTest > same dedup key is recorded only once PASSED
+
+SuggestionRepositoryTest > snapshot exposes pending suggestions for the inbox PASSED
+
+SuggestionRepositoryTest > pending suggestions older than seven days expire PASSED
+
+ChatTextExtractorTest > explicitRangeAndDurationBecomePlans PASSED
+
+ChatTextExtractorTest > temporalNarrativeNegationsDoNotBecomePositiveItems PASSED
+
+ChatTextExtractorTest > multiSentenceQuotationDoesNotBecomeCandidates PASSED
+
+ChatTextExtractorTest > dateOnlyIsTaskDueAtEndOfDay PASSED
+
+ChatTextExtractorTest > ordinaryNegationsAreIgnoredWithoutRejectingMaterialName PASSED
+
+ChatTextExtractorTest > twoDatesNeedExplicitRange PASSED
+
+ChatTextExtractorTest > questionsNegationsAndQuotedCommandsAreIgnored PASSED
+
+ChatTextExtractorTest > explicitPointIsReminderWithoutInventedEnd PASSED
+
+ChatTextExtractorTest > datePrefixWithColonIsNotMistakenForSpeaker PASSED
+
+ChatTextExtractorTest > undatedTextStaysInboxEvenWithClock PASSED
+
+ChatTextExtractorTest > unmatchedQuotationIsConservativelyIgnored PASSED
+
+ChatTextExtractorTest > explicitCrossMidnightRangeUsesSecondDate PASSED
+
+ExtractionSaveTest > deterministicIdCollisionDoesNotOverwriteEditedRow PASSED
+
+ExtractionSaveTest > editedTaskWithoutDueDateCannotBeSaved PASSED
+
+ExtractionSaveTest > duplicateAndUndoNeverReplay PASSED
+
+ExtractionSaveTest > consumedItemStaysSkippedInNewBatchWithAnotherItem PASSED
+
+ExtractionSaveTest > undoThenEditingCandidateCannotReplaySameSourceItem PASSED
+
+ExtractionSaveTest > staleDateAndTamperedSourceRejected PASSED
+
+ExtractionSaveTest > laterPlanConflictRollsBackEarlierReminderAndMarkers PASSED
+
+ExtractionSaveTest > invalidSecondItemRollsBackFirstAndMarker PASSED
+
+FishCharacterTest > default card exports a valid v2 persona without configuration PASSED
+
+--- Failed to create image decoder with message 'incomplete input'
+
+> Task :app:testDebugUnitTest
+
+FishCharacterTest > partial frame import leaves no copied images or action PASSED
+
+FishCharacterTest > action images keep order and metadata across reload and removal PASSED
+
+--- Failed to create image decoder with message 'incomplete input'
+
+> Task :app:testDebugUnitTest
+
+FishCharacterTest > invalid imports are rejected without corrupting the profile PASSED
+
+FishCharacterTest > v2 import edit and export keep unknown fields PASSED
+
+FishCompanionNativeTest > both real atlases render distinct facial and work poses in native compose PASSED
+
+FishCompanionNativeTest > changing expression keeps overlapping character detail opaque through the transition STANDARD_OUT
+    Transition sample hashes: [-494800006, -494800006, -494800006, -502701571, 1702508561, -181345659, 1775649192, 1237907192, 1237907192, 1237907192, 1237907192, 1237907192]
+
+FishCompanionNativeTest > changing expression keeps overlapping character detail opaque through the transition PASSED
+
+FishCompanionNativeTest > a fish sticker displays inside the original conversation panel PASSED
+
+FishCompanionNativeTest > appearance position routine and mood survive rebuilding presentation state PASSED
+
+FishGlobalCompanionTest > opening the fish preserves activities with unfinished editors PASSED
+
+FishGlobalCompanionTest > consumed navigation cannot replay after activity recreation PASSED
+
+FishGlobalCompanionTest > global companion declares the special overlay permission PASSED
+
+FishGlobalCompanionTest > presentation service is private and separate from the model runtime PASSED
+
+FishGlobalInteractionTest > long press opens the companionship settings and suppresses the chat PASSED
+
+FishGlobalInteractionTest > a cancelled gesture never opens the chat PASSED
+
+FishGlobalInteractionTest > tap opens the chat once while a drag only moves and drops PASSED
+
+FishGlobalInteractionTest > global companion stays off by default and roundtrips without moving the in-app fish PASSED
+
+FishTimeToolsTest > local quick action remains a real business tool on the same fish PASSED
+
+FishTimeToolsTest > a fish scheduled project task is visible in the same business snapshot PASSED
+
+FishTimeToolsTest > completing a recurring task updates the same instance without inventing actual PASSED
+
+FishTimeToolsTest > today reads overlapping plans and excludes cancelled items and unrelated actual PASSED
+
+FishTimeToolsTest > task tools write through repository and completion creates no actual records PASSED
+
+FishTimeToolsTest > future actual is rejected without creating a record PASSED
+
+GadgetbridgeImporterTest > missing or empty file yields nothing PASSED
+
+GadgetbridgeImporterTest > non sleep kinds are ignored PASSED
+
+GadgetbridgeImporterTest > split fragments of one night aggregate into one vendor style session PASSED
+
+GadgetbridgeImporterTest > late evening and after midnight samples merge into one night PASSED
+
+GadgetbridgeImporterTest > two distinct nights produce separate sessions PASSED
+
+GadgetbridgeImporterTest > night still in progress is skipped PASSED
+
+HealthConnectReaderTest > all health pages are read before returning records PASSED
+
+HealthConnectReaderTest > sleep only permissions do not require exercise authorization PASSED
+
+HealthConnectReaderTest > empty last page terminates without losing earlier records PASSED
+
+LocalHistoryTest > workout attribution uses start date and never adds its timeline duration again PASSED
+
+LocalHistoryTest > last week and explicit date questions become local structured ranges PASSED
+
+LocalHistoryTest > intervals clip to date bounds and future intervals do not count PASSED
+
+LocalHistoryTest > missing data says records not found rather than claiming no activity PASSED
+
+LocalHistoryTest > questions about last workout have all history scope and writes stay outside route PASSED
+
+LocalHistoryTest > ordinary practice queries still count actual records PASSED
+
+LocalHistoryTest > deleted task titles activity and related note remain searchable in actual history PASSED
+
+LocalHistoryTest > query particles are trimmed only at boundaries of subject names PASSED
+
+LocalHistoryTest > recorded duration and union duration are separate with keyword notes PASSED
+
+LocalHistoryTest > note search works without inventing actual duration PASSED
+
+CourseImportScreenTest > manualDraftCanBeEditedAndPreviewCancelDoesNotWriteWhileConfirmationDoes PASSED
+
+CourseImportScreenTest > failedConfirmationShowsErrorInsidePreviewAndKeepsTheDraftForCorrection PASSED
+
+PdfTimetableExtractorTest > completeSyntheticChinesePdfPreservesAllMergedRowsAndWeeks PASSED
+
+PdfTimetableExtractorTest > extractsRealPdfGlyphPositionsAndTableRules PASSED
+
+PdfTimetableExtractorTest > imageOnlyPdfAndWrongFileAreExplicitErrors PASSED
+
+PdfTimetableExtractorTest > locallyProvidedScutPdfHasSixteenScheduledRows SKIPPED
+
+PdfTimetableExtractorTest > standardPageRotationsKeepGlyphAndRuleCoordinatesAligned PASSED
+
+TimetableParsersTest > weekRangesApplyParityPerSegmentAndAcceptSingleWeek PASSED
+
+TimetableParsersTest > verifiedScutPresetOnlyDatesTheKnownTermAndUsesUserSelectedWushanTimes PASSED
+
+TimetableParsersTest > officialNavigationRequiresExactHttpsHostAndDefaultPort PASSED
+
+TimetableParsersTest > gridHtmlHandlesMergedPeriodsAndSeparateTimetableBlocks PASSED
+
+TimetableParsersTest > malformedRangesNeverBecomePartialSuccess PASSED
+
+TimetableParsersTest > normalizationNeedsExplicitMondayAndEveryUsedPeriodTime PASSED
+
+TimetableParsersTest > scutMergedRowsUseCellBoundsForWeekdaysAndPeriods PASSED
+
+TimetableParsersTest > zfResponseUsesOwnFieldMappingAndRejectsEmptyLoginPage PASSED
+
+TimetableParsersTest > listHtmlPreservesMergedWeekdaysAndDoesNotExecuteScripts PASSED
+
+LedgerTest > draft dedup survives repeats and confirmation undo redo PASSED
+
+LedgerTest > notification parser rejects balances failures pending and red packets PASSED
+
+LedgerTest > bill import creates pending drafts once and reconciles by reference PASSED
+
+LedgerTest > different order references stay distinct while identical repeated text dedups PASSED
+
+LedgerTest > integer money and refund adjusted totals PASSED
+
+LedgerTest > gb18030 alipay csv decodes PASSED
+
+LedgerTest > wechat csv skips transfers and failures and reads quoted merchants PASSED
+
+PersonalMemoryTest > explicit remember has a source and typed personal weekday rule PASSED
+
+PersonalMemoryTest > quoted other speaker and uncertain remember never become active preference PASSED
+
+PersonalMemoryTest > only confirmed enabled in-scope memory restricts matching plan PASSED
+
+PersonalMemoryTest > daily window and cross midnight weekday checks use local dates PASSED
+
+OrganizationTest > merging a tag keeps unrelated tags on the same record and undo restores them PASSED
+
+OrganizationTest > deleting a category moves records and undo keeps every original item PASSED
+
+OrganizationTest > category merge relinks tasks and undo restores the source category PASSED
+
+OrganizationTest > merging a synced record suppresses recreation and undo restores the source link PASSED
+
+OrganizationTest > record split keeps the original id for the first half and undo restores tags PASSED
+
+OrganizationTest > deleting a tag keeps the other tags on the same task and undo restores the link PASSED
+
+OrganizationTest > record merge keeps the first id and one undo restores both records and tags PASSED
+
+OrganizationTest > tag merge moves task and record links and undo restores both PASSED
+
+ProjectProgressTest > ongoing actual clips to now and week while deleted task history stays traceable PASSED
+
+ProjectProgressTest > overlap is separately accumulated and deduplicated with exact sources PASSED
+
+DeadlineServiceTest > manual reminder off survives delay and handling stops future reminder without fake actual PASSED
+
+DeadlineServiceTest > monthly deadline keeps month end anchor and overdue advance alert is not caught up PASSED
+
+DeadlineServiceTest > clearing project uses nullable placement and remains stable after reopen PASSED
+
+DeadlineServiceTest > manual cancelled task is preserved while rule edit succeeds without reminder rewrite PASSED
+
+DeadlineServiceTest > explicit old overdue and far future once remain real pending points without fake records PASSED
+
+DeadlineServiceTest > automatic stop from no advance alert can be explicitly enabled again PASSED
+
+DeadlineServiceTest > yearly leap birthday clamps only the instance while next leap returns to february 29 PASSED
+
+DeadlineServiceTest > deleted owned reminder is not resurrected by edited rule or explicit delay PASSED
+
+DeadlineServiceTest > generation window follows rule timezone across device midnight PASSED
+
+DeadlineServiceTest > manual stop after elapsed trigger survives delay and undo restores user preference PASSED
+
+RecurringServiceTest > manual reminder protects its instance from automatic pause PASSED
+
+RecurringServiceTest > skip and manual edit survive future rule changes without duplication PASSED
+
+RecurringServiceTest > added child tasks protect existing family when recurring project changes PASSED
+
+RecurringServiceTest > stale checked move never overwrites intervening manual task edit PASSED
+
+RecurringServiceTest > weekly frequency has no fabricated slots and completion no fabricated actual PASSED
+
+RecurringServiceTest > frequency edit retires unmatched future keys with original provenance intact PASSED
+
+RecurringServiceTest > weekly pause includes remaining instances in current week and resume is stable PASSED
+
+RecurringServiceTest > explicit project assignment and manual plan protection remain independent PASSED
+
+RecurringServiceTest > reopen and refresh preserve instance identities with plans separate from actual PASSED
+
+RecurringServiceTest > pause resume reuses original instances and undo rule creation is atomic PASSED
+
+RecurringServiceTest > single reschedule checks actual conflict and retains original key PASSED
+
+RecurringServiceTest > ongoing actual timer protects instance from automatic pause PASSED
+
+RecurringServiceTest > manual deletion is not recreated by refresh or edited rule PASSED
+
+RecurringServiceTest > future owned reminder title follows untouched rule edit PASSED
+
+RecurringStateTest > cancelled deleted and paused states never appear as pending PASSED
+
+RecurringStateTest > manual task reopening wins over old skipped or suspended instance marker PASSED
+
+ReminderAppLaunchTest > launching the app arms the system alarm of an existing future reminder PASSED
+
+ReminderNotificationContractTest > deleting a delivered reminder dismisses its notification PASSED
+
+ReminderNotificationContractTest > lockscreen public version never exposes the reminder title PASSED
+
+ReminderNotificationContractTest > refresh keeps a delivered notification until the reminder is disabled PASSED
+
+ReminderNotificationContractTest > two reminders due at the same time keep independent alarms and notifications PASSED
+
+ReminderSystemTest > restoring after reboot only schedules future enabled undelivered reminders PASSED
+
+ReminderSystemTest > stale id and old scheduled time cannot post notification or mark delivery PASSED
+
+ReminderSystemTest > deleting reminder cancels its alarm even after coordinator recreation PASSED
+
+ReminderSystemTest > early or disabled reminder broadcast does not post notification PASSED
+
+ReminderSystemTest > changing reminder time cancels old pending intent and keeps one current alarm PASSED
+
+ReminderSystemTest > blocked notification channel never marks reminder as delivered PASSED
+
+ReminderSystemTest > disabling reminder cancels its alarm PASSED
+
+ReminderSystemTest > unrecognized broadcast action cannot post notification PASSED
+
+ReminderSystemTest > current reminder publishes once and notification opens its reminder id PASSED
+
+ReminderSystemTest > Android 13 denied notification permission never marks reminder as delivered PASSED
+
+ReminderSystemTest > denied exact alarm permission schedules a system inexact fallback PASSED
+
+ReminderTaskLifecycleTest > reminder of an already completed task is never armed PASSED
+
+ReminderTaskLifecycleTest > completing the linked task cancels its pending alarm PASSED
+
+ReminderTaskLifecycleTest > reminder of a cancelled task is never armed PASSED
+
+ReplyCopilotTest > changed schedule rejects saved promise while preserving draft text PASSED
+
+ReplyCopilotTest > uncertain text only offers clarification and running timer blocks alternatives PASSED
+
+ReplyCopilotTest > drafting has no writes and save is explicit idempotent and undoable PASSED
+
+SuggestionEngineTest > adequate sleep is not suggested PASSED
+
+SuggestionEngineTest > task longer than remaining free time is never offered PASSED
+
+SuggestionEngineTest > fragmented adequate night does not become short sleep from final fragment PASSED
+
+SuggestionEngineTest > overdue todo task is suggested with stable dedup key PASSED
+
+SuggestionEngineTest > free slot with an unplanned task is suggested PASSED
+
+SuggestionEngineTest > short sleep from health sync within 24h is suggested PASSED
+
+SuggestionEngineTest > recently due task inside grace window is not suggested PASSED
+
+SuggestionEngineTest > no free slot suggestion when every task is already planned PASSED
+
+SuggestionEngineTest > manually added sleep is never suggested PASSED
+
+AppFlowTest > empty timeline tap creates a task and its selected plan atomically PASSED
+
+AppFlowTest > completed action returns to a single compact row and history can be reopened PASSED
+
+AppFlowTest > pending confirmation stays expanded after state restoration following a completed action STANDARD_ERROR
+    System.logW: A resource was acquired at attached stack trace but never released. See java.io.Closeable for information on avoiding resource leaks.
+    java.lang.Throwable: Explicit termination method 'close' not called
+        at dalvik.system.CloseGuard.$$robo$$dalvik_system_CloseGuard$open(CloseGuard.java:221)
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+        at org.robolectric.shadows.ShadowCloseGuard$CloseGuardReflector$$Reflector150.open(Unknown Source)
+        at org.robolectric.shadows.ShadowCloseGuard.open(ShadowCloseGuard.java:38)
+        at dalvik.system.CloseGuard.open(CloseGuard.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openInner(SQLiteDatabase.java:881)
+        at android.database.sqlite.SQLiteDatabase.openInner(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$open(SQLiteDatabase.java:865)
+        at android.database.sqlite.SQLiteDatabase.open(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openDatabase(SQLiteDatabase.java:739)
+        at android.database.sqlite.SQLiteDatabase.openDatabase(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$createInMemory(SQLiteDatabase.java:920)
+        at android.database.sqlite.SQLiteDatabase.createInMemory(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getDatabaseLocked(SQLiteOpenHelper.java:350)
+        at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getWritableDatabase(SQLiteOpenHelper.java:298)
+        at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getWritableOrReadableDatabase(FrameworkSQLiteOpenHelper.android.kt:224)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.innerGetDatabase(FrameworkSQLiteOpenHelper.android.kt:167)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getSupportDatabase(FrameworkSQLiteOpenHelper.android.kt:141)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper.getWritableDatabase(FrameworkSQLiteOpenHelper.android.kt:96)
+        at androidx.room.RoomDatabase.internalEndTransaction(RoomDatabase.android.kt:700)
+        at androidx.room.RoomDatabase.endTransaction(RoomDatabase.android.kt:693)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invokeSuspend(RoomDatabase.android.kt:2005)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invokeSuspend(RoomDatabase.android.kt:2015)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invoke(RoomDatabase.android.kt)
+        at kotlinx.coroutines.intrinsics.UndispatchedKt.startUndspatched(Undispatched.kt:66)
+        at kotlinx.coroutines.intrinsics.UndispatchedKt.startUndispatchedOrReturn(Undispatched.kt:43)
+        at kotlinx.coroutines.BuildersKt__Builders_commonKt.withContext(Builders.common.kt:165)
+        at kotlinx.coroutines.BuildersKt.withContext(Unknown Source)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$startTransactionCoroutine$2$1$1.invokeSuspend(RoomDatabase.android.kt:2048)
+        at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+        at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)
+        at kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:263)
+        at kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:94)
+        at kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking(Builders.kt:70)
+        at kotlinx.coroutines.BuildersKt.runBlocking(Unknown Source)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$startTransactionCoroutine$2$1.run(RoomDatabase.android.kt:2045)
+        at androidx.room.TransactionExecutor.execute$lambda$1$lambda$0(TransactionExecutor.android.kt:38)
+        at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+        at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+        at java.base/java.lang.Thread.run(Thread.java:1583)
+
+
+AppFlowTest > pending confirmation stays expanded after state restoration following a completed action PASSED
+
+AppFlowTest > home no longer reserves a row for a future assistant placeholder PASSED
+
+AppFlowTest > private PDF imports into Room and renders the full day timeline SKIPPED
+
+AppFlowTest > import preview cancel changes nothing and confirmation saves once PASSED
+
+AppFlowTest > theme switch offers explicit light and dark modes PASSED
+
+AppFlowTest > week browsing and return to current week remain available PASSED
+
+AppFlowTest > review clearly distinguishes cumulative effort and union elapsed time PASSED
+
+AppFlowTest > continuous date position survives switching app tabs PASSED
+
+AppFlowTest > reopened completed conversation stays expanded after state restoration PASSED
+
+AppFlowTest > back during a pending save keeps activity and draft open STANDARD_ERROR
+    System.logW: A resource was acquired at attached stack trace but never released. See java.io.Closeable for information on avoiding resource leaks.
+    java.lang.Throwable: Explicit termination method 'close' not called
+        at dalvik.system.CloseGuard.$$robo$$dalvik_system_CloseGuard$open(CloseGuard.java:221)
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+        at org.robolectric.shadows.ShadowCloseGuard$CloseGuardReflector$$Reflector150.open(Unknown Source)
+        at org.robolectric.shadows.ShadowCloseGuard.open(ShadowCloseGuard.java:38)
+        at dalvik.system.CloseGuard.open(CloseGuard.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openInner(SQLiteDatabase.java:881)
+        at android.database.sqlite.SQLiteDatabase.openInner(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$open(SQLiteDatabase.java:865)
+        at android.database.sqlite.SQLiteDatabase.open(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openDatabase(SQLiteDatabase.java:739)
+        at android.database.sqlite.SQLiteDatabase.openDatabase(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$createInMemory(SQLiteDatabase.java:920)
+        at android.database.sqlite.SQLiteDatabase.createInMemory(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getDatabaseLocked(SQLiteOpenHelper.java:350)
+        at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getWritableDatabase(SQLiteOpenHelper.java:298)
+        at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getWritableOrReadableDatabase(FrameworkSQLiteOpenHelper.android.kt:224)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.innerGetDatabase(FrameworkSQLiteOpenHelper.android.kt:167)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getSupportDatabase(FrameworkSQLiteOpenHelper.android.kt:141)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper.getWritableDatabase(FrameworkSQLiteOpenHelper.android.kt:96)
+        at androidx.room.RoomDatabase.internalEndTransaction(RoomDatabase.android.kt:700)
+        at androidx.room.RoomDatabase.endTransaction(RoomDatabase.android.kt:693)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invokeSuspend(RoomDatabase.android.kt:2005)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invokeSuspend(RoomDatabase.android.kt:2015)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invoke(RoomDatabase.android.kt)
+        at kotlinx.coroutines.intrinsics.UndispatchedKt.startUndspatched(Undispatched.kt:66)
+        at kotlinx.coroutines.intrinsics.UndispatchedKt.startUndispatchedOrReturn(Undispatched.kt:43)
+        at kotlinx.coroutines.BuildersKt__Builders_commonKt.withContext(Builders.common.kt:165)
+        at kotlinx.coroutines.BuildersKt.withContext(Unknown Source)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$startTransactionCoroutine$2$1$1.invokeSuspend(RoomDatabase.android.kt:2048)
+        at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+        at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)
+        at kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:263)
+        at kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:94)
+        at kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking(Builders.kt:70)
+        at kotlinx.coroutines.BuildersKt.runBlocking(Unknown Source)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$startTransactionCoroutine$2$1.run(RoomDatabase.android.kt:2045)
+        at androidx.room.TransactionExecutor.execute$lambda$1$lambda$0(TransactionExecutor.android.kt:38)
+        at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+        at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+        at java.base/java.lang.Thread.run(Thread.java:1583)
+
+
+AppFlowTest > back during a pending save keeps activity and draft open PASSED
+
+AppFlowTest > speech appears at top then executes on the same timeline with undo PASSED
+
+AppFlowTest > editing notes on a short timer record preserves second precision PASSED
+
+AppFlowTest > assistant selected week follows continuous timeline browsing PASSED
+
+AppFlowTest > sleep without overlap uses the day column despite a later scheduled activity PASSED
+
+AppFlowTest > fitness child template pre-fills a task and persists its module association PASSED
+
+AppFlowTest > failed save retains task draft and does not write partial data PASSED
+
+AppFlowTest > homophone suggestion retains original input and changes only after user selection PASSED
+
+AppFlowTest > clarification remains open until supplied time completes the action PASSED
+
+AppFlowTest > returning to current week from review resets a continuously browsed timeline PASSED
+
+AppFlowTest > home places a hold to talk circle at bottom center PASSED
+
+AppFlowTest > user can create task from empty app and see it in tasks PASSED
+
+AppFlowTest > upward cancellation removes live words without opening assistant or saving PASSED
+
+AppFlowTest > completed speech removes the idle transcript banner PASSED
+
+AppFlowTest > long actual records keep course width and conflicts open a clear pair list PASSED
+
+BriefingHealthStatusTest > no attempt is distinct from denied authorization PASSED
+
+BriefingHealthStatusTest > successful zero read is no data and disabled is separate PASSED
+
+BriefingHealthStatusTest > recent exercise does not make old sleep source look current PASSED
+
+BriefingHealthStatusTest > failed channel is explicit even with another successful source PASSED
+
+BriefingHealthStatusTest > old source cannot be labelled current after fresh read PASSED
+
+ButlerBatchOneFlowTest > briefing expands while keeping timeline and opens original due task PASSED
+
+ButlerBatchOneFlowTest > suggestion button creates real plan once and toolbar undo removes it STANDARD_ERROR
+    Intent = Intent { act=com.timeagent.reminders.REFRESH cmp=com.timeagent/.reminders.ReminderRestoreReceiver }; Matching wrappers: [Wrapper[receiver=[com.timeagent.reminders.ReminderRestoreReceiver@7cd68de5], context=[android.app.ContextImpl@3efa9365], intentFilter=[android.content.IntentFilter@259a910a]]]
+
+ButlerBatchOneFlowTest > suggestion button creates real plan once and toolbar undo removes it PASSED
+
+ButlerBatchTwoFlowTest > shared text stays candidate until explicitly selected and saved PASSED
+
+ButlerBatchTwoFlowTest > memory screen shows no seeded preferences and explicit memory can be deactivated PASSED
+
+ButlerBatchTwoFlowTest > history question returns computed result and opens exact original record PASSED
+
+ButlerPageGroupingTest > recurring focus shows a moved occurrence and hides completed ones PASSED
+
+ButlerPageGroupingTest > life deadline groups use the effective due date and keep overdue pending visible PASSED
+
+ButlerPageGroupingTest > next life deadline sorts by moved due date and excludes handled instances PASSED
+
+ConflictDisplayProposalTest > render three short items at the actual fifty dp column width PASSED
+
+ConflictDisplayProposalTest > render proposed narrow conflict summaries and their full details PASSED
+
+ConflictGroupAppearanceTest > a fifty dp day column exposes one readable conflict entry PASSED
+
+ConflictGroupAppearanceTest > expanded conflict sheet shows full wide cards and selects the requested original item PASSED
+
+ConflictGroupAppearanceTest > approved narrow summary shows course names instead of a large warning PASSED
+
+ConflictGroupAppearanceTest > compact approved summary keeps two names and the remaining count PASSED
+
+ConflictLayoutSampleTest > native conflict sample offers both layouts and opens the complete course group PASSED
+
+DailyBriefingCompactUiTest > expanding keeps the full date and opens the next arrangement, collapsing hides the detail PASSED
+
+DailyBriefingCompactUiTest > collapsed briefing including outer spacing fits in eighty dp at 411dp width STANDARD_OUT
+    Collapsed briefing height including outer spacing: 64.0.dp
+
+DailyBriefingCompactUiTest > collapsed briefing including outer spacing fits in eighty dp at 411dp width PASSED
+
+DailyBriefingTest > missing today's sleep stays unknown and completed workout is independent PASSED
+
+DailyBriefingTest > sleep keeps main and nap separate and labels latest past date PASSED
+
+DailyBriefingTest > today due tasks prioritize overdue and count unique overdue tasks PASSED
+
+DailyBriefingTest > next item uses earliest real instant and skips cancelled or completed entries PASSED
+
+DeadlineEntryTest > user creates an explicit point and handles it without fabricating duration PASSED
+
+DeadlineEntryTest > deadline preview shows original date and true pending reminder state PASSED
+
+DeadlineStatusTest > future missing registration and denied notification are separate true states PASSED
+
+DeadlineStatusTest > past time without trigger marker never says delivered and submitted marker never claims visible PASSED
+
+FishNativePreviewTest > plan exposes project task and complete task list with central input retained PASSED
+
+GadgetbridgeSyncFlowTest > Gadgetbridge sleep imports with Health Connect unavailable STANDARD_ERROR
+    Intent = Intent { act=nodomain.freeyourgadget.gadgetbridge.command.TRIGGER_EXPORT pkg=nodomain.freeyourgadget.gadgetbridge }; Matching wrappers: []
+
+GadgetbridgeSyncFlowTest > Gadgetbridge sleep imports with Health Connect unavailable PASSED
+
+GadgetbridgeSyncFlowTest > disabled sleep never imports Gadgetbridge sleep PASSED
+
+GadgetbridgeSyncFlowTest > broken Gadgetbridge export is reported even when Health Connect returns no data STANDARD_ERROR
+    Intent = Intent { act=nodomain.freeyourgadget.gadgetbridge.command.TRIGGER_EXPORT pkg=nodomain.freeyourgadget.gadgetbridge }; Matching wrappers: []
+
+GadgetbridgeSyncFlowTest > broken Gadgetbridge export is reported even when Health Connect returns no data STANDARD_OUT
+    HEALTH-SYNC-ERR IllegalStateException: Gadgetbridge 文件读取失败：You must use ShadowContentResolver.registerInputStream() in order to call read()
+
+GadgetbridgeSyncFlowTest > broken Gadgetbridge export is reported even when Health Connect returns no data PASSED
+
+GridBlockEditorFlowTest > future actual requires confirmation again when its time changes PASSED
+
+GridBlockEditorFlowTest > tapping a pending blank block opens its add page directly PASSED
+
+GridBlockEditorFlowTest > actual without a linked task saves title and notes without creating a task or plan STANDARD_ERROR
+    System.logW: A resource was acquired at attached stack trace but never released. See java.io.Closeable for information on avoiding resource leaks.
+    java.lang.Throwable: Explicit termination method 'close' not called
+        at dalvik.system.CloseGuard.$$robo$$dalvik_system_CloseGuard$open(CloseGuard.java:221)
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+        at org.robolectric.shadows.ShadowCloseGuard$CloseGuardReflector$$Reflector150.open(Unknown Source)
+        at org.robolectric.shadows.ShadowCloseGuard.open(ShadowCloseGuard.java:38)
+        at dalvik.system.CloseGuard.open(CloseGuard.java)
+        at android.database.sqlite.SQLiteConnection.$$robo$$android_database_sqlite_SQLiteConnection$__constructor__(SQLiteConnection.java:172)
+        at android.database.sqlite.SQLiteConnection.<init>(SQLiteConnection.java:163)
+        at android.database.sqlite.SQLiteConnection.$$robo$$android_database_sqlite_SQLiteConnection$open(SQLiteConnection.java:192)
+        at android.database.sqlite.SQLiteConnection.open(SQLiteConnection.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$openConnectionLocked(SQLiteConnectionPool.java:503)
+        at android.database.sqlite.SQLiteConnectionPool.openConnectionLocked(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$open(SQLiteConnectionPool.java:204)
+        at android.database.sqlite.SQLiteConnectionPool.open(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$open(SQLiteConnectionPool.java:196)
+        at android.database.sqlite.SQLiteConnectionPool.open(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openInner(SQLiteDatabase.java:880)
+        at android.database.sqlite.SQLiteDatabase.openInner(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$open(SQLiteDatabase.java:865)
+        at android.database.sqlite.SQLiteDatabase.open(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openDatabase(SQLiteDatabase.java:739)
+        at android.database.sqlite.SQLiteDatabase.openDatabase(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$createInMemory(SQLiteDatabase.java:920)
+        at android.database.sqlite.SQLiteDatabase.createInMemory(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getDatabaseLocked(SQLiteOpenHelper.java:350)
+        at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getWritableDatabase(SQLiteOpenHelper.java:298)
+        at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getWritableOrReadableDatabase(FrameworkSQLiteOpenHelper.android.kt:224)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.innerGetDatabase(FrameworkSQLiteOpenHelper.android.kt:167)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getSupportDatabase(FrameworkSQLiteOpenHelper.android.kt:141)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper.getWritableDatabase(FrameworkSQLiteOpenHelper.android.kt:96)
+        at androidx.room.RoomDatabase.internalEndTransaction(RoomDatabase.android.kt:700)
+        at androidx.room.RoomDatabase.endTransaction(RoomDatabase.android.kt:693)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invokeSuspend(RoomDatabase.android.kt:2005)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invokeSuspend(RoomDatabase.android.kt:2015)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invoke(RoomDatabase.android.kt)
+        at kotlinx.coroutines.intrinsics.UndispatchedKt.startUndspatched(Undispatched.kt:66)
+        at kotlinx.coroutines.intrinsics.UndispatchedKt.startUndispatchedOrReturn(Undispatched.kt:43)
+        at kotlinx.coroutines.BuildersKt__Builders_commonKt.withContext(Builders.common.kt:165)
+        at kotlinx.coroutines.BuildersKt.withContext(Unknown Source)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$startTransactionCoroutine$2$1$1.invokeSuspend(RoomDatabase.android.kt:2048)
+        at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+        at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)
+        at kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:263)
+        at kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:94)
+        at kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking(Builders.kt:70)
+        at kotlinx.coroutines.BuildersKt.runBlocking(Unknown Source)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$startTransactionCoroutine$2$1.run(RoomDatabase.android.kt:2045)
+        at androidx.room.TransactionExecutor.execute$lambda$1$lambda$0(TransactionExecutor.android.kt:38)
+        at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+        at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+        at java.base/java.lang.Thread.run(Thread.java:1583)
+
+    System.logW: A resource was acquired at attached stack trace but never released. See java.io.Closeable for information on avoiding resource leaks.
+    java.lang.Throwable: Explicit termination method 'close' not called
+        at dalvik.system.CloseGuard.$$robo$$dalvik_system_CloseGuard$open(CloseGuard.java:221)
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+        at org.robolectric.shadows.ShadowCloseGuard$CloseGuardReflector$$Reflector150.open(Unknown Source)
+        at org.robolectric.shadows.ShadowCloseGuard.open(ShadowCloseGuard.java:38)
+        at dalvik.system.CloseGuard.open(CloseGuard.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$open(SQLiteConnectionPool.java:215)
+        at android.database.sqlite.SQLiteConnectionPool.open(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$open(SQLiteConnectionPool.java:196)
+        at android.database.sqlite.SQLiteConnectionPool.open(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openInner(SQLiteDatabase.java:880)
+        at android.database.sqlite.SQLiteDatabase.openInner(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$open(SQLiteDatabase.java:865)
+        at android.database.sqlite.SQLiteDatabase.open(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openDatabase(SQLiteDatabase.java:739)
+        at android.database.sqlite.SQLiteDatabase.openDatabase(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$createInMemory(SQLiteDatabase.java:920)
+        at android.database.sqlite.SQLiteDatabase.createInMemory(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getDatabaseLocked(SQLiteOpenHelper.java:350)
+        at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getWritableDatabase(SQLiteOpenHelper.java:298)
+        at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getWritableOrReadableDatabase(FrameworkSQLiteOpenHelper.android.kt:224)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.innerGetDatabase(FrameworkSQLiteOpenHelper.android.kt:167)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getSupportDatabase(FrameworkSQLiteOpenHelper.android.kt:141)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper.getWritableDatabase(FrameworkSQLiteOpenHelper.android.kt:96)
+        at androidx.room.RoomDatabase.internalEndTransaction(RoomDatabase.android.kt:700)
+        at androidx.room.RoomDatabase.endTransaction(RoomDatabase.android.kt:693)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invokeSuspend(RoomDatabase.android.kt:2005)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invokeSuspend(RoomDatabase.android.kt:2015)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invoke(RoomDatabase.android.kt)
+        at kotlinx.coroutines.intrinsics.UndispatchedKt.startUndspatched(Undispatched.kt:66)
+        at kotlinx.coroutines.intrinsics.UndispatchedKt.startUndispatchedOrReturn(Undispatched.kt:43)
+        at kotlinx.coroutines.BuildersKt__Builders_commonKt.withContext(Builders.common.kt:165)
+        at kotlinx.coroutines.BuildersKt.withContext(Unknown Source)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$startTransactionCoroutine$2$1$1.invokeSuspend(RoomDatabase.android.kt:2048)
+        at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+        at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)
+        at kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:263)
+        at kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:94)
+        at kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking(Builders.kt:70)
+        at kotlinx.coroutines.BuildersKt.runBlocking(Unknown Source)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$startTransactionCoroutine$2$1.run(RoomDatabase.android.kt:2045)
+        at androidx.room.TransactionExecutor.execute$lambda$1$lambda$0(TransactionExecutor.android.kt:38)
+        at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+        at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+        at java.base/java.lang.Thread.run(Thread.java:1583)
+
+    System.logW: A resource was acquired at attached stack trace but never released. See java.io.Closeable for information on avoiding resource leaks.
+    java.lang.Throwable: Explicit termination method 'close' not called
+        at dalvik.system.CloseGuard.$$robo$$dalvik_system_CloseGuard$open(CloseGuard.java:221)
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+        at org.robolectric.shadows.ShadowCloseGuard$CloseGuardReflector$$Reflector150.open(Unknown Source)
+        at org.robolectric.shadows.ShadowCloseGuard.open(ShadowCloseGuard.java:38)
+        at dalvik.system.CloseGuard.open(CloseGuard.java)
+        at android.database.sqlite.SQLiteConnection.$$robo$$android_database_sqlite_SQLiteConnection$__constructor__(SQLiteConnection.java:172)
+        at android.database.sqlite.SQLiteConnection.<init>(SQLiteConnection.java:163)
+        at android.database.sqlite.SQLiteConnection.$$robo$$android_database_sqlite_SQLiteConnection$open(SQLiteConnection.java:192)
+        at android.database.sqlite.SQLiteConnection.open(SQLiteConnection.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$openConnectionLocked(SQLiteConnectionPool.java:503)
+        at android.database.sqlite.SQLiteConnectionPool.openConnectionLocked(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$open(SQLiteConnectionPool.java:204)
+        at android.database.sqlite.SQLiteConnectionPool.open(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$open(SQLiteConnectionPool.java:196)
+        at android.database.sqlite.SQLiteConnectionPool.open(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openInner(SQLiteDatabase.java:880)
+        at android.database.sqlite.SQLiteDatabase.openInner(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$open(SQLiteDatabase.java:865)
+        at android.database.sqlite.SQLiteDatabase.open(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openDatabase(SQLiteDatabase.java:739)
+        at android.database.sqlite.SQLiteDatabase.openDatabase(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$createInMemory(SQLiteDatabase.java:920)
+        at android.database.sqlite.SQLiteDatabase.createInMemory(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getDatabaseLocked(SQLiteOpenHelper.java:350)
+        at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getWritableDatabase(SQLiteOpenHelper.java:298)
+        at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getWritableOrReadableDatabase(FrameworkSQLiteOpenHelper.android.kt:224)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.innerGetDatabase(FrameworkSQLiteOpenHelper.android.kt:167)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getSupportDatabase(FrameworkSQLiteOpenHelper.android.kt:141)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper.getWritableDatabase(FrameworkSQLiteOpenHelper.android.kt:96)
+        at androidx.room.driver.SupportSQLiteDriver.open(SupportSQLiteDriver.android.kt:26)
+        at androidx.room.driver.SupportSQLiteConnectionPool.getSupportConnection(SupportSQLiteConnectionPool.android.kt:35)
+        at androidx.room.driver.SupportSQLiteConnectionPool.useConnection(SupportSQLiteConnectionPool.android.kt:42)
+        at androidx.room.RoomConnectionManager.useConnection(RoomConnectionManager.android.kt:126)
+        at androidx.room.RoomDatabase.useConnection$room_runtime_release(RoomDatabase.android.kt:593)
+        at androidx.room.TriggerBasedInvalidationTracker.syncTriggers$room_runtime_release(InvalidationTracker.kt:300)
+        at androidx.room.TriggerBasedInvalidationTracker$createFlow$1$1.invokeSuspend(InvalidationTracker.kt:233)
+        at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+        at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)
+        at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+        at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+        at java.base/java.lang.Thread.run(Thread.java:1583)
+
+
+GridBlockEditorFlowTest > actual without a linked task saves title and notes without creating a task or plan PASSED
+
+GridBlockEditorFlowTest > new planned task and block save with their shared selection PASSED
+
+GridBlockEditorFlowTest > switching types keeps typed title notes and edited dates and times PASSED
+
+GridBlockEditorFlowTest > actual keeps its title when a later note line repeats it PASSED
+
+GridBlockEditorFlowTest > plan may arrange an existing task without creating another task PASSED
+
+GridBlockEditorFlowTest > canceling a selected block writes no history or entities PASSED
+
+GridBlockEditorFlowTest > repeated actual save clicks create one write and one undo entry PASSED
+
+GridBlockEditorFlowTest > releasing a blank selection opens one range editor with plan and actual types PASSED
+
+GridBlockEditorFlowTest > overlapping plan uses an explicit still save action PASSED
+
+GridBlockEditorFlowTest > actual title identical to notes is stored once PASSED
+
+HealthSyncScreenTest > connected Gadgetbridge file permits manual sync without Health Connect PASSED
+
+HealthSyncScreenTest > ready state shows status and performs a sync with outcome summary PASSED
+
+HealthSyncScreenTest > toggles persist to settings and window chips change the request range PASSED
+
+HealthSyncScreenTest > needs permission state disables sync and shows guidance PASSED
+
+HoldToTalkButtonTest > leaving while pressed cancels the recording PASSED
+
+HoldToTalkButtonTest > upward release cancels rather than submitting PASSED
+
+HoldToTalkButtonTest > layout movement under a stationary finger does not cancel recorded speech PASSED
+
+HoldToTalkButtonTest > early completed recognition stops claiming microphone is still listening PASSED
+
+HoldToTalkButtonTest > screen reader can start and explicitly finish speech without physical pointer events PASSED
+
+HoldToTalkButtonTest > external error resets accessible capture so next click cannot submit failed speech PASSED
+
+HoldToTalkButtonTest > short physical tap does not start recording PASSED
+
+HoldToTalkButtonTest > screen reader cancellation does not submit speech PASSED
+
+HoldToTalkButtonTest > long hold starts once and release finishes once PASSED
+
+HoldToTalkButtonTest > sideways finger drift never means upward cancellation PASSED
+
+HoldToTalkButtonTest > processing while finger remains held does not claim microphone is listening STANDARD_ERROR
+    System.logW: A resource was acquired at attached stack trace but never released. See java.io.Closeable for information on avoiding resource leaks.
+    java.lang.Throwable: Explicit termination method 'close' not called
+        at dalvik.system.CloseGuard.$$robo$$dalvik_system_CloseGuard$open(CloseGuard.java:221)
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+        at org.robolectric.shadows.ShadowCloseGuard$CloseGuardReflector$$Reflector150.open(Unknown Source)
+        at org.robolectric.shadows.ShadowCloseGuard.open(ShadowCloseGuard.java:38)
+        at dalvik.system.CloseGuard.open(CloseGuard.java)
+        at android.database.sqlite.SQLiteConnection.$$robo$$android_database_sqlite_SQLiteConnection$__constructor__(SQLiteConnection.java:172)
+        at android.database.sqlite.SQLiteConnection.<init>(SQLiteConnection.java:163)
+        at android.database.sqlite.SQLiteConnection.$$robo$$android_database_sqlite_SQLiteConnection$open(SQLiteConnection.java:192)
+        at android.database.sqlite.SQLiteConnection.open(SQLiteConnection.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$openConnectionLocked(SQLiteConnectionPool.java:503)
+        at android.database.sqlite.SQLiteConnectionPool.openConnectionLocked(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$open(SQLiteConnectionPool.java:204)
+        at android.database.sqlite.SQLiteConnectionPool.open(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$open(SQLiteConnectionPool.java:196)
+        at android.database.sqlite.SQLiteConnectionPool.open(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openInner(SQLiteDatabase.java:880)
+        at android.database.sqlite.SQLiteDatabase.openInner(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$open(SQLiteDatabase.java:865)
+        at android.database.sqlite.SQLiteDatabase.open(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openDatabase(SQLiteDatabase.java:739)
+        at android.database.sqlite.SQLiteDatabase.openDatabase(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$createInMemory(SQLiteDatabase.java:920)
+        at android.database.sqlite.SQLiteDatabase.createInMemory(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getDatabaseLocked(SQLiteOpenHelper.java:350)
+        at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getWritableDatabase(SQLiteOpenHelper.java:298)
+        at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getWritableOrReadableDatabase(FrameworkSQLiteOpenHelper.android.kt:224)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.innerGetDatabase(FrameworkSQLiteOpenHelper.android.kt:167)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getSupportDatabase(FrameworkSQLiteOpenHelper.android.kt:141)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper.getWritableDatabase(FrameworkSQLiteOpenHelper.android.kt:96)
+        at androidx.room.RoomDatabase.internalEndTransaction(RoomDatabase.android.kt:700)
+        at androidx.room.RoomDatabase.endTransaction(RoomDatabase.android.kt:693)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invokeSuspend(RoomDatabase.android.kt:2005)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invokeSuspend(RoomDatabase.android.kt:2015)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invoke(RoomDatabase.android.kt)
+        at kotlinx.coroutines.intrinsics.UndispatchedKt.startUndspatched(Undispatched.kt:66)
+        at kotlinx.coroutines.intrinsics.UndispatchedKt.startUndispatchedOrReturn(Undispatched.kt:43)
+        at kotlinx.coroutines.BuildersKt__Builders_commonKt.withContext(Builders.common.kt:165)
+        at kotlinx.coroutines.BuildersKt.withContext(Unknown Source)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$startTransactionCoroutine$2$1$1.invokeSuspend(RoomDatabase.android.kt:2048)
+        at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+        at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)
+        at kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:263)
+        at kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:94)
+        at kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking(Builders.kt:70)
+        at kotlinx.coroutines.BuildersKt.runBlocking(Unknown Source)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$startTransactionCoroutine$2$1.run(RoomDatabase.android.kt:2045)
+        at androidx.room.TransactionExecutor.execute$lambda$1$lambda$0(TransactionExecutor.android.kt:38)
+        at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+        at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+        at java.base/java.lang.Thread.run(Thread.java:1583)
+
+    System.logW: A resource was acquired at attached stack trace but never released. See java.io.Closeable for information on avoiding resource leaks.
+    java.lang.Throwable: Explicit termination method 'close' not called
+        at dalvik.system.CloseGuard.$$robo$$dalvik_system_CloseGuard$open(CloseGuard.java:221)
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+        at org.robolectric.shadows.ShadowCloseGuard$CloseGuardReflector$$Reflector150.open(Unknown Source)
+        at org.robolectric.shadows.ShadowCloseGuard.open(ShadowCloseGuard.java:38)
+        at dalvik.system.CloseGuard.open(CloseGuard.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$open(SQLiteConnectionPool.java:215)
+        at android.database.sqlite.SQLiteConnectionPool.open(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$open(SQLiteConnectionPool.java:196)
+        at android.database.sqlite.SQLiteConnectionPool.open(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openInner(SQLiteDatabase.java:880)
+        at android.database.sqlite.SQLiteDatabase.openInner(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$open(SQLiteDatabase.java:865)
+        at android.database.sqlite.SQLiteDatabase.open(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openDatabase(SQLiteDatabase.java:739)
+        at android.database.sqlite.SQLiteDatabase.openDatabase(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$createInMemory(SQLiteDatabase.java:920)
+        at android.database.sqlite.SQLiteDatabase.createInMemory(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getDatabaseLocked(SQLiteOpenHelper.java:350)
+        at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getWritableDatabase(SQLiteOpenHelper.java:298)
+        at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getWritableOrReadableDatabase(FrameworkSQLiteOpenHelper.android.kt:224)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.innerGetDatabase(FrameworkSQLiteOpenHelper.android.kt:167)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getSupportDatabase(FrameworkSQLiteOpenHelper.android.kt:141)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper.getWritableDatabase(FrameworkSQLiteOpenHelper.android.kt:96)
+        at androidx.room.RoomDatabase.internalEndTransaction(RoomDatabase.android.kt:700)
+        at androidx.room.RoomDatabase.endTransaction(RoomDatabase.android.kt:693)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invokeSuspend(RoomDatabase.android.kt:2005)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invokeSuspend(RoomDatabase.android.kt:2015)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invoke(RoomDatabase.android.kt)
+        at kotlinx.coroutines.intrinsics.UndispatchedKt.startUndspatched(Undispatched.kt:66)
+        at kotlinx.coroutines.intrinsics.UndispatchedKt.startUndispatchedOrReturn(Undispatched.kt:43)
+        at kotlinx.coroutines.BuildersKt__Builders_commonKt.withContext(Builders.common.kt:165)
+        at kotlinx.coroutines.BuildersKt.withContext(Unknown Source)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$startTransactionCoroutine$2$1$1.invokeSuspend(RoomDatabase.android.kt:2048)
+        at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+        at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)
+        at kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:263)
+        at kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:94)
+        at kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking(Builders.kt:70)
+        at kotlinx.coroutines.BuildersKt.runBlocking(Unknown Source)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$startTransactionCoroutine$2$1.run(RoomDatabase.android.kt:2045)
+        at androidx.room.TransactionExecutor.execute$lambda$1$lambda$0(TransactionExecutor.android.kt:38)
+        at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+        at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+        at java.base/java.lang.Thread.run(Thread.java:1583)
+
+    System.logW: A resource was acquired at attached stack trace but never released. See java.io.Closeable for information on avoiding resource leaks.
+    java.lang.Throwable: Explicit termination method 'close' not called
+        at dalvik.system.CloseGuard.$$robo$$dalvik_system_CloseGuard$open(CloseGuard.java:221)
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+        at org.robolectric.shadows.ShadowCloseGuard$CloseGuardReflector$$Reflector150.open(Unknown Source)
+        at org.robolectric.shadows.ShadowCloseGuard.open(ShadowCloseGuard.java:38)
+        at dalvik.system.CloseGuard.open(CloseGuard.java)
+        at android.database.sqlite.SQLiteConnection.$$robo$$android_database_sqlite_SQLiteConnection$__constructor__(SQLiteConnection.java:172)
+        at android.database.sqlite.SQLiteConnection.<init>(SQLiteConnection.java:163)
+        at android.database.sqlite.SQLiteConnection.$$robo$$android_database_sqlite_SQLiteConnection$open(SQLiteConnection.java:192)
+        at android.database.sqlite.SQLiteConnection.open(SQLiteConnection.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$openConnectionLocked(SQLiteConnectionPool.java:503)
+        at android.database.sqlite.SQLiteConnectionPool.openConnectionLocked(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$open(SQLiteConnectionPool.java:204)
+        at android.database.sqlite.SQLiteConnectionPool.open(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$open(SQLiteConnectionPool.java:196)
+        at android.database.sqlite.SQLiteConnectionPool.open(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openInner(SQLiteDatabase.java:880)
+        at android.database.sqlite.SQLiteDatabase.openInner(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$open(SQLiteDatabase.java:865)
+        at android.database.sqlite.SQLiteDatabase.open(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openDatabase(SQLiteDatabase.java:739)
+        at android.database.sqlite.SQLiteDatabase.openDatabase(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$createInMemory(SQLiteDatabase.java:920)
+        at android.database.sqlite.SQLiteDatabase.createInMemory(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getDatabaseLocked(SQLiteOpenHelper.java:350)
+        at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getWritableDatabase(SQLiteOpenHelper.java:298)
+        at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getWritableOrReadableDatabase(FrameworkSQLiteOpenHelper.android.kt:224)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.innerGetDatabase(FrameworkSQLiteOpenHelper.android.kt:167)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getSupportDatabase(FrameworkSQLiteOpenHelper.android.kt:141)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper.getWritableDatabase(FrameworkSQLiteOpenHelper.android.kt:96)
+        at androidx.room.driver.SupportSQLiteDriver.open(SupportSQLiteDriver.android.kt:26)
+        at androidx.room.driver.SupportSQLiteConnectionPool.getSupportConnection(SupportSQLiteConnectionPool.android.kt:35)
+        at androidx.room.driver.SupportSQLiteConnectionPool.useConnection(SupportSQLiteConnectionPool.android.kt:42)
+        at androidx.room.RoomConnectionManager.useConnection(RoomConnectionManager.android.kt:126)
+        at androidx.room.RoomDatabase.useConnection$room_runtime_release(RoomDatabase.android.kt:593)
+        at androidx.room.TriggerBasedInvalidationTracker.syncTriggers$room_runtime_release(InvalidationTracker.kt:300)
+        at androidx.room.TriggerBasedInvalidationTracker$createFlow$1$1.invokeSuspend(InvalidationTracker.kt:233)
+        at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+        at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)
+        at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+        at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+        at java.base/java.lang.Thread.run(Thread.java:1583)
+
+
+HoldToTalkButtonTest > processing while finger remains held does not claim microphone is listening PASSED
+
+HoldToTalkButtonTest > permission or unavailable service refusal does not finish a recording PASSED
+
+HomeNavigationFlowTest > today offers recording habit deadline and training without visiting settings PASSED
+
+HomeNavigationFlowTest > nested settings returns to settings before the butler home PASSED
+
+HomeVoiceDockTest > asynchronous recognizer permission error clears held microphone before finger release PASSED
+
+MainActivityWindowTest > keyboard resizes the content instead of panning messages behind status bars PASSED
+
+ProjectNextActionTest > next task ignores deleted and cancelled rows and can be scheduled directly PASSED
+
+ProjectNextActionTest > schedule button is absent without callback while next task stays available PASSED
+
+ProjectNextActionTest > completed project recommends nothing even with pending tasks PASSED
+
+ProjectsEntryTest > each review number has original record navigation PASSED
+
+ProjectsEntryTest > task page opens projects without creating assignments automatically PASSED
+
+ProjectsEntryTest > project preview opens exact child task and review stats open original actual PASSED
+
+RecurringEntryTest > new weekly frequency form saves count while hiding fixed time PASSED
+
+RecurringEntryTest > weekly goal preview completes once with no fixed slots or fabricated actual PASSED
+
+RecurringEntryTest > recurring task entry is available from tasks PASSED
+
+SuggestionInboxTest > overdue task appears as inbox suggestion and dismiss silences it STANDARD_ERROR
+    Intent = Intent { act=com.timeagent.reminders.REFRESH cmp=com.timeagent/.reminders.ReminderRestoreReceiver }; Matching wrappers: [Wrapper[receiver=[com.timeagent.reminders.ReminderRestoreReceiver@7f38fa30], context=[android.app.ContextImpl@302e8baf], intentFilter=[android.content.IntentFilter@2f4944cc]]]
+
+SuggestionInboxTest > overdue task appears as inbox suggestion and dismiss silences it PASSED
+
+SuggestionInboxTest > dismissed suggestion does not regenerate on later refresh PASSED
+
+TaskPointInboxFlowTest > new plan defaults to one reminder and saves without a plan PASSED
+
+TaskPointInboxFlowTest > settings announces installed application version PASSED
+
+TaskPointInboxFlowTest > task page exposes the unscheduled inbox entry STANDARD_ERROR
+    Intent = Intent { act=com.timeagent.reminders.REFRESH cmp=com.timeagent/.reminders.ReminderRestoreReceiver }; Matching wrappers: [Wrapper[receiver=[com.timeagent.reminders.ReminderRestoreReceiver@2a6d08be], context=[android.app.ContextImpl@6ae10ab3], intentFilter=[android.content.IntentFilter@5e08b57a]]]
+
+TaskPointInboxFlowTest > task page exposes the unscheduled inbox entry PASSED
+
+TaskPointInboxFlowTest > choosing an explicit range keeps the start and end editor PASSED
+
+TaskPointInboxFlowTest > redo is enabled after undo and restores the task PASSED
+
+TaskPointInboxFlowTest > task note draft survives restoration and asks before discarding PASSED
+
+TaskPointInboxFlowTest > production hides demo entries and offers training on task page PASSED
+
+ThemePreferenceTest > unknown saved choice falls back to system PASSED
+
+ThemePreferenceTest > explicit theme choice persists across settings instances PASSED
+
+TimelineCardTest > same course keeps its color across teaching sections and rooms PASSED
+
+TimelineCardTest > notes become fully readable after the title and time gain enough room PASSED
+
+TimelineCardTest > expanded event card shows a long title beyond four lines PASSED
+
+TimelineCardTest > tiny pinch changes preserve the card typography until the next readable size step PASSED
+
+TimelineCardTest > cards no longer reserve a gutter for a dark vertical stripe PASSED
+
+TimelineCardTest > subpixel card width changes preserve title layout inputs during zoom STANDARD_OUT
+    ZOOM_TITLE before=Constraints(minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = 252) after=Constraints(minWidth = 0, maxWidth = 100, minHeight = 0, maxHeight = 252) equalInputs=true
+
+TimelineCardTest > subpixel card width changes preserve title layout inputs during zoom PASSED
+
+TimelineColorPreferencesTest > eight named default choices have separate colors and known modules are assigned intentionally PASSED
+
+TimelineColorPreferencesTest > module selection survives a fresh preferences instance and reset restores automatic color PASSED
+
+TimelineConflictGroupUiTest > actual record keeps its lane outside the group PASSED
+
+TimelineConflictGroupUiTest > touching half open intervals are not a conflict group PASSED
+
+TimelineConflictGroupUiTest > overlapping course and plan collapse into one full column group and hide individuals PASSED
+
+TimelineConflictGroupUiTest > clicking the group opens wide cards and a course selects its original item PASSED
+
+TimelineConflictsTest > conflicts expose the exact overlap once and ignore actual records STANDARD_ERROR
+    System.logW: A resource was acquired at attached stack trace but never released. See java.io.Closeable for information on avoiding resource leaks.
+    java.lang.Throwable: Explicit termination method 'close' not called
+        at dalvik.system.CloseGuard.$$robo$$dalvik_system_CloseGuard$open(CloseGuard.java:221)
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+        at org.robolectric.shadows.ShadowCloseGuard$CloseGuardReflector$$Reflector150.open(Unknown Source)
+        at org.robolectric.shadows.ShadowCloseGuard.open(ShadowCloseGuard.java:38)
+        at dalvik.system.CloseGuard.open(CloseGuard.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openInner(SQLiteDatabase.java:881)
+        at android.database.sqlite.SQLiteDatabase.openInner(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$open(SQLiteDatabase.java:865)
+        at android.database.sqlite.SQLiteDatabase.open(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openDatabase(SQLiteDatabase.java:739)
+        at android.database.sqlite.SQLiteDatabase.openDatabase(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$createInMemory(SQLiteDatabase.java:920)
+        at android.database.sqlite.SQLiteDatabase.createInMemory(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getDatabaseLocked(SQLiteOpenHelper.java:350)
+        at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getWritableDatabase(SQLiteOpenHelper.java:298)
+        at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getWritableOrReadableDatabase(FrameworkSQLiteOpenHelper.android.kt:224)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.innerGetDatabase(FrameworkSQLiteOpenHelper.android.kt:167)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getSupportDatabase(FrameworkSQLiteOpenHelper.android.kt:141)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper.getWritableDatabase(FrameworkSQLiteOpenHelper.android.kt:96)
+        at androidx.room.RoomDatabase.inTransaction(RoomDatabase.android.kt:802)
+        at androidx.room.util.DBUtil__DBUtil_androidKt.performSuspending(DBUtil.android.kt:247)
+        at androidx.room.util.DBUtil.performSuspending(Unknown Source)
+        at com.timeagent.data.TimeDao_Impl.reminders(TimeDao_Impl.kt:3379)
+        at com.timeagent.data.TimeRepository.readSnapshot(TimeRepository.kt:169)
+        at com.timeagent.data.TimeRepository.access$readSnapshot(TimeRepository.kt:39)
+        at com.timeagent.data.TimeRepository$snapshot$2.invokeSuspend(TimeRepository.kt:168)
+        at com.timeagent.data.TimeRepository$snapshot$2.invoke(TimeRepository.kt)
+        at com.timeagent.data.TimeRepository$snapshot$2.invoke(TimeRepository.kt)
+        at com.timeagent.data.TimeRepository$transaction$2$1$1.invokeSuspend(TimeRepository.kt:41)
+        at com.timeagent.data.TimeRepository$transaction$2$1$1.invoke(TimeRepository.kt)
+        at com.timeagent.data.TimeRepository$transaction$2$1$1.invoke(TimeRepository.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invokeSuspend(RoomDatabase.android.kt:2001)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invokeSuspend(RoomDatabase.android.kt:2015)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invoke(RoomDatabase.android.kt)
+        at kotlinx.coroutines.intrinsics.UndispatchedKt.startUndspatched(Undispatched.kt:66)
+        at kotlinx.coroutines.intrinsics.UndispatchedKt.startUndispatchedOrReturn(Undispatched.kt:43)
+        at kotlinx.coroutines.BuildersKt__Builders_commonKt.withContext(Builders.common.kt:165)
+        at kotlinx.coroutines.BuildersKt.withContext(Unknown Source)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$startTransactionCoroutine$2$1$1.invokeSuspend(RoomDatabase.android.kt:2048)
+        at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+        at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)
+        at kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:263)
+        at kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:94)
+        at kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking(Builders.kt:70)
+        at kotlinx.coroutines.BuildersKt.runBlocking(Unknown Source)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$startTransactionCoroutine$2$1.run(RoomDatabase.android.kt:2045)
+        at androidx.room.TransactionExecutor.execute$lambda$1$lambda$0(TransactionExecutor.android.kt:38)
+        at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+        at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+        at java.base/java.lang.Thread.run(Thread.java:1583)
+
+
+TimelineConflictsTest > conflicts expose the exact overlap once and ignore actual records PASSED
+
+TimelineConflictsTest > conflict groups contain connected scheduled chains in start order PASSED
+
+TimelineConflictsTest > actual records never bridge groups and touching or duplicate events are not a group PASSED
+
+TimelineConflictsTest > sparse schedules preserve exact conflict ordering while excluding duplicate and actual items PASSED
+
+TimelineConflictsTest > adjacent events and duplicate entries do not generate false warnings PASSED
+
+TimelineGroupHitTest > long pressing a reminder dot never turns it into a blank time selection PASSED
+
+TimelineGroupHitTest > long pressing the painted group after its left member ends never creates a blank slot PASSED
+
+TimelinePaletteTest > different free activities use distinct preset colors PASSED
+
+TimelinePaletteTest > rendered agenda keeps its small running status and notes readable PASSED
+
+TimelinePaletteTest > every preset has readable title and secondary text in light and dark modes PASSED
+
+TimelinePaletteTest > a module keeps its chosen color across plans and actual records PASSED
+
+TimelinePendingSelectionTest > blank tap stages a range and second tap adds exactly one selected range PASSED
+
+TimelinePendingSelectionTest > a second finger cancels a pending drag and never opens an add page PASSED
+
+TimelinePendingSelectionTest > long pressing without dragging retains the default one hour PASSED
+
+TimelinePendingSelectionTest > dragging the end handle preserves start and commits on release PASSED
+
+TimelinePerformanceTest > pinch frames reuse the reminder index instead of scanning all reminders per day STANDARD_OUT
+    ZOOM_REMINDER_READS initial=120 gesture=0
+
+TimelinePerformanceTest > pinch frames reuse the reminder index instead of scanning all reminders per day PASSED
+
+TimelinePerformanceTest > repeated fractional date drags do not rebuild the semester source PASSED
+
+TimelinePerformanceTest > retained dates preserve event text nodes when the previous day leaves the screen PASSED
+
+TimelinePerformanceTest > card clicks and blank creation use the moved positions after fractional panning PASSED
+
+TimelineRecordWidthTest > expanded sleep card is clickable across its full width after panning and zooming PASSED
+
+TimelineRecordWidthTest > a later mixed overlap does not reserve a strip during independent sleep PASSED
+
+TimelineRecordWidthTest > overlapping actual records without scheduled events share the full day width PASSED
+
+TimelineRecordWidthTest > mixed overlap keeps scheduled cards wide and actual comparison separate PASSED
+
+TimelineRecordWidthTest > later plans do not shrink a nonoverlapping sleep or each other PASSED
+
+TimelineRecordWidthTest > a lone sleep uses the full day width PASSED
+
+TimelineRecordWidthTest > touching end and start boundaries do not count as overlap PASSED
+
+TimelineRenderCacheTest > scheduled conflict lanes stay separate from records and conflict pairs are unique across midnight PASSED
+
+TimelineRenderCacheTest > decades of running time create segments only for the eight covered dates PASSED
+
+TimelineRenderCacheTest > a changed task invalidates content while unrelated snapshot fields keep the cache PASSED
+
+TimelineRenderCacheTest > an entirely historical window resolves fresh timer items without rebuilding its days PASSED
+
+TimelineRenderCacheTest > changing the time zone rebuilds local day segments PASSED
+
+TimelineRenderCacheTest > running record ticks retain complete historical day layouts PASSED
+
+TimelineRenderCacheTest > a running record crossing midnight invalidates both days and leaves other days cached PASSED
+
+TimelineRenderCacheTest > moving the date range retains the layouts for the seven shared days PASSED
+
+TimelineRenderCacheTest > hit testing follows fractional date movement and excludes lane gaps PASSED
+
+TimelineRenderCacheTest > clock ticks without running records never rebuild or rescan the source PASSED
+
+TimelineRenderCacheTest > fractional pan zoom and vertical pan reuse the prepared date range PASSED
+
+TimelineRenderCacheTest > rewinding a running timer preserves unchanged completed dates and removes its former end day PASSED
+
+TimelineViewportUiTest > small date drag retains fractional movement without a weekly callback PASSED
+
+TimelineViewportUiTest > holding blank grid and dragging selects a time range without panning dates PASSED
+
+TimelineViewportUiTest > initial timeline displays midnight and end of day in the same viewport PASSED
+
+TimelineViewportUiTest > overlapping records remain individually selectable through the list PASSED
+
+TimelineViewportUiTest > stationary two finger hold never becomes a create gesture PASSED
+
+TimelineViewportUiTest > current week restores Monday even when the external range starts on a Tuesday PASSED
+
+TimelineViewportUiTest > dragging one day exposes next Monday as part of the continuous range PASSED
+
+TimelineViewportUiTest > pinching the grid never creates a time selection PASSED
+
+TimelineViewportUiTest > pinch still works when the second finger lands on an event card PASSED
+
+TimelineViewportUiTest > a physical tap on a timeline block still opens its details PASSED
+
+TimelineViewportUiTest > two finger pinch enlarges both dates and hours and fit restores full day PASSED
+
+TimelineViewportUiTest > arrows move seven days from the fractional browsed range and current restores Monday PASSED
+
+VoiceRecordEditorTest > editing a spoken study record keeps its independent activity and subject notes PASSED
+
+WakeupInteractionPreviewTest > native preview covers week range selection and both add types PASSED
+
+WakeupInteractionPreviewTest > native color picker applies a named preset and persists the choice PASSED
+
+WorkoutAssetsTest > offline anatomy viewer includes actual mesh and renderer PASSED
+
+WorkoutAssetsTest > bundled action catalogue has stable ids muscles and real local media PASSED
+
+WorkoutDialogTest > Tabata stage dialog accepts work duration without other workout content STANDARD_ERROR
+    System.logW: A resource was acquired at attached stack trace but never released. See java.io.Closeable for information on avoiding resource leaks.
+    java.lang.Throwable: Explicit termination method 'close' not called
+        at dalvik.system.CloseGuard.$$robo$$dalvik_system_CloseGuard$open(CloseGuard.java:221)
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+        at org.robolectric.shadows.ShadowCloseGuard$CloseGuardReflector$$Reflector150.open(Unknown Source)
+        at org.robolectric.shadows.ShadowCloseGuard.open(ShadowCloseGuard.java:38)
+        at dalvik.system.CloseGuard.open(CloseGuard.java)
+        at android.database.sqlite.SQLiteConnection.$$robo$$android_database_sqlite_SQLiteConnection$__constructor__(SQLiteConnection.java:172)
+        at android.database.sqlite.SQLiteConnection.<init>(SQLiteConnection.java:163)
+        at android.database.sqlite.SQLiteConnection.$$robo$$android_database_sqlite_SQLiteConnection$open(SQLiteConnection.java:192)
+        at android.database.sqlite.SQLiteConnection.open(SQLiteConnection.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$openConnectionLocked(SQLiteConnectionPool.java:503)
+        at android.database.sqlite.SQLiteConnectionPool.openConnectionLocked(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$open(SQLiteConnectionPool.java:204)
+        at android.database.sqlite.SQLiteConnectionPool.open(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$open(SQLiteConnectionPool.java:196)
+        at android.database.sqlite.SQLiteConnectionPool.open(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openInner(SQLiteDatabase.java:880)
+        at android.database.sqlite.SQLiteDatabase.openInner(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$open(SQLiteDatabase.java:865)
+        at android.database.sqlite.SQLiteDatabase.open(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openDatabase(SQLiteDatabase.java:739)
+        at android.database.sqlite.SQLiteDatabase.openDatabase(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$createInMemory(SQLiteDatabase.java:920)
+        at android.database.sqlite.SQLiteDatabase.createInMemory(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getDatabaseLocked(SQLiteOpenHelper.java:350)
+        at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getWritableDatabase(SQLiteOpenHelper.java:298)
+        at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getWritableOrReadableDatabase(FrameworkSQLiteOpenHelper.android.kt:224)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.innerGetDatabase(FrameworkSQLiteOpenHelper.android.kt:167)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getSupportDatabase(FrameworkSQLiteOpenHelper.android.kt:141)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper.getWritableDatabase(FrameworkSQLiteOpenHelper.android.kt:96)
+        at androidx.room.RoomDatabase.inTransaction(RoomDatabase.android.kt:802)
+        at androidx.room.util.DBUtil__DBUtil_androidKt.performSuspending(DBUtil.android.kt:247)
+        at androidx.room.util.DBUtil.performSuspending(Unknown Source)
+        at com.timeagent.data.TimeDao_Impl.reminders(TimeDao_Impl.kt:3379)
+        at com.timeagent.data.TimeRepository.readSnapshot(TimeRepository.kt:169)
+        at com.timeagent.data.TimeRepository.access$readSnapshot(TimeRepository.kt:39)
+        at com.timeagent.data.TimeRepository$snapshot$2.invokeSuspend(TimeRepository.kt:168)
+        at com.timeagent.data.TimeRepository$snapshot$2.invoke(TimeRepository.kt)
+        at com.timeagent.data.TimeRepository$snapshot$2.invoke(TimeRepository.kt)
+        at com.timeagent.data.TimeRepository$transaction$2$1$1.invokeSuspend(TimeRepository.kt:41)
+        at com.timeagent.data.TimeRepository$transaction$2$1$1.invoke(TimeRepository.kt)
+        at com.timeagent.data.TimeRepository$transaction$2$1$1.invoke(TimeRepository.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invokeSuspend(RoomDatabase.android.kt:2001)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invokeSuspend(RoomDatabase.android.kt:2015)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invoke(RoomDatabase.android.kt)
+        at kotlinx.coroutines.intrinsics.UndispatchedKt.startUndspatched(Undispatched.kt:66)
+        at kotlinx.coroutines.intrinsics.UndispatchedKt.startUndispatchedOrReturn(Undispatched.kt:43)
+        at kotlinx.coroutines.BuildersKt__Builders_commonKt.withContext(Builders.common.kt:165)
+        at kotlinx.coroutines.BuildersKt.withContext(Unknown Source)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$startTransactionCoroutine$2$1$1.invokeSuspend(RoomDatabase.android.kt:2048)
+        at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+        at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)
+        at kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:263)
+        at kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:94)
+        at kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking(Builders.kt:70)
+        at kotlinx.coroutines.BuildersKt.runBlocking(Unknown Source)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$startTransactionCoroutine$2$1.run(RoomDatabase.android.kt:2045)
+        at androidx.room.TransactionExecutor.execute$lambda$1$lambda$0(TransactionExecutor.android.kt:38)
+        at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+        at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+        at java.base/java.lang.Thread.run(Thread.java:1583)
+
+    System.logW: A resource was acquired at attached stack trace but never released. See java.io.Closeable for information on avoiding resource leaks.
+    java.lang.Throwable: Explicit termination method 'close' not called
+        at dalvik.system.CloseGuard.$$robo$$dalvik_system_CloseGuard$open(CloseGuard.java:221)
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+        at org.robolectric.shadows.ShadowCloseGuard$CloseGuardReflector$$Reflector150.open(Unknown Source)
+        at org.robolectric.shadows.ShadowCloseGuard.open(ShadowCloseGuard.java:38)
+        at dalvik.system.CloseGuard.open(CloseGuard.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$open(SQLiteConnectionPool.java:215)
+        at android.database.sqlite.SQLiteConnectionPool.open(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$open(SQLiteConnectionPool.java:196)
+        at android.database.sqlite.SQLiteConnectionPool.open(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openInner(SQLiteDatabase.java:880)
+        at android.database.sqlite.SQLiteDatabase.openInner(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$open(SQLiteDatabase.java:865)
+        at android.database.sqlite.SQLiteDatabase.open(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openDatabase(SQLiteDatabase.java:739)
+        at android.database.sqlite.SQLiteDatabase.openDatabase(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$createInMemory(SQLiteDatabase.java:920)
+        at android.database.sqlite.SQLiteDatabase.createInMemory(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getDatabaseLocked(SQLiteOpenHelper.java:350)
+        at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getWritableDatabase(SQLiteOpenHelper.java:298)
+        at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getWritableOrReadableDatabase(FrameworkSQLiteOpenHelper.android.kt:224)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.innerGetDatabase(FrameworkSQLiteOpenHelper.android.kt:167)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getSupportDatabase(FrameworkSQLiteOpenHelper.android.kt:141)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper.getWritableDatabase(FrameworkSQLiteOpenHelper.android.kt:96)
+        at androidx.room.RoomDatabase.inTransaction(RoomDatabase.android.kt:802)
+        at androidx.room.util.DBUtil__DBUtil_androidKt.performSuspending(DBUtil.android.kt:247)
+        at androidx.room.util.DBUtil.performSuspending(Unknown Source)
+        at com.timeagent.data.TimeDao_Impl.reminders(TimeDao_Impl.kt:3379)
+        at com.timeagent.data.TimeRepository.readSnapshot(TimeRepository.kt:169)
+        at com.timeagent.data.TimeRepository.access$readSnapshot(TimeRepository.kt:39)
+        at com.timeagent.data.TimeRepository$snapshot$2.invokeSuspend(TimeRepository.kt:168)
+        at com.timeagent.data.TimeRepository$snapshot$2.invoke(TimeRepository.kt)
+        at com.timeagent.data.TimeRepository$snapshot$2.invoke(TimeRepository.kt)
+        at com.timeagent.data.TimeRepository$transaction$2$1$1.invokeSuspend(TimeRepository.kt:41)
+        at com.timeagent.data.TimeRepository$transaction$2$1$1.invoke(TimeRepository.kt)
+        at com.timeagent.data.TimeRepository$transaction$2$1$1.invoke(TimeRepository.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invokeSuspend(RoomDatabase.android.kt:2001)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invokeSuspend(RoomDatabase.android.kt:2015)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invoke(RoomDatabase.android.kt)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransactionContext$transactionBlock$1.invoke(RoomDatabase.android.kt)
+        at kotlinx.coroutines.intrinsics.UndispatchedKt.startUndspatched(Undispatched.kt:66)
+        at kotlinx.coroutines.intrinsics.UndispatchedKt.startUndispatchedOrReturn(Undispatched.kt:43)
+        at kotlinx.coroutines.BuildersKt__Builders_commonKt.withContext(Builders.common.kt:165)
+        at kotlinx.coroutines.BuildersKt.withContext(Unknown Source)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$startTransactionCoroutine$2$1$1.invokeSuspend(RoomDatabase.android.kt:2048)
+        at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+        at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)
+        at kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:263)
+        at kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:94)
+        at kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking(Builders.kt:70)
+        at kotlinx.coroutines.BuildersKt.runBlocking(Unknown Source)
+        at androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$startTransactionCoroutine$2$1.run(RoomDatabase.android.kt:2045)
+        at androidx.room.TransactionExecutor.execute$lambda$1$lambda$0(TransactionExecutor.android.kt:38)
+        at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+        at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+        at java.base/java.lang.Thread.run(Thread.java:1583)
+
+    System.logW: A resource was acquired at attached stack trace but never released. See java.io.Closeable for information on avoiding resource leaks.
+    java.lang.Throwable: Explicit termination method 'close' not called
+        at dalvik.system.CloseGuard.$$robo$$dalvik_system_CloseGuard$open(CloseGuard.java:221)
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+        at org.robolectric.shadows.ShadowCloseGuard$CloseGuardReflector$$Reflector150.open(Unknown Source)
+        at org.robolectric.shadows.ShadowCloseGuard.open(ShadowCloseGuard.java:38)
+        at dalvik.system.CloseGuard.open(CloseGuard.java)
+        at android.database.sqlite.SQLiteConnection.$$robo$$android_database_sqlite_SQLiteConnection$__constructor__(SQLiteConnection.java:172)
+        at android.database.sqlite.SQLiteConnection.<init>(SQLiteConnection.java:163)
+        at android.database.sqlite.SQLiteConnection.$$robo$$android_database_sqlite_SQLiteConnection$open(SQLiteConnection.java:192)
+        at android.database.sqlite.SQLiteConnection.open(SQLiteConnection.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$openConnectionLocked(SQLiteConnectionPool.java:503)
+        at android.database.sqlite.SQLiteConnectionPool.openConnectionLocked(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$open(SQLiteConnectionPool.java:204)
+        at android.database.sqlite.SQLiteConnectionPool.open(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteConnectionPool.$$robo$$android_database_sqlite_SQLiteConnectionPool$open(SQLiteConnectionPool.java:196)
+        at android.database.sqlite.SQLiteConnectionPool.open(SQLiteConnectionPool.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openInner(SQLiteDatabase.java:880)
+        at android.database.sqlite.SQLiteDatabase.openInner(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$open(SQLiteDatabase.java:865)
+        at android.database.sqlite.SQLiteDatabase.open(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$openDatabase(SQLiteDatabase.java:739)
+        at android.database.sqlite.SQLiteDatabase.openDatabase(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteDatabase.$$robo$$android_database_sqlite_SQLiteDatabase$createInMemory(SQLiteDatabase.java:920)
+        at android.database.sqlite.SQLiteDatabase.createInMemory(SQLiteDatabase.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getDatabaseLocked(SQLiteOpenHelper.java:350)
+        at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java)
+        at android.database.sqlite.SQLiteOpenHelper.$$robo$$android_database_sqlite_SQLiteOpenHelper$getWritableDatabase(SQLiteOpenHelper.java:298)
+        at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getWritableOrReadableDatabase(FrameworkSQLiteOpenHelper.android.kt:224)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.innerGetDatabase(FrameworkSQLiteOpenHelper.android.kt:167)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper.getSupportDatabase(FrameworkSQLiteOpenHelper.android.kt:141)
+        at androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper.getWritableDatabase(FrameworkSQLiteOpenHelper.android.kt:96)
+        at androidx.room.driver.SupportSQLiteDriver.open(SupportSQLiteDriver.android.kt:26)
+        at androidx.room.driver.SupportSQLiteConnectionPool.getSupportConnection(SupportSQLiteConnectionPool.android.kt:35)
+        at androidx.room.driver.SupportSQLiteConnectionPool.useConnection(SupportSQLiteConnectionPool.android.kt:42)
+        at androidx.room.RoomConnectionManager.useConnection(RoomConnectionManager.android.kt:126)
+        at androidx.room.RoomDatabase.useConnection$room_runtime_release(RoomDatabase.android.kt:593)
+        at androidx.room.TriggerBasedInvalidationTracker.syncTriggers$room_runtime_release(InvalidationTracker.kt:300)
+        at androidx.room.TriggerBasedInvalidationTracker$createFlow$1$1.invokeSuspend(InvalidationTracker.kt:233)
+        at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+        at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)
+        at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+        at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+        at java.base/java.lang.Thread.run(Thread.java:1583)
+
+
+WorkoutDialogTest > Tabata stage dialog accepts work duration without other workout content PASSED
+
+WorkoutFlowTest > local library selection records a set pauses and finishes into timeline exactly once PASSED
+
+WorkoutFlowTest > minimize flushes the currently focused number before leaving activity PASSED
+
+WorkoutFlowTest > selected actions and query survive a visit to anatomy PASSED
+
+WorkoutFlowTest > pace stays a local draft until done and complete button commits focused fields PASSED
+
+WorkoutFlowTest > new template permits configuring Tabata before starting a workout PASSED
+
+WorkoutRuntimeTest > anatomy serves packaged wasm and blocks other origins and path traversal PASSED
+
+WorkoutRuntimeTest > rest and interval alarms are derived from persisted clock and paused timer is silent PASSED
+
+WorkoutRuntimeTest > rest cue is claimed once and old alarms cannot claim rescheduled or paused timer PASSED
+
+WorkoutRepositoryTest > parallel duplicate finish produces one record and one history action PASSED
+
+WorkoutRepositoryTest > crash after timeline write before link commit retries without overwriting manual edit PASSED
+
+WorkoutRepositoryTest > single set stopwatch survives repository reopen pause and measured duration completion PASSED
+
+WorkoutRepositoryTest > removing or replacing stopwatch target clears persisted timer PASSED
+
+WorkoutRepositoryTest > discarded workout frees active slot and cannot write actual timeline PASSED
+
+WorkoutRepositoryTest > saved template survives reopen and starts with fresh incomplete sets PASSED
+
+WorkoutRepositoryTest > template edits and delete do not affect existing sessions PASSED
+
+WorkoutRepositoryTest > invalid set edits fail atomically and preserve last saved values PASSED
+
+WorkoutRepositoryTest > no completed sets finish returns actionable error and keeps session active PASSED
+
+WorkoutRepositoryTest > RPE and set comment survive reopen and are included in timeline PASSED
+
+WorkoutRepositoryTest > finish writes actual timeline once with title summary notes and fitness category PASSED
+
+WorkoutRepositoryTest > timeline failure preserves completed workout and allows retry after reopen PASSED
+
+WorkoutRepositoryTest > timeline preserves all eight metric records sides drops and cardio units PASSED
+
+WorkoutRepositoryTest > concurrent repositories admit exactly one active training PASSED
+
+WorkoutRepositoryTest > crash retry never resurrects a manually deleted timeline record PASSED
+
+WorkoutRepositoryTest > last data comes from completed sessions and repeat keeps prescription only PASSED
+
+WorkoutRepositoryTest > database is shared by receiver and activity and can reopen after close PASSED
+
+WorkoutRepositoryTest > session progress and paused rest survive real database close and reopen PASSED
+
+WorkoutRepositoryTest > Tabata timer persists through database restart pause finish and discard PASSED
+
+WorkoutRepositoryTest > partial superset cannot finish and is excluded from completed timeline detail PASSED
+
+WorkoutRepositoryTest > last movement includes only complete superset rounds from finished session PASSED
+
+631 tests completed, 1 failed, 2 skipped
+
+> Task :app:testDebugUnitTest FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:testDebugUnitTest'.
+> There were failing tests. See the report at: file:///F:/261019_%E6%97%B6%E9%97%B4agent/app/build/reports/tests/testDebugUnitTest/index.html
+
+* Try:
+> Run with --scan to get full insights.
+
+BUILD FAILED in 1m 38s
+102 actionable tasks: 5 executed, 97 up-to-date

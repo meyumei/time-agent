@@ -1,0 +1,204 @@
+{
+  "file": "L07-reminder-entry.png",
+  "redactedTextRegions": 7,
+  "ui": [
+    {
+      "node": 11,
+      "text": "通知权限已开启",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[91,437][392,495]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 12,
+      "text": "到点后将向系统提交通知，声音和显示方式由系统设置决定。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[91,515][1129,621]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 14,
+      "text": "通知设置",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[130,691][300,748]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 16,
+      "text": "精确闹钟未授权，将使用系统允许的延后提醒，不能保证准点。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[91,817][1129,923]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 18,
+      "text": "设置提醒精度",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[130,993][385,1050]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 21,
+      "text": "助手建议",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,1229][297,1294]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 22,
+      "text": "根据你的任务、日程和睡眠自动生成；忽略后同类建议不会再出现。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,1320][1116,1426]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 27,
+      "text": "选择空档",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[182,1759][352,1816]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 30,
+      "text": "调整截止 / 延后",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[182,1935][480,1992]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 33,
+      "text": "开始计时",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[571,1935][741,1992]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 36,
+      "text": "事项",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[845,1935][931,1992]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 39,
+      "text": "暂缓 1 小时",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[182,2111][396,2168]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 42,
+      "text": "忽略",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[500,2111][586,2168]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 48,
+      "text": "选择空档",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[182,2589][352,2646]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 52,
+      "text": "",
+      "description": "返回",
+      "kind": "View",
+      "bounds": "[52,203][130,281]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 54,
+      "text": "任务点 / 未安排",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[182,199][608,284]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 56,
+      "text": "",
+      "description": "撤销最近操作",
+      "kind": "View",
+      "bounds": "[934,203][1012,281]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 59,
+      "text": "",
+      "description": "重做",
+      "kind": "View",
+      "bounds": "[1090,203][1168,281]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

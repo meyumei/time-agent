@@ -1,0 +1,72 @@
+{
+  "file": "L34-backup.png",
+  "redactedTextRegions": 3,
+  "ui": [
+    {
+      "node": 10,
+      "text": "任务、项目、周目标、周期实例、实际、课程、想法、笔记、提醒、附件与操作历史，连同训练记录、自定义动作和个人设置一起保存。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[65,411][1155,627]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 11,
+      "text": "动作媒体和 3D 模型随安装包提供。密钥、云端授权和手机权限不写进个人备份；恢复后需重选 GB 文件，并核对健康、通知和闹钟授权。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[65,666][1155,826]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 13,
+      "text": "导出本地备份",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[483,915][738,972]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 16,
+      "text": "选择备份，先校验和预览",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[377,1110][844,1167]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 20,
+      "text": "",
+      "description": "返回",
+      "kind": "View",
+      "bounds": "[52,203][130,281]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 22,
+      "text": "完整本地备份 / 恢复",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[182,199][729,284]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

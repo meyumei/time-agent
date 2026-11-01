@@ -1,0 +1,21 @@
+{
+  "command": [
+    "F:\\261019_\u65f6\u95f4agent\\gradlew.bat",
+    ":core:test",
+    ":agent-runtime:testDebugUnitTest",
+    ":app:testDebugUnitTest",
+    ":app:assembleDebug",
+    ":app:lintDebug",
+    ":app:assembleDebugAndroidTest",
+    "--console=plain",
+    "--no-parallel",
+    "--max-workers=2",
+    "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK"
+  ],
+  "startedEpoch": 1793521315.2730584,
+  "finishedEpoch": 1793521440.2484102,
+  "exitCode": 0,
+  "encoding": "GBK",
+  "testsRerun": false,
+  "unchangedCoreAndRuntimeExecutedInInitialFollowup": true
+}

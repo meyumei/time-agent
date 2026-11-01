@@ -1,0 +1,24 @@
+{
+  "id": "L26",
+  "module": "朗读",
+  "capabilities": "Edge 朗读（speech-output 插件）、鱼语音",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L26-device.png",
+  "spec_code_references": [
+    "fish/FishVoice.kt",
+    "agent-plugins/time-agent/speech-output.mjs"
+  ],
+  "sources": [
+    {
+      "path": "agent-plugins/time-agent/speech-output.mjs",
+      "sha256": "3bc12df3d8a105baeb2000004a0091bd2ab4ca9b79b769996a4c29c107be2c96"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/fish/FishVoice.kt",
+      "sha256": "ab128c41c24fc8b0904ddae90761edec1919aca3cd9dd0ffff90d423251731e5"
+    }
+  ]
+}

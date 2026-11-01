@@ -1,0 +1,26 @@
+{
+  "checkedAtEpoch": 1793525161.6075838,
+  "sessionStatus": "COMPLETED",
+  "movements": 1,
+  "completedSets": 1,
+  "metric": "WEIGHT_REPS",
+  "weightKg": 20.0,
+  "reps": 8,
+  "totalPausedMillis": 7472,
+  "timelineLinked": true,
+  "timelineRecordSource": "WORKOUT",
+  "linkedTimelineRecords": 1,
+  "actualRecords": 10020,
+  "workoutSessions": 201,
+  "savedTemplateTitle": "T0_DS_TEMPLATE",
+  "savedTemplateMovementCount": 1,
+  "integrityChecks": [
+    "ok",
+    "ok"
+  ],
+  "foreignKeyViolations": [
+    0,
+    0
+  ],
+  "otherSevenMetricsCovered": false
+}

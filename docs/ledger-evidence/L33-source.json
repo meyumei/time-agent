@@ -1,0 +1,24 @@
+{
+  "id": "L33",
+  "module": "AI 设置",
+  "capabilities": "DeepSeek 等 Key、模型选择",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L33-device.png",
+  "spec_code_references": [
+    "assistant/AssistantSettings.kt",
+    "DeepSeekClient.kt"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/assistant/AssistantSettings.kt",
+      "sha256": "69b26d7968c5ad6f7ac876e702304d6a69b106ab9484514418b7827281035ce7"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/assistant/DeepSeekClient.kt",
+      "sha256": "d8cdde8619f44dc9813a96ba50d4c5af5447d14a0c954ee0a15c41c12d44c870"
+    }
+  ]
+}

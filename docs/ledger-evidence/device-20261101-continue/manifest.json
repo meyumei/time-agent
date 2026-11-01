@@ -1,0 +1,35 @@
+{
+  "screenshots": [
+    {
+      "file": "L11-round2-rest.png",
+      "sha256": "33dfdddccd41ece77a495d217fd7fd70e08b07bdd110766ef29518e34a16b0fd"
+    },
+    {
+      "file": "L11-round2-paused.png",
+      "sha256": "05233b320ad3df2609a94874a4d5edd0e8098312fc97d05c09c79e8b3d42c3e0"
+    },
+    {
+      "file": "L11-round2-completed.png",
+      "sha256": "190d4c34d8fac6b71c4b88ec48454f195d5fb8c3c35ba94d080de47b655f1f85"
+    },
+    {
+      "file": "L11-round2-template.png",
+      "sha256": "7666a292223c97a0c38ec341df5f08883f1baba6a40241c36e0f40467eac55b3"
+    },
+    {
+      "file": "L02-round3-before-restart.png",
+      "sha256": "c603d41d3a3256fb53bb1bcde42b42ce96a90dc028d6a32620944b05bfe6e01b"
+    },
+    {
+      "file": "L02-round3-after-restart.png",
+      "sha256": "5401c0054e90e0509e1267e578553d986020b9bf1ce5dda113fe48386fb489d7"
+    },
+    {
+      "file": "L02-round3-stopped.png",
+      "sha256": "56f54bb6580786cdde3ea7e709fcf969ab1bda747c3dc9aa3deef61a0d877137"
+    }
+  ],
+  "count": 7,
+  "checkedBy": "Main agent inspected UI images and independent database assertions",
+  "privacy": "Only already-redacted captures and synthetic metadata; raw captures and original databases stay ignored."
+}

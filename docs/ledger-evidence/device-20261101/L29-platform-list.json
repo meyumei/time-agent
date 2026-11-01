@@ -1,0 +1,72 @@
+{
+  "file": "L29-platform-list.png",
+  "redactedTextRegions": 3,
+  "ui": [
+    {
+      "node": 10,
+      "text": "返回",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,240][190,297]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 12,
+      "text": "平台连接",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,385][335,480]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 14,
+      "text": "B站",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,568][190,640]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 15,
+      "text": "扫码连接、读取公开内容和分享见闻",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,640][792,705]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 17,
+      "text": "QQ群聊",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,841][280,913]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 18,
+      "text": "OneBot连接、授权群与语音转文字",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,913][775,978]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "cli": "WorkBuddy/codebuddy.cmd",
+  "requestedModel": "deepseek-v4.1-flash",
+  "requestedEffort": "max",
+  "actualEffort": null,
+  "apkCleanup": {
+    "returnedModels": [
+      "deepseek-v4.1-flash"
+    ],
+    "commands": [
+      "python .tmp/t0-phone/apk-cleanup-round2.py scan",
+      "python .tmp/t0-phone/apk-cleanup-round2.py delete-confirmed"
+    ],
+    "driverCommands": 2,
+    "requestedMaxTurns": 6,
+    "cliReportedTurns": 8,
+    "durationMillis": 100623,
+    "exitCode": 0,
+    "deleted": 0
+  },
+  "workout": {
+    "driverActions": 24,
+    "toolCallsIssued": 25,
+    "driverErrors": 10,
+    "durationMillis": 81595,
+    "maximumActions": 100,
+    "maximumSeconds": 900,
+    "acceptance": "not accepted; no completed workout evidence",
+    "terminatedByMain": true,
+    "onlyScopedDriverUsed": true,
+    "twoFailureStopObeyed": false
+  },
+  "phoneUiOwnersAtOnce": 1,
+  "permissions": {
+    "readable": "Public app labels and synthetic data via scoped driver; APK identity summaries only.",
+    "writable": "No repository files; driver-managed disposable synthetic data/evidence only.",
+    "denied": [
+      "Read",
+      "Edit",
+      "Write",
+      "Agent"
+    ],
+    "forbidden": [
+      "Business/UI/schema code",
+      "Keys",
+      "Private user content",
+      "Uninstall/clear data",
+      "Other applications APKs"
+    ]
+  },
+  "independentAcceptance": [
+    "SDK manifest fallback on previously unidentified candidates",
+    "Worker tool-call inspection",
+    "Live foreground checks, no crash inference",
+    "Fresh backup restored with 39 exact file hashes and 37 table count/content checks"
+  ]
+}

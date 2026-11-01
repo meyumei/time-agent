@@ -1,0 +1,226 @@
+{
+  "file": "L09-health-sync.png",
+  "redactedTextRegions": 7,
+  "ui": [
+    {
+      "node": 9,
+      "text": "健康数据同步",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[65,70][488,165]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 10,
+      "text": "睡眠和健身记录自动进入时间轴",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[65,165][617,217]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 12,
+      "text": "关闭",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[1018,115][1104,172]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 15,
+      "text": "Health Connect 已就绪，可读取睡眠与健身记录。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[117,319][1082,377]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 16,
+      "text": "来源应用无关：小米运动健康、华为、Keep、训记等写入 Health Connect 的记录都会同步。数据只在本机读取，不上传。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[117,397][1103,557]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 18,
+      "text": "管理授权",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[156,627][326,684]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 21,
+      "text": "自动同步",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[117,873][309,945]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 22,
+      "text": "打开应用时静默同步一次；失败不打扰",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[117,945][787,997]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 25,
+      "text": "同步睡眠",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[117,1127][309,1199]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 26,
+      "text": "按 Health Connect 睡眠时段生成“睡眠”记录",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[117,1199][888,1251]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 29,
+      "text": "Gadgetbridge 数据文件（推荐）",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[117,1391][825,1463]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 30,
+      "text": "让 Gadgetbridge 把数据库导出到文件后，本应用直接读取，睡眠经夜间聚合后进入时间轴——不依赖 Health Connect。在 Gadgetbridge 设置 → 自动化 → 自动导出里启用并把位置设为同一文件。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[117,1483][1103,1697]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 31,
+      "text": "已连接数据文件",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[117,1717][393,1769]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 33,
+      "text": "更换文件",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[195,1839][365,1896]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 38,
+      "text": "睡眠来源偏好",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[65,2043][320,2099]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 39,
+      "text": "选中的来源会替换其他来源记录的同一晚睡眠；手工修改过的记录始终保留。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[65,2112][1155,2218]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 50,
+      "text": "Gadgetbridge",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[849,2253][1103,2366]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 53,
+      "text": "同步健身记录",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[117,2459][405,2531]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 54,
+      "text": "训练课自动成为实际记录，标题优先用来源训练名",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[117,2531][934,2637]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 56,
+      "text": "同步范围（最近）",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[65,2709][405,2712]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

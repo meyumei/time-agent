@@ -1,0 +1,80 @@
+{
+  "id": "L31",
+  "module": "运行时",
+  "capabilities": "proot/Node/Python rootfs、前台服务、arm64",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L31-device.png",
+  "spec_code_references": [
+    "agent-runtime/*",
+    "fish/FishRuntimeService.kt"
+  ],
+  "sources": [
+    {
+      "path": "agent-runtime/src/main/java/com/timeagent/runtime/AgentRuntime.kt",
+      "sha256": "59aac16e7771415aee81292882227ce6e89158aad4d471bb9538aa1edde1e4c7"
+    },
+    {
+      "path": "agent-runtime/src/main/java/com/timeagent/runtime/AndroidDns.kt",
+      "sha256": "1eff46104bd328cbadef4df508e6baa017b805920889059c43a2611ac026a310"
+    },
+    {
+      "path": "agent-runtime/src/main/java/com/timeagent/runtime/ArchiveExtractor.kt",
+      "sha256": "9a5b8d40d41875318c20ea73340e0c20b6d732eb49f3709097376afc4b75cffd"
+    },
+    {
+      "path": "agent-runtime/src/main/java/com/timeagent/runtime/GuestPaths.kt",
+      "sha256": "cb55318a43886be1a0c823e684ac3bcdd914fb79ab704acd03cb2b9560b16473"
+    },
+    {
+      "path": "agent-runtime/src/main/java/com/timeagent/runtime/HardlinkProbe.kt",
+      "sha256": "f6722282546e617c06d816e5e5becc18783c8b42094605370da667b486a88004"
+    },
+    {
+      "path": "agent-runtime/src/main/java/com/timeagent/runtime/LocalConfig.kt",
+      "sha256": "ab386fe4c693c9b180ae4aada30fce776de3e68814e30f06b726c0a532f3291c"
+    },
+    {
+      "path": "agent-runtime/src/main/java/com/timeagent/runtime/NativeSupport.kt",
+      "sha256": "38d5d5b652478e3f20fb871b0c0f2f9a8799983e4e65f10739462e66b18ccd74"
+    },
+    {
+      "path": "agent-runtime/src/main/java/com/timeagent/runtime/RootfsInstaller.kt",
+      "sha256": "2db1ca3e456e34176c69d1c89db460823ca26ce06a3ad918e81dd6191d000bf1"
+    },
+    {
+      "path": "agent-runtime/src/main/java/com/timeagent/runtime/RuntimeFiles.kt",
+      "sha256": "2b771aabb44b926dd7b2146d0c7ea3eec9c3427bcd34d1fda56fda85bcec17da"
+    },
+    {
+      "path": "agent-runtime/src/main/java/com/timeagent/runtime/RuntimeLock.kt",
+      "sha256": "2acfefc66485758450a51667dfbaf80725adba881ef5f90d29f114e0a180336a"
+    },
+    {
+      "path": "agent-runtime/src/main/java/com/timeagent/runtime/RuntimeState.kt",
+      "sha256": "311371fa00c4cafb6e627f51eff653a29c343aba5f3e962b82a7f8d00f08888d"
+    },
+    {
+      "path": "agent-runtime/src/main/java/com/timeagent/runtime/StdoutEvents.kt",
+      "sha256": "ae4a17244b4f31fa8b0e602eeed3fdda064c2b27b67a0b48081926bb986c9e09"
+    },
+    {
+      "path": "agent-runtime/src/test/java/com/timeagent/runtime/GuestPathsTest.kt",
+      "sha256": "9cbe947c179709be011f74306b60704b527898b149db37e9d4d79fd132f17432"
+    },
+    {
+      "path": "agent-runtime/src/test/java/com/timeagent/runtime/RuntimeUpgradeTest.kt",
+      "sha256": "34f1ba7999a6a4241a0cb775f79ecf550c0f1b2065853f3132a802d023052c57"
+    },
+    {
+      "path": "agent-runtime/src/test/java/com/timeagent/runtime/StdoutEventsTest.kt",
+      "sha256": "294a0ab7e96b29946a085a1bc0cb7584baa764a2e4753d57acfac82cd9187795"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/fish/FishRuntimeService.kt",
+      "sha256": "75783071a6906f7672b47bec25a2a771741ffa7e19341d2131588e3b23cb80c9"
+    }
+  ]
+}

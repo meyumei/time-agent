@@ -1,0 +1,21 @@
+{
+  "startedAt": "2026-10-31T19:15:34.8182277+08:00",
+  "flags": [
+    "--rerun-tasks",
+    "--console=plain",
+    "--no-parallel",
+    "--max-workers=2"
+  ],
+  "finishedAt": "2026-10-31T19:16:14.5220959+08:00",
+  "exitCode": 1,
+  "tasks": [
+    ":core:test",
+    ":agent-runtime:testDebugUnitTest",
+    ":app:testDebugUnitTest",
+    ":app:assembleDebug",
+    ":app:lintDebug"
+  ],
+  "sourceCommit": "61e4806ebfc65c17967af9ddb1c30f394f964531",
+  "androidSdk": "F:\\261019_时间agent\\.tools\\android-sdk",
+  "javaHome": "F:\\261018_手机pi\\work\\rea-tool\\tools\\jdk-21.0.12.1+1"
+}

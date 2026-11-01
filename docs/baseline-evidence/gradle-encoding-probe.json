@@ -1,0 +1,7 @@
+{
+  "finishedAt": "2026-10-31T19:17:33.7084889+08:00",
+  "startedAt": "2026-10-31T19:17:20.2727046+08:00",
+  "task": ":agent-runtime:testDebugUnitTest",
+  "exitCode": 0,
+  "environmentChange": "Gradle daemon file.encoding=GBK (Windows native argument-file encoding)"
+}

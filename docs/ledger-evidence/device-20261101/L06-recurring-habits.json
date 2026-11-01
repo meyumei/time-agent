@@ -1,0 +1,292 @@
+{
+  "file": "L06-recurring-habits.png",
+  "redactedTextRegions": 8,
+  "ui": [
+    {
+      "node": 10,
+      "text": "返回",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[65,201][151,258]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 12,
+      "text": "周期任务与习惯",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[202,156][587,230]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 13,
+      "text": "本次与以后规则分开处理",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[202,230][587,302]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 15,
+      "text": "撤销",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[881,201][967,258]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 18,
+      "text": "重做",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[1070,201][1156,258]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 21,
+      "text": "新建规则",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[233,370][403,427]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 24,
+      "text": "刷新",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[859,370][945,427]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 27,
+      "text": "今天与近期",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[39,522][249,594]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 28,
+      "text": "暂无待处理的本次事项",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[39,594][389,666]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 29,
+      "text": "规则与以后安排",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[39,706][333,778]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 30,
+      "text": "从选定日期起生效；已处理或手改的本次保持原样",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[39,778][809,850]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 33,
+      "text": "Synthetic rule 0",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[78,916][446,988]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 36,
+      "text": "改规则",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[795,996][914,1053]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 39,
+      "text": "暂停",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[1008,996][1088,1053]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 43,
+      "text": "Synthetic rule 2",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[78,1224][443,1296]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 46,
+      "text": "改规则",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[795,1304][914,1361]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 49,
+      "text": "暂停",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[1008,1304][1088,1361]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 53,
+      "text": "Synthetic rule 4",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[78,1532][445,1604]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 56,
+      "text": "改规则",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[795,1612][914,1669]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 59,
+      "text": "暂停",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[1008,1612][1088,1669]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 63,
+      "text": "Synthetic rule 6",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[78,1840][445,1912]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 66,
+      "text": "改规则",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[795,1920][914,1977]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 69,
+      "text": "暂停",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[1008,1920][1088,1977]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 73,
+      "text": "Synthetic rule 8",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[78,2148][446,2220]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 76,
+      "text": "改规则",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[795,2228][914,2285]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 79,
+      "text": "暂停",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[1008,2228][1088,2285]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

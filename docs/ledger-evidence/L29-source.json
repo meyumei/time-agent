@@ -1,0 +1,29 @@
+{
+  "id": "L29",
+  "module": "QQ",
+  "capabilities": "QQ 频道、QQ 语音",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L29-device.png",
+  "spec_code_references": [
+    "fish/FishQQSettings.kt",
+    "agent-plugins/time-agent/qq-channel.mjs",
+    "qq-voice.mjs"
+  ],
+  "sources": [
+    {
+      "path": "agent-plugins/time-agent/qq-channel.mjs",
+      "sha256": "73d9b499da169ced007c709fd19538c2ef99f615836f0918e7f4055a76afaf07"
+    },
+    {
+      "path": "agent-plugins/time-agent/qq-voice.mjs",
+      "sha256": "9d08cbd2df68501a91dfb5420c3edc4debfd395c00a7f8c0052cb08d211a3a51"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/fish/FishQQSettings.kt",
+      "sha256": "091533917b5a2887b6a53c23d794237fdbfedd36581f85c417f2b6dd0e4ebcdb"
+    }
+  ]
+}

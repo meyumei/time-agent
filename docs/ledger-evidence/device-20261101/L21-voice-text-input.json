@@ -1,0 +1,128 @@
+{
+  "file": "L21-voice-text-input.png",
+  "redactedTextRegions": 5,
+  "ui": [
+    {
+      "node": 11,
+      "text": "大肥鱼",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[46,164][230,245]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 14,
+      "text": "",
+      "description": "大肥鱼的一切",
+      "kind": "View",
+      "bounds": "[1057,187][1135,265]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 17,
+      "text": "准备并启动",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[124,384][337,441]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 20,
+      "text": "模型设置",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[480,384][650,441]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 24,
+      "text": "今日管家简报",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[150,563][376,613]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 25,
+      "text": "今天暂无即将开始的安排",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[150,613][584,665]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 27,
+      "text": "",
+      "description": "展开今日简报",
+      "kind": "View",
+      "bounds": "[960,582][1025,647]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 29,
+      "text": "我在这里。今天想先做什么？",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[46,751][605,809]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 31,
+      "text": "表情",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[98,1529][184,1586]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 33,
+      "text": "T0_DS_voice_input_21",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[255,1466][912,1648]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 0
+    },
+    {
+      "node": 36,
+      "text": "发送",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[1010,1529][1096,1586]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

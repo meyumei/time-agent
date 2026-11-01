@@ -1,0 +1,36 @@
+{
+  "id": "L14",
+  "module": "聊天提取",
+  "capabilities": "从聊天文本提取事项",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L14-device.png",
+  "spec_code_references": [
+    "extraction/*",
+    "ui/ChatExtractionScreen.kt"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/extraction/ChatTextExtractor.kt",
+      "sha256": "bc1cd23d54068b7c267dd695bb03b3c73fcbd90590e19c0b1ef871e7965998b7"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/extraction/ExtractionSave.kt",
+      "sha256": "e97634897193b7f3dc7da6c1dafe4028a4b3224337265b8fbea0371332e50f86"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/ui/ChatExtractionScreen.kt",
+      "sha256": "3ed80a4c3ff24ef61d61b9b3871fb6aa3cb28b5c53dabcfdee825b5f3b973d05"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/extraction/ChatTextExtractorTest.kt",
+      "sha256": "798d46e87429226441b2950762f4ab5834eb5788ffb6c74b261eb6ec0b8961ba"
+    },
+    {
+      "path": "app/src/test/java/com/timeagent/extraction/ExtractionSaveTest.kt",
+      "sha256": "cd89185888e66d96b9381f8c82f946e967a484beea837c30186fad1465da39a4"
+    }
+  ]
+}

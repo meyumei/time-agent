@@ -1,0 +1,24 @@
+{
+  "id": "L23",
+  "module": "鱼聊天",
+  "capabilities": "会话、表情贴纸、工具调用结果",
+  "date": "2026-10-31",
+  "baseline_commit": "660d129b5986c94ffe704a4f181e2565f68d1bd8",
+  "evidence_kind": "source_inventory_only",
+  "device_execution": "NOT_RUN_NO_DEVICE",
+  "expected_device_evidence": "L23-device.png",
+  "spec_code_references": [
+    "fish/FishChatScreen.kt",
+    "FishStickers.kt"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/java/com/timeagent/fish/FishChatScreen.kt",
+      "sha256": "37223ea9c787102bbd75feab917457119324686e52e200348e8782258b853e85"
+    },
+    {
+      "path": "app/src/main/java/com/timeagent/fish/FishStickers.kt",
+      "sha256": "b9168a11d44e4aa858066d9ecab3efb5727ee5a97861de387bc2b04f821dba25"
+    }
+  ]
+}

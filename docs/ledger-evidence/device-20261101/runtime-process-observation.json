@@ -1,0 +1,10 @@
+{
+  "processNames": [
+    "com.timeagent",
+    "libproot.so",
+    "node",
+    "python3.12"
+  ],
+  "nativeUiStartedRuntime": true,
+  "rpcModelEndToEndVerified": false
+}

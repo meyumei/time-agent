@@ -1,0 +1,345 @@
+[
+  {
+    "ledger": "L01",
+    "file": "L01-today-timeline.png",
+    "bytes": 140806,
+    "sha256": "fc8ad95da1046c20b9eab45690a458c563d253520551fb33c83552f90a9fa166",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L01",
+    "file": "L01-conflicts.png",
+    "bytes": 52897,
+    "sha256": "331ba00655bd1f98bc2a26516450df85b12dbbcf628b59d9a1966f9119bdf08c",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L02",
+    "file": "L02-timer-running.png",
+    "bytes": 170197,
+    "sha256": "3b48e7151fc85888d4c0d1a27cf96858386e61844c90045792e3d666bc5245d9",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L02",
+    "file": "L02-timer-stopped.png",
+    "bytes": 173905,
+    "sha256": "680f99cf40b2cfd6e65317199ba1cc5dd8304fb9fc225b4d2b032394729991c6",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L03",
+    "file": "L03-task-list-after-create.png",
+    "bytes": 158821,
+    "sha256": "da25964b65b3fb4d1378ee55b2eabb0e5de5823660bf1ac5a68ce37adcfde4da",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L03",
+    "file": "L03-completed-list.png",
+    "bytes": 146799,
+    "sha256": "f258a2cc1807949204be946929984ae38a20374ae15ad8b2f6ad614945aeb530",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L04",
+    "file": "L04-life-deadlines.png",
+    "bytes": 182726,
+    "sha256": "620313574633c6fba914b07e0c2a44f89d21b2b13331b6a7a67ff075a39f6c1e",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L05",
+    "file": "L05-projects-list.png",
+    "bytes": 90942,
+    "sha256": "439c2d96c07061c4a989d0f83927ddfae092554fd3755efa9d88d3982ea43f17",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L05",
+    "file": "L05-project-detail.png",
+    "bytes": 193036,
+    "sha256": "08031d9b7dfe1f86a0901b3b24a8bfcbba3f413d6e9d06424ba19113fe488d32",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L06",
+    "file": "L06-recurring-habits.png",
+    "bytes": 178091,
+    "sha256": "2f12c7adbe92067bdb760ace4b08249ac28376b0cf2e63668ae201be91f38926",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L07",
+    "file": "L07-reminder-entry.png",
+    "bytes": 174307,
+    "sha256": "b6773f3e395521800441a98b7b8882e516fc5d70071d13e7837469347dd60441",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L08",
+    "file": "L08-import-settings-entry.png",
+    "bytes": 194429,
+    "sha256": "90d41fd45a29d8fda68686a5e5ffe2e5eb9b588f489fd120e905079f0d078107",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L09",
+    "file": "L09-health-sync.png",
+    "bytes": 340308,
+    "sha256": "75af764e7729aebb3ba49684479bf5addc32d7785ce93c74283bad261e41e38e",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L10",
+    "file": "L10-ledger.png",
+    "bytes": 159811,
+    "sha256": "34dca008a8e89218fb3cfd0be54e81e9a4b7766ab2427ead34d99f5b94a8fe2a",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L11",
+    "file": "L11-workout-home.png",
+    "bytes": 566743,
+    "sha256": "05499f71b041e1a043b9b2b134cfc0a082fbd866ce90623288a72669cb4ef63c",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L11",
+    "file": "L11-exercise-gif.png",
+    "bytes": 842480,
+    "sha256": "8830094fed43f07431bb67ad460f5e3184f528d93f40f1274e086d7db150e126",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L11",
+    "file": "L11-anatomy.png",
+    "bytes": 810192,
+    "sha256": "88467f62db5ffb7614b63bb14616f9bbb1cc66bd057c9bfdfd3f5c1b083120e9",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L11",
+    "file": "L11-templates.png",
+    "bytes": 554858,
+    "sha256": "bf9063cce1a9dd3c1573aa82f35082a881569f74da7166ebe066d08485537947",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L11",
+    "file": "L11-active-session.png",
+    "bytes": 123278,
+    "sha256": "4222156ec9a3e17659035bb65aa3fd5fff390a0319f47c957877ced68a23e07d",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L12",
+    "file": "L12-attachment-inbox.png",
+    "bytes": 114984,
+    "sha256": "8ed340ff55c1515477f4aee381595a6d4760a1f03558cf4bccd73c0fbd81bc58",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L13",
+    "file": "L13-inbox.png",
+    "bytes": 186485,
+    "sha256": "33551ceec16b54ed0b84b1563fc6205fe5edd1d893d549834e39e7b2805c01da",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L14",
+    "file": "L14-chat-extraction.png",
+    "bytes": 106881,
+    "sha256": "3b80c32beb5f15ea3c4ab7940eb8d24d051b5a37a1c11b01f1d785007ac5b1b5",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L15",
+    "file": "L15-reply.png",
+    "bytes": 95577,
+    "sha256": "5c5d8c5d88352d7953e0f345579dc63a44e261c190915559ce138129742ac56b",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L16",
+    "file": "L16-personal-rules.png",
+    "bytes": 128843,
+    "sha256": "8ad8c3e2087efa6bb381aa8c1463e95c14530bf430b07784b91a397023a487b7",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L17",
+    "file": "L17-history.png",
+    "bytes": 172668,
+    "sha256": "297ada2feffcefc2db2f0d5a659923cdad489e663b7bc632353c7993f58c7b6c",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L18",
+    "file": "L18-suggestions.png",
+    "bytes": 174307,
+    "sha256": "b6773f3e395521800441a98b7b8882e516fc5d70071d13e7837469347dd60441",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L19",
+    "file": "L19-briefing.png",
+    "bytes": 192089,
+    "sha256": "52789e010d1ae12475b14f5fcf6f679169dde836dcf0383612f3b264c4968c57",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L20",
+    "file": "L20-weekly-goal.png",
+    "bytes": 122396,
+    "sha256": "2c423308315cb8cd7c360337e6b0408d01640bc97049fc52003f8c2110c18f93",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L21",
+    "file": "L21-voice-panel.png",
+    "bytes": 98902,
+    "sha256": "c283376b66878b13aaeb0a7178dca95e6a7da86d0e235996a8d673dda7189503",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L21",
+    "file": "L21-voice-text-input.png",
+    "bytes": 100395,
+    "sha256": "87595aba152d99dc504d483fb457cd18be84de047d3bc08b42e2cb8d86637bd5",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L23",
+    "file": "L23-fish-chat.png",
+    "bytes": 106988,
+    "sha256": "0cea8dda0c553399dbc4f6f09be31fa82719fab2374c698b95edd5dda8271844",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L24",
+    "file": "L24-fish-hub.png",
+    "bytes": 296030,
+    "sha256": "5028996c3fd55d968f25a3474fe3ec6f88550067c75259a74c8011b3865a43e0",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L24",
+    "file": "L24-profile.png",
+    "bytes": 169508,
+    "sha256": "1ae9723f7b6ec9e7f1c3f6cb3df1490a4d045d311668abcb8b9ba1274641812a",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L24",
+    "file": "L24-outfit.png",
+    "bytes": 483159,
+    "sha256": "bfe2f1c4b6f2031391b5a97f07a0e67f87579fb4617ce5b8284cf934488b8c5e",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L24",
+    "file": "L24-expressions.png",
+    "bytes": 588574,
+    "sha256": "fde15f73d9fb9464d526cee7c85d3e18f3caa9ae87ee6aafcc8133dd39abf234",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L25",
+    "file": "L25-companion.png",
+    "bytes": 524061,
+    "sha256": "b0ee550f8b5c456e4c8304e65911bcd2b3dff9a5558578d2746bc5fa4f19c788",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L26",
+    "file": "L26-voice-settings.png",
+    "bytes": 171417,
+    "sha256": "001029d221b7bc79e866d93e876edfc15ff95eed570c3044f14d6e89223628f0",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L26",
+    "file": "L26-voice-preview.png",
+    "bytes": 171417,
+    "sha256": "001029d221b7bc79e866d93e876edfc15ff95eed570c3044f14d6e89223628f0",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L27",
+    "file": "L27-shared-memory.png",
+    "bytes": 127676,
+    "sha256": "b883702b2a3df63741678d951ed33b028945aec249dbc3ec691e287e6a20379c",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L28",
+    "file": "L28-proactive-topics.png",
+    "bytes": 211897,
+    "sha256": "1d9ad7520dbe78eb07b671cb80b9f8890c324de9aadcd0689cc3880c2906117a",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L29",
+    "file": "L29-platform-list.png",
+    "bytes": 78821,
+    "sha256": "f17ec558722cc9548b87e820b4a3d1170b552f6f8d543bf8c519f4abc8c11baf",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L29",
+    "file": "L29-qq-group.png",
+    "bytes": 259066,
+    "sha256": "1edce263549091f54910b2d4619b7aa6503296b7dee2865ccf716ad0292d2995",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L30",
+    "file": "L30-bilibili.png",
+    "bytes": 129575,
+    "sha256": "1661f36b023551da0cd1489bbea13a3f598cf2a16085453a4a67c955504380fe",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L31",
+    "file": "L31-runtime-settings.png",
+    "bytes": 63361,
+    "sha256": "3b4cfa5b5e23b411def3fd640492e3f1d487f197ef6e552a4025ffc5bd7759f9",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L31",
+    "file": "L31-runtime-running.png",
+    "bytes": 50516,
+    "sha256": "282914c62285b118eaadfa2f8c9ae9c90207b0b2953278eee889e8a819918752",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L33",
+    "file": "L33-model-settings.png",
+    "bytes": 162641,
+    "sha256": "cccd3fdccb23f5e63bfbaf67021fbb714e1159998e898b26a6c89d4329c742ff",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L34",
+    "file": "L34-backup.png",
+    "bytes": 176045,
+    "sha256": "42a4e3f6d56f1ae141d672b08aa50367c9511883f79ab95d90ccfd68a7e98cb9",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L35",
+    "file": "L35-theme-changed.png",
+    "bytes": 153487,
+    "sha256": "d50b964ab372140dce6ebcf5dd9b647af72d36074f670506db53e90e551eedab",
+    "kind": "redacted-static-screenshot"
+  },
+  {
+    "ledger": "L35",
+    "file": "L35-theme-restored.png",
+    "bytes": 151475,
+    "sha256": "2783bfe6b415cf70779bc2be59c87b34dba071d4076cb55c0fdbe17f4e51c702",
+    "kind": "redacted-static-screenshot"
+  }
+]

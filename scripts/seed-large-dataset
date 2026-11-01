@@ -1,0 +1,314 @@
+#!/usr/bin/env python3
+"""Generate repeatable, synthetic v12/v1 databases without reading personal data."""
+
+import argparse
+from contextlib import closing
+from datetime import date, datetime, timedelta, timezone
+import hashlib
+import json
+from pathlib import Path
+import sqlite3
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SCHEMA = ROOT / "app/schemas/com.timeagent.data.TimeAgentDatabase/12.json"
+MINUTE = 60_000
+DAY = 24 * 60 * MINUTE
+BASE = int(datetime(2026, 10, 31, 4, tzinfo=timezone.utc).timestamp() * 1000)
+
+
+def encode(value):
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+
+
+def insert(db, table, values):
+    columns = ", ".join(f"`{key}`" for key in values)
+    slots = ", ".join("?" for _ in values)
+    db.execute(f"INSERT INTO `{table}` ({columns}) VALUES ({slots})", tuple(values.values()))
+
+
+def build_workout_session(index, start_ms):
+    metrics = ["WEIGHT_REPS", "REPS", "DURATION", "BODYWEIGHT_REPS",
+               "ASSISTED_REPS", "CARDIO", "STRETCH", "TABATA"]
+    metric = metrics[index % 8]
+    sid = "seed-workout-%03d" % index
+    ended_at = start_ms + 1800000
+    superset = sid + "-ss" if index % 16 == 0 else None
+    movements = []
+    for m in range(2 if superset else 1):
+        mid = "%s-m%d" % (sid, m)
+        base = 20.0 + ((index + m) % 9) * 5.0
+        sets = []
+        for s, kind in enumerate(("NORMAL", "WARMUP", "DROP", "FAILURE")):
+            weight = reps = duration = distance = calories = tabata = None
+            drops = []
+            if metric == "WEIGHT_REPS":
+                weight, reps = (base * 0.5 if kind == "WARMUP" else base), 10 - s
+            elif metric == "BODYWEIGHT_REPS":
+                weight, reps = 0.0, 10 - s
+            elif metric == "ASSISTED_REPS":
+                weight, reps = 20.0, 10 - s
+            elif metric == "REPS":
+                reps = 12 - s
+            elif metric == "DURATION":
+                duration = 30 + s * 15
+            elif metric == "CARDIO":
+                duration, distance, calories = 600, 2000.0, 120.0
+            elif metric == "STRETCH":
+                duration = 45
+            else:
+                duration = 160
+                tabata = {"prepareSeconds": 5, "workSeconds": 20,
+                          "restSeconds": 10, "rounds": 8}
+            if kind == "DROP":
+                drops = [{"weightKg": round((weight or 0.0) * 0.75, 1),
+                          "reps": 6, "leftWeightKg": None}]
+            sets.append({
+                "id": "%s-s%d" % (mid, s), "kind": kind, "weightKg": weight, "reps": reps,
+                "durationSeconds": duration,
+                "completedAt": start_ms + 180000 + (m * 4 + s) * 120000,
+                "leftWeightKg": None, "distanceMeters": distance, "caloriesKcal": calories,
+                "recordValues": {}, "dropSegments": drops, "tabata": tabata, "rpe": None,
+                "comment": "Seed %s %s set" % (metric.lower(), kind.lower()),
+            })
+        movements.append({
+            "id": mid,
+            "exercise": {
+                "id": "%s-ex%d" % (sid, m),
+                "name": "Seed Exercise %s %d" % (metric, m),
+                "primaryMuscles": ["Chest"], "secondaryMuscles": ["Triceps"],
+                "equipment": "Barbell", "metric": metric,
+                "instructions": "Move with control and steady tempo.",
+                "animationAsset": None,
+                "sourceType": "weight" if "REPS" in metric else "generic",
+                "recordFieldKeys": [],
+            },
+            "sets": sets, "restSeconds": 90, "supersetId": superset,
+            "notes": "Seed movement %d" % m, "oneSide": False, "singleSide": False,
+            "warmupRestSeconds": 60,
+        })
+    return {
+        "id": sid, "title": "Seed Workout %03d %s" % (index, metric), "startedAt": start_ms,
+        "updatedAt": ended_at, "status": "COMPLETED", "movements": movements,
+        "notes": "Synthetic seed session for %s." % metric, "endedAt": ended_at,
+        "pausedAt": None, "totalPausedMillis": 0, "restEndsAt": None,
+        "pausedRestRemainingMillis": None, "timelineRecordId": "workout:" + sid,
+        "templateId": None, "bodyWeightKg": 70, "intervalTimer": None, "setTimer": None,
+    }
+
+
+def make_databases(output):
+    output.mkdir(parents=True, exist_ok=True)
+    main_path = output / "v12-sample.db"
+    workout_path = output / "workouts-sample.db"
+    schema = json.loads(SCHEMA.read_text(encoding="utf-8"))["database"]
+    for path in (main_path, workout_path):
+        path.unlink(missing_ok=True)
+    with closing(sqlite3.connect(main_path)) as main, closing(sqlite3.connect(workout_path)) as workouts, main, workouts:
+        main.execute("PRAGMA foreign_keys=ON")
+        main.execute("PRAGMA user_version=12")
+        for entity in schema["entities"]:
+            table = entity["tableName"]
+            main.execute(entity["createSql"].replace("${TABLE_NAME}", table))
+            for index in entity.get("indices", []):
+                main.execute(index["createSql"].replace("${TABLE_NAME}", table))
+        for query in schema["setupQueries"]:
+            main.execute(query)
+        workouts.executescript("""
+            PRAGMA user_version=1;
+            CREATE TABLE workout_sessions (
+                id TEXT NOT NULL PRIMARY KEY, startedAt INTEGER NOT NULL,
+                activeSlot INTEGER, payload TEXT NOT NULL
+            );
+            CREATE INDEX index_workout_sessions_startedAt ON workout_sessions(startedAt);
+            CREATE UNIQUE INDEX index_workout_sessions_activeSlot ON workout_sessions(activeSlot);
+            CREATE TABLE workout_templates (
+                id TEXT NOT NULL PRIMARY KEY, updatedAt INTEGER NOT NULL, payload TEXT NOT NULL
+            );
+        """)
+        created = BASE - 400 * DAY
+        for i in range(6):
+            insert(main, "categories", dict(
+                id=f"seed-category-{i}", name=f"Synthetic category {i}",
+                color=0xFF398A7E + i, sortOrder=i, isArchived=0,
+            ))
+        for i, ident in enumerate(("sleep", "fitness", "fitness-chest", "fitness-back", "fitness-shoulders", "fitness-arms")):
+            insert(main, "activity_templates", dict(
+                id=ident, name=f"Synthetic activity {ident}", parentId="fitness" if i >= 2 else None,
+                defaultMinutes=480 if i == 0 else 60, categoryId="seed-category-2", sortOrder=i,
+                archivedAt=None, createdAt=created, updatedAt=created, version=1,
+            ))
+        for i in range(4):
+            insert(main, "projects", dict(
+                id=f"seed-project-{i}", name=f"Synthetic project {i}", dueAt=BASE + i * DAY,
+                status="ACTIVE", createdAt=created, updatedAt=created, version=1, deletedAt=None,
+            ))
+            insert(main, "weekly_goals", dict(
+                id=f"seed-goal-{i}", projectId=f"seed-project-{i}", activityId=None,
+                weekStart="2026-10-26", targetMinutes=120 + i * 60, version=1,
+            ))
+        for i in range(3):
+            insert(main, "tags", dict(id=f"seed-tag-{i}", name=f"Synthetic tag {i}", color=0xFF398A7E))
+
+        tasks = []
+        plans = []
+        instances = []
+        for i in range(10):
+            rule_id = f"seed-rule-{i:02}"
+            pattern = dict(
+                id=rule_id, frequency="DAILY", startDate="2026-10-01", weekdays=[],
+                weeklyCount=1, minuteOfDay=480, durationMinutes=30, zoneId="Asia/Shanghai",
+                untilDate="2026-10-10", paused=False, effectiveFrom="2026-10-01", leadMinutes=15,
+            )
+            rule = dict(
+                id=rule_id, title=f"Synthetic rule {i}", patternJson=encode(pattern),
+                domain="HABIT" if i % 2 == 0 else "DEADLINE", category="", reference="",
+                projectId=f"seed-project-{i % 4}", createdAt=created, updatedAt=created,
+                version=2, deletedAt=None,
+            )
+            insert(main, "recurring_rules", rule)
+            historical_rule = dict(rule, version=1)
+            for j in range(10):
+                local_date = date(2026, 10, 1) + timedelta(days=j)
+                ident = f"{rule_id}:d:{local_date.isoformat()}"
+                task_id = "recurring-task:" + ident
+                stamp = int(datetime.combine(local_date, datetime.min.time(), timezone.utc).timestamp() * 1000)
+                scheduled = stamp + (120 * MINUTE if j == 2 else 0)
+                status = "COMPLETED" if j == 0 else "SKIPPED" if j == 1 else "PENDING"
+                has_plan = rule["domain"] == "HABIT" and status != "SKIPPED"
+                tasks.append(dict(
+                    id=task_id, title=f"Synthetic recurring item {i}-{j}", description="Synthetic provenance",
+                    estimatedMinutes=30, dueAt=scheduled + (30 * MINUTE if has_plan else 0),
+                    priority=1, status={"COMPLETED": "COMPLETED", "SKIPPED": "CANCELLED"}.get(status, "TODO"),
+                    categoryId=f"seed-category-{i % 6}", createdAt=created, updatedAt=scheduled,
+                    completedAt=scheduled if status == "COMPLETED" else None, source="RECURRING",
+                    deletedAt=None, version=1, activityId=None,
+                ))
+                if has_plan:
+                    plans.append(dict(
+                        id="recurring-plan:" + ident, taskId=task_id,
+                        startAt=scheduled, endAt=scheduled + 30 * MINUTE, status="SCHEDULED",
+                        isLocked=0, createdAt=created, updatedAt=scheduled, version=1,
+                    ))
+                instances.append(dict(
+                    id=ident, ruleId=rule_id, taskId=task_id, originalDate=local_date.isoformat(),
+                    ordinal=1, scheduledAt=None if status == "SKIPPED" else scheduled,
+                    status=status, manualOverride=int(j < 3), ruleSnapshot=encode(historical_rule),
+                    ruleVersion=1, taskVersion=1, planVersion=1 if has_plan else None,
+                    placementVersion=1, scheduleNote="Synthetic manual exception" if j < 3 else "",
+                    version=1,
+                ))
+        for i in range(100, 500):
+            status = ("TODO", "IN_PROGRESS", "COMPLETED", "CANCELLED")[i % 4]
+            tasks.append(dict(
+                id=f"seed-task-{i:03}", title=f"Synthetic task {i}", description=f"Synthetic details {i}",
+                estimatedMinutes=15 + (i % 8) * 15, dueAt=BASE + (i % 15) * DAY if i % 3 else None,
+                priority=i % 3, status=status, categoryId=f"seed-category-{i % 6}",
+                createdAt=created, updatedAt=BASE - DAY,
+                completedAt=BASE - DAY if status == "COMPLETED" else None,
+                source="MANUAL", deletedAt=None, version=1, activityId=None,
+            ))
+        for i, task in enumerate(tasks):
+            insert(main, "tasks", task)
+            insert(main, "task_placements", dict(
+                taskId=task["id"], projectId=f"seed-project-{(i // 10 if i < 100 else i) % 4}",
+                parentTaskId=None, version=1,
+            ))
+            if i < 50:
+                insert(main, "task_tags", dict(taskId=task["id"], tagId=f"seed-tag-{i % 3}"))
+        while len(plans) < 2000:
+            i = len(plans)
+            stamp = BASE + (i % 183 - 180) * DAY + (i % 24) * 30 * MINUTE
+            plans.append(dict(
+                id=f"seed-plan-{i:04}", taskId=tasks[100 + i % 400]["id"],
+                startAt=stamp, endAt=stamp + 30 * MINUTE, status="SCHEDULED",
+                isLocked=int(i % 10 == 0), createdAt=created, updatedAt=stamp, version=1,
+            ))
+        for plan in plans:
+            insert(main, "schedule_blocks", plan)
+        for instance in instances:
+            insert(main, "recurring_instances", instance)
+        for i in range(9800):
+            start = BASE - (i // 2 % 365 + 1) * DAY + (i // 2 % 600) * MINUTE
+            if i % 100 == 0:
+                start = BASE - (i % 365 + 1) * DAY + (11 * 60 + 45) * MINUTE
+            ident = f"seed-record-{i:05}"
+            insert(main, "time_records", dict(
+                id=ident, taskId=tasks[i % 500]["id"] if i % 4 == 0 else None,
+                startAt=start, endAt=start + 30 * MINUTE, categoryId=f"seed-category-{i % 6}",
+                notes=f"Synthetic record note {i}", source="MANUAL", createdAt=created,
+                updatedAt=start + 30 * MINUTE, isManuallyEdited=i % 2, version=1,
+                title=f"Synthetic record {i}",
+            ))
+            if i < 100:
+                insert(main, "record_tags", dict(recordId=ident, tagId=f"seed-tag-{i % 3}"))
+        for i in range(200):
+            session = build_workout_session(i, BASE - (i + 1) * DAY)
+            insert(workouts, "workout_sessions", dict(
+                id=session["id"], startedAt=session["startedAt"], activeSlot=None, payload=encode(session),
+            ))
+            insert(main, "time_records", dict(
+                id=session["timelineRecordId"], taskId=None, startAt=session["startedAt"],
+                endAt=session["endedAt"], categoryId="seed-category-2", notes=session["notes"],
+                source="WORKOUT", createdAt=created, updatedAt=session["endedAt"],
+                isManuallyEdited=0, version=1, title=session["title"],
+            ))
+        directions = ("EXPENSE", "INCOME", "REFUND")
+        for i, account_type in enumerate(("CASH", "BANK", "WECHAT", "ALIPAY", "OTHER")):
+            insert(main, "ledger_accounts", dict(
+                id=f"seed-account-{i}", name=f"Synthetic account {i}", type=account_type, currency="CNY",
+                openingBalanceMinor=0, sortOrder=i, archivedAt=None, createdAt=created, updatedAt=created, version=1,
+            ))
+        for i, direction in enumerate(directions):
+            insert(main, "ledger_categories", dict(
+                id=f"seed-ledger-category-{i}", name=f"Synthetic {direction}", direction=direction,
+                icon="", sortOrder=i, archivedAt=None, createdAt=created, updatedAt=created, version=1,
+            ))
+        for i in range(2000):
+            direction = directions[i % 3]
+            occurred = BASE - (i % 365) * DAY
+            amount = 100 + i * 13
+            transaction_id = f"seed-transaction-{i:04}"
+            capture_id = f"seed-capture-{i:04}" if i < 200 else None
+            if capture_id:
+                insert(main, "payment_captures", dict(
+                    id=capture_id, sourcePackage="com.timeagent.synthetic", sourceLabel="Synthetic source",
+                    notificationKey=f"synthetic-notification-{i}", externalTransactionId=f"synthetic-reference-{i}",
+                    occurredAt=occurred, amountMinor=amount, direction=direction,
+                    merchant=f"Synthetic merchant {i}", rawTextHash=hashlib.sha256(f"synthetic-{i}".encode()).hexdigest(),
+                    parsedJson=encode(dict(amountMinor=amount, direction=direction)), parserVersion=1,
+                    status="CONFIRMED", transactionId=transaction_id,
+                    createdAt=created, updatedAt=occurred, version=1,
+                ))
+            insert(main, "ledger_transactions", dict(
+                id=transaction_id, accountId=f"seed-account-{i % 5}", categoryId=f"seed-ledger-category-{i % 3}",
+                captureId=capture_id, amountMinor=amount, direction=direction, merchant=f"Synthetic merchant {i}",
+                note=f"Synthetic transaction {i}", occurredAt=occurred, createdAt=created,
+                updatedAt=occurred, confirmedAt=occurred, version=1, deletedAt=None,
+            ))
+        counts = {
+            e["tableName"]: main.execute(f'SELECT count(*) FROM `{e["tableName"]}`').fetchone()[0]
+            for e in schema["entities"]
+        }
+        assert main.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
+        assert not main.execute("PRAGMA foreign_key_check").fetchall()
+    manifest = dict(
+        provenance="synthetic", derivedFromRealExport=False, containsRealUserData=False,
+        generator="scripts/seed-large-dataset", seed=20261031, referenceTime="2026-10-31T12:00:00+08:00",
+        schemaVersion=12, schemaIdentityHash=schema["identityHash"],
+        schemaSha256=hashlib.sha256(SCHEMA.read_bytes()).hexdigest(),
+        mainTableCounts=counts, workoutTableCounts=dict(workout_sessions=200, workout_templates=0),
+        manualExceptions=30,
+        files={p.name: dict(bytes=p.stat().st_size, sha256=hashlib.sha256(p.read_bytes()).hexdigest())
+               for p in (main_path, workout_path)},
+    )
+    (output / "dataset-manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return manifest
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output-dir", type=Path, default=ROOT / "outputs/t0-large-dataset",
+                        help="Directory for generated samples; these named files are replaced on rerun.")
+    args = parser.parse_args()
+    print(json.dumps(make_databases(args.output_dir), indent=2, sort_keys=True))
