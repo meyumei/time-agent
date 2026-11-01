@@ -1,0 +1,67 @@
+{
+  "client": "WorkBuddy CLI 2.171.0",
+  "requestedModel": "deepseek-v4.1-flash",
+  "requestedEffort": "max",
+  "serverReportedEffort": null,
+  "allowedTool": "Scoped phone UI driver only; no source/private database/Key access",
+  "limits": {
+    "driverActionsPerPhase": 60,
+    "errorsBeforeDriverStops": 2,
+    "wallTimeoutSeconds": 420
+  },
+  "phases": [
+    {
+      "phase": "workout3",
+      "actualDriverActions": 48,
+      "errors": 0,
+      "cliReportedTurns": 126,
+      "returnedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "durationMs": 196577,
+      "independentlyAccepted": true,
+      "stopReason": "Module completed"
+    },
+    {
+      "phase": "calendar3",
+      "actualDriverActions": 42,
+      "errors": 2,
+      "cliReportedTurns": 118,
+      "returnedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "durationMs": 220765,
+      "independentlyAccepted": false,
+      "stopReason": "Fixture/driver errors; no calendar acceptance"
+    },
+    {
+      "phase": "calendar4",
+      "actualDriverActions": 39,
+      "errors": 0,
+      "cliReportedTurns": null,
+      "returnedModels": [],
+      "durationMs": null,
+      "independentlyAccepted": false,
+      "stopReason": "Main agent terminated after ineffective legend taps; no calendar acceptance"
+    },
+    {
+      "phase": "timer3",
+      "actualDriverActions": 6,
+      "errors": 0,
+      "cliReportedTurns": 19,
+      "returnedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "durationMs": 52112,
+      "independentlyAccepted": true,
+      "stopReason": "Current test completed"
+    }
+  ],
+  "finalScopeChange": "User stopped further baseline tests after current timer test; proceed to T1.1.",
+  "unexecuted": [
+    "Backup instrumented round-trip",
+    "Small lifecycle fixture",
+    "Real reboot",
+    "Further calendar retry"
+  ]
+}

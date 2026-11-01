@@ -1,0 +1,138 @@
+{
+  "file": "L11-round2-template.png",
+  "redactedTextRegions": 4,
+  "ui": [
+    {
+      "node": 9,
+      "text": "把每一组，练得有迹可循",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[131,477][879,567]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 12,
+      "text": "开始自由训练",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[483,747][738,804]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 15,
+      "text": "动作库",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[262,1021][390,1078]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 18,
+      "text": "3D 肌群",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[815,1021][972,1078]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 22,
+      "text": "训练模板",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[249,1221][421,1280]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 25,
+      "text": "训练记录",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[800,1221][972,1280]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 28,
+      "text": "新建训练模板",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[176,1425][431,1482]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 31,
+      "text": "T0_DS_TEMPLATE",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[111,1645][533,1717]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 34,
+      "text": "开练",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[816,1679][902,1736]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 41,
+      "text": "",
+      "description": "返回时间 Agent",
+      "kind": "View",
+      "bounds": "[52,203][130,281]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 43,
+      "text": "训练",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[182,199][305,284]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 45,
+      "text": "",
+      "description": "训练设置",
+      "kind": "View",
+      "bounds": "[1090,203][1168,281]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

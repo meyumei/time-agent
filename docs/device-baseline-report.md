@@ -99,3 +99,25 @@ python .tmp/t0-phone/restore-round2.py --verify-only
 结果退出 0：**39 个文件内容全部一致，37 张表行数及内容摘要全部一致，两库 integrity_check=ok、foreign_key_check=0**。附件、偏好、DSH 会话与共同记忆文件一并恢复，未读取或修改 no_backup 中的 Key；时区 `Asia/Shanghai`、自动时区 `1`。已删本轮上传的 UI probe，临时合成库中转文件也已删除，应用保持停止用于精确比对。[最终恢复校验](ledger-evidence/device-20261101-followup/restore-verification.json)
 
 本轮只更新文档与证据，**未重新运行 Gradle、Node、Python 单元测试或三项仪器测试**；前述测试数字仍属于对应的上一轮实测。原 49 张有效截图与 33 个模块覆盖数未增加。L11 完整训练、L36 日历交接和前述重启、锁屏、语音等缺口仍在，T0.1 保持部分验收，PR 继续为 Draft。下一开发任务仍为 T1.1，本轮未实施。
+
+
+## 2026-11-01 当前测试结束并转入开发
+
+用户在计时恢复测试进行中明确要求：完成当前测试后不再继续基线测试，直接按规格开发。以下是停止前实际取得的新增结果；未执行项保留缺口，不冒充阶段 0 全项验收。
+
+- L11：DS 在合成库完成杠铃卧推 20 kg × 8 次、一组完成、组间休息、暂停/恢复、保存 T0_DS_TEMPLATE、结束训练。主代理人工看图，并在停止应用后独立读库确认 COMPLETED、1 个动作/完成组、累计暂停 7472ms、恰好 1 条 source=WORKOUT 的关联实际、1 个动作的模板。总实际数 10020 包含自动健康同步导入，不能写成训练新增 20 条。其他 7 种记录类型未测。
+- L02：DS 对已运行计时执行 force-stop + 重新启动、结束计时。主代理独立核对同一 id/taskId/startAt，endAt 已保存、关联实际只有 1 条、运行中 0 条，主库完整性通过、外键 0。这是进程重启，不是真实手机重启。
+- L36：两次尝试均无有效交接。首轮夹具误写日程 status，已纠正为 SCHEDULED；第二轮在大数据时间轴误点不可点击的图例，主代理终止。不将采集器或夹具错误算为产品缺陷。
+
+新增 7 张脱敏截图及独立断言见 [本轮清单](ledger-evidence/device-20261101-continue/manifest.json)、
+[训练核对](ledger-evidence/device-20261101-continue/workout-independent-check.json)、
+[计时核对](ledger-evidence/device-20261101-continue/timer-independent-check.json)、
+[DS 实际协作](ledger-evidence/device-20261101-continue/collaboration.json)。DS 返回模型为 deepseek-v4.1-flash，请求 effort=max；实际 effort 没有返回，仍为未知。
+
+未再安装测试 APK、未运行新备份仪器测试、未执行小型提醒夹具、真实重启或下一次日历尝试；草拟的新备份测试已撤下。本轮曾构建该测试 APK：首次因测试代码调用不存在的 deleteSession 失败，改为仅测试库 SQL 后构建与 Lint 成功；这些构建结果不能当作备份功能通过。没有改业务代码、UI、依赖或数据库版本。
+
+停止测试后恢复**本轮开始时重新保存的**原记录。备份 SHA-256
+`a73390ce8b6754d71e35f85c30ff10cb0ad051667b3ac22c85bbb19a92fd1805`；
+恢复后再独立只读校验：39 个文件逐文件内容一致、两库 37 张表计数和内容摘要一致、integrity_check=ok、外键 0。原有 48 实际、30 任务、13 日程、3 训练、附件、偏好与 DSH 会话/共同记忆均恢复；健康同步开关随原偏好恢复。未读取或修改 no_backup 中的 Key。时区 Asia/Shanghai、自动时区 1；测试包未替换，临时 UI probe/XML 已删，应用保持停止用于精确校验。[最终恢复证据](ledger-evidence/device-20261101-continue/restore-verification.json)
+
+剩余真机缺口（开机、权限/锁屏/后台、语音、平台、全部训练类型、日历交接、应用内备份回滚等）按用户要求停止继续采集，T0.1 仍为部分验收。用户已授权进入开发，下一任务为 T1.1 Hilt 与数据库单例，另开任务分支，不将本次未测项标成通过。

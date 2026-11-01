@@ -1,0 +1,12 @@
+{
+  "sameRecordId": true,
+  "sameTaskId": true,
+  "sameStartAt": true,
+  "endAtSaved": true,
+  "runningRecordCount": 0,
+  "linkedRecordCount": 1,
+  "integrity": "ok",
+  "foreignKeyViolations": 0,
+  "processRestart": "force-stop and launch; not device reboot",
+  "snapshotSha256": "a01f61663c59d60602802aadb2262295e9a0169b4ad1e71f8d43b3cb9f57fe88"
+}
