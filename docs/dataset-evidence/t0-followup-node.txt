@@ -1,0 +1,27 @@
+✔ speech speaks readable text without fish markers, code, or URLs (2.1025ms)
+✔ character editing preserves existing agreements and only replaces its managed card (1.7261ms)
+✔ character card v1 imports the same fields and has bounded combined persona size (2.1095ms)
+✔ an autonomous topic waits for its own turn instead of steering a user reply (50.7545ms)
+✔ history uses durable user and assistant events and excludes reasoning and tool payloads (1.6482ms)
+✔ input rejects empty and excessive messages while preserving ordinary text (0.4979ms)
+✔ a persisted DSH transport failure reaches the chat error path (1.977ms)
+✔ proactive context preserves a real source and marks quiet internal time (0.5854ms)
+✔ discovery shares only returned metadata and does not invent an empty feed (0.681ms)
+✔ mentions, self messages, quiet hours, cooldown and smart addressing are meaningful (29.2653ms)
+✔ QQ smart addressing follows the shared profile name after customization (0.607ms)
+✔ OneBot actions feed a group session and never send without the saved switch (16.9699ms)
+✔ changing QQ accounts clears old context and cancels an already generated reply (4.594ms)
+✔ empty or failed QQ turns finish presence and a failed group does not starve the next group (4.6793ms)
+✔ fresh voice transcripts enter the same group context and smart addressing, with no old voice replay (5.2379ms)
+✔ a WAV voice is passed to the native recognizer without using the microphone or an LLM (2.4429ms)
+✔ inline SILK is converted by OneBot and its returned WAV base64 is recognized (32.7965ms)
+✔ NapCat remote file paths are downloaded as converted WAV chunks, never read as phone paths (1.2538ms)
+✔ an incomplete or failed voice download never reaches recognition (0.9796ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 720.0352

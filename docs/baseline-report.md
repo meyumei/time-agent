@@ -93,3 +93,25 @@ Lint：**0 错误、73 警告、2 信息项**。警告未清零，本轮不修�
 本轮通过的是主机单元测试、Node 测试、构建和 Lint；未执行 `connectedDebugAndroidTest`，没有模拟器/真机性能、后台、开机、锁屏、时区、平台登录或运行时 arm64 启动的通过结论。主机通过不能替代账本的 36 项真机补证。受影响账本 L01–L36：业务代码未修改；这些结果建立后续回归基线。
 
 T0.3 生成后新增夹具测试单独报告，不回填为本节的改造前测试总数。阶段 0 完成可执行交付后，建议下一张开发任务为 **T1.1：Hilt 与数据库单例**；仍不在本 PR 实施。
+
+## 2026-11-01 连接手机后的跟进实测
+
+本节是本轮新增结果，不回填前述 2026-10-31 基线数字。业务代码、SDK 声明及依赖没有变化。追加了真实脱敏夹具和测试。
+
+```powershell
+.\gradlew.bat :core:test :agent-runtime:testDebugUnitTest :app:testDebugUnitTest :app:assembleDebug :app:lintDebug :app:assembleDebugAndroidTest --console=plain --no-parallel --max-workers=2 '-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK'
+# agent-plugins/time-agent 下执行
+node --test test/*.test.mjs
+# 项目根目录
+python -B -m unittest discover -s scripts -p 'test_*.py' -v
+```
+
+最终 Gradle 命令退出 **0**，2 分 4 秒。core/runtime 已在本轮首次 `--rerun-tasks` 执行并通过，最终运行复用未变更结果；app 在修改真实样本测试后实跑。JUnit：core **82/82**，runtime **7/7**，app **631 项，629 通过、2 跳过、0 失败/错误**；合计 **720 项、718 通过、2 跳过**。Node **19/19**、退出 0（约 0.80 秒）；Python **9/9**、9.009 秒。跳过仍是依赖私有 PDF 的两项，未变为通过。Lint 为 **0 错误、73 警告、2 信息项**。
+
+本次两个失败回合均在新增样本测试：先把有 LIMIT 80 的 history 查询当作全表数，再误以为原库全部训练关联目标存在；均独立核对源数据后修测试，没有改源数据或业务。保留 [首次失败](dataset-evidence/t0-followup-gradle-initial.txt)、[第二次失败](dataset-evidence/t0-followup-gradle-second.txt)、[最终完整命令](dataset-evidence/t0-followup-gradle.txt)、[JUnit/Lint/APK 汇总](dataset-evidence/t0-followup-test-summary.json)、[Node](dataset-evidence/t0-followup-node.txt)、[Python](dataset-evidence/t0-followup-python.txt)。
+
+最终仪器测试在 API 36 arm64 手机实跑 **3/3 通过**，1.743 秒；覆盖当前 Room 打开真实样本、十个原生 time_* 实参/返回、真实系统时区事件后已有提醒重排。首次时区测量把 dumpsys 移除历史计为 pending 而超时，仅修测试统计后通过；随后测试 APK 重建和 Lint 再次退出 0。未实测真实开机和训练时区重排，不能把此结果扩写为全提醒送达通过。
+
+主 APK 再次实测仍为 **890073507 字节 / 848.84 MiB**，SHA-256 仍为 `13ae925f380092dd707e35a0b3a14259dd6f587c213036def738810970bcdd36`，与前述 APK 逐字节相同；因此各 ABI/rootfs/模型/GIF 组成表继续适用，测试数据库没有进入主 APK。本轮已升级安装 code 28（未卸载）；手机原 code 27 数据在测试结束后完整恢复，39 文件内容和两库 36 表计数/摘要全一致。运行时 arm64 进程实际观察及部分 UI 证据、APK 清理扫描和详细缺口见 [真机报告](device-baseline-report.md)。
+
+T0.2 构建测试基线及 T0.3 真实导出已补齐；T0.1 仍有未覆盖子能力，保持 Draft PR，不把 33 模块的页面截图当作 36 项全流程通过。下一开发任务仍为 **T1.1**。

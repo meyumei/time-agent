@@ -1,0 +1,14 @@
+{
+  "command": [
+    "F:\\261019_\u65f6\u95f4agent\\gradlew.bat",
+    ":app:assembleDebugAndroidTest",
+    ":app:lintDebug",
+    "--console=plain",
+    "--no-parallel",
+    "--max-workers=2",
+    "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK"
+  ],
+  "startedEpoch": 1793521575.7498276,
+  "finishedEpoch": 1793521588.425427,
+  "exitCode": 0
+}

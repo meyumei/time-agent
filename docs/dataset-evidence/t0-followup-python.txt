@@ -1,0 +1,14 @@
+test_current_synthetic_assets_and_rerun (test_anonymize_v12_sample.AnonymizeV12Test.test_current_synthetic_assets_and_rerun) ... ok
+test_legacy_suggestion_keys_keep_links_without_private_identifiers (test_anonymize_v12_sample.AnonymizeV12Test.test_legacy_suggestion_keys_keep_links_without_private_identifiers) ... ok
+test_nested_history_calendar_ids_and_clean_outputs (test_anonymize_v12_sample.AnonymizeV12Test.test_nested_history_calendar_ids_and_clean_outputs) ... ok
+test_no_compatible_date_shift_fails_without_publishing (test_anonymize_v12_sample.AnonymizeV12Test.test_no_compatible_date_shift_fails_without_publishing) ... ok
+test_public_exercise_catalog_keeps_media_and_muscle_references (test_anonymize_v12_sample.AnonymizeV12Test.test_public_exercise_catalog_keeps_media_and_muscle_references) ... ok
+test_public_task_sources_are_preserved (test_anonymize_v12_sample.AnonymizeV12Test.test_public_task_sources_are_preserved) ... ok
+test_unknown_column_and_source_output_alias_are_rejected (test_anonymize_v12_sample.AnonymizeV12Test.test_unknown_column_and_source_output_alias_are_rejected) ... ok
+test_unknown_json_field_fails_without_private_error_or_output (test_anonymize_v12_sample.AnonymizeV12Test.test_unknown_json_field_fails_without_private_error_or_output) ... ok
+test_scale_relations_and_repeatable_bytes (test_seed_large_dataset.LargeDatasetTest.test_scale_relations_and_repeatable_bytes) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 9.009s
+
+OK
