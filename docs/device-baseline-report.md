@@ -68,3 +68,34 @@ UI 测试用临时合成库；没有让 DS 操作原记录。结束后停止所�
 本次扩大到全部可读共享存储、全部 /data/local/tmp 及本应用 files/cache 中 APK 文件，发现 **33 个候选，31 个可识别、2 个无法识别，确认的旧版 com.timeagent 为 0**；删除流程已真实执行，**删除 0、释放 0 字节**。没有可据此删除的旧版时间 Agent 文件，不能宣称全手机旧包已清空，也不能照抄 DS 对设备不存在旧包的过度结论。完整流留在本机；提交 [实际子代理清理摘要](ledger-evidence/device-20261101/ds-apk-cleanup.json)。
 
 清理后复核发现应用期间自动刷新了 health_sync_items.lastSyncedAt、对应 revision 与一条自动建议；任务、实际、日程和训练内容未变。先将刷新后的状态另存私有快照，再还原测试前文件。最终独立比对再次为 **39 文件全一致、36 表计数/内容摘要全一致、完整性通过、外键 0**，时区和自动时区不变；最新结果已更新恢复核对文件。没有删除原记录或卸载应用。
+
+## 2026-11-01 再次清理与训练续测
+
+本节是用户要求“删除旧版本 APK 并继续”后的独立一轮，不覆盖前述历史结果。WorkBuddy DS 再次实际执行以下两个限定命令，各一次；返回模型 `deepseek-v4.1-flash`，请求 `effort=max`，实际 effort 仍未返回。执行约 100.6 秒，退出 0，实际工具调用 2 次；CLI 报告的 8 turns 另行记录。
+
+```powershell
+python .tmp/t0-phone/apk-cleanup-round2.py scan
+python .tmp/t0-phone/apk-cleanup-round2.py delete-confirmed
+```
+
+扫描全部可读共享存储、`/data/local/tmp` 与本应用 files/cache 中的 APK，**33 个候选、32 个识别成功、确认的旧版 com.timeagent 为 0；实际删除 0，释放 0 字节**。此次用 Android SDK aapt2 补核了前次两个未识别文件：一个确认是其他应用；另一个报告 `failed opening zip: Invalid file`，无法判定包名，因此保留。不能称为全手机旧包已清空。已安装的时间 Agent code 28 与测试包保留，没有卸载、清空数据或删除其他应用安装包。[清理结果](ledger-evidence/device-20261101-followup/apk-cleanup.json)
+
+测试前重新停止应用并保存**本轮开始时**的当前数据，未直接套用 10 月 31 日备份。新备份仍为 6883840 字节，SHA-256 `a73390ce8b6754d71e35f85c30ff10cb0ad051667b3ac22c85bbb19a92fd1805`，共 39 个文件。两库共 37 张表（含元数据，本次还计入 `sqlite_sequence`）；主库 30 任务、48 实际、13 日程，训练库 3 次训练。完整性通过、外键违规 0；原备份继续保留在本机忽略目录。[备份摘要](ledger-evidence/device-20261101-followup/backup-summary.json)
+
+本次只调整忽略目录中的采集器：允许源码已有的动态公开按钮“完成（数量）”“完成第 n 组”等被 DS 看见，不改应用 UI 或业务。随后安装临时合成库，派 DS 补 L11 动作添加、完成一组、休息、暂停/恢复、结束和模板；日历交接夹具仅为后续准备，未执行交接。
+
+```powershell
+python .tmp/t0-phone/run-ds.py workout2
+```
+
+**该轮未验收**：25 次工具调用请求中，采集器实际记下 24 个动作、10 个错误，成功截图 0。一次短暂取得今天页后，目标应用持续不在前台，主代理独立检查也观察到其他应用在前台。DS 没有遵守“两次入口失败即停止”，主代理终止了该轮，进程退出 1；未得到训练保存、休息、暂停/恢复或模板证据，也没有证据证明前台切换是应用崩溃。因此不增加通过项、不新增产品缺陷，不将 DS 尝试当成流程完成。[失败动作摘要](ledger-evidence/device-20261101-followup/workout2-attempt.json)、[实际协作记录](ledger-evidence/device-20261101-followup/collaboration.json)
+
+随即恢复**本轮新备份**并两次独立读回；最后一次仅校验：
+
+```powershell
+python .tmp/t0-phone/restore-round2.py --verify-only
+```
+
+结果退出 0：**39 个文件内容全部一致，37 张表行数及内容摘要全部一致，两库 integrity_check=ok、foreign_key_check=0**。附件、偏好、DSH 会话与共同记忆文件一并恢复，未读取或修改 no_backup 中的 Key；时区 `Asia/Shanghai`、自动时区 `1`。已删本轮上传的 UI probe，临时合成库中转文件也已删除，应用保持停止用于精确比对。[最终恢复校验](ledger-evidence/device-20261101-followup/restore-verification.json)
+
+本轮只更新文档与证据，**未重新运行 Gradle、Node、Python 单元测试或三项仪器测试**；前述测试数字仍属于对应的上一轮实测。原 49 张有效截图与 33 个模块覆盖数未增加。L11 完整训练、L36 日历交接和前述重启、锁屏、语音等缺口仍在，T0.1 保持部分验收，PR 继续为 Draft。下一开发任务仍为 T1.1，本轮未实施。

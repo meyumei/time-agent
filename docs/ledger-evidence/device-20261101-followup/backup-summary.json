@@ -1,0 +1,22 @@
+{
+  "savedAtEpoch": 1793523670.169023,
+  "backupBytes": 6883840,
+  "backupSha256": "a73390ce8b6754d71e35f85c30ff10cb0ad051667b3ac22c85bbb19a92fd1805",
+  "protectedFiles": 39,
+  "tablesIncludingMetadata": 37,
+  "protectedCounts": {
+    "time-agent.db": {
+      "tasks": 30,
+      "schedule_blocks": 13,
+      "time_records": 48,
+      "entity_revisions": 175,
+      "health_sync_items": 31
+    },
+    "workouts.db": {
+      "workout_sessions": 3
+    }
+  },
+  "noBackupDirectoryTouched": false,
+  "source": "Fresh phone state at start of this follow-up; not the 2026-10-31 backup.",
+  "backupLocation": "Local ignored private folder; never committed."
+}
