@@ -12,6 +12,9 @@ import android.provider.Settings
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import com.timeagent.data.TimeAgentDatabase
+import dagger.Lazy
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,9 +52,10 @@ object LedgerSettings {
  * Only reads notifications after the package whitelist check. The parsed fields become a pending
  * draft; nothing is booked until the user chooses an account and a category.
  */
+@AndroidEntryPoint
 class PaymentNotificationListener : NotificationListenerService() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private val database = lazy { TimeAgentDatabase.open(applicationContext) }
+    @Inject lateinit var database: Lazy<TimeAgentDatabase>
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         val status = sbn ?: return
@@ -73,7 +77,7 @@ class PaymentNotificationListener : NotificationListenerService() {
         scope.launch {
             val parsed = PaymentParser.parseNotification(packageName, title, body, postedAt) ?: return@launch
             try {
-                val repository = LedgerRepository(database.value, Clock.systemDefaultZone())
+                val repository = LedgerRepository(database.get(), Clock.systemDefaultZone())
                 val capture = repository.recordCapture(parsed, status.key.orEmpty()) ?: return@launch
                 LedgerNotifications.postDraft(this@PaymentNotificationListener, capture)
             } catch (cancelled: CancellationException) {
@@ -86,7 +90,6 @@ class PaymentNotificationListener : NotificationListenerService() {
 
     override fun onDestroy() {
         scope.cancel()
-        if (database.isInitialized()) database.value.close()
         super.onDestroy()
     }
 }

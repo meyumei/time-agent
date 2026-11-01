@@ -6,6 +6,7 @@ import com.google.gson.Gson
 import com.timeagent.core.workout.*
 import com.timeagent.data.TimeRecordEntity
 import com.timeagent.data.TimeRepository
+import com.timeagent.di.AppEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -23,7 +24,7 @@ class WorkoutRepository internal constructor(
     private val clock: Clock = Clock.systemUTC(),
 ) {
     constructor(context: Context, timeRepository: TimeRepository, clock: Clock = Clock.systemUTC()) :
-        this(WorkoutDatabase.open(context), timeRepository, clock)
+        this(AppEntryPoint.from(context).workoutDatabase(), timeRepository, clock)
 
     private val gson = Gson()
     private val dao = db.dao()

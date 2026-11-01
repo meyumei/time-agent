@@ -559,7 +559,4 @@ class LedgerRepository(
         return next
     }
 
-    fun close() {
-        db.close()
-    }
 }

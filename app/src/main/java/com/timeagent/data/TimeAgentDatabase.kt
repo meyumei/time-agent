@@ -109,7 +109,14 @@ abstract class TimeAgentDatabase : RoomDatabase() {
     abstract fun dao(): TimeDao
     abstract fun organizationDao(): OrganizationDao
     abstract fun ledgerDao(): LedgerDao
+
+    override fun close() = synchronized(Companion) {
+        super.close()
+        if (instance === this) instance = null
+    }
+
     companion object {
+        @Volatile private var instance: TimeAgentDatabase? = null
         val MIGRATION_10_11 = object : Migration(10,11) {
             override fun migrate(db:SupportSQLiteDatabase) {
                 db.execSQL("CREATE TABLE IF NOT EXISTS `attachments` (`id` TEXT NOT NULL, `storageKey` TEXT NOT NULL, `originalName` TEXT NOT NULL, `mimeType` TEXT NOT NULL, `sizeBytes` INTEGER NOT NULL, `sha256` TEXT NOT NULL, `ocrText` TEXT NOT NULL, `taskId` TEXT, `projectId` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `version` INTEGER NOT NULL, `deletedAt` INTEGER, `purgedAt` INTEGER, PRIMARY KEY(`id`))")
@@ -191,12 +198,14 @@ abstract class TimeAgentDatabase : RoomDatabase() {
         }
         fun open(context: Context): TimeAgentDatabase {
             com.timeagent.backup.PersonalBackup.recoverIfNeeded(context)
-            return Room.databaseBuilder(context.applicationContext, TimeAgentDatabase::class.java, "time-agent.db")
-            // Never use fallbackToDestructiveMigration: future versions must supply explicit migrations.
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, LedgerSchema.MIGRATION_11_12)
-            .enableMultiInstanceInvalidation()
-            .apply { singleThreadedTransactions() }
-            .build()
+            return instance ?: synchronized(this) {
+                instance ?: Room.databaseBuilder(context.applicationContext, TimeAgentDatabase::class.java, "time-agent.db")
+                    // Never use fallbackToDestructiveMigration: future versions must supply explicit migrations.
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, LedgerSchema.MIGRATION_11_12)
+                    .enableMultiInstanceInvalidation()
+                    .apply { singleThreadedTransactions() }
+                    .build().also { instance = it }
+            }
         }
 
         /** In-memory variant for tests; same serialization guarantees as [open]. */

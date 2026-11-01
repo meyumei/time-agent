@@ -63,6 +63,10 @@ import com.timeagent.data.TagEntity
 import com.timeagent.data.TimeAgentDatabase
 import com.timeagent.data.TimeRecordEntity
 import com.timeagent.data.TimeRepository
+import com.timeagent.backup.recoverPersonalDataBeforeOpen
+import dagger.Lazy
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import com.timeagent.ui.TimeAgentTheme
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -82,20 +86,21 @@ private val splitTimeFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("HH
 
 /**
  * Not exported. Main links it from Settings with startActivity(Intent(this, OrganizationActivity::class.java)).
- * Each visit opens its own database instance, so returning always reads the current file state.
+ * Returning refreshes the screen while retaining the application's shared database.
  */
+@AndroidEntryPoint
 class OrganizationActivity : ComponentActivity() {
-    private lateinit var database: TimeAgentDatabase
+    @Inject lateinit var database: Lazy<TimeAgentDatabase>
     private lateinit var repository: TimeRepository
     private lateinit var organization: OrganizationRepository
     private var resumeTick by mutableIntStateOf(0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (!recoverPersonalDataBeforeOpen()) return
         val clock = java.time.Clock.systemDefaultZone()
-        database = TimeAgentDatabase.open(this)
-        repository = TimeRepository(database, clock)
-        organization = OrganizationRepository(database, clock)
+        repository = TimeRepository(database.get(), clock)
+        organization = OrganizationRepository(database.get(), clock)
         setContent {
             TimeAgentTheme {
                 OrganizationScreen(
@@ -113,10 +118,6 @@ class OrganizationActivity : ComponentActivity() {
         resumeTick++
     }
 
-    override fun onDestroy() {
-        if (isFinishing) database.close()
-        super.onDestroy()
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
