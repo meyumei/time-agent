@@ -1,0 +1,249 @@
+{
+  "file": "L23-fish-chat.png",
+  "redactedTextRegions": 9,
+  "ui": [
+    {
+      "node": 10,
+      "text": "大肥鱼",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[46,164][230,245]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 11,
+      "text": "你的管家 · 我在",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[46,245][280,288]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 13,
+      "text": "",
+      "description": "大肥鱼的一切",
+      "kind": "View",
+      "bounds": "[1057,187][1135,265]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 17,
+      "text": "今日管家简报",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[150,387][376,437]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 18,
+      "text": "今天暂无即将开始的安排",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[150,437][584,489]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 20,
+      "text": "",
+      "description": "展开今日简报",
+      "kind": "View",
+      "bounds": "[960,406][1025,471]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 27,
+      "text": "朗读",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[137,1021][223,1078]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 34,
+      "text": "朗读",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[137,1775][223,1832]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 39,
+      "text": "表情",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[98,2330][184,2387]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 41,
+      "text": "T0_DS_voice_input_21",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[255,2267][912,2449]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 0
+    },
+    {
+      "node": 43,
+      "text": "发送",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[1010,2330][1096,2387]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 49,
+      "text": "在这里",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[982,1332][1081,1375]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 51,
+      "text": "",
+      "description": "今天页面",
+      "kind": "View",
+      "bounds": "[0,2478][246,2712]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 52,
+      "text": "今天",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[88,2622][158,2669]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 55,
+      "text": "",
+      "description": "计划页面",
+      "kind": "View",
+      "bounds": "[246,2478][492,2712]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 56,
+      "text": "计划",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[334,2622][404,2669]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 58,
+      "text": "",
+      "description": "按住说话",
+      "kind": "Button",
+      "bounds": "[521,2483][697,2659]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 59,
+      "text": "按住说话",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[551,2669][667,2708]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 61,
+      "text": "",
+      "description": "复盘页面",
+      "kind": "View",
+      "bounds": "[726,2478][973,2712]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 62,
+      "text": "复盘",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[815,2622][885,2669]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 65,
+      "text": "",
+      "description": "管家页面",
+      "kind": "View",
+      "bounds": "[973,2478][1220,2712]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 66,
+      "text": "管家",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[1062,2622][1132,2669]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

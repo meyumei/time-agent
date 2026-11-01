@@ -1,0 +1,207 @@
+{
+  "file": "L29-qq-group.png",
+  "redactedTextRegions": 3,
+  "ui": [
+    {
+      "node": 10,
+      "text": "返回",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,240][190,297]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 12,
+      "text": "平台连接",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,385][335,480]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 13,
+      "text": "QQ群聊",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,621][279,702]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 14,
+      "text": "同一个大肥鱼，各群保留独立上下文，沿用共同人格和记忆。先填已有的 OneBot HTTP 地址；检查连接只读取登录状态。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,735][1168,951]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 15,
+      "text": "尚未配置QQ连接，填写已有的 OneBot HTTP 地址后检查。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,984][1105,1036]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 16,
+      "text": "",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,1069][1168,1277]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 0
+    },
+    {
+      "node": 17,
+      "text": "OneBot HTTP 地址",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,1150][519,1222]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 18,
+      "text": "",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,1310][1168,1518]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 1
+    },
+    {
+      "node": 19,
+      "text": "访问令牌",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,1391][296,1463]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 20,
+      "text": "",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,1551][1168,1759]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 2
+    },
+    {
+      "node": 21,
+      "text": "授权群号，用逗号分隔",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,1632][584,1704]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 22,
+      "text": "读取授权群的新消息",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,1792][999,1864]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 24,
+      "text": "允许向授权群回复",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,1981][999,2053]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 26,
+      "text": "语音消息转文字",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,2170][999,2242]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 28,
+      "text": "启用接收后，只转写新收到的语音，再按相同接话规则处理。使用内置离线中文模型，不调用云转写；支持最多60秒。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,2359][1168,2465]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 29,
+      "text": "只开接收时不会调用模型或发消息。允许回复后，按下面的接话方式、时段和频率工作；不主动给未授权联系人发消息。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,2498][1168,2604]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 31,
+      "text": "被@或回复时接话",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,2687][438,2712]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 34,
+      "text": "也接明确叫名提问",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[568,2687][908,2712]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

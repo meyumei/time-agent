@@ -1,0 +1,94 @@
+{
+  "file": "L24-outfit.png",
+  "redactedTextRegions": 3,
+  "ui": [
+    {
+      "node": 10,
+      "text": "返回",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,240][190,297]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 12,
+      "text": "换装",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,385][195,480]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 15,
+      "text": "换的是形象，仍然是同一位管家。建议导入透明 PNG，动图也可以。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,1208][1168,1352]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 17,
+      "text": "经典Q版",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,1441][275,1497]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 20,
+      "text": "经典御姐版",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[405,1441][618,1497]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 25,
+      "text": "红色工作服",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[391,1649][606,1707]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 27,
+      "text": "正在穿",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[430,1757][558,1814]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 30,
+      "text": "添加自己的形象",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[130,2014][427,2071]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

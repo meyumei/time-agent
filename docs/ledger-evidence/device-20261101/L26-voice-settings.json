@@ -1,0 +1,138 @@
+{
+  "file": "L26-voice-settings.png",
+  "redactedTextRegions": 6,
+  "ui": [
+    {
+      "node": 10,
+      "text": "返回",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,240][190,297]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 12,
+      "text": "声音",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,385][195,480]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 13,
+      "text": "给管家选择说话的声音。在线音色沿用原仓库的 Edge TTS，会把要朗读的文字发送给语音服务；系统语音由手机已有引擎处理。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,519][1168,735]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 15,
+      "text": "Edge在线声音",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,824][383,880]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 18,
+      "text": "系统语音",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[513,824][683,880]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 21,
+      "text": "晓伊 · 轻快女声",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,1019][405,1075]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 24,
+      "text": "晓晓 · 自然女声",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,1214][405,1270]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 27,
+      "text": "云希 · 男声",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,1409][320,1465]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 33,
+      "text": "自动朗读新回复",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,2208][999,2280]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 35,
+      "text": "仅在应用前台朗读新回复；历史消息可逐条点朗读。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,2361][958,2413]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 40,
+      "text": "停止播放",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[417,2502][587,2559]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 42,
+      "text": "这里选择的是合成音色，还不是对角色原声的复刻。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,2647][958,2699]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

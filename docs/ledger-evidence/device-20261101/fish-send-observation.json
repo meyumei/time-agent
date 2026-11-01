@@ -1,0 +1,5 @@
+{
+  "foregroundPackage": "com.timeagent",
+  "timeAgentCrashBlocksInLast180CrashLines": [],
+  "lostForegroundDoesNotEstablishCrash": true
+}

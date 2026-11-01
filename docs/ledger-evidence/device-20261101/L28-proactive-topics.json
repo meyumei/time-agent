@@ -1,0 +1,219 @@
+{
+  "file": "L28-proactive-topics.png",
+  "redactedTextRegions": 4,
+  "ui": [
+    {
+      "node": 10,
+      "text": "返回管家",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[91,240][261,297]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 12,
+      "text": "主动话题",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,385][335,480]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 13,
+      "text": "沿用共同记忆和当前会话。运行环境开启时，它可以在允许的时间里主动聊聊；关闭后不再自动唤醒或探索 B站。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,519][1168,642]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 14,
+      "text": "允许主动活动",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,681][999,753]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 16,
+      "text": "允许主动找我聊天",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,876][999,948]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 19,
+      "text": "8",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,1168][590,1376]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 0
+    },
+    {
+      "node": 20,
+      "text": "开始",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,1167][184,1221]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 21,
+      "text": "23",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[629,1168][1168,1376]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 1
+    },
+    {
+      "node": 22,
+      "text": "结束",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[681,1167][761,1221]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 23,
+      "text": "可跨午夜；开始与结束相同表示全天。时间窗外保持安静。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,1415][1076,1467]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 24,
+      "text": "30",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,1506][590,1714]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 2
+    },
+    {
+      "node": 25,
+      "text": "最短间隔（分）",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,1505][380,1559]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 26,
+      "text": "180",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[629,1506][1168,1714]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 3
+    },
+    {
+      "node": 27,
+      "text": "最长间隔（分）",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[681,1505][957,1559]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 28,
+      "text": "请先启动内置角色，再管理主动话题。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,1753][868,1825]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 30,
+      "text": "保存主动设置",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[130,1914][385,1971]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 33,
+      "text": "重新读取",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[91,2109][261,2166]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 36,
+      "text": "让它先聊一句",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[339,2109][594,2166]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 38,
+      "text": "B站的浏览开关在平台连接中；公开发布与评论没有随此开关启用。持续后台的实际时长以本机运行情况为准。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,2254][1168,2360]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

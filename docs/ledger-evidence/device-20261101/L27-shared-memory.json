@@ -1,0 +1,95 @@
+{
+  "file": "L27-shared-memory.png",
+  "redactedTextRegions": 3,
+  "ui": [
+    {
+      "node": 9,
+      "text": "返回管家",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[91,240][261,297]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 11,
+      "text": "共同记忆",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,385][335,480]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 12,
+      "text": "这里是同一个角色保存的交流与经历。日程事实仍以今天、计划中的原记录为准。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,519][1168,625]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 13,
+      "text": "",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,664][900,846]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 0
+    },
+    {
+      "node": 14,
+      "text": "寻找一段共同经历",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,719][488,791]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 16,
+      "text": "查找",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[1004,714][1090,771]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 18,
+      "text": "请先启动内置角色，再读取共同记忆。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,885][868,957]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 20,
+      "text": "还没有找到记忆。先和它聊聊，真实的共同经历会逐渐留下来。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,996][1168,1140]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

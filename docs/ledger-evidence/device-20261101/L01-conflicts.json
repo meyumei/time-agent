@@ -1,0 +1,83 @@
+{
+  "file": "L01-conflicts.png",
+  "redactedTextRegions": 15,
+  "ui": [
+    {
+      "node": 17,
+      "text": "红色描边表示课程或计划重叠；绿色实际记录独立展示。点击项目查看完整内容。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[65,1633][1155,1739]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 22,
+      "text": "计划",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[196,1934][272,1984]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 24,
+      "text": "Synthetic task 322",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[150,2000][576,2065]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 25,
+      "text": "时间冲突",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[778,2085][906,2157]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 30,
+      "text": "计划",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[196,2262][272,2312]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 32,
+      "text": "Synthetic task 458",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[150,2328][582,2393]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 33,
+      "text": "时间冲突",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[778,2413][906,2485]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

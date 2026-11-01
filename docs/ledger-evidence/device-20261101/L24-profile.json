@@ -1,0 +1,199 @@
+{
+  "file": "L24-profile.png",
+  "redactedTextRegions": 4,
+  "ui": [
+    {
+      "node": 10,
+      "text": "返回",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,240][190,297]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 12,
+      "text": "个人档案",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,385][335,480]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 13,
+      "text": "这里定义你自己的管家。修改会用于同一个角色在应用和群聊里的表达，共同经历继续保留。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,519][1168,663]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 14,
+      "text": "大肥鱼",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,702][1168,910]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 0
+    },
+    {
+      "node": 15,
+      "text": "名字",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,701][184,755]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 16,
+      "text": "",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,949][1168,1223]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 1
+    },
+    {
+      "node": 17,
+      "text": "介绍与背景",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,1030][344,1102]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 18,
+      "text": "",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,1262][1168,1536]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 2
+    },
+    {
+      "node": 19,
+      "text": "性格与说话口吻",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,1343][440,1415]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 20,
+      "text": "你的个人管家，与你使用同一份真实日程和共同记忆。",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,1575][1168,1849]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 3
+    },
+    {
+      "node": 21,
+      "text": "与你的关系、怎样称呼你",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,1574][538,1628]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 22,
+      "text": "我在这里。今天想先做什么？",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,1888][1168,2096]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 4
+    },
+    {
+      "node": 23,
+      "text": "问候语",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,1887][223,1941]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 24,
+      "text": "",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,2135][1168,2409]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 5
+    },
+    {
+      "node": 25,
+      "text": "说话示例",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,2216][296,2288]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 27,
+      "text": "保存档案",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[130,2498][300,2555]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 30,
+      "text": "导入角色卡",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[91,2693][304,2712]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "scanScope": [
+    "/sdcard/ (readable files)",
+    "/data/local/tmp (depth <=3)"
+  ],
+  "apkCandidates": 33,
+  "identified": 32,
+  "unidentified": 1,
+  "timeAgentPackages": [],
+  "deleted": 0,
+  "freedBytes": 0,
+  "installedApplicationUninstalled": false
+}

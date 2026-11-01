@@ -1,0 +1,61 @@
+{
+  "file": "L11-exercise-gif.png",
+  "redactedTextRegions": 7,
+  "ui": [
+    {
+      "node": 12,
+      "text": "杠铃卧推",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[168,324][451,419]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 15,
+      "text": "",
+      "description": "杠铃卧推",
+      "kind": "ImageView",
+      "bounds": "[168,471][1052,1121]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 19,
+      "text": "1. 仰卧于卧推凳中央，调整头部位置使杠铃杆的垂直投影准确位于嘴巴和鼻子之间连线处\n2. 双脚全脚掌踩实地面，脚尖向外展开约 45 度，膝关节弯曲角度小于 90 度，双腿用力向斜下方蹬地以建立稳定的下肢支撑结构\n3. 肩胛骨主动后缩并下沉锁定，腰部自然起桥，使下背部与卧推凳之间保持约半个拳头的空隙以保护腰椎\n4. 双手采用全握方式抓握杠铃，握距约为 1.5 倍肩宽，确保杠铃压力落在掌根并垂直向下传递至前臂骨骼\n5. 深吸气将杠铃出杆，水平向后移至锁骨与上胸口正上方位置作为起始准备点\n6. 控制速度缓慢下放杠铃，接近底部时进一步降低速度，落点准确位于中胸位置\n7. 下放过程中尽量保持小臂垂直于地面，杠铃轻触胸肌或接近胸部后暂停，小臂较长者可根据杠杆结构不用触胸\n8. 呼气发力推起，推起轨迹呈弧形路径，杠铃回到上胸口位置，推至大小臂夹角约 170 度即可停止\n9. 顶端肘关节不要完全锁死，全程保持肩胛骨稳定避免耸肩，保持目标肌肉持续张力\n10. 意念集中在胸肌收缩夹挤，确保主要发力感来自胸肌群而非单纯依靠手臂推举力量",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[168,1463][1052,2291]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 21,
+      "text": "置顶动作",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[484,2419][654,2476]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 24,
+      "text": "以此开始训练",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[758,2419][1013,2476]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

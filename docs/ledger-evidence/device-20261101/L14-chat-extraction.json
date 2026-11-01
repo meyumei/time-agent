@@ -1,0 +1,84 @@
+{
+  "file": "L14-chat-extraction.png",
+  "redactedTextRegions": 3,
+  "ui": [
+    {
+      "node": 10,
+      "text": "粘贴或分享聊天文字后，逐条检查并确认属于你的事项。文字仅在本机处理。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,398][1168,521]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 11,
+      "text": "",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,560][1168,1122]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 0
+    },
+    {
+      "node": 12,
+      "text": "聊天文字（最多20000字）",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,641][689,713]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 14,
+      "text": "提取候选事项",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[130,1211][385,1268]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 17,
+      "text": "结合空档起草回复",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[130,1406][470,1463]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 21,
+      "text": "返回",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[65,214][151,271]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 23,
+      "text": "聊天文字提取",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[215,199][580,284]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

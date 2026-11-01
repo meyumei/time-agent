@@ -1,0 +1,161 @@
+{
+  "file": "L20-weekly-goal.png",
+  "redactedTextRegions": 3,
+  "ui": [
+    {
+      "node": 11,
+      "text": "周目标",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[168,552][381,647]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 13,
+      "text": "目标类型（二选一）",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[168,699][523,751]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 15,
+      "text": "项目",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[220,801][306,858]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 18,
+      "text": "✓ 活动",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[396,801][536,858]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 22,
+      "text": "Synthetic activity sleep",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[324,960][781,1025]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 25,
+      "text": "Synthetic activity fitness",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[324,1130][806,1195]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 28,
+      "text": "Synthetic activity fitness-chest",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[324,1300][933,1365]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 31,
+      "text": "Synthetic activity fitness-back",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[324,1470][920,1535]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 34,
+      "text": "Synthetic activity fitness-shoulders",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[324,1640][1018,1705]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 37,
+      "text": "Synthetic activity fitness-arms",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[324,1810][923,1875]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 38,
+      "text": "2026-10-26",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[168,1953][1052,2142]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 0
+    },
+    {
+      "node": 39,
+      "text": "周起始（周一）yyyy-MM-dd",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[220,1952][730,2006]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 41,
+      "text": "取消",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[700,2192][786,2249]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 44,
+      "text": "保存",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[915,2192][1001,2249]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

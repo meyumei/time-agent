@@ -1,0 +1,61 @@
+{
+  "file": "L31-runtime-running.png",
+  "redactedTextRegions": 4,
+  "ui": [
+    {
+      "node": 10,
+      "text": "返回",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,240][190,297]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 12,
+      "text": "运行设置",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,385][335,480]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 15,
+      "text": "重新连接",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[130,680][300,737]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 18,
+      "text": "停止",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[430,680][516,737]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 21,
+      "text": "模型设置",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[91,875][261,932]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

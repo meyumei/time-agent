@@ -1,0 +1,96 @@
+{
+  "file": "L11-templates.png",
+  "redactedTextRegions": 4,
+  "ui": [
+    {
+      "node": 11,
+      "text": "新训练模板",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,398][1168,606]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 0
+    },
+    {
+      "node": 12,
+      "text": "模板名称",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,397][262,451]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 13,
+      "text": "",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,645][1168,853]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 1
+    },
+    {
+      "node": 14,
+      "text": "训练说明",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,726][296,798]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 16,
+      "text": "添加动作",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[525,942][695,999]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 20,
+      "text": "",
+      "description": "返回",
+      "kind": "View",
+      "bounds": "[52,203][130,281]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 22,
+      "text": "训练模板",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[182,199][426,284]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 24,
+      "text": "保存",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[1070,214][1156,271]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "file": "L11-anatomy.png",
+  "redactedTextRegions": 8,
+  "ui": [
+    {
+      "node": 15,
+      "text": "全身",
+      "description": "",
+      "kind": "Button",
+      "bounds": "[74,2494][279,2634]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 22,
+      "text": "",
+      "description": "返回",
+      "kind": "View",
+      "bounds": "[52,203][130,281]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 24,
+      "text": "3D 肌群",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[182,199][405,284]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

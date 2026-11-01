@@ -1,0 +1,14 @@
+{
+  "event": "system timezone changed",
+  "before": 3,
+  "afterCancellation": 0,
+  "afterTimezoneBroadcast": 3,
+  "manualPoint": 1,
+  "habit": 1,
+  "recurringDeadline": 1,
+  "ordinaryPlanOrDueDateCreatedReminder": false,
+  "notificationsAllowed": true,
+  "exactAlarmsAllowed": false,
+  "bootCovered": false,
+  "workoutCovered": false
+}

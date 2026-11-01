@@ -1,0 +1,106 @@
+{
+  "file": "L12-attachment-inbox.png",
+  "redactedTextRegions": 3,
+  "ui": [
+    {
+      "node": 11,
+      "text": "选择文件或截图",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[130,396][427,453]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 13,
+      "text": "主动选取后复制到应用私有存储。单件最多8 MiB，总空间12 MiB。图片可识别为可修正草稿。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,502][1168,608]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 15,
+      "text": "全部附件",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,691][274,747]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 18,
+      "text": "回收站",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[404,691][532,747]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 20,
+      "text": "",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,797][1168,1005]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 0
+    },
+    {
+      "node": 21,
+      "text": "筛选文件名或草稿",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,878][488,950]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 22,
+      "text": "还没有匹配的附件",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,1038][436,1110]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 25,
+      "text": "返回",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[65,214][151,271]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 27,
+      "text": "附件收件箱",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[215,199][520,284]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "file": "L24-expressions.png",
+  "redactedTextRegions": 3,
+  "ui": [
+    {
+      "node": 10,
+      "text": "返回",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,240][190,297]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 12,
+      "text": "表情动作",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,385][335,480]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 15,
+      "text": "导入动图，或按顺序选择多张图片作为连续动作。选择触发场景后，会在对应状态使用；同场景以最后添加的为准。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,1078][1168,1294]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 17,
+      "text": "新增表情动作",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[130,1383][385,1440]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 20,
+      "text": "结束预览",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[91,1578][261,1635]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 22,
+      "text": "你补充的动作参考",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,1723][436,1788]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 25,
+      "text": "指一指",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[306,1905][920,1977]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 27,
+      "text": "加入动作",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[959,1913][1129,1970]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 31,
+      "text": "送你一朵花",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[306,2172][920,2244]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 33,
+      "text": "加入动作",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[959,2180][1129,2237]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 37,
+      "text": "有点惊讶",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[306,2439][920,2511]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 39,
+      "text": "加入动作",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[959,2447][1129,2504]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 43,
+      "text": "准备晚安",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[306,2706][920,2712]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "file": "L25-companion.png",
+  "redactedTextRegions": 4,
+  "ui": [
+    {
+      "node": 10,
+      "text": "返回",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,240][190,297]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 12,
+      "text": "陪伴与作息",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,385][405,480]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 15,
+      "text": "拖动可调整位置，点击进入管家对话，长按打开「大肥鱼的一切」。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,1208][1168,1352]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 16,
+      "text": "应用内显示大肥鱼",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,1433][999,1505]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 18,
+      "text": "全局悬浮陪伴",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,1602][340,1674]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 19,
+      "text": "在桌面和其他应用上陪着你",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,1674][525,1726]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 21,
+      "text": "首次开启需授权“显示在其他应用上层”。全局角色可拖动，点击继续管家对话，长按返回这里；通知栏也可关闭。锁屏时隐藏，回到主界面使用原来的悬浮鱼。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,1781][1168,1941]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 23,
+      "text": "8",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[52,2084][590,2292]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 0
+    },
+    {
+      "node": 24,
+      "text": "起床（0–23时）",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[104,2083][394,2137]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 25,
+      "text": "23",
+      "description": "",
+      "kind": "EditText",
+      "bounds": "[629,2084][1168,2292]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false",
+      "editIndex": 1
+    },
+    {
+      "node": 26,
+      "text": "睡觉（0–23时）",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[681,2083][971,2137]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 27,
+      "text": "睡前会犯困，睡眠时安静休息。你发来消息时会醒来；正在执行事务时保持工作。主动聊天的时段与频率在「主动话题」里设置。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[52,2331][1168,2547]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 29,
+      "text": "保存作息",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[130,2636][300,2693]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

@@ -1,0 +1,204 @@
+{
+  "file": "L11-active-session.png",
+  "redactedTextRegions": 5,
+  "ui": [
+    {
+      "node": 11,
+      "text": "添加今天要练的动作",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[394,1041][826,1113]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 13,
+      "text": "打开动作库",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[504,1209][717,1266]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 16,
+      "text": "保存为训练模板",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[78,1521][375,1578]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 19,
+      "text": "放弃训练",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[78,1677][248,1734]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 22,
+      "text": "",
+      "description": "返回训练中心",
+      "kind": "View",
+      "bounds": "[98,210][176,288]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 24,
+      "text": "训练中",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[215,221][919,277]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 26,
+      "text": "完成",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[997,221][1083,278]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 28,
+      "text": "00:52",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[59,327][487,506]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 30,
+      "text": "",
+      "description": "暂停训练",
+      "kind": "View",
+      "bounds": "[526,383][604,461]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 33,
+      "text": "自由训练",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[59,506][1161,662]",
+      "enabled": "true",
+      "clickable": "true",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 36,
+      "text": "",
+      "description": "最小化",
+      "kind": "View",
+      "bounds": "[142,2519][230,2607]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 37,
+      "text": "最小化",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[136,2620][235,2663]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 39,
+      "text": "",
+      "description": "加动作",
+      "kind": "View",
+      "bounds": "[429,2519][517,2607]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 40,
+      "text": "加动作",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[423,2620][522,2663]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 42,
+      "text": "",
+      "description": "写心得",
+      "kind": "View",
+      "bounds": "[715,2519][803,2607]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 43,
+      "text": "写心得",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[709,2620][808,2663]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 45,
+      "text": "",
+      "description": "设置",
+      "kind": "View",
+      "bounds": "[996,2519][1084,2607]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 46,
+      "text": "设置",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[1007,2620][1073,2663]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}

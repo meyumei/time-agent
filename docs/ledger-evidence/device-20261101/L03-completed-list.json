@@ -1,0 +1,160 @@
+{
+  "file": "L03-completed-list.png",
+  "redactedTextRegions": 7,
+  "ui": [
+    {
+      "node": 9,
+      "text": "返回计划",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[39,188][209,245]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 12,
+      "text": "先决定要做什么，再为它留出时间。",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[65,359][753,417]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 14,
+      "text": "生活期限 · 续费 / 归还 / 生日",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[332,506][888,563]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 17,
+      "text": "回复副驾 · 结合空档起草",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[375,701][845,758]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 20,
+      "text": "附件收件箱 · 文件与文字",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[375,896][845,953]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 23,
+      "text": "周期任务与习惯",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[462,1091][759,1148]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 29,
+      "text": "未安排",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[111,1477][255,1549]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 31,
+      "text": ">",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[1080,1507][1109,1579]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 33,
+      "text": "健身训练",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[111,1739][303,1811]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 34,
+      "text": "动作库、训练记录与 3D 肌群",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[111,1818][620,1870]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 35,
+      "text": ">",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[1080,1769][1109,1841]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 37,
+      "text": "待完成",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[117,2005][245,2061]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 40,
+      "text": "已完成",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[375,2005][503,2061]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    },
+    {
+      "node": 43,
+      "text": "T0_DS_COMPLETE",
+      "description": "",
+      "kind": "TextView",
+      "bounds": "[117,2208][550,2280]",
+      "enabled": "true",
+      "clickable": "false",
+      "checked": "false",
+      "selected": "false"
+    }
+  ]
+}
