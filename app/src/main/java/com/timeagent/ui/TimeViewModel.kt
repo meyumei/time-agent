@@ -14,7 +14,11 @@ import kotlinx.coroutines.flow.*
 import java.time.*
 import java.time.Duration
 
-class TimeViewModel(val repository: TimeRepository, private val appContext: android.content.Context? = null) : ViewModel() {
+class TimeViewModel(
+    val repository: TimeRepository,
+    private val appContext: android.content.Context? = null,
+    val clock: ClockSource = SystemClockSource(repository::now, android.os.SystemClock::elapsedRealtime),
+) : ViewModel() {
     val fish by lazy { appContext?.let { com.timeagent.fish.FishSession.get(it, repository) } }
     val assistant = AssistantConversation(repository)
     private var assistantJob: Job? = null
@@ -50,15 +54,16 @@ class TimeViewModel(val repository: TimeRepository, private val appContext: andr
     }
     suspend fun prepareForRestore() { assistantJob?.cancelAndJoin(); assistant.cancelPending() }
     val zone = repository.zone
-    private val _now = MutableStateFlow(repository.now())
-    val now = _now.asStateFlow()
-    private val _weekStart = MutableStateFlow(WeekState.startOfWeek(repository.now().atZone(zone).toLocalDate()))
+    private val clockRefreshes = MutableSharedFlow<Instant>(extraBufferCapacity = 1)
+    val now = merge(clock.minuteTicks, clockRefreshes)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, clock.now())
+    private val _weekStart = MutableStateFlow(WeekState.startOfWeek(clock.now().atZone(zone).toLocalDate()))
     private val _visibleWeekStart = MutableStateFlow(_weekStart.value)
     val visibleWeekStart = _visibleWeekStart.asStateFlow()
     private val _timelineNavigationRevision = MutableStateFlow(0L)
     val timelineNavigationRevision = _timelineNavigationRevision.asStateFlow()
-    val week = combine(_weekStart, _now) { selected, now -> WeekState(now.atZone(zone).toLocalDate(), selected) }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, WeekState(repository.now().atZone(zone).toLocalDate()))
+    val week = combine(_weekStart, now) { selected, now -> WeekState(now.atZone(zone).toLocalDate(), selected) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, WeekState(clock.now().atZone(zone).toLocalDate()))
     private val _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
     private val _busy = MutableStateFlow(false)
@@ -71,16 +76,14 @@ class TimeViewModel(val repository: TimeRepository, private val appContext: andr
             try { repository.initialize(); com.timeagent.recurring.RecurringService(repository).refresh() } catch (e: Exception) { if (e is CancellationException) throw e; _error.value = e.message }
         }
         viewModelScope.launch {
-            var lastHour=repository.now().epochSecond/3600
-            while(isActive) {
-                _now.value=repository.now()
-                val hour=_now.value.epochSecond/3600
+            var lastHour=clock.now().epochSecond/3600
+            now.collect { instant ->
+                val hour=instant.epochSecond/3600
                 if(hour!=lastHour) {
                     lastHour=hour
                     try { com.timeagent.recurring.RecurringService(repository).refresh() }
                     catch(e:Exception) { if(e is CancellationException)throw e;_error.value="周期登记未完成：${e.message}" }
                 }
-                delay(1000)
             }
         }
     }
@@ -92,10 +95,11 @@ class TimeViewModel(val repository: TimeRepository, private val appContext: andr
         _timelineNavigationRevision.value++
     }
     fun currentWeek() {
-        _weekStart.value = WeekState.startOfWeek(repository.now().atZone(zone).toLocalDate())
+        _weekStart.value = WeekState.startOfWeek(clock.now().atZone(zone).toLocalDate())
         _visibleWeekStart.value = _weekStart.value
         _timelineNavigationRevision.value++
     }
+    fun refreshClock() { clockRefreshes.tryEmit(clock.now()) }
     fun dismissError() { _error.value = null }
     fun report(message: String) { _error.value = message }
 
@@ -197,7 +201,7 @@ class TimeViewModel(val repository: TimeRepository, private val appContext: andr
         _busy.value = true
         _error.value = null
         viewModelScope.launch {
-            try { action(); _now.value = repository.now(); onSuccess() }
+            try { action(); onSuccess() }
             catch (e: Exception) { if (e is CancellationException) throw e; _error.value = e.message ?: "保存失败，请重试；编辑内容仍保留" }
             finally { _busy.value = false }
         }

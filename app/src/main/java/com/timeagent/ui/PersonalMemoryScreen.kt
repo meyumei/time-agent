@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.timeagent.data.PersonalMemoryEntity
 import com.timeagent.memory.PersonalMemoryRules
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +36,7 @@ fun PersonalMemoryScreen(model: TimeViewModel, onClose: () -> Unit, onOpenRecord
     val context = LocalContext.current
     val data by model.data.collectAsState()
     val busy by model.busy.collectAsState()
-    val now by model.now.collectAsState()
+    val now by model.now.collectAsStateWithLifecycle()
     val memories = data.memories.filter { it.deletedAt == null }.sortedByDescending { it.updatedAt }
     var editing by remember { mutableStateOf<PersonalMemoryEntity?>(null) }
     var creating by remember { mutableStateOf(false) }

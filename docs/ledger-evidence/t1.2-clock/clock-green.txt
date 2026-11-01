@@ -1,0 +1,328 @@
+
+> Configure project :agent-runtime
+WARNING: The option setting 'android.overridePathCheck=true' is experimental.
+The current default is 'false'.
+
+> Task :core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:processResources NO-SOURCE
+> Task :core:processTestResources NO-SOURCE
+> Task :agent-runtime:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :agent-runtime:preBuild UP-TO-DATE
+> Task :agent-runtime:preDebugBuild UP-TO-DATE
+> Task :agent-runtime:generateDebugResValues UP-TO-DATE
+> Task :agent-runtime:generateDebugResources UP-TO-DATE
+> Task :agent-runtime:packageDebugResources UP-TO-DATE
+> Task :agent-runtime:parseDebugLocalResources UP-TO-DATE
+> Task :agent-runtime:generateDebugRFile UP-TO-DATE
+> Task :agent-runtime:compileDebugKotlin UP-TO-DATE
+> Task :agent-runtime:javaPreCompileDebug UP-TO-DATE
+> Task :agent-runtime:compileDebugJavaWithJavac NO-SOURCE
+> Task :agent-runtime:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :agent-runtime:processDebugJavaRes UP-TO-DATE
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :agent-runtime:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :agent-runtime:compileDebugLibraryResources UP-TO-DATE
+> Task :agent-runtime:writeDebugAarMetadata UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :agent-runtime:extractDeepLinksDebug UP-TO-DATE
+> Task :agent-runtime:processDebugManifest UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :agent-runtime:mergeDebugShaders UP-TO-DATE
+> Task :agent-runtime:compileDebugShaders NO-SOURCE
+> Task :agent-runtime:generateDebugAssets UP-TO-DATE
+> Task :agent-runtime:mergeDebugAssets UP-TO-DATE
+> Task :app:mergeDebugShaders UP-TO-DATE
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:packageDebugUnitTestForUnitTest UP-TO-DATE
+> Task :app:generateDebugUnitTestConfig UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :core:compileKotlin
+> Task :core:compileJava NO-SOURCE
+> Task :core:classes UP-TO-DATE
+> Task :core:jar
+
+> Task :core:compileTestKotlin
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:27:47 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:31:31 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:35:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:36:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:45:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:49:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:57:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:60:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:63:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:64:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:67:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:68:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:71:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:72:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:79:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:82:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:85:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:86:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:89:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:90:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:93:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:94:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:113:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:118:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:119:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:120:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:132:50 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:136:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:149:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:152:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:156:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:157:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:160:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:161:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:164:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:165:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:176:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:178:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:179:9 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:187:49 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:192:70 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+w: file:///F:/261019_时间agent/core/src/test/kotlin/com/timeagent/core/ClockSourceTest.kt:200:37 This declaration needs opt-in. Its usage should be marked with '@kotlinx.coroutines.ExperimentalCoroutinesApi' or '@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)'
+
+> Task :core:compileTestJava NO-SOURCE
+> Task :core:testClasses UP-TO-DATE
+
+> Task :core:test
+
+ClockSourceTest > cancellingCollectorStopsTicking PASSED
+
+ClockSourceTest > independentCollectorsKeepTheirOwnCadence PASSED
+
+ClockSourceTest > secondTicksEmitImmediatelyOnCollection PASSED
+
+ClockSourceTest > ticksReportActualWallClockAfterManualJumpAndRealign PASSED
+
+ClockSourceTest > constructionAndIdleTimeReadNoClocks PASSED
+
+ClockSourceTest > minuteTicksAlignToMinuteBoundaryWithoutSecondEmissions PASSED
+
+ClockSourceTest > secondTicksAlignToNextWallSecondFromFractionalStart PASSED
+
+ClockSourceTest > elapsedRealtimeReadsOnlyMonotonicSourceAcrossWallJump PASSED
+
+CourseImportTest > normalization is deterministic and duplicate source rows collapse PASSED
+
+CourseImportTest > same source course id can have multiple weekly meeting patterns PASSED
+
+CourseImportTest > missing school periods and out of term weeks reject whole preview PASSED
+
+CourseImportTest > one course can meet in different rooms without losing source detail PASSED
+
+CourseImportTest > normalizer expands explicit weeks using school period times and timezone PASSED
+
+FishCompanionTest > transient response settles and moods decay with elapsed time PASSED
+
+FishCompanionTest > negative content is concerned before generic positive word matching PASSED
+
+FishCompanionTest > cross midnight routine and wake up work PASSED
+
+FishCompanionTest > local clock quiet hours settle but never replace a running task PASSED
+
+FishCompanionTest > real events drive work error and completion PASSED
+
+RecurringRulesTest > weekly frequency keeps count target distinct from fixed schedule PASSED
+
+RecurringRulesTest > monthly end and leap birthday clamp but retain original anchor PASSED
+
+RecurringRulesTest > daily and weekdays yield stable original date keys after reopen PASSED
+
+RecurringRulesTest > pause and end boundary generate no extra instance PASSED
+
+RecurringRulesTest > invalid rule is rejected before generating and once does not repeat PASSED
+
+SleepSummaryTest > fragments and same day nap are grouped by wake date PASSED
+
+SleepSummaryTest > evening fragment ending before midnight belongs to the following wake day PASSED
+
+SleepSummaryTest > duration uses elapsed instants across daylight saving changes PASSED
+
+SleepSummaryTest > partially future sleep is not reported as a finished night PASSED
+
+SleepSummaryTest > overlaps union within source and competing sources are alternatives PASSED
+
+SleepSummaryTest > empty input produces no dates and future or invalid intervals are ignored PASSED
+
+TimeInputTest > changed minute fields produce explicitly edited instant PASSED
+
+TimeInputTest > unchanged minute fields preserve original seconds and milliseconds PASSED
+
+TimeInputTest > short intervals remain positive when only notes are changed PASSED
+
+TimeRulesTest > adjacent intervals do not conflict but positive intersections do PASSED
+
+TimeRulesTest > academic week uses explicit first teaching monday PASSED
+
+TimeRulesTest > cross midnight blocks split into visible daily segments PASSED
+
+TimeRulesTest > invalid or zero duration intervals are rejected PASSED
+
+TimeRulesTest > overlapping records report cumulative effort and union separately PASSED
+
+TimeRulesTest > overlap layout keeps all events in separate reachable lanes PASSED
+
+TimeRulesTest > browsing across year does not change today PASSED
+
+TimeRulesTest > free slots merge busy spans and keep buffer PASSED
+
+TimeRulesTest > statistics clip records to selected week PASSED
+
+TimeRulesTest > nested and disjoint spans form correct union PASSED
+
+TimelineSelectionTest > late tap ends at midnight without crossing the displayed day PASSED
+
+TimelineSelectionTest > selection follows fractional date and zoomed hour offset PASSED
+
+TimelineSelectionTest > tap resolves date and nearest quarter hour from actual viewport PASSED
+
+TimelineSelectionTest > outside or invalid screen coordinates do not create a date PASSED
+
+TimelineSelectionTest > upward drag remains one date and orders both endpoints PASSED
+
+TimelineViewportTest > decades long blocks are clipped before creating visible daily segments PASSED
+
+TimelineViewportTest > vertical pan clamps to the full day at both edges PASSED
+
+TimelineViewportTest > many tiny drags preserve sub day precision across a year boundary PASSED
+
+TimelineViewportTest > large finite dimensions preserve focal coordinates without overflowing PASSED
+
+TimelineViewportTest > fit viewport contains seven dates and all 1440 minutes PASSED
+
+TimelineViewportTest > dragging by a fraction of a day has no snapping PASSED
+
+TimelineViewportTest > invalid gesture numbers never produce nonfinite viewport state PASSED
+
+TimelineViewportTest > unrenderable tiny dimensions are ignored instead of creating NaN PASSED
+
+TimelineViewportTest > zoom keeps the focused day and minute fixed under the fingers PASSED
+
+TimelineViewportTest > one day drag changes Monday through Sunday into Tuesday through Monday PASSED
+
+TimelineViewportTest > calendar navigation retains the fractional date zoom and vertical position PASSED
+
+VoiceAudioTest > silk truncated and overlong recordings are not treated as valid speech PASSED
+
+VoiceAudioTest > converted stereo wav is mixed and resampled to real mono pcm PASSED
+
+WorkoutExtendedRulesTest > bodyweight and assisted drops preserve source raw drop load semantics PASSED
+
+WorkoutExtendedRulesTest > stretch may complete without numbers while record still requires duration PASSED
+
+WorkoutExtendedRulesTest > RPE and per set comment reject invalid values and preserve valid values PASSED
+
+WorkoutExtendedRulesTest > single set stopwatch persists timestamp and freezes across global pause PASSED
+
+WorkoutExtendedRulesTest > drop segments add to base set without duplicating group count PASSED
+
+WorkoutExtendedRulesTest > explicit template duration remains a prescription when starting PASSED
+
+WorkoutExtendedRulesTest > superset child work counts only after entire round is completed PASSED
+
+WorkoutExtendedRulesTest > tabata moves from prepare through rounds with no trailing rest PASSED
+
+WorkoutExtendedRulesTest > each drop segment rounds independently before capacity is summed PASSED
+
+WorkoutExtendedRulesTest > stopwatch conflicts with Tabata and clears when its set completes or workout ends PASSED
+
+WorkoutExtendedRulesTest > tabata phase is derived from persisted timestamps and freezes during pause PASSED
+
+WorkoutExtendedRulesTest > tabata finish records actual configured seconds only after timer reaches end PASSED
+
+WorkoutExtendedRulesTest > bodyweight added and assisted load use stable session body weight PASSED
+
+WorkoutExtendedRulesTest > cardio numeric formats match original field contracts PASSED
+
+WorkoutExtendedRulesTest > warmup rest differs from working rest and all warmup superset waits for round PASSED
+
+WorkoutExtendedRulesTest > stopwatch starts idempotently saves at least one second and can stop while paused PASSED
+
+WorkoutExtendedRulesTest > cardio accepts any recorded field including zero and preserves pace strings PASSED
+
+WorkoutExtendedRulesTest > separate side weights and one side repetition are preserved in capacity PASSED
+
+WorkoutExtendedRulesTest > history clone clears measured results and retains prescriptions PASSED
+
+WorkoutRulesTest > warmup is recorded separately and excluded from working volume PASSED
+
+WorkoutRulesTest > repeated exercises are separate movement and set identities PASSED
+
+WorkoutRulesTest > pause freezes training and rest and resume reconstructs deadline PASSED
+
+WorkoutRulesTest > invalid numeric input is rejected even on incomplete sets PASSED
+
+WorkoutRulesTest > finish needs completed work and seals paused duration idempotently PASSED
+
+WorkoutRulesTest > reps and duration require their own positive input PASSED
+
+WorkoutRulesTest > rest expires from persisted deadline without timer callbacks PASSED
+
+WorkoutRulesTest > superset waits for paired round before resting PASSED
+
+WorkoutRulesTest > summary counts only completed sets and weight reps volume PASSED
+
+WorkoutRulesTest > template restart preserves prescription and superset but renews identities PASSED
+
+WorkoutRulesTest > complete rejects missing metric fields and accepts zero kg bodyweight PASSED
+
+> Task :app:kspDebugKotlin
+
+> Task :app:compileDebugKotlin
+w: file:///F:/261019_时间agent/app/src/main/java/com/timeagent/ui/TimeAgentApp.kt:291:48 Condition is always 'false'.
+w: file:///F:/261019_时间agent/app/src/main/java/com/timeagent/ui/ReplyCopilotScreen.kt:24:21 'val LocalClipboardManager: ProvidableCompositionLocal<ClipboardManager>' is deprecated. Use LocalClipboard instead which supports suspend functions.
+w: file:///F:/261019_时间agent/app/src/main/java/com/timeagent/ui/TimeAgentApp.kt:291:48 Condition is always 'false'.
+
+> Task :app:compileDebugJavaWithJavac
+> Task :app:hiltAggregateDepsDebug
+> Task :app:hiltJavaCompileDebug
+> Task :app:processDebugJavaRes
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:kspDebugUnitTestKotlin
+> Task :app:transformDebugClassesWithAsm
+
+> Task :app:compileDebugUnitTestKotlin
+w: file:///F:/261019_时间agent/app/src/test/java/com/timeagent/reminders/ReminderAppLaunchTest.kt:63:44 'field triggerAtTime: Long' is deprecated. Deprecated in Java.
+w: file:///F:/261019_时间agent/app/src/test/java/com/timeagent/reminders/ReminderAppLaunchTest.kt:66:32 'field operation: PendingIntent?' is deprecated. Deprecated in Java.
+w: file:///F:/261019_时间agent/app/src/test/java/com/timeagent/reminders/ReminderAppLaunchTest.kt:89:29 'field operation: PendingIntent?' is deprecated. Deprecated in Java.
+w: file:///F:/261019_时间agent/app/src/test/java/com/timeagent/ui/MainActivityWindowTest.kt:21:40 'static field SOFT_INPUT_ADJUST_RESIZE: Int' is deprecated. Deprecated in Java.
+
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:hiltAggregateDepsDebugUnitTest
+> Task :app:hiltJavaCompileDebugUnitTest NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes UP-TO-DATE
+> Task :app:transformDebugUnitTestClassesWithAsm
+
+> Task :app:testDebugUnitTest
+
+ClockRecompositionTest > a minute boundary updates the timeline while the timer keeps its duration PASSED
+
+ClockRecompositionTest > five timer seconds cause zero timeline or root recompositions STANDARD_OUT
+    CLOCK_FIVE_SECONDS timeline=0 root=0
+
+ClockRecompositionTest > five timer seconds cause zero timeline or root recompositions PASSED
+
+BUILD SUCCESSFUL in 1m 22s
+54 actionable tasks: 18 executed, 36 up-to-date

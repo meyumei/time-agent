@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.gson.Gson
 import com.timeagent.core.*
 import com.timeagent.data.*
@@ -175,7 +176,7 @@ fun RecurringScreen(
     val gson = remember { Gson() }
     val service = remember { RecurringService(model.repository) }
     val zone = remember { model.repository.zone }
-    val now by model.now.collectAsState()
+    val now by model.now.collectAsStateWithLifecycle()
     val today = now.atZone(zone).toLocalDate()
     var expanded by remember { mutableStateOf<Set<String>>(emptySet()) }
     var history by remember { mutableStateOf<Set<String>>(emptySet()) }
