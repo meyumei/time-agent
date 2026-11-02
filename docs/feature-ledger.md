@@ -201,3 +201,7 @@ D-T0-04 仅在上述目标写入中获得持久 requestId；鱼的稳定 toolCal
 WorkBuddy CLI DS 实际编写查询、聚合、边界验证、性能模块/provider，并执行两次受限 PowerShell 连接检查；模型响应为 deepseek-v4.1-flash，请求 max，实际 effort 未返回。主代理独立集成、构建并核对 APK。无线配对协议错误，重新连接仍 offline；没有安装/卸载/清数据、修改手机记录或恢复旧备份。
 
 详见 [T1.6 改动、真实结果及设备步骤](t1.6-range-queries.md)、[机器记录](ledger-evidence/t1.6-queries/verification.json)、[协作与独立审查](ledger-evidence/t1.6-queries/collaboration.json)。下一开发任务为 **T2.1：设计 Token、主题与双模式**；当前仍需补 T1.6 的设备结果。
+
+### T1.6 有线补验（2026-11-02）
+
+L01/L02/L07/L08 的范围读取及 L34 迁移：14 项设备检查、2 项独立性能测量通过。原有 31 张主库表的原有列及训练表保持一致；本轮证据为 `docs/ledger-evidence/t1.6-wired/`。本项不代替 L01–L36 的逐模块 UI 与权限验收。

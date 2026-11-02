@@ -2,8 +2,8 @@
   "generatedAt": "2026-11-02T19:45:35.340842+08:00",
   "baseCommit": "b8a2a5415467364dc1614f18200fbe2dd177ec68",
   "branch": "codex/t1.6-range-queries",
-  "status": "code-built-device-acceptance-pending",
-  "taskAcceptanceComplete": false,
+  "status": "device-query-migration-and-performance-verified",
+  "taskAcceptanceComplete": true,
   "commands": [
     {
       "label": "aggregate-red",
@@ -355,5 +355,26 @@
     "No personal app installation, uninstall, clear-data, private DB read or restore.",
     "No final host unit/Node regression per latest user instruction.",
     "Index-only v14 advances planned future feature schema versions to v15-v20."
-  ]
+  ],
+  "wiredFollowUp": {
+    "date": "2026-11-02",
+    "device": "Redmi K70 Ultra / 2407FRK8EC",
+    "connection": "USB",
+    "queryAndMigrationTests": {
+      "tests": 14,
+      "passed": 14,
+      "failed": 0
+    },
+    "macrobenchmarks": {
+      "tests": 2,
+      "iterationsEach": 5,
+      "passed": 2,
+      "failed": 0
+    },
+    "originalMainTablesCompared": 31,
+    "originalColumnsUnchanged": true,
+    "workoutRowsUnchanged": true,
+    "privateBackupPublished": false,
+    "evidenceDirectory": "docs/ledger-evidence/t1.6-wired"
+  }
 }
