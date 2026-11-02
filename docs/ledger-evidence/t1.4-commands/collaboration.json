@@ -1,0 +1,143 @@
+{
+  "date": "2026-11-02",
+  "client": "WorkBuddy CLI 2.171.0",
+  "requestedModel": "deepseek-v4.1-flash",
+  "requestedEffort": "max",
+  "serverReportedEffort": null,
+  "effortEvidence": "Model is confirmed only by the successful contracts response; the server did not report actual effort.",
+  "phoneAccess": false,
+  "businessDataAccess": false,
+  "sourceWritesAllowed": false,
+  "primaryOwns": [
+    "shared entry points and entities",
+    "executor and transactions",
+    "repository",
+    "Hilt",
+    "UI callbacks",
+    "tests",
+    "independent verification",
+    "Git and PR"
+  ],
+  "runs": [
+    {
+      "phase": "contracts",
+      "exitCode": 0,
+      "requestedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "serverReportedEffort": null,
+      "generationLimit": 1,
+      "toolCallLimit": 0,
+      "timeoutSeconds": 180,
+      "proposedFiles": [
+        "app/src/main/java/com/timeagent/domain/command/Command.kt",
+        "app/src/main/java/com/timeagent/domain/command/CommandResult.kt"
+      ],
+      "inputScope": "Only the supplied prompt; no filesystem or external data tools.",
+      "allowedWriteFiles": [],
+      "primaryWritesOnly": true,
+      "tools": [],
+      "mcpServers": [],
+      "permissionMode": "dontAsk",
+      "actualToolCalls": 0,
+      "actualWrites": [],
+      "returnedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "cliResults": [
+        {
+          "subtype": "success",
+          "is_error": false,
+          "duration_ms": 11503,
+          "num_turns": 3
+        }
+      ],
+      "cliMaxTurns": 2,
+      "turnLimitInterpretation": "CLI turns are not tool calls. Contracts reported 3 turns despite max-turns=2; tool calls remained zero.",
+      "rawStreamPath": "evidence/t1.4-commands/ds-contracts.stream.jsonl",
+      "rawStreamSha256": "39efd106f8e1342ce5efaf7a77f782d147e5e92be3a8d111da6716fd587614e5",
+      "settingsSha256": "fcdf2aa8e24648332558149d0fea9b77daf9ac92e7f5edca61e9e842b6c0ec9e",
+      "promptSha256": "1ac6cd597b931ac3cef22c6ecdd4594ef45f5c7de47caaab39fd0a7a80e844fb",
+      "disposition": "Generated two Kotlin contract contents in JSON; primary reviewed, wrote the files and added timerRecord. DS ran no tests."
+    },
+    {
+      "phase": "cancellation-review",
+      "clientVersion": "2.171.0",
+      "exitCode": 124,
+      "requestedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "serverReportedEffort": null,
+      "allowedReadFiles": [
+        "app/src/main/java/com/timeagent/data/TimeRepository.kt",
+        "app/src/main/java/com/timeagent/data/PersonalDataGate.kt",
+        "app/src/main/java/com/timeagent/domain/command/CommandExecutor.kt",
+        "app/src/test/java/com/timeagent/domain/command/CommitCancellationTest.kt"
+      ],
+      "allowedWriteFiles": [],
+      "generationLimit": 1,
+      "toolCallLimit": 0,
+      "timeoutSeconds": 180,
+      "inputScope": "Only the supplied prompt; no filesystem or external data tools.",
+      "primaryWritesOnly": true,
+      "tools": [],
+      "mcpServers": [],
+      "permissionMode": "dontAsk",
+      "actualToolCalls": 0,
+      "actualWrites": [],
+      "returnedModels": [],
+      "cliResults": [],
+      "cliMaxTurns": 2,
+      "turnLimitInterpretation": "CLI turns are not tool calls. Contracts reported 3 turns despite max-turns=2; tool calls remained zero.",
+      "rawStreamPath": "evidence/t1.4-commands/ds-cancellation-review.stream.jsonl",
+      "rawStreamSha256": "8c9c2561b40241af6999c1bb877689cd52dc14992afb3f5ddb0117855c05a269",
+      "settingsSha256": "fcdf2aa8e24648332558149d0fea9b77daf9ac92e7f5edca61e9e842b6c0ec9e",
+      "promptSha256": "8a93ab03af5ea7cb424bc1df0f3555a4648010c174842897aa1b7c60ef6e26a0",
+      "disposition": "Timed out after 180 seconds without an assistant model response or review result. Not counted as passing review."
+    }
+  ],
+  "independentCodexReviews": [
+    {
+      "role": "specification",
+      "agentId": "01a19979-a4ac-7b40-86b1-4152718b0579",
+      "testsRun": false,
+      "scope": "T1.4 contracts and compatibility",
+      "findings": [
+        "Soft-deleted recurring schedule reuse",
+        "Retry after deletion",
+        "Events after a swallowed nested rejection"
+      ],
+      "disposition": "All reproduced and fixed; first-green, transaction-red and retry-red retain failures, integration-green passes."
+    },
+    {
+      "role": "quality",
+      "agentId": "01a19982-d8fc-7601-9d77-b5c3dc4ec97c",
+      "testsRun": false,
+      "findings": [
+        "Caller cancellation after SQLite commit can skip DataChanged"
+      ],
+      "disposition": "Primary reproduced with real SQLite commit-boundary wrapper, then fixed; cancellation-red fails and cancellation-green passes."
+    },
+    {
+      "role": "final cancellation quality review",
+      "agentId": "01a19a05-4488-7d31-9c97-15f7f8260a2b",
+      "nickname": "Hypatia",
+      "testsRun": false,
+      "readOnly": true,
+      "scope": [
+        "TimeRepository.kt transaction/CommitEffects",
+        "PersonalDataGate.kt",
+        "CommandExecutor.kt",
+        "CommitCancellationTest.kt"
+      ],
+      "findings": [],
+      "result": "No actionable bug found in the scoped static review. Commit/return is protected, the business block remains cancellable, and committed effects run after the current gate access exits. No independent test execution claimed.",
+      "phoneAccess": false,
+      "privateDataAccess": false
+    }
+  ],
+  "acceptance": {
+    "executedBy": "primary",
+    "agentSelfReportIsAcceptance": false,
+    "evidence": "verification.json; test-results.txt; failure summary JSON files",
+    "fullRegressionFindings": "Two legacy SQLite exception-type regressions were fixed without weakening existing tests."
+  }
+}

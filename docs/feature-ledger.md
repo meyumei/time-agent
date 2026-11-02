@@ -167,3 +167,13 @@
 D-T0-03 中 `time_create_plan` 无关联分支的隐式任务及返回任务 ID 已在本轮取消，当前返回日程 ID；周期完成返回结构差异仍在。此处与前文 T0 的历史接口快照区分。其余 T0 缺陷未在本任务修复，command_log 存在不代表 T1.4/T1.5 的统一协议已经落地。
 
 本轮 ADB 无设备，模拟器包两次下载无效，**未安装、未动手机记录、未恢复旧备份**。真实升级安装后旧日程保留，以及迁移前快照在设备上的恢复仍待验收。已通过的恢复测试是把数据恢复到 v13，不声称降级 APK/schema；format1 限制继续存在。L01–L36 原有截图与待补证项不因主机回归改记为通过。PR 保持 Draft；[改动文件、命令、失败摘要与设备步骤](t1.3-independent-schedules.md)、[机器结果](ledger-evidence/t1.3-schedules/verification.json)、[协作记录](ledger-evidence/t1.3-schedules/collaboration.json)。下一开发任务为 **T1.4 CommandExecutor**。
+
+## 2026-11-02 T1.4 开发跟进
+
+在 `codex/t1.4-command-executor` 引入统一命令入口，先迁移日程/实际记录增删改与计时开始/停止/切换。直接影响 **L01、L02**；组合事务和原调用方涉及 **L03、L06、L08、L09、L11、L13、L14、L15、L18、L22、L32、L34**；共享 Repository 事务与撤销入口还间接涉及 L03–L20。保留已有入口、冲突可保存、实际可重叠、周期同 ID 重排及原组合撤销能力；本轮不重做页面布局，主库仍为 v13。
+
+命令日志、业务变更与 OperationEntity 撤销组同事务写入；同 requestId 重试返回首次结果，版本冲突不覆盖。批量任一步失败整体回滚；提交后才发 DataChanged。真实 SQLite 提交边界取消测试先复现“已提交但漏事件”，再验证修复后恰好一次；提交前取消保持回滚。完整回归发现旧网格创建/训练回记的两个 SQLite 异常兼容问题，保留原测试并修复，未削弱原断言。
+
+本轮 **JUnit 787 项，785 通过、2 项原有跳过，0 失败；Node 19/19；Debug APK 与设备测试包构建成功；Lint 0 错误、75 警告、2 信息**。新增命令相关 27 项测试覆盖幂等、并发、版本、批量、撤销重做、计时、旧接口和取消。core/runtime 来自本轮强制执行，app 来自最后完整回归。WorkBuddy DS 实际生成两个契约文件的内容，由主代理审查写入；补充只读复核超时，不作为通过。主代理独立运行测试，另有定向 Codex 静态复核，没有把代理描述算作实测。
+
+D-T0-04 仅在上述目标写入中获得持久 requestId；鱼的稳定 toolCallId、任务/本地输入及通知按钮仍待 **T1.5**，不能标记为全 App 完成。其余 T0 提醒/路由等缺陷仍保留。本轮 ADB 仍无设备，**未安装、未访问或修改手机记录、未恢复旧备份**；原有真机缺口不变，设备测试包仅完成构建。PR 保持 Draft；[完整文件清单、命令、失败修复与设备步骤](t1.4-command-executor.md)、[本轮机器结果](ledger-evidence/t1.4-commands/verification.json)、[协作范围与结果](ledger-evidence/t1.4-commands/collaboration.json)。下一任务为 **T1.5：鱼工具与本地写入接入 CommandExecutor**。

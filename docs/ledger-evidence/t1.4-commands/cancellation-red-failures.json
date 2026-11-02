@@ -1,0 +1,7 @@
+[
+  {
+    "test": "com.timeagent.domain.command.CommitCancellationTest.cancellationAtTheCommitBoundaryStillPublishesExactlyOnce",
+    "message": "java.lang.AssertionError: A committed command must publish even when its caller is cancelled expected:<[DataChanged(affectedTypes=[PLAN])]> but was:<[]>",
+    "trace": "java.lang.AssertionError: A committed command must publish even when its caller is cancelled expected:<[DataChanged(affectedTypes=[PLAN])]> but was:<[]>\n\tat org.junit.Assert.fail(Assert.java:89)\n\tat org.junit.Assert.failNotEquals(Assert.java:835)\n\tat org.junit.Assert.assertEquals(Assert.java:120)\n\tat com.timeagent.domain.command.CommitCancellationTest$cancellationAtTheCommitBoundaryStillPublishesExactlyOnce$1.invokeSuspend(CommitCancellationTest.kt:70)\n\tat kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)\n\tat kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)\n\tat kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:263)\n\tat kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:94)\n\tat kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking(Builders.kt:70)\n\tat kotlinx.coroutines.BuildersKt.runBlocking(Unknown Source)\n\tat kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking$default(Builders.kt:48)\n\tat kotlinx.coroutines.BuildersKt.runBlocking$default(Unknown Source)\n\tat com.timeagent.domain.command.CommitCancellationTest.cancellationAtTheCommitBoundaryStillPublishesExactlyOnce(CommitCancellationTest.kt:44)"
+  }
+]

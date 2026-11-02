@@ -53,6 +53,8 @@ class DatabaseOwnershipTest {
     fun hiltEntryPointsAndFactoriesShareBothDatabases() {
         assertSame(main, TimeAgentDatabase.open(app))
         assertSame(dependencies.timeRepository(), AppEntryPoint.from(app).timeRepository())
+        assertSame(dependencies.timeRepository().commands, dependencies.commandExecutor())
+        assertSame(dependencies.commandExecutor(), AppEntryPoint.from(app).commandExecutor())
         assertSame(dependencies.workoutDatabase(), WorkoutDatabase.open(app))
     }
 
