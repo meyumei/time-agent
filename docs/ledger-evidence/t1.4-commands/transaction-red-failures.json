@@ -1,0 +1,7 @@
+[
+  {
+    "test": "com.timeagent.domain.command.CommandExecutorTest.aHandledNestedRejectionCannotPublishRolledBackWrites",
+    "message": "java.lang.AssertionError: 回滚后不能发布数据变化",
+    "trace": "java.lang.AssertionError: 回滚后不能发布数据变化\n\tat org.junit.Assert.fail(Assert.java:89)\n\tat org.junit.Assert.assertTrue(Assert.java:42)\n\tat com.timeagent.domain.command.CommandExecutorTest$aHandledNestedRejectionCannotPublishRolledBackWrites$1.invokeSuspend(CommandExecutorTest.kt:262)\n\tat kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)\n\tat kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)\n\tat kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:263)\n\tat kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:94)"
+  }
+]

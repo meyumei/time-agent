@@ -45,6 +45,7 @@ interface TimeDao {
     @Query("SELECT schedule_blocks.* FROM schedule_blocks LEFT JOIN tasks ON taskId=tasks.id WHERE schedule_blocks.deletedAt IS NULL AND (schedule_blocks.taskId IS NULL OR (tasks.deletedAt IS NULL AND tasks.status != 'CANCELLED')) AND schedule_blocks.status='SCHEDULED' ORDER BY startAt") suspend fun activePlans(): List<ScheduleBlockEntity>
     @Query("SELECT * FROM command_log WHERE requestId=:requestId") suspend fun commandResult(requestId: String): CommandLogEntity?
     @Insert suspend fun putCommandResult(item: CommandLogEntity)
+    @Query("DELETE FROM command_log WHERE createdAt < :cutoff") suspend fun deleteCommandResultsBefore(cutoff: Long)
     @Query("SELECT * FROM time_records ORDER BY startAt DESC") suspend fun records(): List<TimeRecordEntity>
     @Query("SELECT * FROM time_records WHERE id=:id") suspend fun record(id: String): TimeRecordEntity?
     @Query("SELECT * FROM time_records WHERE endAt IS NULL LIMIT 1") suspend fun runningTimer(): TimeRecordEntity?
@@ -73,6 +74,7 @@ interface TimeDao {
     @Query("SELECT * FROM operation_history ORDER BY id DESC LIMIT 80") suspend fun history(): List<OperationEntity>
     @Query("SELECT * FROM operation_history WHERE undone=0 ORDER BY id DESC LIMIT 1") suspend fun lastAction(): OperationEntity?
     @Query("SELECT * FROM operation_history WHERE entityType=:type AND entityId=:id LIMIT 1") suspend fun actionFor(type: String, id: String): OperationEntity?
+    @Query("SELECT * FROM operation_history WHERE id=:id") suspend fun action(id: Long): OperationEntity?
     @Query("SELECT * FROM import_batches ORDER BY completedAt DESC") suspend fun importBatches(): List<ImportBatchEntity>
     @Query("SELECT * FROM import_batches WHERE id=:id") suspend fun importBatch(id: String): ImportBatchEntity?
     @Query("SELECT * FROM entity_revisions WHERE `key`=:key") suspend fun revision(key: String): EntityRevision?

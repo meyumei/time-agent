@@ -1,0 +1,12 @@
+[
+  {
+    "test": "com.timeagent.domain.command.LegacyCommandRoutingTest.deletionRetryUsesItsLogEvenAfterTheActualRecordIsGone",
+    "message": "java.lang.IllegalArgumentException: 记录不存在",
+    "trace": "java.lang.IllegalArgumentException: 记录不存在\n\tat com.timeagent.data.TimeRepository$deleteRecord$2.invokeSuspend(TimeRepository.kt:759)\n\tat com.timeagent.data.TimeRepository$deleteRecord$2.invoke(TimeRepository.kt)\n\tat com.timeagent.data.TimeRepository$deleteRecord$2.invoke(TimeRepository.kt)\n\tat com.timeagent.data.TimeRepository$transaction$2$result$1$1$1.invokeSuspend(TimeRepository.kt:54)\n\tat com.timeagent.data.TimeRepository$transaction$2$result$1$1$1.invoke(TimeRepository.kt)\n\tat com.timeagent.data.TimeRepository$transaction$2$result$1$1$1.invoke(TimeRepository.kt)\n\tat androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invokeSuspend(RoomDatabase.android.kt:2001)"
+  },
+  {
+    "test": "com.timeagent.domain.command.LegacyCommandRoutingTest.stoppedTimerRetryReturnsItsFirstValueEvenAfterALaterDeletion",
+    "message": "java.lang.IllegalArgumentException: 计时记录不存在",
+    "trace": "java.lang.IllegalArgumentException: 计时记录不存在\n\tat com.timeagent.data.TimeRepository$stopTimer$2.invokeSuspend(TimeRepository.kt:731)\n\tat com.timeagent.data.TimeRepository$stopTimer$2.invoke(TimeRepository.kt)\n\tat com.timeagent.data.TimeRepository$stopTimer$2.invoke(TimeRepository.kt)\n\tat com.timeagent.data.TimeRepository$transaction$2$result$1$1$1.invokeSuspend(TimeRepository.kt:54)\n\tat com.timeagent.data.TimeRepository$transaction$2$result$1$1$1.invoke(TimeRepository.kt)\n\tat com.timeagent.data.TimeRepository$transaction$2$result$1$1$1.invoke(TimeRepository.kt)\n\tat androidx.room.RoomDatabaseKt__RoomDatabase_androidKt$withTransaction$2.invokeSuspend(RoomDatabase.android.kt:2001)"
+  }
+]

@@ -4,12 +4,16 @@ import androidx.room.withTransaction
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.timeagent.core.*
+import com.timeagent.domain.command.*
 import com.timeagent.suggestions.SuggestionAction
 import com.timeagent.suggestions.suggestionFreeSlots
 import com.timeagent.suggestions.suggestionTaskSlots
 import com.timeagent.memory.PersonalMemoryRules
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.job
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.*
 import kotlin.coroutines.AbstractCoroutineContextElement
@@ -38,8 +42,44 @@ data class LocalSnapshot(
 )
 
 class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock = Clock.systemDefaultZone()) {
+    val commands by lazy { CommandExecutor(this) }
     internal val database: TimeAgentDatabase get() = db
-    internal suspend fun <T> transaction(block: suspend () -> T): T = withContext(Dispatchers.IO) { PersonalDataGate.access { db.withTransaction { block() } } }
+    private class CommitEffects : AbstractCoroutineContextElement(Key) {
+        companion object Key : CoroutineContext.Key<CommitEffects>
+        val actions = mutableListOf<suspend () -> Unit>()
+        var rollbackOnly = false
+    }
+    internal suspend fun <T> transaction(block: suspend () -> T): T = withContext(Dispatchers.IO) {
+        val parent = currentCoroutineContext()[CommitEffects]
+        if (parent != null) {
+            try { PersonalDataGate.access { db.withTransaction { block() } } }
+            catch (e: Exception) { parent.rollbackOnly = true; throw e }
+        } else {
+            val callerJob = currentCoroutineContext().job
+            val effects = CommitEffects()
+            var committed = false
+            try {
+                PersonalDataGate.access {
+                    withContext(NonCancellable + effects) {
+                        val result = db.withTransaction {
+                            val value = withContext(callerJob) { block() }
+                            callerJob.ensureActive()
+                            check(!effects.rollbackOnly) { "事务中有未完成的操作，已整体回滚" }
+                            value
+                        }
+                        committed = true
+                        result
+                    }
+                }
+            } finally {
+                // Protect the commit/return boundary, then publish after releasing the data gate.
+                if (committed) withContext(NonCancellable) { effects.actions.forEach { it() } }
+            }
+        }
+    }
+    internal suspend fun afterCommit(action: suspend () -> Unit) {
+        checkNotNull(currentCoroutineContext()[CommitEffects]).actions += action
+    }
     private val dao = db.dao()
     private val gson = Gson()
     val zone: ZoneId get() = clock.zone
@@ -240,7 +280,7 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         dao.putReminder(item.copy(deliveredAt = stamp))
         true
     }
-    suspend fun redoLastAction() = transaction {
+    internal suspend fun redoLastActionRaw() = transaction {
         val action = requireNotNull(dao.redoAction()) { "还没有可重做的操作" }
         applyHistory(action, forward = true)
         dao.markRedone(action.id)
@@ -294,18 +334,38 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         if (collector != null) collector.entries += entry else { dao.clearRedo(); dao.putAction(entry) }
     }
 
-    private class AssistantJournal : AbstractCoroutineContextElement(Key) {
+    private class AssistantJournal(val undoToken: String? = null) : AbstractCoroutineContextElement(Key) {
         companion object Key : CoroutineContext.Key<AssistantJournal>
         val entries = mutableListOf<OperationEntity>()
     }
     private data class AssistantBatch(val entries: List<OperationEntity>)
+
+    internal data class CommandWrite<T>(val value: T, val entries: List<OperationEntity>, val undoToken: String?)
+    internal suspend fun <T> commandWrite(requestId: String, label: String, block: suspend () -> T): CommandWrite<T> {
+        val parent = currentCoroutineContext()[AssistantJournal]
+        val collector = AssistantJournal(parent?.undoToken ?: "group:$requestId")
+        val value = withContext(collector) { block() }
+        if (parent != null) parent.entries += collector.entries
+        else if (collector.entries.isNotEmpty()) {
+            dao.clearRedo()
+            dao.putAction(OperationEntity(actionType = label, entityType = "ASSISTANT_BATCH", entityId = requestId,
+                beforeSnapshot = null, afterSnapshot = gson.toJson(AssistantBatch(collector.entries)), createdAt = now().toEpochMilli()))
+        }
+        return CommandWrite(value, collector.entries, collector.undoToken.takeIf { collector.entries.isNotEmpty() })
+    }
+
+    internal fun historyTargets(action: OperationEntity): List<Pair<String, String>> = when (action.entityType) {
+        "ASSISTANT_BATCH", "IDEA_REMINDER" -> gson.fromJson(action.afterSnapshot, AssistantBatch::class.java).entries.flatMap(::historyTargets)
+        "COURSE_BATCH" -> gson.fromJson(action.afterSnapshot, CourseBatchSnapshot::class.java).occurrences.map { "OCCURRENCE" to it.id }
+        else -> listOf(action.entityType to action.entityId)
+    }
 
     /** Local typed writes share one transaction and one undo; a replayed request never writes twice. */
     suspend fun assistantTransaction(requestId: String, actionLabel: String? = null, block: suspend () -> Unit): Boolean = transaction {
         require(requestId.isNotBlank())
         if (dao.actionFor("ASSISTANT_BATCH", requestId) != null) return@transaction false
         check(currentCoroutineContext()[AssistantJournal] == null)
-        val collector = AssistantJournal()
+        val collector = AssistantJournal("group:$requestId")
         withContext(collector) { block() }
         if (collector.entries.isNotEmpty()) {
             dao.clearRedo()
@@ -420,7 +480,17 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
             .filter { span.overlaps(it.span) }
     }
 
-    suspend fun savePlan(plan: ScheduleBlockEntity, expectedVersion: Long? = null, expectedTaskVersion: Long? = null, expectedConflicts: List<Conflict>? = null): List<Conflict> = transaction {
+    suspend fun savePlan(plan: ScheduleBlockEntity, expectedVersion: Long? = null, expectedTaskVersion: Long? = null,
+                         expectedConflicts: List<Conflict>? = null, requestId: String = UUID.randomUUID().toString()): List<Conflict> = transaction {
+        val before = dao.plan(plan.id)
+        val command = if (before == null && expectedVersion == null) CreateSchedule(requestId, plan, expectedTaskVersion, expectedConflicts)
+        else UpdateSchedule(requestId, plan, expectedVersion ?: before!!.version, expectedTaskVersion, expectedConflicts)
+        val result = commands.executeForRepository(command)
+        result.throwIfRejected()
+        result.warnings.map { Conflict(it.id, it.title, TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(it.endAt))) }
+    }
+
+    internal suspend fun savePlanRaw(plan: ScheduleBlockEntity, expectedVersion: Long? = null, expectedTaskVersion: Long? = null, expectedConflicts: List<Conflict>? = null): List<Conflict> = transaction {
         val task = plan.taskId?.let { activeTask(it) }
         require(plan.title.trim().length <= 200 && (task != null || plan.title.isNotBlank())) { "日程名称不能为空，最多200字" }
         require(plan.source in setOf("MANUAL", "FISH", "VOICE", "CALENDAR", "TEMPLATE", "RECURRING", "SAMPLE")) { "日程来源无效" }
@@ -452,7 +522,15 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         warnings // A warning never prevents saving a valid plan.
     }
 
-    suspend fun saveRecord(record: TimeRecordEntity, allowFuture: Boolean = false, expectedVersion: Long? = null, expectedTaskVersion: Long? = null) = transaction {
+    suspend fun saveRecord(record: TimeRecordEntity, allowFuture: Boolean = false, expectedVersion: Long? = null,
+                           expectedTaskVersion: Long? = null, requestId: String = UUID.randomUUID().toString()) = transaction {
+        val before = dao.record(record.id)
+        val command = if (before == null && expectedVersion == null) CreateActual(requestId, record, allowFuture, expectedTaskVersion)
+        else UpdateActual(requestId, record, expectedVersion ?: before!!.version, allowFuture, expectedTaskVersion)
+        commands.executeForRepository(command).throwIfRejected()
+    }
+
+    internal suspend fun saveRecordRaw(record: TimeRecordEntity, allowFuture: Boolean = false, expectedVersion: Long? = null, expectedTaskVersion: Long? = null) = transaction {
         val end = requireNotNull(record.endAt) { "手动记录必须设置结束时间" }
         TimeSpan(Instant.ofEpochMilli(record.startAt), Instant.ofEpochMilli(end))
         require(allowFuture || end <= now().toEpochMilli()) { "记录包含未来时间，请确认后保存，或将其创建为计划" }
@@ -650,13 +728,19 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
     }
 
     suspend fun startTimer(taskId: String?, requestId: String = UUID.randomUUID().toString(), switchExisting: Boolean = false, expectedTaskVersion: Long? = null): TimeRecordEntity = transaction {
+        val result = commands.executeForRepository(StartTimer(requestId, taskId, switchExisting, expectedTaskVersion))
+        result.throwIfRejected()
+        requireNotNull(result.timerRecord) { "开始计时结果缺失" }
+    }
+
+    internal suspend fun startTimerRaw(taskId: String?, requestId: String, switchExisting: Boolean = false, expectedTaskVersion: Long? = null): TimeRecordEntity = transaction {
         dao.record(requestId)?.let { return@transaction it } // Stable request ID makes a double tap harmless.
         val task = taskId?.let { activeTask(it) }
         checkVersion(task?.version, expectedTaskVersion)
         val running = dao.runningTimer()
         if (running != null) {
             if (!switchExisting) throw TimerAlreadyRunning()
-            stopTimer(running.id)
+            stopTimerRaw(running.id)
         }
         val record = TimeRecordEntity(requestId, taskId, now().toEpochMilli(), null, categoryId = task?.categoryId, source = "TIMER", createdAt = now().toEpochMilli(), updatedAt = now().toEpochMilli(), version = nextVersion("RECORD", requestId))
         dao.putRecord(record)
@@ -664,7 +748,16 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         record
     }
 
-    suspend fun stopTimer(id: String, expectedVersion: Long? = null): TimeRecordEntity = transaction {
+    suspend fun stopTimer(id: String, expectedVersion: Long? = null, requestId: String = UUID.randomUUID().toString()): TimeRecordEntity = transaction {
+        val result = commands.replay(requestId) ?: run {
+            val version = expectedVersion ?: requireNotNull(dao.record(id)) { "计时记录不存在" }.version
+            commands.executeForRepository(StopTimer(requestId, id, version))
+        }
+        result.throwIfRejected()
+        requireNotNull(result.timerRecord) { "结束计时结果缺失" }
+    }
+
+    internal suspend fun stopTimerRaw(id: String, expectedVersion: Long? = null): TimeRecordEntity = transaction {
         val before = requireNotNull(dao.record(id)) { "计时记录不存在" }
         checkVersion(before.version, expectedVersion)
         if (before.endAt != null) return@transaction before
@@ -676,12 +769,27 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         after
     }
 
-    suspend fun deletePlan(id: String) = transaction {
+    suspend fun deletePlan(id: String, expectedVersion: Long? = null, requestId: String = UUID.randomUUID().toString()) = transaction {
+        val result = commands.replay(requestId) ?: run {
+            val version = expectedVersion ?: requireNotNull(dao.plan(id)) { "计划不存在" }.version
+            commands.executeForRepository(DeleteSchedule(requestId, id, version))
+        }
+        result.throwIfRejected()
+    }
+    internal suspend fun deletePlanRaw(id: String, expectedVersion: Long? = null) = transaction {
         val before = requireNotNull(dao.plan(id)) { "计划不存在" }
+        checkVersion(before.version, expectedVersion)
         val after = before.copy(deletedAt = now().toEpochMilli(), updatedAt = now().toEpochMilli(), version = nextVersion("PLAN", id, before.version))
         dao.putPlan(after); journal("PLAN", id, before, after, "删除计划")
     }
-    suspend fun deleteRecord(id: String, expectedVersion: Long? = null) = transaction {
+    suspend fun deleteRecord(id: String, expectedVersion: Long? = null, requestId: String = UUID.randomUUID().toString()) = transaction {
+        val result = commands.replay(requestId) ?: run {
+            val version = expectedVersion ?: requireNotNull(dao.record(id)) { "记录不存在" }.version
+            commands.executeForRepository(DeleteActual(requestId, id, version))
+        }
+        result.throwIfRejected()
+    }
+    internal suspend fun deleteRecordRaw(id: String, expectedVersion: Long? = null) = transaction {
         val before = requireNotNull(dao.record(id)) { "记录不存在" }
         checkVersion(before.version, expectedVersion)
         require(before.endAt != null) { "请先结束计时" }
@@ -751,6 +859,14 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
     }
 
     suspend fun undoLastAction(expectedAssistantId: String? = null) = transaction {
+        val action = requireNotNull(dao.lastAction()) { "还没有可撤销的操作" }
+        if (expectedAssistantId != null && (action.entityType != "ASSISTANT_BATCH" || action.entityId != expectedAssistantId)) throw StaleChange()
+        commands.executeForRepository(UndoCommand(UUID.randomUUID().toString(), "operation:${action.id}")).throwIfRejected()
+    }
+    suspend fun redoLastAction() = transaction {
+        commands.executeForRepository(RedoCommand(UUID.randomUUID().toString())).throwIfRejected()
+    }
+    internal suspend fun undoLastActionRaw(expectedAssistantId: String? = null) = transaction {
         val action = requireNotNull(dao.lastAction()) { "还没有可撤销的操作" }
         if (expectedAssistantId != null && (action.entityType != "ASSISTANT_BATCH" || action.entityId != expectedAssistantId)) throw StaleChange()
         applyHistory(action, forward = false)

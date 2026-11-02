@@ -296,7 +296,7 @@ import java.util.UUID
             if (tab == 2) WeekHeader(reviewWeek, data, { model.changeReviewWeek(-1) }, { model.changeReviewWeek(1) }, model::currentWeek)
             running?.let { item ->
                 RunningTimerBar(item, data.tasks.firstOrNull { it.id == item.taskId }?.title ?: "自由计时",
-                    model.clock, busy, onStop = { model.perform { model.repository.stopTimer(item.id) } })
+                    model.clock, busy, onStop = { model.perform { model.repository.stopTimer(item.id, item.version, requestId = "timer-stop:${item.id}:${item.version}") } })
             }
         }
     }, bottomBar = {
@@ -471,14 +471,14 @@ import java.util.UUID
                                 val before = request.entity as? ScheduleBlockEntity
                                 val title = if (before?.title == "" && values.taskId != null && values.taskId == before.taskId && values.title == data.tasks.firstOrNull { it.id == before.taskId }?.title) "" else values.title
                                 model.repository.savePlan((before ?: ScheduleBlockEntity(request.id, values.taskId, values.start, values.end)).copy(taskId = values.taskId, title = title, notes = values.notes, startAt = values.start, endAt = values.end,
-                                    allDayStartDate = values.allDayStartDate, allDayEndDate = values.allDayEndDate), before?.version)
+                                    allDayStartDate = values.allDayStartDate, allDayEndDate = values.allDayEndDate), before?.version, requestId = "editor:${request.id}")
                             }
                         }
                         EditorKind.RECORD -> {
                             val before = request.entity as? TimeRecordEntity
                             val notes = if (request.selection != null && values.title.isNotBlank() && values.notes.lineSequence().firstOrNull()?.trim() != values.title)
                                 listOf(values.title, values.notes.trim()).filter { it.isNotBlank() }.joinToString("\n") else values.notes
-                            model.repository.saveRecord((before ?: TimeRecordEntity(request.id, values.taskId, values.start, values.end)).copy(taskId = values.taskId, startAt = values.start, endAt = values.end, title = values.title, notes = if (request.selection == null) values.notes else notes, categoryId = values.categoryId), values.allowFuture, before?.version)
+                            model.repository.saveRecord((before ?: TimeRecordEntity(request.id, values.taskId, values.start, values.end)).copy(taskId = values.taskId, startAt = values.start, endAt = values.end, title = values.title, notes = if (request.selection == null) values.notes else notes, categoryId = values.categoryId), values.allowFuture, before?.version, requestId = "editor:${request.id}")
                         }
                         EditorKind.COURSE -> {
                             val before = request.entity as CourseOccurrenceEntity
@@ -568,8 +568,8 @@ import java.util.UUID
                                 val noteType = when (selection.entity) { is ScheduleBlockEntity -> "PLAN"; is TimeRecordEntity -> "RECORD"; is CourseOccurrenceEntity -> "OCCURRENCE"; else -> null }
                                 if (noteType != null) TextButton(onClick = { openNote(noteType, selection.id, selection.title) }) { Text("记笔记") }
                                 TextButton(onClick = { editor = EditorRequest(when (selection.kind) { ItemKind.COURSE -> EditorKind.COURSE; ItemKind.PLAN -> EditorKind.PLAN; ItemKind.RECORD -> EditorKind.RECORD }, selection.entity); selected = null }, enabled = editable) { Text("修改") }
-                                TextButton(onClick = { confirmation = "确认${if (selection.kind == ItemKind.COURSE) "取消这一次课程" else "删除此时间块"}？可以撤销恢复。" to {
-                                    model.perform(onSuccess = { selected = null }) { when (val item = selection.entity) { is ScheduleBlockEntity -> model.repository.deletePlan(item.id); is TimeRecordEntity -> model.repository.deleteRecord(item.id); is CourseOccurrenceEntity -> model.repository.saveOccurrence(item.copy(status = "CANCELLED"), item.version) } }
+                                TextButton(onClick = { val requestId = UUID.randomUUID().toString(); confirmation = "确认${if (selection.kind == ItemKind.COURSE) "取消这一次课程" else "删除此时间块"}？可以撤销恢复。" to {
+                                    model.perform(onSuccess = { selected = null }) { when (val item = selection.entity) { is ScheduleBlockEntity -> model.repository.deletePlan(item.id, item.version, requestId); is TimeRecordEntity -> model.repository.deleteRecord(item.id, item.version, requestId); is CourseOccurrenceEntity -> model.repository.saveOccurrence(item.copy(status = "CANCELLED"), item.version) } }
                                 } }, enabled = editable && !busy) { Text(if (selection.kind == ItemKind.COURSE) "取消本次课程" else "删除") }
                             }
                         }

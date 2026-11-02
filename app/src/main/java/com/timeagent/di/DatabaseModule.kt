@@ -3,6 +3,7 @@ package com.timeagent.di
 import android.content.Context
 import com.timeagent.data.TimeAgentDatabase
 import com.timeagent.data.TimeRepository
+import com.timeagent.domain.command.CommandExecutor
 import com.timeagent.workout.data.WorkoutDatabase
 import dagger.Module
 import dagger.Provides
@@ -28,4 +29,8 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun timeRepository(database: TimeAgentDatabase): TimeRepository = TimeRepository(database)
+
+    @Provides
+    @Singleton
+    fun commandExecutor(repository: TimeRepository): CommandExecutor = repository.commands
 }
