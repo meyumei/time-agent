@@ -1,0 +1,546 @@
+{
+  "generatedAt": "2026-11-02T14:15:44.385107+08:00",
+  "baseCommit": "05d50347f002252371a70a6f46ec8323185acef3",
+  "branch": "codex/t1.5-tool-command-routing",
+  "automatedAcceptance": "passed",
+  "deviceAcceptance": "pending",
+  "modules": {
+    "core": {
+      "tests": 90,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 90,
+      "actualExecution": "final-verification (--rerun-tasks); final-acceptance UP-TO-DATE"
+    },
+    "agent-runtime": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 7,
+      "actualExecution": "final-verification (--rerun-tasks); final-acceptance UP-TO-DATE"
+    },
+    "app": {
+      "tests": 717,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2,
+      "passed": 715,
+      "actualExecution": "final-acceptance"
+    }
+  },
+  "node": {
+    "tests": 27,
+    "pass": 27,
+    "fail": 0,
+    "skipped": 0
+  },
+  "lint": {
+    "Warning": 75,
+    "Information": 2
+  },
+  "commands": [
+    {
+      "label": "apk-badging",
+      "command": [
+        "F:\\261019_时间agent\\.tools\\android-sdk\\build-tools\\36.0.0\\aapt2.exe",
+        "dump",
+        "badging",
+        "F:\\261019_时间agent\\app\\build\\outputs\\apk\\debug\\app-debug.apk"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.4,
+      "rawLogSha256": "c298d6b86e81cf8c28278fdce08fba3f4b954c80964bc1e2507233a87cfb0e50"
+    },
+    {
+      "label": "apk-signature",
+      "command": [
+        "F:\\261019_时间agent\\.tools\\android-sdk\\build-tools\\36.0.0\\apksigner.bat",
+        "verify",
+        "--verbose",
+        "--print-certs",
+        "F:\\261019_时间agent\\app\\build\\outputs\\apk\\debug\\app-debug.apk"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 1.55,
+      "rawLogSha256": "9bf70c20499297c144689218d9c772c78e059f72110e893a28facbfb6d04edd5"
+    },
+    {
+      "label": "conversation-state-green",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.fish.FishCommandRoutingTest",
+        "--tests",
+        "com.timeagent.assistant.AssistantConversationTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 41.44,
+      "rawLogSha256": "cc6fde4b67ea6bdeb8e8b459f2fb1ddab6040b8fb009f27b7ed846704c0eed02"
+    },
+    {
+      "label": "conversation-state-red",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.fish.FishCommandRoutingTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 30.36,
+      "rawLogSha256": "214b0cd33db651131679b49014b3bb7812d7fe633c0ae1597f7a6433f5449422"
+    },
+    {
+      "label": "database-failure-red",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "*FishCommandRoutingTest.sqlFailureIsFailedWithNoPartialWrites",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 15.57,
+      "rawLogSha256": "4a5553a207cc4f0846c50e9c5a9502f0a8669f7e7831cc9404db25cc1e2a6c87"
+    },
+    {
+      "label": "extended-red",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.fish.FishCommandRoutingTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 21.2,
+      "rawLogSha256": "fd2fe9c08ae81dc22fd148cda92d29ce52cc171c15d38b7857cda918c928b9f5"
+    },
+    {
+      "label": "final-acceptance",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":core:test",
+        ":agent-runtime:testDebugUnitTest",
+        ":app:testDebugUnitTest",
+        ":app:assembleDebug",
+        ":app:lintDebug",
+        ":app:assembleDebugAndroidTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 393.73,
+      "rawLogSha256": "324246fef563dc59f3d80fede3ffd8cc34bba73657832af097597fa98274c33e"
+    },
+    {
+      "label": "final-verification",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":core:test",
+        ":agent-runtime:testDebugUnitTest",
+        ":app:testDebugUnitTest",
+        ":app:assembleDebug",
+        ":app:lintDebug",
+        ":app:assembleDebugAndroidTest",
+        "--rerun-tasks",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 625.73,
+      "rawLogSha256": "c4f0333a2c9a625660b634be48f6eeac6deb06608d3787605d8583e235eb6154"
+    },
+    {
+      "label": "first-green",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.fish.FishCommandRoutingTest",
+        "--tests",
+        "com.timeagent.fish.FishTimeToolsTest",
+        "--tests",
+        "com.timeagent.assistant.*",
+        "--tests",
+        "com.timeagent.reminders.*",
+        "--tests",
+        "com.timeagent.domain.command.*",
+        "--tests",
+        "com.timeagent.recurring.*",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 135.95,
+      "rawLogSha256": "b850bc731d6ef1ddc74f333c6afab9e30de0b44e666617219512055505383841"
+    },
+    {
+      "label": "fish-artifact",
+      "command": [
+        "python",
+        "scripts/verify-fish-artifact.py",
+        "--apk",
+        "F:\\261019_时间agent\\app\\build\\outputs\\apk\\debug\\app-debug.apk",
+        "--built",
+        "F:\\261019_时间agent",
+        "--report",
+        "F:\\261019_时间agent\\evidence\\t1.5-tools\\fish-artifact.json"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 6.85,
+      "rawLogSha256": "ec31d636de70ca3b20e26d4b349ea0ac8b41d0fe717beb40cca3e5f39947298e"
+    },
+    {
+      "label": "integration-green",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.fish.*",
+        "--tests",
+        "com.timeagent.assistant.*",
+        "--tests",
+        "com.timeagent.reminders.*",
+        "--tests",
+        "com.timeagent.domain.command.*",
+        "--tests",
+        "com.timeagent.recurring.*",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 96.33,
+      "rawLogSha256": "3cdf652de9e2616512101279b47fc00697124c32432570b1caeb05cbd1ee37cb"
+    },
+    {
+      "label": "node-final-tests",
+      "command": [
+        "node",
+        "--test",
+        "test/*.test.mjs"
+      ],
+      "cwd": "agent-plugins/time-agent",
+      "exitCode": 0,
+      "elapsedSeconds": 0.39,
+      "rawLogSha256": "4e07bdf834e9f1833f7547eb23117ed655645ee3526fb3650540156f34e9ed0c"
+    },
+    {
+      "label": "protocol-red",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.fish.FishCommandRoutingTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 20.69,
+      "rawLogSha256": "0883c53ae43104164de7ce9cdb93abdc2a454eb12a44547ae6b9523025e6b42d"
+    },
+    {
+      "label": "quality-green",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.fish.FishCommandRoutingTest",
+        "--tests",
+        "com.timeagent.assistant.*",
+        "--tests",
+        "com.timeagent.domain.command.*",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 97.32,
+      "rawLogSha256": "c040a6c85ab72f3c9632b50c6434a7b909edd53fbfdbbd8b9ede70472c186035"
+    },
+    {
+      "label": "quality-red",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.fish.FishCommandRoutingTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 28.24,
+      "rawLogSha256": "b3dc8e80276592762f551d884c1bbd06b0207f87a48c1aa9c8eff744e28fe8b5"
+    },
+    {
+      "label": "red-behavior",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.fish.FishCommandRoutingTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 74.36,
+      "rawLogSha256": "64340c2b1a37bfca74dee7a68254ca12032234ce237be79a59991593f0994b24"
+    },
+    {
+      "label": "red-contract",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.fish.FishCommandRoutingTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 87.45,
+      "rawLogSha256": "853a75c0da850b29966adf638a6900e2204036ccdffe52c98131ffb50f9c6525"
+    },
+    {
+      "label": "review-regression",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.fish.*",
+        "--tests",
+        "com.timeagent.assistant.*",
+        "--tests",
+        "com.timeagent.reminders.*",
+        "--tests",
+        "com.timeagent.domain.command.*",
+        "--tests",
+        "com.timeagent.recurring.*",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 139.6,
+      "rawLogSha256": "3b543a33e21a1550e6a8cdac72fe682d493f3890e7dd569b0fbb6cd55a60225a"
+    },
+    {
+      "label": "status-green",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.fish.FishCommandRoutingTest",
+        "--tests",
+        "com.timeagent.assistant.AssistantConversationTest",
+        "--tests",
+        "com.timeagent.assistant.AssistantConfirmationTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 69.0,
+      "rawLogSha256": "27d68cf162fcbe8ecb25ebe821d31fb7bec79a9d28e6d1d22b52e2262693d4f1"
+    },
+    {
+      "label": "status-red",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.fish.FishCommandRoutingTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 16.22,
+      "rawLogSha256": "8bc9f6114c20809d1ed3e165f0bfc6fd47f2fc9c511a3ce4fc221090d4ac27fa"
+    }
+  ],
+  "newFishTests": 27,
+  "android": {
+    "compileSdk": 36,
+    "minSdk": 26,
+    "targetSdk": 35,
+    "schemaBefore": 13,
+    "schemaAfter": 13,
+    "schemaUnchanged": true,
+    "schemaSha256": "ac8a4ba462531821d923688db316a6940737280da857d8f31c2ca47ecd25af92",
+    "v12FixtureUnchanged": true,
+    "v12FixtureSha256": "57645b16d0f69d1f5f2358ed12a139db8cedd48f03297aa8deccbf9e287372e9"
+  },
+  "apk": {
+    "bytes": 890604950,
+    "MiB": 849.35,
+    "sha256": "8c5b3388c13e565f06bd4645a7230829e06acff0b7f19d49c2b5a3c1d474608e",
+    "groups": {
+      "other": {
+        "compressedBytes": 229110876,
+        "apkPercent": 25.7253
+      },
+      "nativeLibraries": {
+        "compressedBytes": 87246474,
+        "apkPercent": 9.7963
+      },
+      "models": {
+        "compressedBytes": 285241363,
+        "apkPercent": 32.0278
+      },
+      "rootfs": {
+        "compressedBytes": 85783057,
+        "apkPercent": 9.632
+      },
+      "gif": {
+        "compressedBytes": 202426773,
+        "apkPercent": 22.7291
+      }
+    },
+    "abis": {
+      "arm64-v8a": {
+        "compressedBytes": 21209838,
+        "apkPercent": 2.3815
+      },
+      "armeabi-v7a": {
+        "compressedBytes": 18585552,
+        "apkPercent": 2.0868
+      },
+      "x86": {
+        "compressedBytes": 24034035,
+        "apkPercent": 2.6986
+      },
+      "x86_64": {
+        "compressedBytes": 23417049,
+        "apkPercent": 2.6293
+      }
+    },
+    "runtimeArchives": {
+      "assets/fish/dsh-runtime.bin": {
+        "compressedBytes": 127308331,
+        "apkPercent": 14.2946
+      },
+      "assets/fish/glibc-python.bin": {
+        "compressedBytes": 6565414,
+        "apkPercent": 0.7372
+      },
+      "assets/fish/offline-rootfs.bin": {
+        "compressedBytes": 85783057,
+        "apkPercent": 9.632
+      },
+      "assets/fish/python-support.bin": {
+        "compressedBytes": 904360,
+        "apkPercent": 0.1015
+      },
+      "assets/fish/time-agent-overlay.bin": {
+        "compressedBytes": 18510651,
+        "apkPercent": 2.0784
+      }
+    },
+    "previousT14Bytes": 891564073,
+    "changePercent": -0.107578,
+    "versionName": "0.15.2-preview",
+    "versionCode": 28,
+    "signatureVerified": true
+  },
+  "instrumentationApk": {
+    "built": true,
+    "executed": false,
+    "bytes": 1653041
+  },
+  "device": {
+    "deviceCount": 0,
+    "installed": false,
+    "userDataAccessed": false,
+    "acceptance": "pending"
+  },
+  "limitations": [
+    "No ADB device; no installation, user-data modification or physical-device acceptance.",
+    "Task/TimeRecord lack sourceRef column in v13; command result sourceRef + affected IDs persist the provenance link without a schema change.",
+    "Existing notification delivery claim routed; no existing completion/stop action buttons to migrate. N06 later.",
+    "InputRouter, new UI result cards, component extraction and other module writes are outside T1.5."
+  ]
+}

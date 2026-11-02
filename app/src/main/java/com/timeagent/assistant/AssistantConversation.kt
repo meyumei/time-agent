@@ -1,6 +1,7 @@
 package com.timeagent.assistant
 
 import com.timeagent.data.*
+import com.timeagent.domain.command.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
@@ -13,6 +14,7 @@ data class AssistantChatState(
     val pending: AssistantPreview? = null, val undoId: String? = null,
     val completionRevision: Long = 0,
     val localDestination: String? = null,
+    val commandResult: CommandResult? = null,
 )
 fun interface ConversationCloud {
     suspend fun interpret(input: String, context: AssistantContext, turns: List<ConversationTurn>): CloudResult
@@ -27,6 +29,15 @@ class AssistantConversation(private val repository: TimeRepository) {
     private val writer = RepositoryAssistantWriter(repository)
     private var unfinished: String? = null
     private var awaitingCommand: AssistantCommand? = null
+    private var activeRequestId: String? = null
+    private var activeOrigin: Origin = Origin.VOICE
+
+    internal fun stagedCopy(): AssistantConversation = AssistantConversation(repository).also {
+        it._state.value = _state.value
+        it.unfinished = unfinished
+        it.awaitingCommand = awaitingCommand
+        it.interpreter.lastMutation = interpreter.lastMutation
+    }
     private fun answer(text: String, completed: Boolean = false) {
         val current = _state.value
         _state.value = current.copy(turns = (current.turns + ConversationTurn("assistant", text)).takeLast(20),
@@ -39,10 +50,13 @@ class AssistantConversation(private val repository: TimeRepository) {
             pending = null, undoId = undoId, completionRevision = _state.value.completionRevision + 1, localDestination = destination)
     }
 
-    suspend fun submit(input: String, context: AssistantContext, cloud: ConversationCloud? = null) {
+    suspend fun submit(input: String, context: AssistantContext, cloud: ConversationCloud? = null,
+                       requestId: String? = null, origin: Origin = Origin.VOICE) {
         val text = input.trim()
         if (_state.value.busy || text.isBlank()) return
-        _state.value = _state.value.copy(busy = true, turns = (_state.value.turns + ConversationTurn("user", text)).takeLast(20), localDestination = null)
+        activeRequestId = requestId
+        activeOrigin = origin
+        _state.value = _state.value.copy(busy = true, turns = (_state.value.turns + ConversationTurn("user", text)).takeLast(20), localDestination = null, commandResult = null)
         try {
             if (text.length > 2000) { answer("请一次说一个操作，文字最多 2000 字。"); return }
             if (ConversationIntentGuard.refusesWrite(text)) {
@@ -50,15 +64,17 @@ class AssistantConversation(private val repository: TimeRepository) {
                 val query = (interpreter.parse(text, context) as? Interpretation.Parsed)?.command as? AssistantCommand.Query
                 if (query != null) {
                     when (val reply = planner.prepare(query, context)) {
-                        is AssistantReply.Answer -> answer(reply.text, completed = true)
+                        is AssistantReply.Answer -> { queryResult(query, context); answer(reply.text, completed = true) }
                         is AssistantReply.Clarification -> answer(reply.text)
                         is AssistantReply.Preview -> Unit
                     }
                     return
                 }
                 if (ConversationIntentGuard.isRecordQuestion(text)) {
-                    val records = context.snapshot.records.filter { it.endAt != null && (!text.contains("睡眠") || it.notes in setOf("睡眠", "睡觉")) }
-                    answer("当前有 ${records.size} 条相关实际记录；本次询问未添加新记录。", completed = true)
+                    val result = repository.commands.execute(CountActualRecords(activeRequestId ?: java.util.UUID.randomUUID().toString(),
+                        text.contains("睡眠"), activeOrigin))
+                    _state.value = _state.value.copy(commandResult = result)
+                    answer(result.message, completed = true)
                 } else answer("已按你的要求暂不保存，数据未修改。", completed = true)
                 return
             }
@@ -88,12 +104,16 @@ class AssistantConversation(private val repository: TimeRepository) {
                 is Interpretation.Parsed -> {
                     unfinished = null
                     when (val reply = planner.prepare(result.command, context)) {
-                        is AssistantReply.Answer -> answer(reply.text, completed = true)
+                        is AssistantReply.Answer -> {
+                            if (result.command is AssistantCommand.Query) queryResult(result.command, context)
+                            answer(reply.text, completed = true)
+                        }
                         is AssistantReply.Clarification -> { unfinished = request; awaitingCommand = result.command; answer(reply.text) }
                         is AssistantReply.Preview -> {
                             val item = reply.value
                             val previewOnly = ConversationIntentGuard.requestsPreview(request)
-                            if (item.needsFutureApproval || item.warnings.any { it.startsWith("时间冲突") } || previewOnly) {
+                            if (item.needsFutureApproval || item.warnings.any { it.startsWith("时间冲突") } || previewOnly ||
+                                origin is Origin.FISH && item.mutation.deletedCount() > 10) {
                                 _state.value = _state.value.copy(pending = item)
                                 val details = if (item.mutation is AssistantMutation.Batch) item.after else item.after.lines().take(3).joinToString("\n")
                                 answer(if (previewOnly) "已按“先预览”生成操作，确认后才保存；数据尚未修改。\n${item.title}\n$details\n仍然执行吗？"
@@ -116,10 +136,17 @@ class AssistantConversation(private val repository: TimeRepository) {
 
     private suspend fun execute(item: AssistantPreview, confirmed: Boolean = false): Boolean {
         if (item.needsFutureApproval && !confirmed) return false
-        val wrote = repository.assistantTransaction(item.id) { writer.write(item.mutation, confirmed && item.needsFutureApproval) }
+        if (activeOrigin is Origin.FISH && item.mutation.deletedCount() > 10) {
+            answer("批量删除超过 10 条，请在 App 对应业务页面核对并确认；数据尚未修改。")
+            return false
+        }
+        val result = writer.commitResult(item, confirmed && item.needsFutureApproval, activeRequestId ?: item.id, activeOrigin)
+        _state.value = _state.value.copy(commandResult = result)
+        result.throwIfRejected()
+        val wrote = result.status == CommandStatus.APPLIED
         if (wrote) {
             interpreter.lastMutation = item.mutation
-            _state.value = _state.value.copy(pending = null, undoId = item.id)
+            _state.value = _state.value.copy(pending = null, undoId = result.undoToken?.removePrefix("group:"))
             val details = when (item.mutation) {
                 is AssistantMutation.Batch -> item.after.lines().filterNot { it.startsWith("任务 #") || it.startsWith("计划 #") || it == "不关联任务" }.joinToString("\n")
                 is AssistantMutation.CancelSampleCourses -> "${item.mutation.courses.size} 门 / ${item.mutation.occurrences.size} 次内置示例课程已取消。"
@@ -130,9 +157,20 @@ class AssistantConversation(private val repository: TimeRepository) {
         return wrote
     }
 
+    private suspend fun queryResult(query: AssistantCommand.Query, context: AssistantContext) {
+        val result = repository.commands.execute(ReadAssistantQuery(activeRequestId ?: java.util.UUID.randomUUID().toString(),
+            query, context.selectedWeekStart, activeOrigin))
+        _state.value = _state.value.copy(commandResult = result)
+    }
+
     private suspend fun undo(thisActionOnly: Boolean) {
         if (thisActionOnly && _state.value.undoId == null) { answer("当前没有这次助手操作可撤销，未改动其他历史操作。"); return }
-        repository.undoLastAction(_state.value.undoId)
+        val token = _state.value.undoId?.let { "group:$it" }
+            ?: repository.snapshot().history.firstOrNull { !it.undone }?.let { "operation:${it.id}" }
+        if (token == null) { answer("还没有可撤销的操作。"); return }
+        val result = repository.commands.execute(UndoCommand(activeRequestId ?: java.util.UUID.randomUUID().toString(), token, activeOrigin))
+        _state.value = _state.value.copy(commandResult = result)
+        result.throwIfRejected()
         unfinished = null; awaitingCommand = null; interpreter.lastMutation = null
         _state.value = _state.value.copy(undoId = null, pending = null)
         answer("已撤销，时间轴已恢复。", completed = true)
@@ -140,7 +178,9 @@ class AssistantConversation(private val repository: TimeRepository) {
 
     /** Redo restores the operation the user just undid; it never creates a second copy of the record. */
     private suspend fun redo() {
-        repository.redoLastAction()
+        val result = repository.commands.execute(RedoCommand(activeRequestId ?: java.util.UUID.randomUUID().toString(), origin = activeOrigin))
+        _state.value = _state.value.copy(commandResult = result)
+        result.throwIfRejected()
         unfinished = null; awaitingCommand = null; interpreter.lastMutation = null
         _state.value = _state.value.copy(undoId = null, pending = null)
         answer("已恢复刚才撤销的操作。", completed = true)

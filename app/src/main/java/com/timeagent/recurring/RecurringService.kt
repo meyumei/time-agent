@@ -93,28 +93,32 @@ class RecurringService(private val repository: TimeRepository) {
     }
     suspend fun act(instanceId: String, expectedVersion: Long, action: String, requestId: String) {
         repository.assistantTransaction(requestId) {
-            val instance = dao().recurringInstance(instanceId) ?: throw StaleChange()
-            if (instance.version != expectedVersion) throw StaleChange()
-            val task = dao().task(instance.taskId) ?: throw StaleChange()
-            if (task.deletedAt != null) throw StaleChange()
-            require(dao().runningTimer()?.taskId!=task.id) { "请先结束本次计时，再处理状态" }
-            if(action.uppercase() in setOf("COMPLETE","SKIP"))disableReminders(task.id)
-            when (action.uppercase()) {
-                "COMPLETE" -> {
-                    val saved = repository.saveTask(task.copy(status = "COMPLETED"), task.version)
-                    repository.saveRecurringInstance(instance.copy(status = "COMPLETED", manualOverride = true, taskVersion = saved.version, scheduleNote="已标记完成；未自动补写实际时长", version = instance.version), instance.version)
-                }
-                "SKIP" -> {
-                    val saved = repository.saveTask(task.copy(status = "CANCELLED"), task.version)
-                    dao().plans().filter{it.taskId==task.id && it.status=="SCHEDULED" && it.deletedAt==null}.forEach{repository.deletePlan(it.id)}
-                    repository.saveRecurringInstance(instance.copy(status = "SKIPPED", manualOverride = true, scheduledAt=null, taskVersion = saved.version, planVersion = null, scheduleNote="本次已跳过，计划已移出；未补打卡", version = instance.version), instance.version)
-                }
-                "REOPEN" -> {
-                    val saved = repository.saveTask(task.copy(status = "TODO"), task.version)
-                    repository.saveRecurringInstance(instance.copy(status = "PENDING", manualOverride = true, scheduledAt=dao().plan("recurring-plan:${instance.id}")?.startAt, taskVersion = saved.version, scheduleNote="本次已重开；未创建新计划或恢复提醒，请核对", version = instance.version), instance.version)
-                }
-                else -> throw IllegalArgumentException("未知操作:$action")
+            actRaw(instanceId, expectedVersion, action)
+        }
+    }
+
+    internal suspend fun actRaw(instanceId: String, expectedVersion: Long, action: String) {
+        val instance = dao().recurringInstance(instanceId) ?: throw StaleChange()
+        if (instance.version != expectedVersion) throw StaleChange()
+        val task = dao().task(instance.taskId) ?: throw StaleChange()
+        if (task.deletedAt != null) throw StaleChange()
+        require(dao().runningTimer()?.taskId!=task.id) { "请先结束本次计时，再处理状态" }
+        if(action.uppercase() in setOf("COMPLETE","SKIP"))disableReminders(task.id)
+        when (action.uppercase()) {
+            "COMPLETE" -> {
+                val saved = repository.saveTask(task.copy(status = "COMPLETED"), task.version)
+                repository.saveRecurringInstance(instance.copy(status = "COMPLETED", manualOverride = true, taskVersion = saved.version, scheduleNote="已标记完成；未自动补写实际时长", version = instance.version), instance.version)
             }
+            "SKIP" -> {
+                val saved = repository.saveTask(task.copy(status = "CANCELLED"), task.version)
+                dao().plans().filter{it.taskId==task.id && it.status=="SCHEDULED" && it.deletedAt==null}.forEach{repository.deletePlan(it.id)}
+                repository.saveRecurringInstance(instance.copy(status = "SKIPPED", manualOverride = true, scheduledAt=null, taskVersion = saved.version, planVersion = null, scheduleNote="本次已跳过，计划已移出；未补打卡", version = instance.version), instance.version)
+            }
+            "REOPEN" -> {
+                val saved = repository.saveTask(task.copy(status = "TODO"), task.version)
+                repository.saveRecurringInstance(instance.copy(status = "PENDING", manualOverride = true, scheduledAt=dao().plan("recurring-plan:${instance.id}")?.startAt, taskVersion = saved.version, scheduleNote="本次已重开；未创建新计划或恢复提醒，请核对", version = instance.version), instance.version)
+            }
+            else -> throw IllegalArgumentException("未知操作:$action")
         }
     }
 

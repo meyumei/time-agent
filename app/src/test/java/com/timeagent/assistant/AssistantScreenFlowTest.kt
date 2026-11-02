@@ -46,6 +46,8 @@ class AssistantScreenFlowTest {
         compose.onNodeWithText("确认保存").performScrollTo().performClick()
         compose.waitUntil(10000) { Shadows.shadowOf(Looper.getMainLooper()).idle(); runBlocking { db.dao().tasks().size == 1 } }
         assertEquals("阅读", runBlocking { db.dao().tasks().single().title })
-        assertEquals(1, runBlocking { db.dao().history().count { it.entityType == "TASK" } })
+        val action = runBlocking { db.dao().history().single { it.entityType == "ASSISTANT_BATCH" } }
+        assertTrue(action.afterSnapshot!!.contains("\"entityType\":\"TASK\""))
+        runBlocking { model.repository.undoLastAction(); assertTrue(db.dao().tasks().isEmpty()) }
     }
 }

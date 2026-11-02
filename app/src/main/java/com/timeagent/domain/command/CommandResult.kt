@@ -2,7 +2,7 @@ package com.timeagent.domain.command
 
 import com.timeagent.data.TimeRecordEntity
 
-enum class CommandStatus { APPLIED, DUPLICATE, CONFLICT, INVALID, NOT_FOUND, FAILED }
+enum class CommandStatus { APPLIED, DUPLICATE, CONFLICT, INVALID, NOT_FOUND, FAILED, NEEDS_CONFIRMATION }
 
 data class EntityRef(
     val type: String,
@@ -35,6 +35,8 @@ data class CommandResult(
     val conflict: ConflictInfo? = null,
     val warnings: List<ScheduleWarning> = emptyList(),
     val timerRecord: TimeRecordEntity? = null,
+    val payload: String? = null,
+    val sourceRef: String? = null,
 )
 
 data class DataChanged(val affectedTypes: Set<String>)

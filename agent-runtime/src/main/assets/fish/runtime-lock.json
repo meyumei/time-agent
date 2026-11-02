@@ -41,7 +41,7 @@
     },
     {
       "name": "time-agent-overlay.bin",
-      "sha256": "5f54ca664f975dff28759ff73bcf09ceec39c0541c65bd35c7291283ac25c529",
+      "sha256": "70cdd27570b1dced2a41b88a92a097771da5aee5cb2001b52356ea1502a6a770",
       "strip": 0
     }
   ],

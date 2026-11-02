@@ -1,0 +1,74 @@
+{
+  "apk": "F:\\261019_时间agent\\app\\build\\outputs\\apk\\debug\\app-debug.apk",
+  "sha256": "8c5b3388c13e565f06bd4645a7230829e06acff0b7f19d49c2b5a3c1d474608e",
+  "dshVersion": "0.2.1-rc.2",
+  "fish": {
+    "repository": "https://github.com/derkinL/dsh-remembers",
+    "commit": "cadbc0219156de3dd2f1c312b3ec41c9b2615736",
+    "enabled": true,
+    "status": "Adapted; real SDK loading and resume checked on desktop; phone pending"
+  },
+  "biliCli": {
+    "repository": "https://github.com/Alterssss/dsh-bili-whale",
+    "version": "0.4.5",
+    "commit": "ef3f74171b4104249f5583c4d2df9bebad14934a",
+    "scope": "tools only; one shared dsh-remembers role"
+  },
+  "sourceAdapterFilesMatchApk": 92,
+  "stickerFilesMatchApk": 12,
+  "nativeAtlasPixelsMatchApk": 2,
+  "runtimeAssetsMatchApk": [
+    "assets/fish/offline-rootfs.bin",
+    "assets/fish/dsh-runtime.bin",
+    "assets/fish/python-support.bin",
+    "assets/fish/glibc-python.bin",
+    "assets/fish/time-agent-overlay.bin",
+    "lib/arm64-v8a/libproot.so",
+    "lib/arm64-v8a/libprootloader.so",
+    "lib/arm64-v8a/libtalloc.so",
+    "lib/arm64-v8a/libandroidshmem.so"
+  ],
+  "nativeAbi": "arm64-v8a",
+  "bundledUserCredentials": false,
+  "speech": {
+    "manifest": {
+      "engine": "sherpa-onnx",
+      "engineVersion": "2.0.1",
+      "modelRepository": "csukuangfj/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17",
+      "modelRevision": "2365baeacb507f821a0c8120fcee3d484dba7a07",
+      "modelSize": 239233841,
+      "modelSha256": "c71f0ce00bec95b07744e116345e33d8cbbe08cef896382cf907bf4b51a2cd51",
+      "aarSha256": "a8d09d1d32f3eb8520482c6d3d43fae674681c5b050385967c70a3c2c9bf0ee7",
+      "tokensSha256": "f449eb28dc567533d7fa59be34e2abca8784f771850c78a47fb731a31429a1dc",
+      "source": "Original qqbot received-audio pipeline; native Android SenseVoice for final transcription; Vosk preview retained",
+      "phoneVerified": false
+    },
+    "assetsMatchSourceAndBuild": 6,
+    "aarMatchesSourceAndBuild": true,
+    "modelStoredWithoutCompression": true,
+    "nativeLibraries": [
+      "lib/arm64-v8a/libonnxruntime.so",
+      "lib/arm64-v8a/libsherpa-onnx-c-api.so",
+      "lib/arm64-v8a/libsherpa-onnx-cxx-api.so",
+      "lib/arm64-v8a/libsherpa-onnx-jni.so"
+    ]
+  },
+  "voice": {
+    "version": "7.3.1",
+    "unmodifiedWheels": 13,
+    "caBundle": {
+      "source": "https://curl.se/ca/cacert.pem",
+      "snapshot": "2026-10-20",
+      "sha256": "796f1389bfea13c0ed78f663b765baaff54a508e5483786bd6ece73c5e3e3cbe"
+    }
+  },
+  "characterAssetsMatchSource": [
+    "assets/fish/references/bedtime.jpg",
+    "assets/fish/references/pointing.png",
+    "assets/fish/references/rose.jpg",
+    "assets/fish/references/surprised.jpg",
+    "assets/fish/wardrobe/red-work.png"
+  ],
+  "realModelInferenceVerified": false,
+  "phoneRuntimeVerified": false
+}

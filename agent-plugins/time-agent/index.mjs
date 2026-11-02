@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import { defineTool } from '@deepseek-ai/dsh-tools';
 import { createUserMessage } from '@deepseek-ai/dsh-llm';
 import { proactiveText } from './protocol.mjs';
+import { toolIdentity } from './tool-identity.mjs';
 
 export const name = 'time-agent-native';
 export const inject = ['agents', 'sessions', 'tools'];
@@ -29,9 +30,9 @@ export async function apply(ctx) {
     ['time_tasks','读取真实未完成任务。',{}],
     ['time_projects','读取真实项目与任务进度。',{}],
     ['time_create_task','创建一项待办任务，返回真实记录标识。',{title:{type:'string',required:true},projectId:{type:'string'}}],
-    ['time_complete_task','完成指定真实任务。taskId 必须从查询结果取得。',{taskId:{type:'string',required:true}}],
-    ['time_create_plan','安排时间。title、start、end 必填，日期时间使用含时区的 ISO8601；taskId 可选。',{title:{type:'string',required:true},start:{type:'string',required:true},end:{type:'string',required:true},taskId:{type:'string'}}],
-    ['time_record','补记一段实际投入。日期时间使用含时区的 ISO8601。',{title:{type:'string',required:true},start:{type:'string',required:true},end:{type:'string',required:true},taskId:{type:'string'}}]
+    ['time_complete_task','完成指定真实任务。taskId、expectedVersion 从查询结果取得。',{taskId:{type:'string',required:true},expectedVersion:{type:'integer',required:true}}],
+    ['time_create_plan','安排时间。日期时间使用含时区的 ISO8601；kind 为 TIMED/POINT/ALL_DAY。POINT 的 start=end；ALL_DAY 的 start/end 日期为含首尾的日期。关联任务时传查询所得 expectedVersion。',{title:{type:'string',required:true},start:{type:'string',required:true},end:{type:'string',required:true},taskId:{type:'string'},kind:{type:'string'},timezoneId:{type:'string'},expectedVersion:{type:'integer'}}],
+    ['time_record','补记一段实际投入。日期时间使用含时区的 ISO8601。关联任务时传查询所得 expectedVersion。',{title:{type:'string',required:true},start:{type:'string',required:true},end:{type:'string',required:true},taskId:{type:'string'},expectedVersion:{type:'integer'}}]
   ];
   for (const [toolName,description,parameters] of definitions) {
     ctx.effect(() => ctx.tools.register(defineTool({
@@ -42,7 +43,8 @@ export async function apply(ctx) {
         if(sessionId.startsWith('timeagent-qq-group-') && toolName!=='fish_presence') {
           throw new Error('群聊会话不读取或修改主要用户的私人业务记录，请在App中处理。');
         }
-        return call('/tool',{tool:toolName,args,sessionId},exec.signal);
+        const identity = toolName === 'fish_presence' ? {sessionId} : toolIdentity(exec);
+        return call('/tool',{tool:toolName,args,...identity},exec.signal);
       }
     })));
   }

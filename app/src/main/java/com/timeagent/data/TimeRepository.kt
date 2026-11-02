@@ -194,12 +194,13 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         dao.putMemory(after); journal("MEMORY", id, before, after, "删除个人记忆")
     }
     suspend fun rememberExplicit(text: String, requestId: String): PersonalMemoryEntity = transaction {
+        val result = commands.executeForRepository(RememberRule(requestId, text))
+        result.throwIfRejected()
+        gson.fromJson(result.payload, PersonalMemoryEntity::class.java)
+    }
+    internal suspend fun rememberExplicitRaw(text: String): PersonalMemoryEntity {
         val parsed = requireNotNull(PersonalMemoryRules.fromExplicit(text, now())) { "请用明确的“记住……”表达；问句和转述不会保存" }
-        var result = dao.memories().firstOrNull { it.deletedAt == null && it.text == parsed.text && it.confirmed }
-        assistantTransaction(requestId) {
-            if (result == null) result = saveMemory(parsed)
-        }
-        requireNotNull(result) { "这次记忆操作已经撤销，请重新录入" }
+        return dao.memories().firstOrNull { it.deletedAt == null && it.text == parsed.text && it.confirmed } ?: saveMemory(parsed)
     }
     suspend fun proposeMemoryCandidate(): PersonalMemoryEntity? = transaction {
         val proposedRecordIds = dao.memories().filter { it.sourceType == "OBSERVATION" }.mapNotNull { it.sourceId }.toSet()
@@ -271,6 +272,9 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         saved
     }
     suspend fun markReminderDelivered(id: String, expectedRemindAt: Long): Boolean = transaction {
+        commands.executeForRepository(DeliverReminder("reminder:$id:$expectedRemindAt", id, expectedRemindAt)).status == CommandStatus.APPLIED
+    }
+    internal suspend fun markReminderDeliveredRaw(id: String, expectedRemindAt: Long): Boolean = transaction {
         val item = dao.reminder(id) ?: return@transaction false
         val key = reminderDeliveryKey(id, expectedRemindAt)
         if (!item.enabled || item.deliveredAt != null || item.remindAt != expectedRemindAt || expectedRemindAt > now().toEpochMilli() || dao.revision(key) != null) return@transaction false
@@ -733,7 +737,7 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         requireNotNull(result.timerRecord) { "开始计时结果缺失" }
     }
 
-    internal suspend fun startTimerRaw(taskId: String?, requestId: String, switchExisting: Boolean = false, expectedTaskVersion: Long? = null): TimeRecordEntity = transaction {
+    internal suspend fun startTimerRaw(taskId: String?, requestId: String, switchExisting: Boolean = false, expectedTaskVersion: Long? = null, source: String = "TIMER"): TimeRecordEntity = transaction {
         dao.record(requestId)?.let { return@transaction it } // Stable request ID makes a double tap harmless.
         val task = taskId?.let { activeTask(it) }
         checkVersion(task?.version, expectedTaskVersion)
@@ -742,7 +746,7 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
             if (!switchExisting) throw TimerAlreadyRunning()
             stopTimerRaw(running.id)
         }
-        val record = TimeRecordEntity(requestId, taskId, now().toEpochMilli(), null, categoryId = task?.categoryId, source = "TIMER", createdAt = now().toEpochMilli(), updatedAt = now().toEpochMilli(), version = nextVersion("RECORD", requestId))
+        val record = TimeRecordEntity(requestId, taskId, now().toEpochMilli(), null, categoryId = task?.categoryId, source = source, createdAt = now().toEpochMilli(), updatedAt = now().toEpochMilli(), version = nextVersion("RECORD", requestId))
         dao.putRecord(record)
         journal("RECORD", record.id, null, record, "开始计时")
         record
