@@ -5,6 +5,14 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
 }
+val seedBenchmarkData by tasks.registering(Exec::class) {
+    inputs.file(rootProject.file("scripts/seed-large-dataset"))
+    inputs.file(file("schemas/com.timeagent.data.TimeAgentDatabase/12.json"))
+    outputs.dir(layout.buildDirectory.dir("generated/benchmarkAssets"))
+    commandLine("python", rootProject.file("scripts/seed-large-dataset"), "--output-dir",
+        layout.buildDirectory.dir("generated/benchmarkAssets/benchmark-data").get().asFile)
+}
+
 android {
     namespace = "com.timeagent"
     compileSdk = 36
@@ -17,8 +25,18 @@ android {
         ndk { abiFilters += setOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64") }
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    buildTypes {
+        create("benchmark") {
+            initWith(getByName("release"))
+            isDebuggable = false
+            signingConfig = signingConfigs.getByName("debug")
+            applicationIdSuffix = ".benchmark"
+            matchingFallbacks += listOf("release")
+        }
+    }
     buildFeatures { compose = true }
     sourceSets {
+        getByName("benchmark").assets.srcDir(seedBenchmarkData)
         getByName("test").java.srcDir("src/migrationTest/java")
         getByName("androidTest").java.srcDir("src/migrationTest/java")
         getByName("androidTest").assets.srcDir("schemas")

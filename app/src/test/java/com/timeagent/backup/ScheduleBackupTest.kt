@@ -16,7 +16,7 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [28])
 class ScheduleBackupTest {
-    @Test fun `v13 backup round trips standalone points metadata and command results`() = runBlocking(Dispatchers.IO) {
+    @Test fun `v14 backup round trips standalone points metadata and command results`() = runBlocking(Dispatchers.IO) {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val mainName = "schedule-backup-main.db"
         val workoutName = "schedule-backup-workout.db"
@@ -32,7 +32,7 @@ class ScheduleBackupTest {
             main.dao().putCommandResult(command)
             val service = PersonalBackup(context, main, workout)
             val bytes = service.create()
-            assertEquals(13, service.preview(bytes).mainVersion)
+            assertEquals(14, service.preview(bytes).mainVersion)
             repo.deletePlan("point")
             main.openHelper.writableDatabase.execSQL("DELETE FROM command_log")
             service.restore(bytes)

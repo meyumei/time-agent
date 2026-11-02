@@ -1,0 +1,359 @@
+{
+  "generatedAt": "2026-11-02T19:45:35.340842+08:00",
+  "baseCommit": "b8a2a5415467364dc1614f18200fbe2dd177ec68",
+  "branch": "codex/t1.6-range-queries",
+  "status": "code-built-device-acceptance-pending",
+  "taskAcceptanceComplete": false,
+  "commands": [
+    {
+      "label": "aggregate-red",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.data.TimelineRepositoryQueryTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 6.52,
+      "rawLogSha256": "84f492cce5163e02aee250ace64897fc8f1371059f19857c2d0006e49fa27f9e"
+    },
+    {
+      "label": "build-device-packages-fixed",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:assembleDebug",
+        ":app:assembleDebugAndroidTest",
+        ":app:lintDebug",
+        ":app:assembleBenchmark",
+        ":benchmark:assembleBenchmark",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 426.56,
+      "rawLogSha256": "0250350e8e78abe3fb289cb40a158133a552e77a102a94b8dec0893d36efc6cf"
+    },
+    {
+      "label": "build-device-packages",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:assembleDebug",
+        ":app:assembleDebugAndroidTest",
+        ":app:lintDebug",
+        ":app:assembleBenchmark",
+        ":benchmark:assembleBenchmark",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 88.73,
+      "rawLogSha256": "4cf1bade3937850ab1e45c72df6ddfb0261c581f57b4680746acdc53ca18a6fa"
+    },
+    {
+      "label": "delivery-build",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:assembleDebug",
+        ":app:assembleDebugAndroidTest",
+        ":app:lintDebug",
+        ":app:assembleBenchmark",
+        ":benchmark:assembleBenchmark",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 304.86,
+      "rawLogSha256": "4b40c4748ecb5faa64b35863fa6bda68394189eab7d2a27128849c0192687b32"
+    },
+    {
+      "label": "final-build-reviewed",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:assembleDebug",
+        ":app:assembleDebugAndroidTest",
+        ":app:lintDebug",
+        ":app:assembleBenchmark",
+        ":benchmark:assembleBenchmark",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 331.95,
+      "rawLogSha256": "c49a4b2f73fe26ce546a7f9edcfebfa294e60fe4a1074b6062ff2db9a6bf4eb7"
+    },
+    {
+      "label": "final-build",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:assembleDebug",
+        ":app:assembleDebugAndroidTest",
+        ":app:lintDebug",
+        ":app:assembleBenchmark",
+        ":benchmark:assembleBenchmark",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 353.92,
+      "rawLogSha256": "ce557cdae067b59787637c1af9574b4b31783596e2448e72847f09e894a617ac"
+    },
+    {
+      "label": "query-green",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.data.TimelineQueryTest",
+        "--tests",
+        "com.timeagent.data.TimelineRangeTest",
+        "--tests",
+        "com.timeagent.data.TimelineIndexMigrationTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 97.37,
+      "rawLogSha256": "be2e70722922c3a4430d30b77cb93eca8f29aace29b6d25964aee16fb1aeffba"
+    },
+    {
+      "label": "red-behavior",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.data.TimelineQueryTest",
+        "--tests",
+        "com.timeagent.data.TimelineRangeTest",
+        "--tests",
+        "com.timeagent.data.TimelineIndexMigrationTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 150.28,
+      "rawLogSha256": "0a0295416347761e5af09937455b476708b40f7d4cdf70461482616adabb643a"
+    },
+    {
+      "label": "red-contract",
+      "command": [
+        "F:\\261019_时间agent\\gradlew.bat",
+        ":app:testDebugUnitTest",
+        "--tests",
+        "com.timeagent.data.TimelineRangeTest",
+        "--tests",
+        "com.timeagent.data.TimelineIndexMigrationTest",
+        "--console=plain",
+        "--no-parallel",
+        "--max-workers=2",
+        "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+        "-Dhttps.proxyHost=",
+        "-Dhttp.proxyHost=",
+        "-Djava.net.useSystemProxies=false"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 110.4,
+      "rawLogSha256": "ed774dc8f9eab2750add8000f70696b96edf35359888b2933813b180ad4a9a4b"
+    }
+  ],
+  "lint": {
+    "Warning": 75,
+    "Information": 2
+  },
+  "hostTests": {
+    "finalRegressionExecuted": false,
+    "reason": "User requested real-device-only testing during this task; earlier host runs are historical development logs, not final acceptance.",
+    "earlierQueryGreen": {
+      "tests": 11,
+      "passed": 11,
+      "source": "query-green.log"
+    }
+  },
+  "android": {
+    "compileSdk": 36,
+    "minSdk": 26,
+    "targetSdk": 35,
+    "schemaBefore": 13,
+    "schemaAfter": 14,
+    "migrationDeviceExecuted": false,
+    "historicalSchemasUnchanged": true,
+    "v12FixtureUnchanged": true,
+    "v12FixtureSha256": "57645b16d0f69d1f5f2358ed12a139db8cedd48f03297aa8deccbf9e287372e9"
+  },
+  "deviceTests": {
+    "cases": 14,
+    "executed": false,
+    "passed": null,
+    "failed": null
+  },
+  "benchmark": {
+    "tests": 2,
+    "iterationsPerTest": 5,
+    "executed": false,
+    "measurements": null,
+    "targetPackage": "com.timeagent.benchmark",
+    "frameFixtureWeek": "2026-10-19",
+    "privateAppDataTouched": false
+  },
+  "device": {
+    "checkedAt": "2026-11-02T19:47:18.559139+08:00",
+    "exitCode": 0,
+    "activeDeviceCount": 0,
+    "deviceOutput": "List of devices attached\r\n172.19.0.1:35329       offline transport_id:3\r\n\r\n",
+    "error": ""
+  },
+  "independentReconnect": [
+    {
+      "action": "disconnect",
+      "exitCode": 0,
+      "output": "disconnected 172.19.0.1:35329\r\n"
+    },
+    {
+      "action": "connect",
+      "exitCode": 0,
+      "output": "failed to connect to 172.19.0.1:35329\r\n"
+    },
+    {
+      "action": "devices",
+      "exitCode": 0,
+      "output": "List of devices attached\r\n172.19.0.1:35329       offline transport_id:3\r\n\r\n"
+    }
+  ],
+  "apk": {
+    "bytes": 892007157,
+    "MiB": 850.68,
+    "sha256": "20cbf9d59bff89f25582ca7797cf2e34f1d5e9478bcfdf2d347d228e87101177",
+    "groups": {
+      "other": {
+        "compressedBytes": 229128251,
+        "apkPercent": 25.6868
+      },
+      "nativeLibraries": {
+        "compressedBytes": 87246474,
+        "apkPercent": 9.7809
+      },
+      "models": {
+        "compressedBytes": 285241363,
+        "apkPercent": 31.9775
+      },
+      "rootfs": {
+        "compressedBytes": 85783057,
+        "apkPercent": 9.6169
+      },
+      "gif": {
+        "compressedBytes": 202426773,
+        "apkPercent": 22.6934
+      }
+    },
+    "abis": {
+      "arm64-v8a": {
+        "compressedBytes": 21209838,
+        "apkPercent": 2.3778
+      },
+      "armeabi-v7a": {
+        "compressedBytes": 18585552,
+        "apkPercent": 2.0836
+      },
+      "x86": {
+        "compressedBytes": 24034035,
+        "apkPercent": 2.6944
+      },
+      "x86_64": {
+        "compressedBytes": 23417049,
+        "apkPercent": 2.6252
+      }
+    },
+    "runtimeArchives": {
+      "assets/fish/dsh-runtime.bin": {
+        "compressedBytes": 127308331,
+        "apkPercent": 14.2721
+      },
+      "assets/fish/glibc-python.bin": {
+        "compressedBytes": 6565414,
+        "apkPercent": 0.736
+      },
+      "assets/fish/offline-rootfs.bin": {
+        "compressedBytes": 85783057,
+        "apkPercent": 9.6169
+      },
+      "assets/fish/python-support.bin": {
+        "compressedBytes": 904360,
+        "apkPercent": 0.1014
+      },
+      "assets/fish/time-agent-overlay.bin": {
+        "compressedBytes": 18510651,
+        "apkPercent": 2.0752
+      }
+    },
+    "previousT15Bytes": 890604950,
+    "changePercent": 0.157444
+  },
+  "artifacts": {
+    "deviceTests": {
+      "path": "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk",
+      "bytes": 1698725,
+      "sha256": "b0550ce313e54b3382f79a30466b26da6a0d7160065de59c892fa33cb590d54a",
+      "executed": false
+    },
+    "benchmarkTarget": {
+      "path": "app/build/outputs/apk/benchmark/app-benchmark.apk",
+      "bytes": 874337286,
+      "sha256": "f1f3ff9b327265e91e321bd13d817e537b4a430785d8c7ce75e434e84b21cfef",
+      "executed": false
+    },
+    "benchmarkTests": {
+      "path": "benchmark/build/outputs/apk/benchmark/benchmark-benchmark.apk",
+      "bytes": 39966257,
+      "sha256": "0634a3a9a71fd31660eba0e58d264d03dac18cf1455af2c263db07891d6d8506",
+      "executed": false
+    }
+  },
+  "limitations": [
+    "Wireless pairing protocol failure; reconnect remains offline. No on-device tests or performance baseline.",
+    "Root legacy snapshot remains for unported pages and briefing; timeline only is bounded.",
+    "No personal app installation, uninstall, clear-data, private DB read or restore.",
+    "No final host unit/Node regression per latest user instruction.",
+    "Index-only v14 advances planned future feature schema versions to v15-v20."
+  ]
+}

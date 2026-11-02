@@ -36,7 +36,7 @@ class BusinessMigrationTest {
         val db = TimeAgentDatabase.open(context)
         try {
             val sql = db.openHelper.readableDatabase
-            assertEquals(13, sql.version)
+            assertEquals(14, sql.version)
             val record = db.dao().record("synthetic-record")!!
             assertEquals("Keep notes", record.notes)
             assertEquals(7L, record.version)

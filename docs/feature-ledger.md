@@ -189,3 +189,15 @@ D-T0-04 仅在上述目标写入中获得持久 requestId；鱼的稳定 toolCal
 现有通知没有完成/停止按钮，本轮只迁移已经存在的提醒投递写入；N06 后续再新增动作。Task/TimeRecord 尚无实体 sourceRef 列，会话来源通过 command_log 结果与 affected ID 关联，随 30 天保留期，未冒充永久实体回链。D-T0-04 仅在本轮接入范围获得稳定标识；其余旧模块写入和 InputRouter 没有宣称全部迁移。
 
 本轮 ADB 无设备，未安装、卸载、清数据、访问手机私人数据或恢复旧备份。T0 真机证据缺口保持，PR 为 Draft。详见 [完整改动、失败摘要及设备验收步骤](t1.5-tool-command-routing.md)、[本轮机器结果](ledger-evidence/t1.5-tools/verification.json)、[DS 协作与独立审查](ledger-evidence/t1.5-tools/collaboration.json)。下一任务为 **T1.6：按需查询替代全量快照**。
+
+## 2026-11-02 T1.6 开发跟进（设备验收待补）
+
+在 `codex/t1.6-range-queries` 让时间轴按实际可见日期前后各一天读取相交日程、实际与课表，以及引用任务/课程和范围提醒。直接影响 **L01**，涉及 **L02、L07、L08**；迁移/备份兼容影响 **L34**。保留跨天、跨月、提醒点、全天、实际重叠、长时间运行计时、历史任务标签、原编辑/撤销/提醒入口。其他页面和简报继续使用旧 `observe()`，没有冒充全 App 快照已删除。
+
+主库 v13→v14 仅新增 `(deletedAt,startAt)` 日程索引；提交 schema、设备 MigrationTestHelper 链路，沿用迁移快照并保持全局最近两份，后续拟建功能版本顺延。旧 schema 和 v12 脱敏样本不变。新 `:benchmark` 使用独立 `.benchmark` 包和合成大数据；普通 APK 已核对不含测试库/provider。
+
+按用户本轮最新指令，新增验证转到 AndroidTest，停止本机红绿单测，不继续完整主机/Node 回归。最终 Debug APK、设备测试包、性能目标/测试包构建成功，Lint 0 错误、75 警告、2 信息。**设备 14 项检查、迁移升级/恢复及性能基线均未实测，账本不据此勾选真机通过。**
+
+WorkBuddy CLI DS 实际编写查询、聚合、边界验证、性能模块/provider，并执行两次受限 PowerShell 连接检查；模型响应为 deepseek-v4.1-flash，请求 max，实际 effort 未返回。主代理独立集成、构建并核对 APK。无线配对协议错误，重新连接仍 offline；没有安装/卸载/清数据、修改手机记录或恢复旧备份。
+
+详见 [T1.6 改动、真实结果及设备步骤](t1.6-range-queries.md)、[机器记录](ledger-evidence/t1.6-queries/verification.json)、[协作与独立审查](ledger-evidence/t1.6-queries/collaboration.json)。下一开发任务为 **T2.1：设计 Token、主题与双模式**；当前仍需补 T1.6 的设备结果。

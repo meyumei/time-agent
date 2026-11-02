@@ -120,6 +120,7 @@ private val DayNames = listOf("周一", "周二", "周三", "周四", "周五", 
     canRedo: Boolean = false,
     onReminder: (ReminderEntity) -> Unit = {},
     briefing: @Composable () -> Unit = {},
+    onVisibleRange: (LocalDate, LocalDate) -> Unit = { _, _ -> },
 ) {
     var showConflicts by remember { mutableStateOf(false) }
     var conflictGroup by remember { mutableStateOf<List<TimelineItem>?>(null) }
@@ -160,6 +161,8 @@ private val DayNames = listOf("周一", "周二", "周三", "周四", "周五", 
     val dates = rendered.dates
     val reportDate by rememberUpdatedState(onVisibleDate)
     LaunchedEffect(dates.first()) { reportDate(dates.first()) }
+    val reportRange by rememberUpdatedState(onVisibleRange)
+    LaunchedEffect(dates.first(), dates.last()) { reportRange(dates.first(), dates.last()) }
     val items = rendered.items
     val conflicts = rendered.conflicts
     // Reminders depend on their source and time zone, never on pinch frames or date placement.

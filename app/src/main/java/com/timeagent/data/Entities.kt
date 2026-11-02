@@ -31,7 +31,7 @@ data class TaskEntity(
     val activityId: String? = null,
 )
 
-@Entity(tableName = "schedule_blocks", foreignKeys = [ForeignKey(entity = TaskEntity::class, parentColumns = ["id"], childColumns = ["taskId"], onDelete = ForeignKey.RESTRICT)], indices = [Index("taskId"), Index("startAt")])
+@Entity(tableName = "schedule_blocks", foreignKeys = [ForeignKey(entity = TaskEntity::class, parentColumns = ["id"], childColumns = ["taskId"], onDelete = ForeignKey.RESTRICT)], indices = [Index("taskId"), Index("startAt"), Index(value = ["deletedAt", "startAt"])])
 data class ScheduleBlockEntity(
     @PrimaryKey val id: String, val taskId: String?, val startAt: Long, val endAt: Long,
     val status: String = "SCHEDULED", val isLocked: Boolean = false,

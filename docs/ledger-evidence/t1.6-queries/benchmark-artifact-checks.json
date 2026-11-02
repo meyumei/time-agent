@@ -1,0 +1,27 @@
+{
+  "app": {
+    "package": "com.timeagent",
+    "signatureValid": true,
+    "debuggable": true,
+    "versionCode": "28",
+    "fixturePackaged": false,
+    "providerPackaged": false
+  },
+  "benchmarkTarget": {
+    "package": "com.timeagent.benchmark",
+    "signatureValid": true,
+    "debuggable": false,
+    "versionCode": "28",
+    "fixturePackaged": true,
+    "providerPackaged": true,
+    "profileableShell": true
+  },
+  "benchmarkTests": {
+    "package": "com.timeagent.benchmark.test",
+    "signatureValid": true,
+    "debuggable": true,
+    "versionCode": "",
+    "fixturePackaged": false,
+    "providerPackaged": false
+  }
+}

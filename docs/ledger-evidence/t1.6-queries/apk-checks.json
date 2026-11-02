@@ -1,0 +1,6 @@
+{
+  "signatureExit": 0,
+  "badgingExit": 0,
+  "noSyntheticDbOrProviderInDebug": true,
+  "build": "delivery-build"
+}
