@@ -194,19 +194,12 @@ private val DayNames = listOf("周一", "周二", "周三", "周四", "周五", 
                 } }
             }
         } else {
-            val configuration = LocalViewConfiguration.current
-            val gridConfiguration = remember(configuration) { object : ViewConfiguration by configuration {
-                // Expanded touch targets would intercept neighboring empty time cells; list mode retains normal targets.
-                override val minimumTouchTargetSize = DpSize.Zero
-            } }
-            CompositionLocalProvider(LocalViewConfiguration provides gridConfiguration) {
             TimelineGrid(
                 rendered, viewport, week.today, now, zone, onSelect, { transform -> viewport = transform(viewport) },
                 Modifier.weight(1f), if (busy) null else onCreateAt,
                 resolve = rendered::currentItem, remindersByDate = remindersByDate, onReminder = onReminder,
                 onConflictGroup = { conflictGroup = it },
             )
-            }
         }
     }
     if (showConflicts) TimelineConflictsSheet(conflicts, zone, onSelect, onClose = { showConflicts = false })
@@ -310,35 +303,29 @@ private suspend fun PointerInputScope.detectTimelineGestures(
                 Text("${first.year} · 今天 ${today.monthValue}月${today.dayOfMonth}日 ${DayNames[today.dayOfWeek.value - 1]}", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
             if (busy) CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp)
-            IconButton(onClick = onUndo, enabled = !busy && canUndo, modifier = Modifier.size(34.dp)) { Icon(Icons.AutoMirrored.Rounded.Undo, "撤销最近操作", Modifier.size(20.dp)) }
-            IconButton(onClick = onRedo, enabled = !busy && canRedo, modifier = Modifier.size(34.dp)) { Icon(Icons.AutoMirrored.Rounded.Redo, "重做", Modifier.size(20.dp)) }
+            IconButton(onClick = onUndo, enabled = !busy && canUndo, modifier = Modifier.size(48.dp)) { Icon(Icons.AutoMirrored.Rounded.Undo, "撤销最近操作", Modifier.size(20.dp)) }
+            IconButton(onClick = onRedo, enabled = !busy && canRedo, modifier = Modifier.size(48.dp)) { Icon(Icons.AutoMirrored.Rounded.Redo, "重做", Modifier.size(20.dp)) }
             ThemeSwitch(themeMode, onThemeMode)
-            IconButton(onClick = onAssistant, modifier = Modifier.size(34.dp)) { Icon(Icons.Rounded.KeyboardAlt, "语音助手", Modifier.size(20.dp)) }
-            IconButton(onClick = onCreate, enabled = !busy, modifier = Modifier.size(34.dp)) { Icon(Icons.Rounded.Add, "新建", Modifier.size(25.dp)) }
+            IconButton(onClick = onAssistant, modifier = Modifier.size(48.dp)) { Icon(Icons.Rounded.KeyboardAlt, "语音助手", Modifier.size(20.dp)) }
+            IconButton(onClick = onCreate, enabled = !busy, modifier = Modifier.size(48.dp)) { Icon(Icons.Rounded.Add, "新建", Modifier.size(25.dp)) }
         }
-        CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
-            Row(Modifier.fillMaxWidth().height(32.dp), verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onPrevious, modifier = Modifier.size(28.dp)) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "上一周", Modifier.size(16.dp)) }
-                TextButton(onClick = onCurrent, modifier = Modifier.width(34.dp).height(30.dp), contentPadding = PaddingValues(horizontal = 4.dp)) { Text("本周", fontSize = 11.sp, maxLines = 1) }
-                IconButton(onClick = onNext, modifier = Modifier.size(28.dp)) { Icon(Icons.AutoMirrored.Rounded.ArrowForward, "下一周", Modifier.size(16.dp)) }
-                Spacer(Modifier.width(2.dp))
-                if (conflicts > 0) TextButton(onClick = onConflicts, modifier = Modifier.width(30.dp).height(30.dp).semantics { contentDescription = "查看时间冲突" }, contentPadding = PaddingValues(horizontal = 2.dp)) {
-                    Icon(Icons.Rounded.WarningAmber, null, Modifier.size(13.dp), tint = MaterialTheme.colorScheme.error)
-                    Text(conflicts.toString(), fontSize = 11.sp, color = MaterialTheme.colorScheme.error)
-                }
-                ItemKind.entries.forEach { kind ->
-                    Icon(kind.legendIcon(), null, Modifier.size(8.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text(kind.label, Modifier.padding(start = 1.dp, end = 1.dp), fontSize = 9.sp, maxLines = 1, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-                Spacer(Modifier.weight(1f))
-                TextButton(onClick = onFit, modifier = Modifier.width(48.dp).height(30.dp).semantics { contentDescription = "适合屏幕" }, contentPadding = PaddingValues(horizontal = 2.dp)) {
-                    Icon(Icons.Rounded.FitScreen, null, Modifier.size(15.dp))
-                    Text("${(zoom * 100).roundToInt()}%", fontSize = 10.sp, maxLines = 1)
-                }
-                TextButton(onClick = onToggleList, modifier = Modifier.width(if (listMode) 40.dp else 32.dp).height(30.dp), contentPadding = PaddingValues(horizontal = 2.dp)) {
-                    Text(if (listMode) "时间轴" else "列表", fontSize = 10.sp, maxLines = 1)
-                }
+        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).heightIn(min = 48.dp), verticalAlignment = Alignment.CenterVertically) {
+            IconButton(onClick = onPrevious, modifier = Modifier.size(48.dp)) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "上一周") }
+            TextButton(onClick = onCurrent, modifier = Modifier.heightIn(min = 48.dp)) { Text("本周") }
+            IconButton(onClick = onNext, modifier = Modifier.size(48.dp)) { Icon(Icons.AutoMirrored.Rounded.ArrowForward, "下一周") }
+            if (conflicts > 0) TextButton(onClick = onConflicts, modifier = Modifier.heightIn(min = 48.dp).semantics { contentDescription = "查看时间冲突" }) {
+                Icon(Icons.Rounded.WarningAmber, null, tint = MaterialTheme.colorScheme.error)
+                Text(conflicts.toString(), color = MaterialTheme.colorScheme.error)
             }
+            ItemKind.entries.forEach { kind ->
+                Icon(kind.legendIcon(), null, Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(kind.label, Modifier.padding(start = 4.dp, end = 8.dp), style = MaterialTheme.typography.bodyMedium)
+            }
+            TextButton(onClick = onFit, modifier = Modifier.heightIn(min = 48.dp).semantics { contentDescription = "适合屏幕" }) {
+                Icon(Icons.Rounded.FitScreen, null)
+                Text("${(zoom * 100).roundToInt()}%")
+            }
+            TextButton(onClick = onToggleList, modifier = Modifier.heightIn(min = 48.dp)) { Text(if (listMode) "时间轴" else "列表") }
         }
     }
 }

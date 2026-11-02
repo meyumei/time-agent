@@ -65,18 +65,16 @@ import java.util.UUID
 ) {
     val context = LocalContext.current
     val appearance = remember(context) { ThemePreference(context) }
-    var themeMode by remember { mutableStateOf(appearance.read()) }
-    val dark = when (themeMode) { ThemeMode.SYSTEM -> isSystemInDarkTheme(); ThemeMode.LIGHT -> false; ThemeMode.DARK -> true }
     val appScope = rememberCoroutineScope()
     val coordinator = remember(context, model) { ReminderCoordinator(context.applicationContext, model.repository) }
     LaunchedEffect(coordinator) { coordinator.start(appScope) }
     val suggestionCoordinator = remember(context, model) { SuggestionCoordinator(context.applicationContext, model.repository) }
     LaunchedEffect(suggestionCoordinator) { suggestionCoordinator.start(appScope) }
-    MatchThemeSystemBars(dark)
-    TimeAgentTheme(darkTheme = dark) {
+    TimeAgentTheme {
+        val themeMode = LocalAppearance.current.theme
         TimelineColorEnvironment {
             TimeAgentContent(model, themeMode, speechFactory, openReminderId, onOpenReminderConsumed, sharedText, onSharedTextConsumed,
-                fishDestination, onFishDestinationConsumed) { selected -> appearance.save(selected); themeMode = selected }
+                fishDestination, onFishDestinationConsumed) { selected -> appearance.save(selected) }
         }
     }
 }
@@ -276,6 +274,12 @@ import java.util.UUID
     }
     if (editor == null && extraScreen == null) Scaffold(modifier = Modifier.imePadding(), topBar = {
         Column(Modifier.statusBarsPadding()) {
+            if (LocalAppearance.current.modeHintPending) {
+                Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text("现在可在外观中切换到工具模式", Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+                    TextButton(onClick = { ThemePreference(context).acknowledgeModeHint() }) { Text("知道了") }
+                }
+            }
             if (tab != 0 && tab != 3) Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp, top = 6.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(listOf("今天", "计划", "复盘", "管家")[tab], style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
                 if (busy) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
@@ -355,7 +359,7 @@ import java.util.UUID
                     }
                 }
                 3 -> if (fish != null) com.timeagent.fish.FishChatScreen(fish,
-                    onSettings = { assistantSettingsOpen = true }, onCompanion = { openScreen("fish-companion") },
+                    onSettings = { openScreen("settings") }, onCompanion = { openScreen("fish-companion") },
                     requestInput = assistantExpanded, onInputFocused = { assistantExpanded = false }, briefing = briefingContent)
                 else TextButton(onClick = { openScreen("settings") }) { Text("打开设置") }
             }
@@ -378,8 +382,10 @@ import java.util.UUID
         "fish-voice" -> fish?.let { com.timeagent.fish.FishVoiceScreen(it,onClose=::closeScreen) }
         "fish-appearance" -> fish?.let { com.timeagent.fish.FishCompanionSettingsScreen(it,onClose=::closeScreen) }
         "fish-runtime" -> fish?.let { com.timeagent.fish.FishRuntimeSettingsScreen(it,onModel={assistantSettingsOpen=true},onClose=::closeScreen) }
+        "appearance" -> AppearanceScreen(onClose = ::closeScreen)
         "settings" -> Column(Modifier.fillMaxSize().statusBarsPadding()) {
             TextButton(onClick = ::closeScreen) { Text("返回管家") }
+            TextButton(onClick = { openScreen("appearance") }, modifier = Modifier.testTag("settings-appearance")) { Text("外观 · 模式、深浅色与动态取色") }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                 TextButton(onClick = { context.startActivity(android.content.Intent(context, com.timeagent.organization.OrganizationActivity::class.java)) }) { Text("分类、标签与记录整理") }
                 TextButton(onClick = { context.startActivity(android.content.Intent(context, com.timeagent.ledger.LedgerActivity::class.java)) }) { Text("支付记账") }

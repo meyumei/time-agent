@@ -138,20 +138,20 @@ import java.util.UUID
                 Surface(color = Color(0xFF172C43), shape = RoundedCornerShape(26.dp)) { Column(Modifier.fillMaxWidth().padding(22.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text("把每一组，练得有迹可循", color = Color.White, fontSize = 21.sp, fontWeight = FontWeight.Bold)
                     Text("近 7 天 ${week.size} 次 · ${week.sumOf { WorkoutRules.summary(it, now).elapsedMillis } / 60_000} 分钟 · ${number(week.sumOf { WorkoutRules.summary(it, now).volumeKg })} kg", color = Color(0xFFB9CDE0), style = MaterialTheme.typography.bodySmall)
-                    Button(onClick = onStart, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("workout-start"), colors = ButtonDefaults.buttonColors(containerColor = WorkoutBlue)) { Text(if (active == null) "开始自由训练" else "继续「${active.title}」") }
+                    Button(onClick = onStart, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("workout-start"), colors = ButtonDefaults.buttonColors(containerColor = WorkoutBlue, contentColor = MaterialTheme.colorScheme.onPrimary)) { Text(if (active == null) "开始自由训练" else "继续「${active.title}」") }
                 } }
             }
             item { Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) { OutlinedButton(onClick = onLibrary, modifier = Modifier.weight(1f).testTag("workout-library")) { Text("动作库") }; OutlinedButton(onClick = onAnatomy, modifier = Modifier.weight(1f).testTag("workout-anatomy")) { Text("3D 肌群") } } }
             item { TabRow(selectedTabIndex = tab, containerColor = Color.Transparent) { listOf("训练模板", "训练记录").forEachIndexed { i, label -> Tab(selected = i == tab, onClick = { tab = i }, text = { Text(label) }) } } }
             if (tab == 0) {
                 item { TextButton(onClick = { onEditTemplate(null) }, modifier = Modifier.testTag("workout-new-template")) { Icon(Icons.Rounded.Add, null); Text("新建训练模板") } }
-                if (templates.isEmpty()) item { Text("把常练的动作、组数和休息时间保存为模板，下次直接开练。", color = Color.Gray, style = MaterialTheme.typography.bodyMedium) }
+                if (templates.isEmpty()) item { Text("把常练的动作、组数和休息时间保存为模板，下次直接开练。", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium) }
                 items(templates, key = { it.id }) { template -> WorkoutListCard(template.title, "${template.movements.size} 个动作 · ${template.movements.sumOf { it.sets.size }} 组", onClick = { onEditTemplate(template) }) {
                     TextButton(onClick = { onTemplate(template.id) }, enabled = !busy && active == null) { Text("开练") }
                     IconButton(onClick = { delete = template }) { Icon(Icons.Rounded.DeleteOutline, "删除模板 ${template.title}") }
                 } }
             } else {
-                if (completed.isEmpty()) item { Text("完成一次训练后，这里会保留每个动作、训练组和心得。", color = Color.Gray) }
+                if (completed.isEmpty()) item { Text("完成一次训练后，这里会保留每个动作、训练组和心得。", color = MaterialTheme.colorScheme.onSurfaceVariant) }
                 items(completed, key = { it.id }) { session ->
                     val result = WorkoutRules.summary(session, now)
                     WorkoutListCard(session.title, "${workoutDate(session.startedAt)} · ${result.workingSets} 正式组 · ${number(result.volumeKg)} kg", { onOpen(session.id) }) { Icon(Icons.Rounded.ChevronRight, "查看训练详情") }
@@ -163,7 +163,7 @@ import java.util.UUID
 }
 
 @Composable private fun WorkoutListCard(title: String, subtitle: String, onClick: () -> Unit, trailing: @Composable RowScope.() -> Unit) {
-    Surface(shape = RoundedCornerShape(20.dp), color = Color.White, modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)) { Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) { Column(Modifier.weight(1f)) { Text(title, fontWeight = FontWeight.Bold); Text(subtitle, style = MaterialTheme.typography.bodySmall, color = Color.Gray) }; trailing() } }
+    Surface(shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.surface, modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)) { Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) { Column(Modifier.weight(1f)) { Text(title, fontWeight = FontWeight.Bold); Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }; trailing() } }
 }
 
 @Composable private fun WorkoutSettingsDialog(pounds: Boolean, onPounds: (Boolean) -> Unit, onDismiss: () -> Unit) {

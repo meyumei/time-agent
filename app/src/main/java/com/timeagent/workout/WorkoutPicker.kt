@@ -38,8 +38,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
-internal val WorkoutBlue = Color(0xFF0088FF)
-internal val WorkoutBackground = Color(0xFFF3F4F5)
+internal val WorkoutBlue: Color
+    @Composable
+    get() = MaterialTheme.colorScheme.primary
+internal val WorkoutBackground: Color
+    @Composable
+    get() = MaterialTheme.colorScheme.background
 internal val WorkoutMuscles = listOf("全部", "置顶", "胸", "背", "腿", "肩", "前锯肌", "斜方肌", "二头", "三头", "小腿", "前臂", "颈部", "臀部", "功能性", "核心稳定", "腹部", "热身动作", "拉伸", "有氧", "组合", "全身", "计时动作", "Tabata", "自重")
 
 internal fun anatomyMuscle(exercise: ExerciseDefinition): String = exercise.primaryMuscles.firstOrNull { it in setOf("胸", "背", "腿", "肩", "前锯肌", "斜方肌", "二头", "三头", "小腿", "前臂", "颈部", "臀部", "核心稳定", "腹部") }
@@ -94,14 +98,14 @@ internal fun anatomyMuscle(exercise: ExerciseDefinition): String = exercise.prim
         }
     }) { padding ->
         Row(Modifier.padding(padding).fillMaxSize()) {
-            LazyColumn(Modifier.width(86.dp).fillMaxHeight().background(Color(0xFFEFF0F2))) {
+            LazyColumn(Modifier.width(86.dp).fillMaxHeight().background(MaterialTheme.colorScheme.surfaceContainer)) {
                 items(WorkoutMuscles) { name ->
                     Column {
-                        Box(Modifier.fillMaxWidth().background(if (muscle == name) Color.White else Color.Transparent).clickable { muscle = name; subpart = null }.padding(horizontal = 12.dp, vertical = 17.dp)) {
-                            Text(name, color = if (muscle == name) WorkoutBlue else Color(0xFF72777E), fontWeight = if (muscle == name) FontWeight.Bold else FontWeight.Normal)
+                        Box(Modifier.fillMaxWidth().background(if (muscle == name) MaterialTheme.colorScheme.surfaceContainerHighest else Color.Transparent).clickable { muscle = name; subpart = null }.padding(horizontal = 12.dp, vertical = 17.dp)) {
+                            Text(name, color = if (muscle == name) WorkoutBlue else MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = if (muscle == name) FontWeight.Bold else FontWeight.Normal)
                         }
                         if (muscle == name) subfilters[name].orEmpty().forEach { part ->
-                            Text(part.label, style = MaterialTheme.typography.labelMedium, color = if (subpart == part.key) WorkoutBlue else Color(0xFF72777E), modifier = Modifier.fillMaxWidth().clickable { subpart = if (subpart == part.key) null else part.key }.padding(start = 16.dp, end = 4.dp, top = 12.dp, bottom = 12.dp))
+                            Text(part.label, style = MaterialTheme.typography.labelMedium, color = if (subpart == part.key) WorkoutBlue else MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.fillMaxWidth().clickable { subpart = if (subpart == part.key) null else part.key }.padding(start = 16.dp, end = 4.dp, top = 12.dp, bottom = 12.dp))
                         }
                     }
                 }
@@ -113,14 +117,14 @@ internal fun anatomyMuscle(exercise: ExerciseDefinition): String = exercise.prim
                 if (filtered.isEmpty()) Box(Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) { Text(if (exercises.isEmpty()) "正在读取本地动作库…" else "没有匹配动作，可以调整筛选或添加自定义动作") }
                 LazyVerticalGrid(GridCells.Fixed(2), modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(filtered, key = { it.id }) { exercise ->
-                        Surface(shape = RoundedCornerShape(20.dp), color = if (exercise.id in chosen) Color(0xFFE3F2FF) else Color.White, modifier = Modifier.fillMaxWidth().testTag("workout-exercise-${exercise.id}").clickable { if (selecting) chosen = if (exercise.id in chosen) chosen - exercise.id else chosen + exercise.id else detail = exercise }) {
+                        Surface(shape = RoundedCornerShape(20.dp), color = if (exercise.id in chosen) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface, modifier = Modifier.fillMaxWidth().testTag("workout-exercise-${exercise.id}").clickable { if (selecting) chosen = if (exercise.id in chosen) chosen - exercise.id else chosen + exercise.id else detail = exercise }) {
                             Column(Modifier.padding(9.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                                 Box {
                                     ExercisePicture(exercise, Modifier.fillMaxWidth().height(108.dp))
-                                    if (exercise.id in chosen) Icon(Icons.Rounded.CheckCircle, "已选择", tint = WorkoutBlue, modifier = Modifier.align(Alignment.TopEnd).size(22.dp))
+                                    if (exercise.id in chosen) Icon(Icons.Rounded.CheckCircle, "已选择", tint = MaterialTheme.colorScheme.onSecondaryContainer, modifier = Modifier.align(Alignment.TopEnd).size(22.dp))
                                 }
                                 Text(exercise.name, maxLines = 2, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Medium, modifier = Modifier.heightIn(min = 40.dp))
-                                Text(exercise.equipment, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+                                Text(exercise.equipment, style = MaterialTheme.typography.labelSmall, color = if (exercise.id in chosen) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant)
                                 TextButton(onClick = { detail = exercise }, contentPadding = PaddingValues(0.dp)) { Text("查看动作要点", style = MaterialTheme.typography.labelMedium) }
                             }
                         }

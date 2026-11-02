@@ -36,8 +36,10 @@ internal fun RunningTimerBar(
 ) {
     val now by clock.secondTicks.collectAsStateWithLifecycle(initialValue = clock.now())
     val seconds = Duration.between(Instant.ofEpochMilli(record.startAt), now).seconds.coerceAtLeast(0)
+    val semantic = com.timeagent.ui.design.LocalSemanticColors.current
     Surface(
-        color = MaterialTheme.colorScheme.secondaryContainer,
+        color = semantic.running,
+        contentColor = semantic.onRunning,
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
         shape = RoundedCornerShape(14.dp),
     ) {
@@ -46,7 +48,8 @@ internal fun RunningTimerBar(
                 Text(title, style = MaterialTheme.typography.labelLarge)
                 Text("计时中 · ${"%02d:%02d:%02d".format(seconds / 3600, seconds / 60 % 60, seconds % 60)}", style = MaterialTheme.typography.bodySmall)
             }
-            TextButton(onClick = onStop, enabled = !busy) { Text("结束计时") }
+            TextButton(onClick = onStop, enabled = !busy,
+                colors = androidx.compose.material3.ButtonDefaults.textButtonColors(contentColor = semantic.onRunning)) { Text("结束计时") }
         }
     }
 }

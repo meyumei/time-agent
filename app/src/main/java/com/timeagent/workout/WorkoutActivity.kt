@@ -36,7 +36,7 @@ class WorkoutActivity : ComponentActivity() {
                     WorkoutRepository(workoutDatabase.get(), timeRepository.get()), WorkoutCatalog(applicationContext),
                 ) as T
             })
-            TimeAgentTheme(darkTheme = false) {
+            TimeAgentTheme {
                 WorkoutApp(model, intent.getStringExtra(EXTRA_SESSION_ID), onClose = ::finish)
             }
         }

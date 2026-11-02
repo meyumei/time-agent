@@ -48,12 +48,14 @@ private fun imageFrames(references: List<String>): List<Drawable>? {
 
 @Composable
 private fun DrawableImage(drawable: Drawable?, modifier: Modifier) {
+    val animate = com.timeagent.ui.design.LocalPresentation.current.animateCharacter
     AndroidView(modifier = modifier, factory = { ImageView(it).apply { scaleType = ImageView.ScaleType.FIT_CENTER } },
         update = { view ->
             if (view.drawable !== drawable) {
                 (view.drawable as? Animatable)?.stop()
-                view.setImageDrawable(drawable); (drawable as? Animatable)?.start()
+                view.setImageDrawable(drawable)
             }
+            (drawable as? Animatable)?.let { if (animate && !it.isRunning) it.start() else if (!animate) it.stop() }
         }, onRelease = { (it.drawable as? Animatable)?.stop() })
 }
 
@@ -64,10 +66,11 @@ fun FishAssetImage(reference: String, modifier: Modifier = Modifier) {
 
 @Composable
 fun FishAssetSprite(asset: FishAsset, modifier: Modifier = Modifier) {
+    val animate = com.timeagent.ui.design.LocalPresentation.current.animateCharacter
     val frames = imageFrames(asset.files)
     var frame by remember(asset.id) { mutableIntStateOf(0) }
-    LaunchedEffect(asset.id, frames) {
-        if (frames != null && frames.size > 1) {
+    LaunchedEffect(asset.id, frames, animate) {
+        if (animate && frames != null && frames.size > 1) {
             val start = SystemClock.elapsedRealtime()
             while (true) {
                 val elapsed = SystemClock.elapsedRealtime() - start
@@ -76,8 +79,11 @@ fun FishAssetSprite(asset: FishAsset, modifier: Modifier = Modifier) {
             }
         }
     }
-    val motion = rememberInfiniteTransition(label = "fish-breathing")
-    val breathe by motion.animateFloat(0f, 1f, infiniteRepeatable(tween(2200), RepeatMode.Reverse), label = "breath")
+    val breathe = if (animate) {
+        val motion = rememberInfiniteTransition(label = "fish-breathing")
+        val value by motion.animateFloat(0f, 1f, infiniteRepeatable(tween(2200), RepeatMode.Reverse), label = "breath")
+        value
+    } else 0f
     DrawableImage(frames?.get(frame % frames.size), modifier.graphicsLayer {
         translationY = -3f * breathe; scaleX = 1f + .008f * breathe; scaleY = 1f + .008f * breathe
     })

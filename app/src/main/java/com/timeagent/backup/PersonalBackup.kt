@@ -158,7 +158,7 @@ class PersonalBackup(
                 ?.sortedByDescending { it.lastModified() }?.drop(2)?.forEach { it.delete() }
         }
         private val publicKeys = mapOf(
-            "appearance" to setOf("theme"), "timeline_colors_v1" to emptySet(),
+            "appearance" to setOf("theme", "presentation", "dynamicColor"), "timeline_colors_v1" to emptySet(),
             "workout" to setOf("pinned", "sound", "keepAwake"),
             "health_sync" to setOf("enabled", "sleep", "exercise", "windowDays", "preferredSleepOrigin"),
             "assistant-settings" to setOf("model"),
@@ -188,13 +188,14 @@ class PersonalBackup(
                 require(allowed(name, key, false)) { "备份包含不允许迁移的设置" }
                 preferenceValue(value)
                 val expected = when {
-                    name == "timeline_colors_v1" || name == "appearance" || key in setOf("preferredSleepOrigin", "model") -> "string"
+                    name == "timeline_colors_v1" || name == "appearance" && key != "dynamicColor" || key in setOf("preferredSleepOrigin", "model") -> "string"
                     key == "pinned" -> "set"
                     key == "windowDays" -> "int"
                     else -> "boolean"
                 }
                 require(value.type == expected) { "个人设置 $key 的值类型不兼容" }
-                if (name == "appearance") require(value.value in setOf("SYSTEM", "LIGHT", "DARK"))
+                if (name == "appearance" && key == "theme") require(value.value in setOf("SYSTEM", "LIGHT", "DARK"))
+                if (name == "appearance" && key == "presentation") require(value.value in setOf("TOOL", "COMPANION"))
                 if (key == "windowDays") require(value.value.toInt() in setOf(7, 14, 30))
             } }
             require(payload.preferences.keys == publicKeys.keys) { "备份个人设置不完整" }

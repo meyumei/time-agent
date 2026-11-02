@@ -46,7 +46,7 @@ import java.util.UUID
     val focusManager = LocalFocusManager.current
     LaunchedEffect(session.id) { model.refreshPrevious(session.id) }
     Scaffold(containerColor = WorkoutBackground, topBar = {
-        Column(Modifier.background(Brush.verticalGradient(listOf(Color.White, Color(0xFFE1E5E9)))).statusBarsPadding().padding(horizontal = 18.dp, vertical = 10.dp)) {
+        Column(Modifier.background(Brush.verticalGradient(listOf(MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.surfaceContainer))).statusBarsPadding().padding(horizontal = 18.dp, vertical = 10.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "返回训练中心") }
                 Text(if (readOnly) "训练记录" else "训练中", style = MaterialTheme.typography.labelLarge, modifier = Modifier.weight(1f))
@@ -63,7 +63,7 @@ import java.util.UUID
                     if (summary.warmupSets > 0) Text("热身 ${summary.warmupSets} 组", style = MaterialTheme.typography.labelSmall)
                 }
             }
-            Text(session.title, modifier = Modifier.fillMaxWidth().clickable(enabled = !readOnly) { textTarget = "title"; editText = "训练标题" to session.title }.padding(vertical = 8.dp), style = MaterialTheme.typography.titleLarge, color = Color(0xFF656D75))
+            Text(session.title, modifier = Modifier.fillMaxWidth().clickable(enabled = !readOnly) { textTarget = "title"; editText = "训练标题" to session.title }.padding(vertical = 8.dp), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (session.status == WorkoutSessionStatus.PAUSED) Text("已暂停 · 训练计时和休息倒计时已冻结", style = MaterialTheme.typography.labelMedium, color = WorkoutBlue)
             if (session.movements.any { it.exercise.metric.name in listOf("BODYWEIGHT_REPS", "ASSISTED_REPS") }) TextButton(onClick = { bodyWeight = true }, enabled = !readOnly) { Text("体重：${session.bodyWeightKg?.let { number(it) + " kg" } ?: "未设置"} · 用于自重/辅助容量") }
         }
@@ -79,7 +79,7 @@ import java.util.UUID
     }) { padding ->
         LazyColumn(Modifier.padding(padding).fillMaxSize(), contentPadding = PaddingValues(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             if (readOnly) item {
-                Surface(shape = RoundedCornerShape(20.dp), color = Color.White) { Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Surface(shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.surface) { Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("${summary.completedMovements} 个动作 · ${summary.workingSets} 个正式组", fontWeight = FontWeight.Bold)
                     Text("训练容量 ${number(summary.volumeKg)} kg · 不计热身组", style = MaterialTheme.typography.bodySmall)
                     Text(if (session.timelineRecordId == null) "时间轴回记尚未完成，训练详情已保留。" else "已关联时间轴实际记录", color = if (session.timelineRecordId == null) MaterialTheme.colorScheme.error else WorkoutBlue)
@@ -90,16 +90,16 @@ import java.util.UUID
             }
             val rest = WorkoutRules.restRemainingMillis(session, now)
             if (!readOnly && session.setTimer != null) item {
-                Surface(shape = RoundedCornerShape(20.dp), color = Color(0xFFE0F1FF), modifier = Modifier.testTag("workout-set-timer")) {
+                Surface(shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.secondaryContainer, modifier = Modifier.testTag("workout-set-timer")) {
                     Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Column(Modifier.weight(1f)) { Text("单组秒表", fontWeight = FontWeight.Bold); Text(formatWorkoutTime(WorkoutRules.sessionSetTimerElapsedMillis(session, now)), fontSize = 30.sp, color = WorkoutBlue) }
+                        Column(Modifier.weight(1f)) { Text("单组秒表", fontWeight = FontWeight.Bold); Text(formatWorkoutTime(WorkoutRules.sessionSetTimerElapsedMillis(session, now)), fontSize = 30.sp, color = MaterialTheme.colorScheme.onSecondaryContainer) }
                         Button(onClick = { model.perform { model.repository.stopSetTimer(session.id) } }, enabled = !busy) { Text("记录时长") }
                     }
                 }
             }
             if (!readOnly && rest > 0) item {
-                Surface(shape = RoundedCornerShape(20.dp), color = Color(0xFFE0F1FF), modifier = Modifier.testTag("workout-rest")) { Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Column(Modifier.weight(1f)) { Text("组间休息", fontWeight = FontWeight.Bold); Text(formatWorkoutTime(rest), fontSize = 28.sp, color = WorkoutBlue) }
+                Surface(shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.secondaryContainer, modifier = Modifier.testTag("workout-rest")) { Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) { Text("组间休息", fontWeight = FontWeight.Bold); Text(formatWorkoutTime(rest), fontSize = 28.sp, color = MaterialTheme.colorScheme.onSecondaryContainer) }
                     TextButton(onClick = { model.update(session.id) { it.copy(restEndsAt = it.restEndsAt?.plus(15_000), pausedRestRemainingMillis = it.pausedRestRemainingMillis?.plus(15_000)) } }) { Text("+15秒") }
                     TextButton(onClick = { model.update(session.id) { it.copy(restEndsAt = null, pausedRestRemainingMillis = null) } }) { Text("跳过") }
                 } }
@@ -133,11 +133,11 @@ import java.util.UUID
 
 @Composable private fun WorkoutMovementCard(model: WorkoutViewModel, session: WorkoutSession, movement: WorkoutMovement, index: Int, previous: WorkoutMovement?, readOnly: Boolean, pounds: Boolean, onAnatomy: (String) -> Unit, onReplace: () -> Unit, onNote: () -> Unit, onDelete: () -> Unit) {
     var menu by remember { mutableStateOf(false) }; var restEdit by remember { mutableStateOf(false) }; var warmupRestEdit by remember { mutableStateOf(false) }; var fieldOptions by remember { mutableStateOf(false) }
-    Surface(shape = RoundedCornerShape(22.dp), color = Color.White) {
+    Surface(shape = RoundedCornerShape(22.dp), color = MaterialTheme.colorScheme.surface) {
         Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 ExercisePicture(movement.exercise, Modifier.size(68.dp).clickable { onAnatomy(anatomyMuscle(movement.exercise)) })
-                Column(Modifier.weight(1f).padding(start = 8.dp)) { Text(movement.exercise.name, fontWeight = FontWeight.Bold); Text(movement.exercise.primaryMuscles.joinToString(" · "), style = MaterialTheme.typography.labelSmall, color = Color.Gray); movement.supersetId?.let { Text("超级组 ${it.takeLast(3).uppercase()}", color = WorkoutBlue, style = MaterialTheme.typography.labelSmall) } }
+                Column(Modifier.weight(1f).padding(start = 8.dp)) { Text(movement.exercise.name, fontWeight = FontWeight.Bold); Text(movement.exercise.primaryMuscles.joinToString(" · "), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant); movement.supersetId?.let { Text("超级组 ${it.takeLast(3).uppercase()}", color = WorkoutBlue, style = MaterialTheme.typography.labelSmall) } }
                 if (!readOnly) Box {
                     IconButton(onClick = { menu = true }) { Icon(Icons.Rounded.MoreVert, "动作设置：${movement.exercise.name}") }
                     DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
@@ -155,14 +155,14 @@ import java.util.UUID
                     }
                 }
             }
-            if (movement.notes.isNotBlank()) Text(movement.notes, style = MaterialTheme.typography.bodySmall, color = Color(0xFF68717C))
+            if (movement.notes.isNotBlank()) Text(movement.notes, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (movement.supersetId != null) Text("同一轮全部动作完成后计入容量；热身组不计容量。", style = MaterialTheme.typography.labelSmall, color = WorkoutBlue)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(metricLabel(movement.exercise.metric), style = MaterialTheme.typography.labelSmall, modifier = Modifier.weight(1f))
                 TextButton(onClick = { restEdit = true }, enabled = !readOnly, contentPadding = PaddingValues(0.dp)) { Text("休息 ${movement.restSeconds} 秒", style = MaterialTheme.typography.labelSmall) }
                 if (movement.exercise.metric.name == "CARDIO" && !readOnly) TextButton(onClick = { fieldOptions = true }) { Text("记录项") }
             }
-            if (previous != null) Text("上次：" + previous.sets.filter { it.isCompleted }.take(5).joinToString(" / ") { set -> if (movement.exercise.metric == WorkoutMetric.DURATION) "${set.durationSeconds ?: 0}秒" else "${set.weightKg?.let(::number) ?: "自重"} × ${set.reps ?: 0}" }, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+            if (previous != null) Text("上次：" + previous.sets.filter { it.isCompleted }.take(5).joinToString(" / ") { set -> if (movement.exercise.metric == WorkoutMetric.DURATION) "${set.durationSeconds ?: 0}秒" else "${set.weightKg?.let(::number) ?: "自重"} × ${set.reps ?: 0}" }, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             movement.sets.forEachIndexed { setIndex, set -> key(set.id) { WorkoutSetRow(model, session, movement, set, setIndex, readOnly, pounds) } }
             if (!readOnly) TextButton(onClick = { model.updateMovement(session.id, movement.id) { item -> val last = item.sets.lastOrNull(); item.copy(sets = item.sets + (last?.copy(id = UUID.randomUUID().toString(), completedAt = null, durationSeconds = null, distanceMeters = null, caloriesKcal = null, recordValues = emptyMap(), rpe = null, comment = "") ?: WorkoutSet())) } }, modifier = Modifier.fillMaxWidth().testTag("workout-add-set")) { Text("＋ 添加一组") }
         }
@@ -179,7 +179,7 @@ import java.util.UUID
     val metric = movement.exercise.metric.name
     val focusManager = LocalFocusManager.current
     val factor = if (pounds) 2.2046226218 else 1.0
-    Column(Modifier.fillMaxWidth().background(if (set.isCompleted) Color(0xFFE8F5EC) else Color(0xFFF4F5F6), RoundedCornerShape(12.dp)).padding(horizontal = 5.dp, vertical = 6.dp)) {
+    Column(Modifier.fillMaxWidth().background(if (set.isCompleted) MaterialTheme.colorScheme.surfaceContainerHigh else MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(12.dp)).padding(horizontal = 5.dp, vertical = 6.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
             Box {
                 TextButton(onClick = { kindMenu = true }, enabled = !readOnly, contentPadding = PaddingValues(0.dp), modifier = Modifier.width(34.dp)) { Text(when (set.kind) { WorkoutSetKind.NORMAL -> "${index + 1}"; WorkoutSetKind.WARMUP -> "热"; WorkoutSetKind.DROP -> "递减"; WorkoutSetKind.FAILURE -> "力竭" }, fontSize = 11.sp) }
@@ -193,8 +193,8 @@ import java.util.UUID
             else if (metric == "TABATA") TextButton(onClick = { tabataEdit = true }, enabled = !readOnly, modifier = Modifier.weight(1f)) { val config = set.tabata ?: WorkoutTabata(); Text("${config.workSeconds}练 / ${config.restSeconds}休 × ${config.rounds}", fontSize = 12.sp) }
             else Text(set.durationSeconds?.let { "拉伸 $it 秒" } ?: "拉伸完成后勾选", Modifier.weight(1f), style = MaterialTheme.typography.bodySmall)
             if (metric == "TABATA" && !readOnly && !set.isCompleted) IconButton(onClick = { model.perform { model.repository.startInterval(session.id, movement.id, set.id) } }, enabled = session.status == WorkoutSessionStatus.ACTIVE, modifier = Modifier.size(32.dp)) { Icon(Icons.Rounded.PlayArrow, "开始Tabata") }
-            IconToggleButton(checked = set.isCompleted, onCheckedChange = { focusManager.clearFocus(); model.toggleSet(session.id, movement.id, set) }, enabled = !readOnly && session.status == WorkoutSessionStatus.ACTIVE, modifier = Modifier.size(36.dp).testTag("workout-complete-set")) { Icon(if (set.isCompleted) Icons.Rounded.CheckCircle else Icons.Rounded.RadioButtonUnchecked, "${if (set.isCompleted) "取消完成" else "完成"}第 ${index + 1} 组", tint = if (set.isCompleted) Color(0xFF28A366) else Color.Gray) }
-            if (!readOnly) IconButton(onClick = { model.updateMovement(session.id, movement.id) { it.copy(sets = it.sets.filterNot { item -> item.id == set.id }) } }, modifier = Modifier.size(25.dp)) { Icon(Icons.Rounded.Close, "删除第 ${index + 1} 组", modifier = Modifier.size(15.dp), tint = Color.Gray) }
+            IconToggleButton(checked = set.isCompleted, onCheckedChange = { focusManager.clearFocus(); model.toggleSet(session.id, movement.id, set) }, enabled = !readOnly && session.status == WorkoutSessionStatus.ACTIVE, modifier = Modifier.size(36.dp).testTag("workout-complete-set")) { Icon(if (set.isCompleted) Icons.Rounded.CheckCircle else Icons.Rounded.RadioButtonUnchecked, "${if (set.isCompleted) "取消完成" else "完成"}第 ${index + 1} 组", tint = if (set.isCompleted) Color(0xFF28A366) else MaterialTheme.colorScheme.onSurfaceVariant) }
+            if (!readOnly) IconButton(onClick = { model.updateMovement(session.id, movement.id) { it.copy(sets = it.sets.filterNot { item -> item.id == set.id }) } }, modifier = Modifier.size(25.dp)) { Icon(Icons.Rounded.Close, "删除第 ${index + 1} 组", modifier = Modifier.size(15.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
         if (movement.singleSide && weightMetric) Row(Modifier.padding(start = 39.dp, end = 70.dp)) { NumericInput(set.leftWeightKg?.times(factor), "左侧${if (pounds) "lb" else "kg"}", readOnly, Modifier.fillMaxWidth()) { value -> model.updateSet(session.id, movement.id, set.id) { current -> current.copy(leftWeightKg = value?.div(factor)) } } }
         if (metric == "CARDIO") {
@@ -246,7 +246,7 @@ import java.util.UUID
 }
 
 @Composable internal fun WorkoutBottomAction(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector, action: () -> Unit, modifier: Modifier = Modifier) {
-    Column(modifier.clickable(onClick = action).padding(horizontal = 16.dp, vertical = 7.dp), horizontalAlignment = Alignment.CenterHorizontally) { Icon(icon, title, tint = if (title == "加动作") WorkoutBlue else Color(0xFF62676C), modifier = Modifier.size(27.dp)); Text(title, style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 4.dp)) }
+    Column(modifier.clickable(onClick = action).padding(horizontal = 16.dp, vertical = 7.dp), horizontalAlignment = Alignment.CenterHorizontally) { Icon(icon, title, tint = if (title == "加动作") WorkoutBlue else MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(27.dp)); Text(title, style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 4.dp)) }
 }
 
 @Composable internal fun WorkoutTextDialog(title: String, initial: String, onDismiss: () -> Unit, onSave: (String) -> Unit, numeric: Boolean = false) {
