@@ -3,6 +3,9 @@ package com.timeagent.domain.command
 import com.timeagent.data.Conflict
 import com.timeagent.data.ScheduleBlockEntity
 import com.timeagent.data.TimeRecordEntity
+import com.timeagent.assistant.AssistantPreview
+import com.timeagent.assistant.AssistantCommand
+import java.time.LocalDate
 
 sealed interface Origin {
     data object UI : Origin
@@ -107,4 +110,53 @@ data class RedoCommand(
     override val requestId: String,
     val undoToken: String? = null,
     override val origin: Origin = Origin.UI,
+) : Command
+
+data class CommitAssistant(
+    override val requestId: String,
+    val preview: AssistantPreview,
+    val allowFuture: Boolean = false,
+    val projectId: String? = null,
+    override val origin: Origin = Origin.VOICE,
+) : Command
+
+data class RememberRule(
+    override val requestId: String,
+    val text: String,
+    override val origin: Origin = Origin.VOICE,
+) : Command
+
+data class CompleteRecurring(
+    override val requestId: String,
+    val instanceId: String,
+    val expectedVersion: Long,
+    val expectedTaskVersion: Long,
+    override val origin: Origin,
+) : Command
+
+data class DeliverReminder(
+    override val requestId: String,
+    val id: String,
+    val remindAt: Long,
+    override val origin: Origin = Origin.NOTIFICATION,
+) : Command
+
+data class ReadTimeData(
+    override val requestId: String,
+    val tool: String,
+    val date: String? = null,
+    override val origin: Origin,
+) : Command
+
+data class ReadAssistantQuery(
+    override val requestId: String,
+    val query: AssistantCommand.Query,
+    val selectedWeekStart: LocalDate,
+    override val origin: Origin = Origin.VOICE,
+) : Command
+
+data class CountActualRecords(
+    override val requestId: String,
+    val sleepOnly: Boolean,
+    override val origin: Origin = Origin.VOICE,
 ) : Command

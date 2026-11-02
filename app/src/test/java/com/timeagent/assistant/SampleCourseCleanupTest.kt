@@ -49,7 +49,8 @@ class SampleCourseCleanupTest {
         assertEquals(32, db.dao().occurrences().count { it.status == "CANCELLED" })
         assertEquals("SCHEDULED", db.dao().occurrence("real-o")!!.status)
         assertEquals("TODO", db.dao().task("task")!!.status)
-        assertEquals(1, db.dao().history().count { it.entityType == "COURSE_BATCH" })
+        val action = db.dao().history().single { it.entityType == "ASSISTANT_BATCH" }
+        assertTrue(action.afterSnapshot!!.contains("\"entityType\":\"COURSE_BATCH\""))
         repo.undoLastAction()
         assertTrue(db.dao().occurrences().all { it.status == "SCHEDULED" })
         assertTrue(db.dao().occurrences().filter { it.id != "real-o" }.all { it.version > before.first { old -> old.id == it.id }.version })

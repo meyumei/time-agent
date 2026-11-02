@@ -161,7 +161,9 @@ class FishSession private constructor(private val context: Context, repository: 
                             }
                             val result = try {
                                 if (event.optString("tool") == "fish_presence") presencePayload()
-                                else tools.execute(event.getString("tool"),event.optJSONObject("args") ?: JSONObject())
+                                else tools.execute(event.getString("tool"), event.optJSONObject("args") ?: JSONObject(),
+                                    com.timeagent.domain.command.Origin.FISH(event.getString("sessionId"),
+                                        event.getString("messageId"), event.getString("toolCallId")))
                             }
                             catch (error: Exception) {
                                 if (error is CancellationException) throw error

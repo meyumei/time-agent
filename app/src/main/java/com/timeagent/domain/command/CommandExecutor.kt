@@ -2,10 +2,14 @@ package com.timeagent.domain.command
 
 import com.google.gson.Gson
 import com.timeagent.data.*
+import com.timeagent.assistant.*
+import com.timeagent.fish.TimeToolQueries
+import com.timeagent.recurring.RecurringService
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import java.time.Duration
+import java.time.DateTimeException
 
 class CommandExecutor internal constructor(private val repository: TimeRepository) {
     private val dao = repository.database.dao()
@@ -27,10 +31,30 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
     private suspend fun execute(command: Command, preserveFailure: Boolean): CommandResult = try {
         require(command.requestId.isNotBlank()) { "请求编号不能为空，尚未保存" }
         repository.transaction {
+            if (command is ReadTimeData) {
+                return@transaction CommandResult(command.requestId, CommandStatus.APPLIED,
+                    message = "已读取本地数据", payload = TimeToolQueries(repository).read(command.tool, command.date).toString())
+            }
+            if (command is ReadAssistantQuery) {
+                val context = AssistantContext(repository.now(), repository.zone, command.selectedWeekStart, repository.snapshot())
+                val answer = AssistantPlanner().prepare(command.query, context) as AssistantReply.Answer
+                return@transaction CommandResult(command.requestId, CommandStatus.APPLIED, message = answer.text)
+            }
+            if (command is CountActualRecords) {
+                val count = dao.records().count { it.endAt != null && (!command.sleepOnly || it.notes in setOf("睡眠", "睡觉")) }
+                return@transaction CommandResult(command.requestId, CommandStatus.APPLIED,
+                    message = "当前有 $count 条相关实际记录；本次询问未添加新记录。")
+            }
             replay(command.requestId)?.let { return@transaction it }
+            var payload: String? = null
             val applied = when (command) {
                 is UndoCommand -> changeHistory(command.undoToken, forward = false)
                 is RedoCommand -> changeHistory(command.undoToken, forward = true)
+                is DeliverReminder -> {
+                    if (!repository.markReminderDeliveredRaw(command.id, command.remindAt)) return@transaction CommandResult(
+                        command.requestId, CommandStatus.NOT_FOUND, message = "提醒已处理或已变化，本次未投递")
+                    Applied(listOf("REMINDER" to command.id), null)
+                }
                 else -> {
                     val captured = repository.commandWrite(command.requestId, label(command)) {
                         when (command) {
@@ -38,6 +62,33 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
                             is BatchCommand -> {
                                 require(command.commands.isNotEmpty()) { "没有可执行的内容" }
                                 command.commands.flatMap { apply(it) }
+                            }
+                            is CommitAssistant -> {
+                                require(!command.preview.needsFutureApproval || command.allowFuture) { "实际记录包含未来时间，请先确认" }
+                                val mutation = command.preview.mutation.fromOrigin(command.origin)
+                                applyAssistant(mutation, command.allowFuture, command.origin)
+                                val id = mutation.createdId()
+                                if (command.projectId != null) {
+                                    require(mutation is AssistantMutation.SaveTask) { "只有任务可设置项目归属" }
+                                    repository.savePlacement(TaskPlacementEntity(id, command.projectId))
+                                }
+                                payload = gson.toJson(mapOf("id" to id, "message" to command.preview.after))
+                                emptyList()
+                            }
+                            is RememberRule -> {
+                                val saved = repository.rememberExplicitRaw(command.text)
+                                payload = gson.toJson(gson.toJsonTree(saved).asJsonObject.apply {
+                                    addProperty("destination", "memory")
+                                    addProperty("message", "已记住：${saved.text}")
+                                })
+                                emptyList()
+                            }
+                            is CompleteRecurring -> {
+                                version("TASK", dao.recurringInstance(command.instanceId)?.taskId ?: "", command.expectedTaskVersion)
+                                RecurringService(repository).actRaw(command.instanceId, command.expectedVersion, "COMPLETE")
+                                payload = gson.toJson(mapOf("id" to dao.recurringInstance(command.instanceId)!!.taskId,
+                                    "message" to "本次已完成，实际投入未自动生成"))
+                                emptyList()
                             }
                             else -> error("不支持的命令")
                         }
@@ -54,7 +105,8 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
                 else -> null
             }
             val result = CommandResult(command.requestId, CommandStatus.APPLIED, affected, applied.undoToken,
-                "${label(command)}成功", warnings = applied.warnings, timerRecord = timerRecord)
+                "${label(command)}成功", warnings = applied.warnings, timerRecord = timerRecord, payload = payload,
+                sourceRef = (command.origin as? Origin.FISH)?.let { "${it.sessionId}/${it.messageId}" })
             dao.putCommandResult(CommandLogEntity(command.requestId, command.javaClass.simpleName, gson.toJson(result), repository.now().toEpochMilli()))
             dao.deleteCommandResultsBefore(repository.now().minus(Duration.ofDays(30)).toEpochMilli())
             if (affected.isNotEmpty()) {
@@ -72,6 +124,8 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
     } catch (_: TimerAlreadyRunning) {
         CommandResult(command.requestId, CommandStatus.CONFLICT, message = "已有计时正在进行，请先确认切换",
             conflict = ConflictInfo("RECORD", "", null, null, null, "RUNNING_TIMER"))
+    } catch (_: DateTimeException) {
+        CommandResult(command.requestId, CommandStatus.INVALID, message = "日期时间格式无效，请使用带时区的 ISO-8601 时间，尚未保存")
     } catch (e: IllegalArgumentException) {
         CommandResult(command.requestId, CommandStatus.INVALID, message = e.message ?: "内容无效，尚未保存")
     } catch (e: Exception) {
@@ -85,12 +139,18 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
             "PLAN" -> dao.plan(id)
             "RECORD" -> dao.record(id)
             "TASK" -> dao.task(id)
+            "IDEA" -> dao.idea(id)
+            "REMINDER" -> dao.reminder(id)
+            "OCCURRENCE" -> dao.occurrence(id)
             else -> error("未知实体类型")
         }
         val current = when (entity) {
             is ScheduleBlockEntity -> entity.version
             is TimeRecordEntity -> entity.version
             is TaskEntity -> entity.version
+            is IdeaEntity -> entity.version
+            is ReminderEntity -> entity.version
+            is CourseOccurrenceEntity -> entity.version
             else -> null
         }
         val deleted = when (entity) {
@@ -108,6 +168,40 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
         if (id != null) version("TASK", id, expectedVersion)
         else if (expectedVersion != null) throw Rejected(CommandStatus.CONFLICT, "任务关联已经变化，尚未保存",
             ConflictInfo("TASK", "", expectedVersion, null, null))
+    }
+
+    private suspend fun applyAssistant(mutation: AssistantMutation, allowFuture: Boolean, origin: Origin) {
+        when (mutation) {
+            is AssistantMutation.Batch -> {
+                require(mutation.mutations.isNotEmpty()) { "没有可执行的内容" }
+                mutation.mutations.forEach { applyAssistant(it, allowFuture, origin) }
+                return
+            }
+            is AssistantMutation.SaveTask -> version("TASK", mutation.task.id, mutation.expectedVersion, mutation.expectedVersion == null)
+            is AssistantMutation.SavePlan -> {
+                version("PLAN", mutation.plan.id, mutation.expectedVersion, mutation.expectedVersion == null)
+                task(mutation.plan.taskId, mutation.expectedTaskVersion)
+            }
+            is AssistantMutation.SaveRecord -> {
+                version("RECORD", mutation.record.id, mutation.expectedVersion, mutation.expectedVersion == null)
+                if (mutation.expectedVersion == null) task(mutation.record.taskId, mutation.expectedTaskVersion)
+            }
+            is AssistantMutation.SaveIdea -> version("IDEA", mutation.idea.id, mutation.expectedVersion, mutation.expectedVersion == null)
+            is AssistantMutation.SaveReminder -> version("REMINDER", mutation.reminder.id, mutation.expectedVersion, mutation.expectedVersion == null)
+            is AssistantMutation.SaveCourse -> version("OCCURRENCE", mutation.occurrence.id, mutation.expectedVersion)
+            is AssistantMutation.DeleteRecord -> version("RECORD", mutation.id, mutation.expectedVersion)
+            is AssistantMutation.StartTimer -> {
+                version("RECORD", mutation.requestId, null, create = true)
+                task(mutation.taskId, mutation.expectedTaskVersion)
+            }
+            is AssistantMutation.StopTimer -> version("RECORD", mutation.recordId, mutation.expectedVersion)
+            is AssistantMutation.SaveEvent -> {
+                version("TASK", mutation.task.id, null, create = true)
+                version("PLAN", mutation.plan.id, null, create = true)
+            }
+            is AssistantMutation.CancelSampleCourses -> Unit
+        }
+        RepositoryAssistantWriter(repository).writeRaw(mutation, allowFuture, origin)
     }
 
     private suspend fun apply(command: MutationCommand): List<ScheduleWarning> {
@@ -185,6 +279,13 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
         is BatchCommand -> "批量保存"
         is UndoCommand -> "撤销"
         is RedoCommand -> "重做"
+        is CommitAssistant -> command.preview.title
+        is RememberRule -> "保存个人规则"
+        is CompleteRecurring -> "完成周期事项"
+        is DeliverReminder -> "投递提醒"
+        is ReadTimeData -> "查询"
+        is ReadAssistantQuery -> "查询"
+        is CountActualRecords -> "查询实际记录"
     }
 }
 
@@ -192,7 +293,7 @@ internal fun CommandResult.throwIfRejected() {
     when (status) {
         CommandStatus.APPLIED, CommandStatus.DUPLICATE -> Unit
         CommandStatus.CONFLICT -> if (conflict?.reason == "RUNNING_TIMER") throw TimerAlreadyRunning() else throw StaleChange()
-        CommandStatus.INVALID, CommandStatus.NOT_FOUND -> throw IllegalArgumentException(message)
+        CommandStatus.INVALID, CommandStatus.NOT_FOUND, CommandStatus.NEEDS_CONFIRMATION -> throw IllegalArgumentException(message)
         CommandStatus.FAILED -> throw IllegalStateException(message)
     }
 }

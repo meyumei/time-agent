@@ -1,6 +1,7 @@
 package com.timeagent.assistant
 
 import com.timeagent.data.*
+import com.timeagent.domain.command.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -44,22 +45,31 @@ class AssistantConfirmation(private val writer: AssistantWriter) {
 
 class RepositoryAssistantWriter(private val repository: TimeRepository) : AssistantWriter {
     override suspend fun commit(preview: AssistantPreview, allowFuture: Boolean) {
-        if (preview.mutation is AssistantMutation.Batch) repository.assistantTransaction(preview.id) { write(preview.mutation, allowFuture) }
-        else write(preview.mutation, allowFuture)
+        commitResult(preview, allowFuture).throwIfRejected()
     }
+    internal suspend fun commitResult(preview: AssistantPreview, allowFuture: Boolean, requestId: String = preview.id, origin: Origin = Origin.VOICE): CommandResult {
+        val command = CommitAssistant(requestId, preview, allowFuture, origin = origin)
+        return if (origin is Origin.FISH) repository.commands.execute(command) else repository.commands.executeForRepository(command)
+    }
+
     override suspend fun write(mutation: AssistantMutation, allowFuture: Boolean) {
+        commit(AssistantPreview(java.util.UUID.randomUUID().toString(), "本地操作", "", "", mutation = mutation), allowFuture)
+    }
+
+    internal suspend fun writeRaw(mutation: AssistantMutation, allowFuture: Boolean, origin: Origin = Origin.VOICE) {
         when (mutation) {
-            is AssistantMutation.Batch -> mutation.mutations.forEach { write(it, allowFuture) }
+            is AssistantMutation.Batch -> mutation.mutations.forEach { writeRaw(it, allowFuture, origin) }
             is AssistantMutation.SaveIdea -> repository.saveIdea(mutation.idea, mutation.expectedVersion)
             is AssistantMutation.SaveReminder -> repository.saveReminder(mutation.reminder, mutation.expectedVersion)
             is AssistantMutation.SaveTask -> repository.saveTask(mutation.task, mutation.expectedVersion)
-            is AssistantMutation.SavePlan -> repository.savePlan(mutation.plan, mutation.expectedVersion, expectedTaskVersion = mutation.expectedTaskVersion, expectedConflicts = mutation.expectedConflicts)
-            is AssistantMutation.SaveRecord -> repository.saveRecord(mutation.record, allowFuture, mutation.expectedVersion, mutation.expectedTaskVersion)
+            is AssistantMutation.SavePlan -> repository.savePlanRaw(mutation.plan, mutation.expectedVersion, expectedTaskVersion = mutation.expectedTaskVersion, expectedConflicts = mutation.expectedConflicts)
+            is AssistantMutation.SaveRecord -> repository.saveRecordRaw(mutation.record, allowFuture, mutation.expectedVersion, mutation.expectedTaskVersion)
             is AssistantMutation.SaveEvent -> repository.saveAssistantEvent(mutation.task, mutation.plan, mutation.expectedConflicts)
-            is AssistantMutation.DeleteRecord -> repository.deleteRecord(mutation.id, mutation.expectedVersion)
+            is AssistantMutation.DeleteRecord -> repository.deleteRecordRaw(mutation.id, mutation.expectedVersion)
             is AssistantMutation.SaveCourse -> repository.saveOccurrence(mutation.occurrence, mutation.expectedVersion, mutation.expectedConflicts)
-            is AssistantMutation.StartTimer -> repository.startTimer(mutation.taskId, requestId = mutation.requestId, expectedTaskVersion = mutation.expectedTaskVersion)
-            is AssistantMutation.StopTimer -> repository.stopTimer(mutation.recordId, expectedVersion = mutation.expectedVersion)
+            is AssistantMutation.StartTimer -> repository.startTimerRaw(mutation.taskId, requestId = mutation.requestId, expectedTaskVersion = mutation.expectedTaskVersion,
+                source = if (origin is Origin.FISH) "FISH" else "TIMER")
+            is AssistantMutation.StopTimer -> repository.stopTimerRaw(mutation.recordId, expectedVersion = mutation.expectedVersion)
             is AssistantMutation.CancelSampleCourses -> repository.cancelSampleCourses(mutation.courses, mutation.occurrences, mutation.requestId)
         }
     }

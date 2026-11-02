@@ -1,0 +1,145 @@
+apk-badging
+
+
+apk-signature
+
+
+conversation-state-green
+BUILD SUCCESSFUL in 41s
+
+conversation-state-red
+FishCommandRoutingTest > cancellingFishPreviewCannotBeConfirmedLater FAILED
+FishCommandRoutingTest > fishClarificationKeepsUnfinishedInputForTheNextCall FAILED
+27 tests completed, 2 failed
+> Task :app:testDebugUnitTest FAILED
+BUILD FAILED in 30s
+
+database-failure-red
+FishCommandRoutingTest > sqlFailureIsFailedWithNoPartialWrites FAILED
+> Task :app:testDebugUnitTest FAILED
+BUILD FAILED in 15s
+
+extended-red
+FishCommandRoutingTest > quickTimerRetryAndStoppingPreserveFishSourceAndUndo FAILED
+FishCommandRoutingTest > concurrentRetriesAndDistinctCallsHaveDifferentEffects FAILED
+FishCommandRoutingTest > reminderClaimRoutesThroughOneNotificationCommandAndNoUserUndo FAILED
+14 tests completed, 3 failed
+> Task :app:testDebugUnitTest FAILED
+BUILD FAILED in 20s
+
+final-acceptance
+BUILD SUCCESSFUL in 6m 33s
+
+final-verification
+BUILD SUCCESSFUL in 10m 25s
+
+first-green
+FishCommandRoutingTest > concurrentRetriesAndDistinctCallsHaveDifferentEffects FAILED
+FishCommandRoutingTest > reminderClaimRoutesThroughOneNotificationCommandAndNoUserUndo FAILED
+AssistantScreenFlowTest > text preview cancel and confirm change real Room only after confirmation FAILED
+SampleCourseCleanupTest > all bundled examples cancel atomically after confirmation and one undo restores the entire batch FAILED
+241 tests completed, 4 failed
+> Task :app:testDebugUnitTest FAILED
+BUILD FAILED in 2m 15s
+
+fish-artifact
+
+
+integration-green
+FishCommandRoutingTest > quickTimerRetryAndStoppingPreserveFishSourceAndUndo FAILED
+263 tests completed, 1 failed
+> Task :app:testDebugUnitTest FAILED
+BUILD FAILED in 1m 36s
+
+node-final-tests
+
+
+protocol-red
+FishCommandRoutingTest > linkedPlanRequiresTaskVersionAndMemoryRetryKeepsDestination FAILED
+FishCommandRoutingTest > actualRetryPreservesOneRecordAndMalformedInputIsInvalid FAILED
+20 tests completed, 2 failed
+> Task :app:testDebugUnitTest FAILED
+BUILD FAILED in 20s
+
+quality-green
+BUILD SUCCESSFUL in 1m 36s
+
+quality-red
+FishCommandRoutingTest > historicalRecordRemainsEditableAfterItsTaskIsCancelled FAILED
+FishCommandRoutingTest > outerRollbackRestoresPendingQuickConfirmationForRetry FAILED
+FishCommandRoutingTest > fishEditsPreserveWorkoutAndHealthProvenance FAILED
+25 tests completed, 3 failed
+> Task :app:testDebugUnitTest FAILED
+BUILD FAILED in 27s
+
+red-behavior
+FishCommandRoutingTest > failedProjectPlacementRollsBackTaskHistoryAndRequest FAILED
+FishCommandRoutingTest > retryAfterUndoDoesNotRecreateTheTaskOrUndoAnotherAction FAILED
+FishCommandRoutingTest > concurrentRetriesAndDistinctCallsHaveDifferentEffects FAILED
+FishCommandRoutingTest > quickActionRetryUsesFirstResultAndDoesNotDuplicateIdea FAILED
+FishCommandRoutingTest > reminderClaimRoutesThroughOneNotificationCommandAndNoUserUndo FAILED
+FishCommandRoutingTest > localPreviewCommitAndMemoryUseDurableCommands FAILED
+FishCommandRoutingTest > staleFishTaskVersionReturnsConflictAndCreatesNoActual FAILED
+FishCommandRoutingTest > scheduleCarriesFishProvenanceAndQueriesExposeVersionsWithoutWriting FAILED
+FishCommandRoutingTest > lostResponseRetryAfterReopeningBridgeCreatesOneTaskAndOneUndo FAILED
+9 tests completed, 9 failed
+> Task :app:testDebugUnitTest FAILED
+BUILD FAILED in 1m 14s
+
+red-contract
+> Task :app:compileDebugUnitTestKotlin FAILED
+BUILD FAILED in 1m 26s
+
+review-regression
+BUILD SUCCESSFUL in 2m 18s
+
+status-green
+BUILD SUCCESSFUL in 1m 8s
+
+status-red
+FishCommandRoutingTest > linkedPlanRequiresTaskVersionAndMemoryRetryKeepsDestination FAILED
+FishCommandRoutingTest > recordQuestionIsAReadAndSqlFailureIsFailedWithNoPartialWrites FAILED
+FishCommandRoutingTest > actualRetryPreservesOneRecordAndMalformedInputIsInvalid FAILED
+21 tests completed, 3 failed
+> Task :app:testDebugUnitTest FAILED
+BUILD FAILED in 16s
+
+node --test test/*.test.mjs
+✔ speech speaks readable text without fish markers, code, or URLs (1.6043ms)
+✔ character editing preserves existing agreements and only replaces its managed card (2.3288ms)
+✔ character card v1 imports the same fields and has bounded combined persona size (2.29ms)
+✔ an autonomous topic waits for its own turn instead of steering a user reply (49.6279ms)
+✔ history uses durable user and assistant events and excludes reasoning and tool payloads (1.5615ms)
+✔ input rejects empty and excessive messages while preserving ordinary text (0.3584ms)
+✔ a persisted DSH transport failure reaches the chat error path (1.4933ms)
+✔ proactive context preserves a real source and marks quiet internal time (0.5387ms)
+✔ discovery shares only returned metadata and does not invent an empty feed (2.8798ms)
+✔ mentions, self messages, quiet hours, cooldown and smart addressing are meaningful (89.346ms)
+✔ QQ smart addressing follows the shared profile name after customization (0.4066ms)
+✔ OneBot actions feed a group session and never send without the saved switch (16.9506ms)
+✔ changing QQ accounts clears old context and cancels an already generated reply (3.6557ms)
+✔ empty or failed QQ turns finish presence and a failed group does not starve the next group (4.224ms)
+✔ fresh voice transcripts enter the same group context and smart addressing, with no old voice replay (4.7299ms)
+✔ a WAV voice is passed to the native recognizer without using the microphone or an LLM (3.0078ms)
+✔ inline SILK is converted by OneBot and its returned WAV base64 is recognized (33.6766ms)
+✔ NapCat remote file paths are downloaded as converted WAV chunks, never read as phone paths (1.5106ms)
+✔ an incomplete or failed voice download never reaches recognition (1.0172ms)
+✔ all ten tools forward durable identity across an aborted HTTP response and preserve group isolation (82.3866ms)
+✔ retry after unrelated later events returns the same identity (2.483ms)
+✔ different calls and sessions produce distinct identities (0.4449ms)
+✔ nested sibling calls share a parent message but not a tool call id (1.3342ms)
+✔ falls back to the latest durable tool/call event (0.3033ms)
+✔ rejects missing or blank identifiers (0.7905ms)
+✔ rejects when no durable event matches (0.2534ms)
+✔ does not mutate snapshot events (0.2484ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 27
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 282.7872
+
+pinned official DSH plugin probe
+{"officialDshVersion":"0.2.1-rc.2","registeredTools":11,"requiredVersionValidated":true,"httpRequests":1,"status":"passed"}

@@ -177,3 +177,15 @@ D-T0-03 中 `time_create_plan` 无关联分支的隐式任务及返回任务 ID 
 本轮 **JUnit 787 项，785 通过、2 项原有跳过，0 失败；Node 19/19；Debug APK 与设备测试包构建成功；Lint 0 错误、75 警告、2 信息**。新增命令相关 27 项测试覆盖幂等、并发、版本、批量、撤销重做、计时、旧接口和取消。core/runtime 来自本轮强制执行，app 来自最后完整回归。WorkBuddy DS 实际生成两个契约文件的内容，由主代理审查写入；补充只读复核超时，不作为通过。主代理独立运行测试，另有定向 Codex 静态复核，没有把代理描述算作实测。
 
 D-T0-04 仅在上述目标写入中获得持久 requestId；鱼的稳定 toolCallId、任务/本地输入及通知按钮仍待 **T1.5**，不能标记为全 App 完成。其余 T0 提醒/路由等缺陷仍保留。本轮 ADB 仍无设备，**未安装、未访问或修改手机记录、未恢复旧备份**；原有真机缺口不变，设备测试包仅完成构建。PR 保持 Draft；[完整文件清单、命令、失败修复与设备步骤](t1.4-command-executor.md)、[本轮机器结果](ledger-evidence/t1.4-commands/verification.json)、[协作范围与结果](ledger-evidence/t1.4-commands/collaboration.json)。下一任务为 **T1.5：鱼工具与本地写入接入 CommandExecutor**。
+
+## 2026-11-02 T1.5 开发跟进
+
+在 `codex/t1.5-tool-command-routing` 将十个鱼工具、本地预览/对话写入、显式个人规则和现有提醒投递认领接入 CommandExecutor。正式工具 requestId 由 DSH 的实际 callId、持久消息事件和 sessionId 派生；重试先读取结果，不重新规划或写入。保留所有工具名称、原页面、共同记忆、Linux/proot＋DSH 和 BYOK，主库继续为 v13。
+
+直接影响 **L01、L02、L03、L06、L07、L16、L22、L32**；本地命令复用涉及 L08/L13/L18/L21，桥接涉及 L23/L31，来源及历史记录修正兼容性覆盖 L09/L11。真实 Room 测试覆盖响应丢失/桥重建/并发重试、撤销后重试、版本冲突、周期完成不补实际、项目归属原子回滚、本地预览与记忆日志、提醒单次认领、训练/健康来源保留、已取消任务的历史实际编辑，以及外层回滚、取消预览和澄清追问。Node 测试实际注册插件并模拟 HTTP 响应被取消后的同身份重发；锁定官方 SDK 另做加载和参数校验。
+
+本轮 **JUnit 814 项，812 通过、2 项既有私有 PDF 跳过，0 失败；Node 27/27；Debug APK 与设备测试包构建成功；Lint 0 错误、75 警告、2 信息**。新增 27 项 Kotlin 工具桥测试；core/runtime 来自本轮强制执行，app 为质量修正后的最终完整回归。APK 849.35 MiB，签名、包内插件与当前源码比对通过。WorkBuddy DS 实际编写身份辅助模块与对应测试；主代理独立验收，两轮独立只读审查发现的问题均复现并修正，代理描述未充当实测。
+
+现有通知没有完成/停止按钮，本轮只迁移已经存在的提醒投递写入；N06 后续再新增动作。Task/TimeRecord 尚无实体 sourceRef 列，会话来源通过 command_log 结果与 affected ID 关联，随 30 天保留期，未冒充永久实体回链。D-T0-04 仅在本轮接入范围获得稳定标识；其余旧模块写入和 InputRouter 没有宣称全部迁移。
+
+本轮 ADB 无设备，未安装、卸载、清数据、访问手机私人数据或恢复旧备份。T0 真机证据缺口保持，PR 为 Draft。详见 [完整改动、失败摘要及设备验收步骤](t1.5-tool-command-routing.md)、[本轮机器结果](ledger-evidence/t1.5-tools/verification.json)、[DS 协作与独立审查](ledger-evidence/t1.5-tools/collaboration.json)。下一任务为 **T1.6：按需查询替代全量快照**。
