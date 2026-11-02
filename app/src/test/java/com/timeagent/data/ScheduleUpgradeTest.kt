@@ -62,15 +62,16 @@ class ScheduleUpgradeTest {
                     File("src/androidTest/assets/db/v12-sample.db").copyTo(this, overwrite = true)
                 }
                 val db = TimeAgentDatabase.open(context)
-                try { assertEquals(13, db.openHelper.writableDatabase.version) } finally { db.close() }
+                try { assertEquals(14, db.openHelper.writableDatabase.version) } finally { db.close() }
             }
             val files = snapshots.listFiles()!!
             assertEquals(2, files.size)
-            files.forEach {
+            val versions = files.map {
                 val envelope = JsonParser.parseString(it.readText()).asJsonObject
                 val payload = JsonParser.parseString(envelope["payload"].asString).asJsonObject
-                assertEquals(12, payload["main"].asJsonObject["version"].asInt)
+                payload["main"].asJsonObject["version"].asInt
             }
+            assertEquals(setOf(12, 13), versions.toSet())
         } finally {
             context.deleteDatabase("time-agent.db")
             snapshots.listFiles()?.forEach { it.delete() }
@@ -101,8 +102,11 @@ class ScheduleUpgradeTest {
         val db = TimeAgentDatabase.open(context)
         val workout = WorkoutDatabase.open(context)
         try {
-            assertEquals(13, db.openHelper.writableDatabase.version)
-            val backup = snapshots.listFiles()!!.single().readBytes()
+            assertEquals(14, db.openHelper.writableDatabase.version)
+            val snapshotFiles = snapshots.listFiles()!!
+            assertEquals(2, snapshotFiles.size)
+            assertTrue(snapshotFiles.any { it.name.startsWith("v13-before-v14-") })
+            val backup = snapshotFiles.single { it.name.startsWith("v12-before-v13-") }.readBytes()
             val envelope = JsonParser.parseString(backup.toString(Charsets.UTF_8)).asJsonObject
             val payload = JsonParser.parseString(envelope["payload"].asString).asJsonObject
             assertEquals(12, payload["main"].asJsonObject["version"].asInt)

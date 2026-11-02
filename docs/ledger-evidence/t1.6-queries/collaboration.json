@@ -1,0 +1,254 @@
+{
+  "date": "2026-11-02",
+  "cli": "C:/Users/[local-user]/AppData/Roaming/npm/codebuddy.cmd",
+  "cliVersion": "2.171.0",
+  "requestedModel": "deepseek-v4.1-flash",
+  "confirmedResponseModel": "deepseek-v4.1-flash",
+  "requestedEffort": "max",
+  "serverReportedEffort": null,
+  "calls": [
+    {
+      "label": "ds-benchmark",
+      "exitCode": 0,
+      "cliVersion": "2.171.0",
+      "requestedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "serverReportedEffort": null,
+      "generationLimit": 1,
+      "toolCallLimit": 0,
+      "timeoutSeconds": 240,
+      "elapsedSeconds": 88.81,
+      "responseModel": "deepseek-v4.1-flash",
+      "actualToolCalls": 0,
+      "toolNames": [],
+      "reportedTurns": 3,
+      "rawStreamSha256": "d93d5a42b115b076f1c79eb6490dcbf3262d8b0fb4cabf184e4c125750fdf35b",
+      "resultModelUsage": [
+        "deepseek-v4.1-flash"
+      ]
+    },
+    {
+      "label": "ds-device-connect",
+      "exitCode": 0,
+      "requestedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "serverReportedEffort": null,
+      "allowedActions": [
+        "connect",
+        "status"
+      ],
+      "maxToolCalls": 2,
+      "timeoutSeconds": 120,
+      "elapsedSeconds": 13.04,
+      "responseModel": "deepseek-v4.1-flash",
+      "actualToolCalls": 2,
+      "toolNames": [
+        "PowerShell",
+        "PowerShell"
+      ],
+      "reportedTurns": 9,
+      "rawStreamSha256": "80c55948f64fd162b50e197417f1a21c916b43c9a5af58152635fe4e5431ba24",
+      "resultModelUsage": [
+        "deepseek-v4.1-flash"
+      ]
+    },
+    {
+      "label": "ds-query-aggregate-retry",
+      "exitCode": 0,
+      "cliVersion": "2.171.0",
+      "requestedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "serverReportedEffort": null,
+      "generationLimit": 1,
+      "toolCallLimit": 0,
+      "timeoutSeconds": 240,
+      "elapsedSeconds": 12.82,
+      "responseModel": "deepseek-v4.1-flash",
+      "actualToolCalls": 0,
+      "toolNames": [],
+      "reportedTurns": 3,
+      "rawStreamSha256": "6ddd1179b12c02ee7897fd3bc817e16c099a205df645859a6cbf0288d62d6f77",
+      "resultModelUsage": [
+        "deepseek-v4.1-flash"
+      ]
+    },
+    {
+      "label": "ds-query-aggregate",
+      "exitCode": 124,
+      "cliVersion": "2.171.0",
+      "requestedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "serverReportedEffort": null,
+      "generationLimit": 1,
+      "toolCallLimit": 0,
+      "timeoutSeconds": 240,
+      "elapsedSeconds": 240.26,
+      "responseModel": "deepseek-v4.1-flash",
+      "actualToolCalls": 0,
+      "toolNames": [],
+      "reportedTurns": null,
+      "rawStreamSha256": "d37d46c7b6e9041d52bcfd6d814be65e97d24073f5a29f7ea810daf69679bb9c",
+      "resultModelUsage": []
+    },
+    {
+      "label": "ds-query-implementation",
+      "exitCode": 0,
+      "cliVersion": "2.171.0",
+      "requestedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "serverReportedEffort": null,
+      "generationLimit": 1,
+      "toolCallLimit": 0,
+      "timeoutSeconds": 240,
+      "elapsedSeconds": 147.69,
+      "responseModel": "deepseek-v4.1-flash",
+      "actualToolCalls": 0,
+      "toolNames": [],
+      "reportedTurns": 3,
+      "rawStreamSha256": "176213f1bb7e78f55a7f852d59747eab684cd0e42f3cb023665204fb806c0b8c",
+      "resultModelUsage": [
+        "deepseek-v4.1-flash"
+      ]
+    },
+    {
+      "label": "ds-query-tests-retry",
+      "exitCode": 0,
+      "cliVersion": "2.171.0",
+      "requestedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "serverReportedEffort": null,
+      "generationLimit": 1,
+      "toolCallLimit": 0,
+      "timeoutSeconds": 240,
+      "elapsedSeconds": 139.29,
+      "responseModel": "deepseek-v4.1-flash",
+      "actualToolCalls": 0,
+      "toolNames": [],
+      "reportedTurns": 3,
+      "rawStreamSha256": "64783a3d9ed0e104a897b7053d12378665e59f6a50534a793b8900fb207f584a",
+      "resultModelUsage": [
+        "deepseek-v4.1-flash"
+      ]
+    },
+    {
+      "label": "ds-query-tests",
+      "exitCode": 124,
+      "cliVersion": "2.171.0",
+      "requestedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "serverReportedEffort": null,
+      "generationLimit": 1,
+      "toolCallLimit": 0,
+      "timeoutSeconds": 240,
+      "elapsedSeconds": 240.24,
+      "responseModel": "deepseek-v4.1-flash",
+      "actualToolCalls": 0,
+      "toolNames": [],
+      "reportedTurns": null,
+      "rawStreamSha256": "5a3fb3627412f01313be11cce94f54e969b658be626c8d8a9f6949b09fbac97c",
+      "resultModelUsage": []
+    },
+    {
+      "label": "ds-spec-review",
+      "exitCode": 124,
+      "cliVersion": "2.171.0",
+      "requestedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "serverReportedEffort": null,
+      "generationLimit": 1,
+      "toolCallLimit": 0,
+      "timeoutSeconds": 240,
+      "elapsedSeconds": 240.32,
+      "responseModel": "deepseek-v4.1-flash",
+      "actualToolCalls": 0,
+      "toolNames": [],
+      "reportedTurns": null,
+      "rawStreamSha256": "125a7f0cf61fd2a0a4813503d2f6179a4531a81208f575f598655add281d0627",
+      "resultModelUsage": []
+    },
+    {
+      "label": "ds-benchmark-fix",
+      "exitCode": 0,
+      "cliVersion": "2.171.0",
+      "requestedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "serverReportedEffort": null,
+      "generationLimit": 1,
+      "toolCallLimit": 0,
+      "timeoutSeconds": 240,
+      "elapsedSeconds": 57.98,
+      "responseModel": "deepseek-v4.1-flash",
+      "actualToolCalls": 0,
+      "reportedTurns": 3,
+      "outputFormat": "Kotlin fence instead of requested JSON; main agent inspected and extracted file",
+      "resultModelUsage": [
+        "deepseek-v4.1-flash"
+      ]
+    }
+  ],
+  "ownership": {
+    "DSCandidates": [
+      "TimelineQueryTest -> TimelineQueryDeviceTest",
+      "TimelineDao.kt",
+      "TimelineQueries.kt",
+      "benchmark/build.gradle.kts",
+      "benchmark/src/main/AndroidManifest.xml",
+      "benchmark/src/main/java/com/timeagent/benchmark/TimelineBenchmark.kt",
+      "app/src/benchmark/AndroidManifest.xml",
+      "app/src/benchmark/java/com/timeagent/benchmark/BenchmarkFixtureProvider.kt"
+    ],
+    "mainAgent": [
+      "Shared database/entity/schema and migration registration",
+      "Migration snapshot/backup version compatibility",
+      "VM and Compose entrypoint integration",
+      "Additional device checks and moving checks from host to Android",
+      "Independent builds, artifact inspection, docs, commit and Draft PR"
+    ]
+  },
+  "constraints": {
+    "development": "Specified candidate files only, no tool calls actually used; max 240s per generation. Main integrated candidates.",
+    "device": "Only fixed connect/status driver actions, max2 tool calls, max120s. Actual 2 PowerShell calls. No raw ADB/private data access granted to DS.",
+    "turnReporting": "CLI --max-turns2 on generation calls reported num_turns3; device --max-turns5 reported9. These are not claimed as strict total event limits; actual tool counts separately recorded.",
+    "stopConditions": [
+      "Timeout ends only associated CLI process tree",
+      "Offline device stops device testing",
+      "No overwrite of shared entrypoints by agents"
+    ]
+  },
+  "reviews": [
+    {
+      "agent": "Epicurus",
+      "kind": "independent Codex spec review, not WorkBuddy DS",
+      "agentId": "01a19bfa-a1f8-7381-9851-1e32ab8fba15",
+      "result": "No confirmed spec deviation in inspected scope",
+      "execution": "read-only, no tests"
+    },
+    {
+      "agent": "Singer",
+      "kind": "independent Codex quality review, not WorkBuddy DS",
+      "agentId": "01a19bfd-0301-7261-9790-08b8bd4780e5",
+      "findings": [
+        "Conditional SQLite 999 bind-parameter failure for referenced-row lookup",
+        "Frame benchmark slides into empty dates"
+      ],
+      "fixes": [
+        "Chunked 999 IDs within existing transaction",
+        "Fixed populated fixture week plus reset/header waits and inverse swipe pairs"
+      ],
+      "recheck": "Both findings and the loading-state correction accepted on read-only recheck; no other confirmed regression. No device test run by reviewer.",
+      "execution": "read-only, no tests",
+      "additionalFix": "Range-query state keyed independently of TimelineScreen; new query starts loading without resetting viewport."
+    }
+  ],
+  "deviceAcceptance": {
+    "connected": false,
+    "testsExecuted": false,
+    "result": "offline",
+    "originalRecordsModified": false,
+    "appInstalled": false,
+    "appUninstalled": false,
+    "clearData": false,
+    "oldBackupRestored": false
+  },
+  "mainAcceptance": "Actual Gradle build exit and artifacts checked independently; no on-device test/performance pass claimed."
+}

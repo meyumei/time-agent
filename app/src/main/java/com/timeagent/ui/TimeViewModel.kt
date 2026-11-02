@@ -70,6 +70,10 @@ class TimeViewModel(
     val busy = _busy.asStateFlow()
     val data = repository.observe().catch { _error.value = "读取失败：${it.message}，请重新打开应用重试" }
         .stateIn(viewModelScope, SharingStarted.Eagerly, LocalSnapshot())
+    fun timeline(range: TimelineRange): Flow<LocalSnapshot> =
+        repository.observeTimeline(range.start, range.end).catch {
+            _error.value = "时间轴读取失败：${it.message}，请重新打开应用重试"
+        }
 
     init {
         viewModelScope.launch {

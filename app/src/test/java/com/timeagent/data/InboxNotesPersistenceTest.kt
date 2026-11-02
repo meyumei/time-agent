@@ -63,7 +63,7 @@ class InboxNotesPersistenceTest {
 
         val upgraded = TimeAgentDatabase.open(context)
         try {
-            assertEquals(13, upgraded.openHelper.readableDatabase.version)
+            assertEquals(14, upgraded.openHelper.readableDatabase.version)
             assertEquals("act", upgraded.dao().task("t1")!!.activityId)
             assertEquals("健身", upgraded.dao().activity("act")!!.name)
             assertEquals("p1", upgraded.dao().plans().single().id)

@@ -1,0 +1,225 @@
+INSTRUMENTATION_STATUS: class=com.timeagent.benchmark.TimelineBenchmark
+
+INSTRUMENTATION_STATUS: current=1
+
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+
+INSTRUMENTATION_STATUS: numtests=2
+
+INSTRUMENTATION_STATUS: stream=
+
+com.timeagent.benchmark.TimelineBenchmark:
+
+INSTRUMENTATION_STATUS: test=startupCold
+
+INSTRUMENTATION_STATUS_CODE: 1
+
+INSTRUMENTATION_STATUS: additionalTestOutputFile_TimelineBenchmark_startupCold_iter000_2026-11-02-14-17-24.perfetto-trace=/storage/emulated/0/Android/media/com.timeagent.benchmark.test/TimelineBenchmark_startupCold_iter000_2026-11-02-14-17-24.perfetto-trace
+
+INSTRUMENTATION_STATUS_CODE: 2
+
+INSTRUMENTATION_STATUS: additionalTestOutputFile_TimelineBenchmark_startupCold_iter001_2026-11-02-14-17-32.perfetto-trace=/storage/emulated/0/Android/media/com.timeagent.benchmark.test/TimelineBenchmark_startupCold_iter001_2026-11-02-14-17-32.perfetto-trace
+
+INSTRUMENTATION_STATUS_CODE: 2
+
+INSTRUMENTATION_STATUS: additionalTestOutputFile_TimelineBenchmark_startupCold_iter002_2026-11-02-14-17-40.perfetto-trace=/storage/emulated/0/Android/media/com.timeagent.benchmark.test/TimelineBenchmark_startupCold_iter002_2026-11-02-14-17-40.perfetto-trace
+
+INSTRUMENTATION_STATUS_CODE: 2
+
+INSTRUMENTATION_STATUS: additionalTestOutputFile_TimelineBenchmark_startupCold_iter003_2026-11-02-14-17-49.perfetto-trace=/storage/emulated/0/Android/media/com.timeagent.benchmark.test/TimelineBenchmark_startupCold_iter003_2026-11-02-14-17-49.perfetto-trace
+
+INSTRUMENTATION_STATUS_CODE: 2
+
+INSTRUMENTATION_STATUS: additionalTestOutputFile_TimelineBenchmark_startupCold_iter004_2026-11-02-14-17-57.perfetto-trace=/storage/emulated/0/Android/media/com.timeagent.benchmark.test/TimelineBenchmark_startupCold_iter004_2026-11-02-14-17-57.perfetto-trace
+
+INSTRUMENTATION_STATUS_CODE: 2
+
+INSTRUMENTATION_STATUS: android.studio.display.benchmark=TimelineBenchmark_startupCold
+
+  timeToFullDisplayMs      [min 735.4](file://TimelineBenchmark_startupCold_iter000_2026-11-02-14-17-24.perfetto-trace),   [median 781.8](file://TimelineBenchmark_startupCold_iter002_2026-11-02-14-17-40.perfetto-trace),   [max 921.2](file://TimelineBenchmark_startupCold_iter002_2026-11-02-14-17-40.perfetto-trace)
+
+  timeToInitialDisplayMs   [min 523.5](file://TimelineBenchmark_startupCold_iter004_2026-11-02-14-17-57.perfetto-trace),   [median 535.4](file://TimelineBenchmark_startupCold_iter002_2026-11-02-14-17-40.perfetto-trace),   [max 674.9](file://TimelineBenchmark_startupCold_iter002_2026-11-02-14-17-40.perfetto-trace)
+
+    Traces: Iteration [0](file://TimelineBenchmark_startupCold_iter000_2026-11-02-14-17-24.perfetto-trace) [1](file://TimelineBenchmark_startupCold_iter001_2026-11-02-14-17-32.perfetto-trace) [2](file://TimelineBenchmark_startupCold_iter002_2026-11-02-14-17-40.perfetto-trace) [3](file://TimelineBenchmark_startupCold_iter003_2026-11-02-14-17-49.perfetto-trace) [4](file://TimelineBenchmark_startupCold_iter004_2026-11-02-14-17-57.perfetto-trace)
+
+
+
+INSTRUMENTATION_STATUS: android.studio.v2display.benchmark=TimelineBenchmark_startupCold
+
+  timeToFullDisplayMs      [min 735.4](file://TimelineBenchmark_startupCold_iter000_2026-11-02-14-17-24.perfetto-trace),   [median 781.8](file://TimelineBenchmark_startupCold_iter002_2026-11-02-14-17-40.perfetto-trace),   [max 921.2](file://TimelineBenchmark_startupCold_iter002_2026-11-02-14-17-40.perfetto-trace)
+
+  timeToInitialDisplayMs   [min 523.5](file://TimelineBenchmark_startupCold_iter004_2026-11-02-14-17-57.perfetto-trace),   [median 535.4](file://TimelineBenchmark_startupCold_iter002_2026-11-02-14-17-40.perfetto-trace),   [max 674.9](file://TimelineBenchmark_startupCold_iter002_2026-11-02-14-17-40.perfetto-trace)
+
+    Traces: Iteration [0](file://TimelineBenchmark_startupCold_iter000_2026-11-02-14-17-24.perfetto-trace) [1](file://TimelineBenchmark_startupCold_iter001_2026-11-02-14-17-32.perfetto-trace) [2](file://TimelineBenchmark_startupCold_iter002_2026-11-02-14-17-40.perfetto-trace) [3](file://TimelineBenchmark_startupCold_iter003_2026-11-02-14-17-49.perfetto-trace) [4](file://TimelineBenchmark_startupCold_iter004_2026-11-02-14-17-57.perfetto-trace)
+
+
+
+INSTRUMENTATION_STATUS: android.studio.v2display.benchmark.outputDirPath=/storage/emulated/0/Android/media/com.timeagent.benchmark.test
+
+INSTRUMENTATION_STATUS: android.studio.v3display.benchmark=TimelineBenchmark_startupCold
+
+  timeToFullDisplayMs      [min 735.4](file://TimelineBenchmark_startupCold_iter000_2026-11-02-14-17-24.perfetto-trace),   [median 781.8](file://TimelineBenchmark_startupCold_iter002_2026-11-02-14-17-40.perfetto-trace),   [max 921.2](file://TimelineBenchmark_startupCold_iter002_2026-11-02-14-17-40.perfetto-trace)
+
+  timeToInitialDisplayMs   [min 523.5](file://TimelineBenchmark_startupCold_iter004_2026-11-02-14-17-57.perfetto-trace),   [median 535.4](file://TimelineBenchmark_startupCold_iter002_2026-11-02-14-17-40.perfetto-trace),   [max 674.9](file://TimelineBenchmark_startupCold_iter002_2026-11-02-14-17-40.perfetto-trace)
+
+    Traces: Iteration [0](file://TimelineBenchmark_startupCold_iter000_2026-11-02-14-17-24.perfetto-trace) [1](file://TimelineBenchmark_startupCold_iter001_2026-11-02-14-17-32.perfetto-trace) [2](file://TimelineBenchmark_startupCold_iter002_2026-11-02-14-17-40.perfetto-trace) [3](file://TimelineBenchmark_startupCold_iter003_2026-11-02-14-17-49.perfetto-trace) [4](file://TimelineBenchmark_startupCold_iter004_2026-11-02-14-17-57.perfetto-trace)
+
+
+
+INSTRUMENTATION_STATUS: android.studio.v3display.benchmark.outputDirPath=/storage/emulated/0/Android/media/com.timeagent.benchmark.test
+
+INSTRUMENTATION_STATUS: time_to_full_display_millis_median=781.847077
+
+INSTRUMENTATION_STATUS: time_to_full_display_millis_min=735.449154
+
+INSTRUMENTATION_STATUS: time_to_full_display_millis_stddev=75.41457288893255
+
+INSTRUMENTATION_STATUS: time_to_initial_display_millis_median=535.377231
+
+INSTRUMENTATION_STATUS: time_to_initial_display_millis_min=523.513
+
+INSTRUMENTATION_STATUS: time_to_initial_display_millis_stddev=65.64312287507266
+
+INSTRUMENTATION_STATUS_CODE: 2
+
+INSTRUMENTATION_STATUS: class=com.timeagent.benchmark.TimelineBenchmark
+
+INSTRUMENTATION_STATUS: current=1
+
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+
+INSTRUMENTATION_STATUS: numtests=2
+
+INSTRUMENTATION_STATUS: stream=.
+
+INSTRUMENTATION_STATUS: test=startupCold
+
+INSTRUMENTATION_STATUS_CODE: 0
+
+INSTRUMENTATION_STATUS: class=com.timeagent.benchmark.TimelineBenchmark
+
+INSTRUMENTATION_STATUS: current=2
+
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+
+INSTRUMENTATION_STATUS: numtests=2
+
+INSTRUMENTATION_STATUS: stream=
+
+INSTRUMENTATION_STATUS: test=frameTimelineSwipe
+
+INSTRUMENTATION_STATUS_CODE: 1
+
+INSTRUMENTATION_STATUS: additionalTestOutputFile_TimelineBenchmark_frameTimelineSwipe_iter000_2026-11-02-14-18-14.perfetto-trace=/storage/emulated/0/Android/media/com.timeagent.benchmark.test/TimelineBenchmark_frameTimelineSwipe_iter000_2026-11-02-14-18-14.perfetto-trace
+
+INSTRUMENTATION_STATUS_CODE: 2
+
+INSTRUMENTATION_STATUS: additionalTestOutputFile_TimelineBenchmark_frameTimelineSwipe_iter001_2026-11-02-14-18-30.perfetto-trace=/storage/emulated/0/Android/media/com.timeagent.benchmark.test/TimelineBenchmark_frameTimelineSwipe_iter001_2026-11-02-14-18-30.perfetto-trace
+
+INSTRUMENTATION_STATUS_CODE: 2
+
+INSTRUMENTATION_STATUS: additionalTestOutputFile_TimelineBenchmark_frameTimelineSwipe_iter002_2026-11-02-14-18-51.perfetto-trace=/storage/emulated/0/Android/media/com.timeagent.benchmark.test/TimelineBenchmark_frameTimelineSwipe_iter002_2026-11-02-14-18-51.perfetto-trace
+
+INSTRUMENTATION_STATUS_CODE: 2
+
+INSTRUMENTATION_STATUS: additionalTestOutputFile_TimelineBenchmark_frameTimelineSwipe_iter003_2026-11-02-14-19-09.perfetto-trace=/storage/emulated/0/Android/media/com.timeagent.benchmark.test/TimelineBenchmark_frameTimelineSwipe_iter003_2026-11-02-14-19-09.perfetto-trace
+
+INSTRUMENTATION_STATUS_CODE: 2
+
+INSTRUMENTATION_STATUS: additionalTestOutputFile_TimelineBenchmark_frameTimelineSwipe_iter004_2026-11-02-14-19-24.perfetto-trace=/storage/emulated/0/Android/media/com.timeagent.benchmark.test/TimelineBenchmark_frameTimelineSwipe_iter004_2026-11-02-14-19-24.perfetto-trace
+
+INSTRUMENTATION_STATUS_CODE: 2
+
+INSTRUMENTATION_STATUS: android.studio.display.benchmark=TimelineBenchmark_frameTimelineSwipe
+
+  frameCount           [min 113.0](file://TimelineBenchmark_frameTimelineSwipe_iter004_2026-11-02-14-19-24.perfetto-trace),   [median 114.0](file://TimelineBenchmark_frameTimelineSwipe_iter002_2026-11-02-14-18-51.perfetto-trace),   [max 114.0](file://TimelineBenchmark_frameTimelineSwipe_iter000_2026-11-02-14-18-14.perfetto-trace)
+
+  frameDurationCpuMs   P50   11.3,   P90   14.0,   P95   14.6,   P99   15.7
+
+  frameOverrunMs       P50    2.5,   P90    5.1,   P95    5.6,   P99    8.1
+
+    Traces: Iteration [0](file://TimelineBenchmark_frameTimelineSwipe_iter000_2026-11-02-14-18-14.perfetto-trace) [1](file://TimelineBenchmark_frameTimelineSwipe_iter001_2026-11-02-14-18-30.perfetto-trace) [2](file://TimelineBenchmark_frameTimelineSwipe_iter002_2026-11-02-14-18-51.perfetto-trace) [3](file://TimelineBenchmark_frameTimelineSwipe_iter003_2026-11-02-14-19-09.perfetto-trace) [4](file://TimelineBenchmark_frameTimelineSwipe_iter004_2026-11-02-14-19-24.perfetto-trace)
+
+
+
+INSTRUMENTATION_STATUS: android.studio.v2display.benchmark=TimelineBenchmark_frameTimelineSwipe
+
+  frameCount           [min 113.0](file://TimelineBenchmark_frameTimelineSwipe_iter004_2026-11-02-14-19-24.perfetto-trace),   [median 114.0](file://TimelineBenchmark_frameTimelineSwipe_iter002_2026-11-02-14-18-51.perfetto-trace),   [max 114.0](file://TimelineBenchmark_frameTimelineSwipe_iter000_2026-11-02-14-18-14.perfetto-trace)
+
+  frameDurationCpuMs   P50   11.3,   P90   14.0,   P95   14.6,   P99   15.7
+
+  frameOverrunMs       P50    2.5,   P90    5.1,   P95    5.6,   P99    8.1
+
+    Traces: Iteration [0](file://TimelineBenchmark_frameTimelineSwipe_iter000_2026-11-02-14-18-14.perfetto-trace) [1](file://TimelineBenchmark_frameTimelineSwipe_iter001_2026-11-02-14-18-30.perfetto-trace) [2](file://TimelineBenchmark_frameTimelineSwipe_iter002_2026-11-02-14-18-51.perfetto-trace) [3](file://TimelineBenchmark_frameTimelineSwipe_iter003_2026-11-02-14-19-09.perfetto-trace) [4](file://TimelineBenchmark_frameTimelineSwipe_iter004_2026-11-02-14-19-24.perfetto-trace)
+
+
+
+INSTRUMENTATION_STATUS: android.studio.v2display.benchmark.outputDirPath=/storage/emulated/0/Android/media/com.timeagent.benchmark.test
+
+INSTRUMENTATION_STATUS: android.studio.v3display.benchmark=TimelineBenchmark_frameTimelineSwipe
+
+  frameCount           [min 113.0](file://TimelineBenchmark_frameTimelineSwipe_iter004_2026-11-02-14-19-24.perfetto-trace),   [median 114.0](file://TimelineBenchmark_frameTimelineSwipe_iter002_2026-11-02-14-18-51.perfetto-trace),   [max 114.0](file://TimelineBenchmark_frameTimelineSwipe_iter000_2026-11-02-14-18-14.perfetto-trace)
+
+  frameDurationCpuMs   P50   11.3,   P90   14.0,   P95   14.6,   P99   15.7
+
+  frameOverrunMs       P50    2.5,   P90    5.1,   P95    5.6,   P99    8.1
+
+    Traces: Iteration [0](file://TimelineBenchmark_frameTimelineSwipe_iter000_2026-11-02-14-18-14.perfetto-trace) [1](file://TimelineBenchmark_frameTimelineSwipe_iter001_2026-11-02-14-18-30.perfetto-trace) [2](file://TimelineBenchmark_frameTimelineSwipe_iter002_2026-11-02-14-18-51.perfetto-trace) [3](file://TimelineBenchmark_frameTimelineSwipe_iter003_2026-11-02-14-19-09.perfetto-trace) [4](file://TimelineBenchmark_frameTimelineSwipe_iter004_2026-11-02-14-19-24.perfetto-trace)
+
+
+
+INSTRUMENTATION_STATUS: android.studio.v3display.benchmark.outputDirPath=/storage/emulated/0/Android/media/com.timeagent.benchmark.test
+
+INSTRUMENTATION_STATUS: frame_count_median=114.0
+
+INSTRUMENTATION_STATUS: frame_count_min=113.0
+
+INSTRUMENTATION_STATUS: frame_count_stddev=0.4472135954999579
+
+INSTRUMENTATION_STATUS: frame_duration_cpu_millis_p50=11.323923
+
+INSTRUMENTATION_STATUS: frame_duration_cpu_millis_p90=14.042154199999999
+
+INSTRUMENTATION_STATUS: frame_duration_cpu_millis_p95=14.5633996
+
+INSTRUMENTATION_STATUS: frame_duration_cpu_millis_p99=15.70736012
+
+INSTRUMENTATION_STATUS: frame_overrun_millis_p50=2.538656
+
+INSTRUMENTATION_STATUS: frame_overrun_millis_p90=5.104032
+
+INSTRUMENTATION_STATUS: frame_overrun_millis_p95=5.596905
+
+INSTRUMENTATION_STATUS: frame_overrun_millis_p99=8.137530280000014
+
+INSTRUMENTATION_STATUS_CODE: 2
+
+INSTRUMENTATION_STATUS: class=com.timeagent.benchmark.TimelineBenchmark
+
+INSTRUMENTATION_STATUS: current=2
+
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+
+INSTRUMENTATION_STATUS: numtests=2
+
+INSTRUMENTATION_STATUS: stream=.
+
+INSTRUMENTATION_STATUS: test=frameTimelineSwipe
+
+INSTRUMENTATION_STATUS_CODE: 0
+
+INSTRUMENTATION_RESULT: stream=
+
+
+
+Time: 132.546
+
+
+
+OK (2 tests)
+
+
+
+
+
+INSTRUMENTATION_CODE: -1

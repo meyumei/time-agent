@@ -1,0 +1,157 @@
+{
+  "android_metadata": {
+    "beforeRows": 1,
+    "afterRows": 1,
+    "originalColumnsEqual": true
+  },
+  "tasks": {
+    "beforeRows": 30,
+    "afterRows": 30,
+    "originalColumnsEqual": true
+  },
+  "schedule_blocks": {
+    "beforeRows": 13,
+    "afterRows": 13,
+    "originalColumnsEqual": true
+  },
+  "time_records": {
+    "beforeRows": 48,
+    "afterRows": 48,
+    "originalColumnsEqual": true
+  },
+  "categories": {
+    "beforeRows": 3,
+    "afterRows": 3,
+    "originalColumnsEqual": true
+  },
+  "tags": {
+    "beforeRows": 0,
+    "afterRows": 0,
+    "originalColumnsEqual": true
+  },
+  "task_tags": {
+    "beforeRows": 0,
+    "afterRows": 0,
+    "originalColumnsEqual": true
+  },
+  "record_tags": {
+    "beforeRows": 0,
+    "afterRows": 0,
+    "originalColumnsEqual": true
+  },
+  "academic_terms": {
+    "beforeRows": 2,
+    "afterRows": 2,
+    "originalColumnsEqual": true
+  },
+  "courses": {
+    "beforeRows": 15,
+    "afterRows": 15,
+    "originalColumnsEqual": true
+  },
+  "course_occurrences": {
+    "beforeRows": 177,
+    "afterRows": 177,
+    "originalColumnsEqual": true
+  },
+  "operation_history": {
+    "beforeRows": 106,
+    "afterRows": 106,
+    "originalColumnsEqual": true
+  },
+  "import_batches": {
+    "beforeRows": 3,
+    "afterRows": 3,
+    "originalColumnsEqual": true
+  },
+  "entity_revisions": {
+    "beforeRows": 176,
+    "afterRows": 176,
+    "originalColumnsEqual": true
+  },
+  "activity_templates": {
+    "beforeRows": 6,
+    "afterRows": 6,
+    "originalColumnsEqual": true
+  },
+  "reminders": {
+    "beforeRows": 3,
+    "afterRows": 3,
+    "originalColumnsEqual": true
+  },
+  "ideas": {
+    "beforeRows": 1,
+    "afterRows": 1,
+    "originalColumnsEqual": true
+  },
+  "notes": {
+    "beforeRows": 0,
+    "afterRows": 0,
+    "originalColumnsEqual": true
+  },
+  "health_sync_items": {
+    "beforeRows": 31,
+    "afterRows": 31,
+    "originalColumnsEqual": true
+  },
+  "agent_suggestions": {
+    "beforeRows": 25,
+    "afterRows": 25,
+    "originalColumnsEqual": true
+  },
+  "personal_memories": {
+    "beforeRows": 0,
+    "afterRows": 0,
+    "originalColumnsEqual": true
+  },
+  "projects": {
+    "beforeRows": 1,
+    "afterRows": 1,
+    "originalColumnsEqual": true
+  },
+  "task_placements": {
+    "beforeRows": 2,
+    "afterRows": 2,
+    "originalColumnsEqual": true
+  },
+  "weekly_goals": {
+    "beforeRows": 1,
+    "afterRows": 1,
+    "originalColumnsEqual": true
+  },
+  "recurring_rules": {
+    "beforeRows": 3,
+    "afterRows": 3,
+    "originalColumnsEqual": true
+  },
+  "recurring_instances": {
+    "beforeRows": 12,
+    "afterRows": 12,
+    "originalColumnsEqual": true
+  },
+  "attachments": {
+    "beforeRows": 1,
+    "afterRows": 1,
+    "originalColumnsEqual": true
+  },
+  "ledger_accounts": {
+    "beforeRows": 0,
+    "afterRows": 0,
+    "originalColumnsEqual": true
+  },
+  "ledger_categories": {
+    "beforeRows": 0,
+    "afterRows": 0,
+    "originalColumnsEqual": true
+  },
+  "payment_captures": {
+    "beforeRows": 0,
+    "afterRows": 0,
+    "originalColumnsEqual": true
+  },
+  "ledger_transactions": {
+    "beforeRows": 0,
+    "afterRows": 0,
+    "originalColumnsEqual": true
+  }
+}

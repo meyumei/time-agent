@@ -1,0 +1,32 @@
+{
+  "cliVersion": "2.171.0",
+  "exitCode": 0,
+  "requestedModel": "deepseek-v4.1-flash",
+  "requestedEffort": "max",
+  "serverReportedEffort": null,
+  "maxToolCalls": 6,
+  "elapsedSeconds": 357.34,
+  "actualToolCalls": 6,
+  "actualCommands": [
+    "python .tmp/t16-wired/device-driver.py status",
+    "python .tmp/t16-wired/device-driver.py backup",
+    "python .tmp/t16-wired/device-driver.py install",
+    "python .tmp/t16-wired/device-driver.py queries",
+    "python .tmp/t16-wired/device-driver.py benchmark",
+    "python .tmp/t16-wired/device-driver.py audit"
+  ],
+  "modelUsage": {
+    "deepseek-v4.1-flash": {
+      "inputTokens": 0,
+      "outputTokens": 1570,
+      "cacheReadInputTokens": 74240,
+      "cacheCreationInputTokens": 9160,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000
+    }
+  },
+  "numTurns": 19,
+  "device": "Redmi K70 Ultra / 2407FRK8EC",
+  "connection": "USB",
+  "privateBackupPublished": false
+}

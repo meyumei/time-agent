@@ -130,10 +130,10 @@ class PersonalBackup(
         @Volatile private var liveRestoreInProgress = false
         private val recoveryLock = Any()
         /** The caller holds the old main database's migration transaction; Room is not opened recursively. */
-        internal fun createBeforeMigration(context: Context, main: androidx.sqlite.db.SupportSQLiteDatabase) {
+        internal fun createBeforeMigration(context: Context, main: androidx.sqlite.db.SupportSQLiteDatabase, fromVersion: Int = 12, toVersion: Int = 13) {
             val sql = main.backupSql()
             // Earlier migrations in the same open may have run while user_version is still below 12.
-            val oldMain = BackupTables.capture(BackupSql(12, sql.query, sql.exec), BackupTables.mainForVersion(12))
+            val oldMain = BackupTables.capture(BackupSql(fromVersion, sql.query, sql.exec), BackupTables.mainForVersion(fromVersion))
             val workoutPath = context.getDatabasePath("workouts.db")
             val oldWorkout = if (workoutPath.isFile) {
                 SQLiteDatabase.openDatabase(workoutPath.path, null, SQLiteDatabase.OPEN_READWRITE).use { workout ->
@@ -152,8 +152,9 @@ class PersonalBackup(
             )
             val bytes = encode(payload)
             val directory = File(context.noBackupFilesDir, "migration-snapshots").apply { check(isDirectory || mkdirs()) }
-            atomicWrite(File(directory, "v12-before-v13-${payload.createdAt}-${java.util.UUID.randomUUID()}.json"), bytes)
-            directory.listFiles { f -> f.name.startsWith("v12-before-v13-") && f.extension == "json" }
+            val prefix = "v$fromVersion-before-v$toVersion-"
+            atomicWrite(File(directory, "$prefix${payload.createdAt}-${java.util.UUID.randomUUID()}.json"), bytes)
+            directory.listFiles { f -> f.name.contains("-before-v") && f.extension == "json" }
                 ?.sortedByDescending { it.lastModified() }?.drop(2)?.forEach { it.delete() }
         }
         private val publicKeys = mapOf(

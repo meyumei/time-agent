@@ -312,32 +312,35 @@ import java.util.UUID
         Box(Modifier.padding(padding).consumeWindowInsets(padding).fillMaxSize()) {
             when (tab) {
                 0 -> screenState.SaveableStateProvider("timeline") {
-                    MinuteClockContent(model) { now ->
-                        val briefingSync = briefingHealthStatus(healthSettings.enabled() && (healthSettings.sleepEnabled() || healthSettings.exerciseEnabled()), healthSettings.readReport(), zone, now)
-                        TimelineScreen(data, week, now, zone, { selected = it }, model::changeWeek,
-                            onCreate = { addMenu = true }, onAssistant = { if (fish != null) tab = 3; assistantExpanded = true },
-                            onUndo = { model.perform { model.repository.undoLastAction() } },
-                            canUndo = data.history.any { !it.undone }, busy = busy || data.loading,
-                            onVisibleDate = model::reportVisibleDate, navigationRevision = timelineNavigationRevision,
-                            onCreateAt = { model.dismissError(); editor = EditorRequest(EditorKind.PLAN, selection = it, scheduleRange = true) }, themeMode = themeMode, onThemeMode = onThemeMode,
-                            onRedo = { model.perform { model.repository.redoLastAction() } },
-                            canRedo = data.history.any { it.undone && it.redoable },
-                            onReminder = { reminderDetail = it },
-                            briefing = {
-                                if (fish != null) {
-                                    val daily = remember(data, now.epochSecond / 60, zone, briefingSync, workouts) {
-                                        buildDailyBriefing(data, now, zone, briefingSync, workouts)
+                    TimelineQueryContent(model, week, !data.loading) { timelineData, reportRange ->
+                        MinuteClockContent(model) { now ->
+                            val briefingSync = briefingHealthStatus(healthSettings.enabled() && (healthSettings.sleepEnabled() || healthSettings.exerciseEnabled()), healthSettings.readReport(), zone, now)
+                            TimelineScreen(timelineData, week, now, zone, { selected = it }, model::changeWeek,
+                                onCreate = { addMenu = true }, onAssistant = { if (fish != null) tab = 3; assistantExpanded = true },
+                                onUndo = { model.perform { model.repository.undoLastAction() } },
+                                canUndo = data.history.any { !it.undone }, busy = busy || data.loading || timelineData.loading,
+                                onVisibleRange = reportRange,
+                                onVisibleDate = model::reportVisibleDate, navigationRevision = timelineNavigationRevision,
+                                onCreateAt = { model.dismissError(); editor = EditorRequest(EditorKind.PLAN, selection = it, scheduleRange = true) }, themeMode = themeMode, onThemeMode = onThemeMode,
+                                onRedo = { model.perform { model.repository.redoLastAction() } },
+                                canRedo = data.history.any { it.undone && it.redoable },
+                                onReminder = { reminderDetail = it },
+                                briefing = {
+                                    if (fish != null) {
+                                        val daily = remember(data, now.epochSecond / 60, zone, briefingSync, workouts) {
+                                            buildDailyBriefing(data, now, zone, briefingSync, workouts)
+                                        }
+                                        FishButlerSummary(fish, if (data.loading) "正在读取今天的安排" else collapsedSummary(daily, zone), onOpen = { tab = 3 })
+                                    } else briefingContent()
+                                    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+                                        TextButton(onClick = { editor = EditorRequest(EditorKind.RECORD) }, modifier = Modifier.testTag("today-record")) { Text("补记时间") }
+                                        TextButton(onClick = { openScreen("recurring") }, modifier = Modifier.testTag("today-recurring")) { Text("本次习惯") }
+                                        TextButton(onClick = { openScreen("deadlines") }, modifier = Modifier.testTag("today-deadlines")) { Text("处理期限") }
+                                        TextButton(onClick = { context.startActivity(WorkoutActivity.intent(context)) }, modifier = Modifier.testTag("today-workout")) { Text("训练") }
                                     }
-                                    FishButlerSummary(fish, if (data.loading) "正在读取今天的安排" else collapsedSummary(daily, zone), onOpen = { tab = 3 })
-                                } else briefingContent()
-                                Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
-                                    TextButton(onClick = { editor = EditorRequest(EditorKind.RECORD) }, modifier = Modifier.testTag("today-record")) { Text("补记时间") }
-                                    TextButton(onClick = { openScreen("recurring") }, modifier = Modifier.testTag("today-recurring")) { Text("本次习惯") }
-                                    TextButton(onClick = { openScreen("deadlines") }, modifier = Modifier.testTag("today-deadlines")) { Text("处理期限") }
-                                    TextButton(onClick = { context.startActivity(WorkoutActivity.intent(context)) }, modifier = Modifier.testTag("today-workout")) { Text("训练") }
-                                }
-                                workoutReadError?.let { Text(it, Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.error) }
-                            })
+                                    workoutReadError?.let { Text(it, Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.error) }
+                                })
+                        }
                     }
                 }
                 1 -> PlanHubScreen(data, zone, { selected = it }, { editor = EditorRequest(EditorKind.TASK) }, ::startTimer,

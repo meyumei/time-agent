@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Merged only into the benchmark variant: debug/release APKs get no provider and no fixture assets. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <profileable android:shell="true" />
+        <provider
+            android:name="com.timeagent.benchmark.BenchmarkFixtureProvider"
+            android:authorities="${applicationId}.benchmark-fixture"
+            android:exported="false"
+            android:initOrder="100" />
+    </application>
+
+</manifest>
