@@ -123,6 +123,7 @@ import com.timeagent.ui.navigation.*
     val extraScreen = navigator.page
     val shellDrafts = androidx.lifecycle.viewmodel.compose.viewModel<ShellDraftViewModel>()
     var editor by shellDrafts::editor
+    var quickTaskTitle by rememberSaveable { mutableStateOf("") }
     val editorState = rememberSaveableStateHolder()
     val editorDrafts = shellDrafts.editorDrafts
     var selected by remember { mutableStateOf<Any?>(null) }
@@ -388,8 +389,22 @@ import com.timeagent.ui.navigation.*
                         }
                     }
                 }
-                1 -> PlanHubScreen(data, zone, { selected = it }, { editor = EditorRequest(EditorKind.TASK) }, ::startTimer,
-                    { openScreen(it) }, reselectRevision = reselectRevision,
+                1 -> PlanHubScreen(data, zone, { selected = it }, {
+                    editor = EditorRequest(EditorKind.TASK, title = quickTaskTitle.trim().takeIf(String::isNotBlank))
+                    quickTaskTitle = ""
+                }, ::startTimer,
+                    onToggle = { task ->
+                        model.perform {
+                            model.repository.saveTask(
+                                task.copy(status = if (task.status == "COMPLETED") "TODO" else "COMPLETED"),
+                                task.version,
+                            )
+                        }
+                    },
+                    onSchedule = { task -> editor = EditorRequest(EditorKind.PLAN, taskId = task.id, scheduleRange = true) },
+                    onDelete = { task -> deletingTask = task },
+                    onQuickPreview = { text -> quickTaskTitle = text },
+                    onOpen = { openScreen(it) }, reselectRevision = reselectRevision,
                     scheduleContent = { PlanScheduleOverview(data, model.repository.now(), zone) { selected = it } })
                 2 -> Column {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -669,7 +684,7 @@ import com.timeagent.ui.navigation.*
     switchTask?.let { target -> AlertDialog(onDismissRequest = { switchTask = null }, title = { Text("切换计时任务？") }, text = { Text("先结束当前计时，再开始新任务。已有记录会保留。") }, confirmButton = { TextButton(onClick = { model.perform(onSuccess = { switchTask = null }) { model.repository.startTimer(target.first, target.second, switchExisting = true) } }, enabled = !busy) { Text("结束并开始") } }, dismissButton = { TextButton(onClick = { switchTask = null }) { Text("取消") } }) }
     deletingTask?.let { task ->
         fun delete(action: LinkedScheduleAction) {
-            model.perform(onSuccess = { deletingTask = null; selected = null }) { model.repository.deleteTask(task.id, action) }
+            model.perform(onSuccess = { deletingTask = null; selected = null }) { model.repository.deleteTask(task.id, action, task.version) }
         }
         AlertDialog(onDismissRequest = { if (!busy) deletingTask = null }, title = { Text("删除任务") },
             text = { Text("关联日程如何处理？实际记录始终保留，删除操作可撤销。") },

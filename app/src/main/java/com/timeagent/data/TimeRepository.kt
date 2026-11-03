@@ -455,8 +455,9 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         savePlan(plan, expectedTaskVersion = saved.version, expectedConflicts = expectedConflicts)
     }
 
-    suspend fun deleteTask(id: String, linkedSchedules: LinkedScheduleAction? = null) = transaction {
+    suspend fun deleteTask(id: String, linkedSchedules: LinkedScheduleAction? = null, expectedVersion: Long? = null) = transaction {
         val before = activeTask(id)
+        checkVersion(before.version, expectedVersion)
         require(dao.runningTimer()?.taskId != id) { "请先结束此任务的计时，再删除任务" }
         val plans = dao.plans().filter { it.taskId == id && it.deletedAt == null }
         require(plans.isEmpty() || linkedSchedules != null) { "请选择同时删除关联日程，或保留为独立日程" }

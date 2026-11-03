@@ -68,6 +68,10 @@ fun PlanHubScreen(
     onSelect: (TaskEntity) -> Unit,
     onCreate: () -> Unit,
     onStart: (String?) -> Unit,
+    onToggle: (TaskEntity) -> Unit = {},
+    onSchedule: (TaskEntity) -> Unit = {},
+    onDelete: (TaskEntity) -> Unit = {},
+    onQuickPreview: (String) -> Unit = {},
     onOpen: (String) -> Unit,
     reselectRevision: Int = 0,
     scheduleContent: @Composable () -> Unit = {},
@@ -100,7 +104,14 @@ fun PlanHubScreen(
                 }
             }
         }
-        if (selectedTab == 0) scheduleContent() else {
+        if (selectedTab == 0) scheduleContent()
+        else if (selectedTab == 1) {
+            TaskListContent(
+                data = data, zone = zone, onSelect = onSelect, onCreate = onCreate, onStart = onStart,
+                onToggle = onToggle, onSchedule = onSchedule, onDelete = onDelete,
+                onQuickPreview = onQuickPreview, reselectRevision = reselectRevision,
+            )
+        } else {
             PlanHubContent(data, zone, onSelect, onCreate, onStart, onOpen, reselectRevision)
         }
     }
