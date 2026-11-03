@@ -1,0 +1,293 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+
+package com.timeagent.ui.components
+
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DisplayMode
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimeInput
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.input.KeyboardType
+import com.timeagent.ui.design.DesignTokens
+import java.time.Duration
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+
+private val DateDisplayFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy年M月d日")
+private val TimeDisplayFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+@Composable
+private fun FieldShell(
+    label: String,
+    valueText: String,
+    error: String?,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier.fillMaxWidth()) {
+        OutlinedButton(
+            onClick = onClick,
+            modifier = Modifier.fillMaxWidth().heightIn(min = DesignTokens.touchTarget),
+        ) {
+            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start) {
+                Text(
+                    label,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    valueText,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+        }
+        if (error != null) {
+            Text(
+                error,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(start = DesignTokens.spacing16, top = DesignTokens.spacing4),
+            )
+        }
+    }
+}
+
+@Composable
+fun DateField(
+    label: String,
+    value: LocalDate,
+    onValueChange: (LocalDate) -> Unit,
+    modifier: Modifier = Modifier,
+    error: String? = null,
+) {
+    var showDialog by rememberSaveable { mutableStateOf(false) }
+    FieldShell(label, value.format(DateDisplayFormat), error, { showDialog = true }, modifier)
+    if (showDialog) {
+        val state = rememberDatePickerState(
+            initialSelectedDateMillis = value.toUtcMillis(),
+            initialDisplayedMonthMillis = value.toUtcMillis(),
+            initialDisplayMode = DisplayMode.Picker,
+        )
+        DatePickerDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    state.selectedDateMillis?.let { onValueChange(it.toUtcDate()) }
+                    showDialog = false
+                }, enabled = state.selectedDateMillis != null) { Text("使用日期") }
+            },
+            dismissButton = { TextButton(onClick = { showDialog = false }) { Text("取消") } },
+        ) {
+            DatePicker(state = state, showModeToggle = true)
+        }
+    }
+}
+
+@Composable
+fun TimeField(
+    label: String,
+    value: LocalTime,
+    onValueChange: (LocalTime) -> Unit,
+    modifier: Modifier = Modifier,
+    error: String? = null,
+) {
+    var showDialog by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
+    val is24Hour = android.text.format.DateFormat.is24HourFormat(context)
+    val displayFormat = if (is24Hour) TimeDisplayFormat else DateTimeFormatter.ofPattern("a h:mm")
+    FieldShell(label, value.format(displayFormat), error, { showDialog = true }, modifier)
+    if (showDialog) {
+        val fontScale = LocalDensity.current.fontScale
+        var keyboard by rememberSaveable { mutableStateOf(fontScale > 1.3f) }
+        val state = rememberTimePickerState(value.hour, value.minute, is24Hour = is24Hour)
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("选择时间") },
+            text = {
+                Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                        TextButton(onClick = { keyboard = !keyboard }) {
+                            Text(if (keyboard) "表盘选择" else "键盘输入")
+                        }
+                    }
+                    Row(Modifier.horizontalScroll(rememberScrollState())) {
+                        if (keyboard) TimeInput(state) else TimePicker(state)
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    onValueChange(LocalTime.of(state.hour, state.minute))
+                    showDialog = false
+                }) { Text("使用时间") }
+            },
+            dismissButton = { TextButton(onClick = { showDialog = false }) { Text("取消") } },
+        )
+    }
+}
+
+@Composable
+fun DateTimeRangeField(
+    start: LocalDateTime,
+    end: LocalDateTime,
+    onChange: (LocalDateTime, LocalDateTime) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val startDate = start.toLocalDate()
+    val startTime = start.toLocalTime()
+    val endDate = end.toLocalDate()
+    val endTime = end.toLocalTime()
+    val valid = end.isAfter(start)
+    val crossDay = endDate == startDate.plusDays(1) && endTime < startTime
+    val showCrossDay = crossDay || (endDate == startDate && endTime < startTime)
+
+    Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(DesignTokens.spacing8)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.spacing8)) {
+            DateField("开始日期", startDate, { onChange(LocalDateTime.of(it, startTime), end) }, Modifier.weight(1f))
+            TimeField("开始时间", startTime, { onChange(LocalDateTime.of(startDate, it), end) }, Modifier.weight(1f))
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.spacing8)) {
+            DateField("结束日期", endDate, { onChange(start, LocalDateTime.of(it, endTime)) }, Modifier.weight(1f))
+            TimeField("结束时间", endTime, { onChange(start, LocalDateTime.of(endDate, it)) }, Modifier.weight(1f))
+        }
+        if (showCrossDay) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = DesignTokens.touchTarget)
+                    .toggleable(
+                        value = crossDay,
+                        role = Role.Switch,
+                        onValueChange = { checked ->
+                            val date = if (checked) startDate.plusDays(1) else startDate
+                            onChange(start, LocalDateTime.of(date, endTime))
+                        },
+                    ),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Switch(checked = crossDay, onCheckedChange = null)
+                Spacer(Modifier.width(DesignTokens.spacing8))
+                Text("跨到次日", style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+        if (valid) {
+            Text(
+                "时长：${durationText(Duration.between(start, end))}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        } else {
+            Text(
+                "结束时间必须晚于开始时间",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
+            )
+        }
+    }
+}
+
+@Composable
+fun DurationField(
+    minutes: Int,
+    onChange: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val presets = remember { listOf(15, 30, 45, 60, 90) }
+    var text by rememberSaveable { mutableStateOf(if (minutes > 0) minutes.toString() else "") }
+    LaunchedEffect(minutes) {
+        if (text.toIntOrNull() != minutes) {
+            text = if (minutes > 0) minutes.toString() else ""
+        }
+    }
+    val invalid = text.isNotEmpty() && (text.toIntOrNull()?.let { it > 0 } != true)
+
+    Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(DesignTokens.spacing8)) {
+        Text("时长", style = MaterialTheme.typography.labelLarge)
+        Row(
+            Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.spacing8),
+        ) {
+            presets.forEach { preset ->
+                FilterChip(
+                    selected = minutes == preset,
+                    onClick = { text = preset.toString(); onChange(preset) },
+                    label = { Text("$preset 分钟") },
+                )
+            }
+        }
+        OutlinedTextField(
+            value = text,
+            onValueChange = { input ->
+                text = input
+                input.toIntOrNull()?.takeIf { it > 0 }?.let(onChange)
+            },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("自定义时长（分钟）") },
+            singleLine = true,
+            isError = invalid,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            supportingText = if (invalid) {
+                { Text("请输入大于 0 的整数") }
+            } else {
+                null
+            },
+        )
+    }
+}
+
+private fun LocalDate.toUtcMillis(): Long =
+    atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
+
+private fun Long.toUtcDate(): LocalDate =
+    Instant.ofEpochMilli(this).atZone(ZoneOffset.UTC).toLocalDate()
+
+private fun durationText(duration: Duration): String {
+    val totalMinutes = duration.toMinutes().coerceAtLeast(0)
+    val hours = totalMinutes / 60
+    val rest = totalMinutes % 60
+    return when {
+        hours > 0 && rest > 0 -> "${hours}小时${rest}分钟"
+        hours > 0 -> "${hours}小时"
+        else -> "${rest}分钟"
+    }
+}

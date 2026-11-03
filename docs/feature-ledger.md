@@ -213,3 +213,9 @@ L01/L02/L07/L08 的范围读取及 L34 迁移：14 项设备检查、2 项独立
 本轮基础组在 `shell-round5` 29 项通过，命令/鱼桥在 `final-round2` 54 项通过，业务/训练 11 项通过。UI 在 `shell-ui-round8` 13 项有 1 项失败，130%/200% 应用字体矩阵同样未全通过。语音系统返回断言没有删减；已重新生成 APK，待复验。2026-11-03 手机断开，尚未覆盖更新日常应用，尚未完成最终旧 APK 清理。系统字号上次读取 1.0，之后大字体仅作用于隔离应用。不能据此将任一账本模块全部勾选通过。
 
 最新 `:app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug` 退出 0（258.10 秒）。没有执行主机单测或 Node 回归。详见 [组合版交付和未验项](t2.2-navigation-shell.md)、[实际结果摘要](ledger-evidence/t2-shell/verification.json)。
+
+## 2026-11-03 T2.3 通用组件
+
+新增统一顶栏、FAB、分段切换、日期/时间/范围/时长、重复、提醒、条目选择及反馈组件；Settings 与主壳先接入顶栏/FAB，编辑器完整迁移留在 T2.5。组件不直接写库，写入继续由现有 CommandExecutor 路由。
+
+组件编译与 AndroidTest 编译退出 0；本轮未运行主机单测、Node 或真机。详见 [T2.3 组件记录](t2.3-shared-components.md)。

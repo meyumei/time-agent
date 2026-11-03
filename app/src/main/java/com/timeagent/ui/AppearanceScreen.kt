@@ -22,9 +22,7 @@ fun AppearanceScreen(onClose: () -> Unit) {
     val preference = remember(context) { ThemePreference(context) }
     val appearance = LocalAppearance.current
     Scaffold(topBar = {
-        TopAppBar(title = { Text("外观") }, navigationIcon = {
-            TextButton(onClick = onClose) { Text("返回设置") }
-        })
+        com.timeagent.ui.components.AppTopBar("外观", onClose)
     }) { padding ->
         Column(Modifier.padding(padding).fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)) {
