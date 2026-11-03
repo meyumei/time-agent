@@ -10,14 +10,16 @@ data class TimelineViewport(
     val firstDay: Double,
     val zoom: Double = 1.0,
     val firstMinute: Double = 0.0,
+    val dayCount: Int = 7,
 ) {
     init {
         require(firstDay.isFinite() && firstDay in MIN_DAY..MAX_DAY)
         require(zoom.isFinite() && zoom in 1.0..MAX_ZOOM)
         require(firstMinute.isFinite() && firstMinute in 0.0..(MINUTES_PER_DAY - MINUTES_PER_DAY / zoom))
+        require(dayCount in SUPPORTED_DAY_COUNTS)
     }
 
-    fun dayWidth(width: Double): Double = (width / FIT_DAYS) * zoom
+    fun dayWidth(width: Double): Double = (width / dayCount) * zoom
     fun minuteHeight(height: Double): Double = (height / MINUTES_PER_DAY) * zoom
     fun shiftDays(days: Long): TimelineViewport = copy(firstDay = (firstDay + days).coerceIn(MIN_DAY, MAX_DAY))
 
@@ -40,7 +42,7 @@ data class TimelineViewport(
         val dy = panY.takeIf(Double::isFinite) ?: 0.0
         val oldDayWidth = dayWidth(width)
         val oldMinuteHeight = minuteHeight(height)
-        val nextDayWidth = (width / FIT_DAYS) * nextZoom
+        val nextDayWidth = (width / dayCount) * nextZoom
         val nextMinuteHeight = (height / MINUTES_PER_DAY) * nextZoom
         if (oldDayWidth <= 0.0 || oldMinuteHeight <= 0.0 || nextDayWidth <= 0.0 || nextMinuteHeight <= 0.0) return this
         val day = (firstDay + x / oldDayWidth - (x + dx) / nextDayWidth).coerceIn(MIN_DAY, MAX_DAY)
@@ -51,7 +53,7 @@ data class TimelineViewport(
 
     fun visibleDates(): List<LocalDate> {
         val start = floor(firstDay).toLong()
-        val end = ceil(firstDay + FIT_DAYS / zoom).toLong()
+        val end = ceil(firstDay + dayCount.toDouble() / zoom).toLong()
         return (start until end).map(LocalDate::ofEpochDay)
     }
 
@@ -66,12 +68,19 @@ data class TimelineViewport(
 
     companion object {
         const val MAX_ZOOM = 6.0
-        private const val FIT_DAYS = 7.0
         private const val MINUTES_PER_DAY = 1440.0
+        private val SUPPORTED_DAY_COUNTS = setOf(1, 3, 7)
         private val MIN_DAY = LocalDate.MIN.plusDays(14).toEpochDay().toDouble()
         private val MAX_DAY = LocalDate.MAX.minusDays(14).toEpochDay().toDouble()
 
-        fun fit(firstDate: LocalDate): TimelineViewport =
-            TimelineViewport(firstDate.toEpochDay().toDouble().coerceIn(MIN_DAY, MAX_DAY))
+        fun fit(firstDate: LocalDate, dayCount: Int = 7): TimelineViewport =
+            TimelineViewport(firstDate.toEpochDay().toDouble().coerceIn(MIN_DAY, MAX_DAY), dayCount = dayCount)
+
+        fun withDayCount(viewport: TimelineViewport, dayCount: Int): TimelineViewport {
+            require(dayCount in SUPPORTED_DAY_COUNTS)
+            val center = viewport.firstDay + viewport.dayCount / (2.0 * viewport.zoom)
+            val first = (center - dayCount / (2.0 * viewport.zoom)).coerceIn(MIN_DAY, MAX_DAY)
+            return viewport.copy(firstDay = first, dayCount = dayCount)
+        }
     }
 }
