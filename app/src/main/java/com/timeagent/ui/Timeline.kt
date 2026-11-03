@@ -94,8 +94,8 @@ fun Long.minutesLabel(): String = if (this < 60) "${this} 分钟" else "${this /
 }
 
 private val ViewportSaver = listSaver<TimelineViewport, Double>(
-    save = { listOf(it.firstDay, it.zoom, it.firstMinute) },
-    restore = { TimelineViewport(it[0], it[1], it[2]) },
+    save = { listOf(it.firstDay, it.zoom, it.firstMinute, it.dayCount.toDouble()) },
+    restore = { TimelineViewport(it[0], it[1], it[2], it.getOrNull(3)?.toInt() ?: 7) },
 )
 private val DayNames = listOf("周一", "周二", "周三", "周四", "周五", "周六", "周日")
 
