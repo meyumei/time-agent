@@ -334,7 +334,7 @@ import com.timeagent.ui.navigation.*
                 state = voiceControl.copy(finish = { voiceControl.finish(); voiceSheetOpen = true }))
         }
     }, floatingActionButton = {
-        if (editor == null && extraScreen == null && tab == 2) FloatingActionButton(onClick = { addMenu = true }, containerColor = Indigo) { Icon(Icons.Rounded.Add, "新建", tint = androidx.compose.ui.graphics.Color.White) }
+        if (editor == null && extraScreen == null && tab == 2) com.timeagent.ui.components.PrimaryFab("新建", { addMenu = true })
     }) { padding ->
         Box(Modifier.padding(padding).consumeWindowInsets(padding).fillMaxSize()) {
             AppNavHost(navigator, motionMillis = com.timeagent.ui.design.LocalPresentation.current.motionMillis, rootContent = { rootTab, reselectRevision ->

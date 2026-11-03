@@ -18,8 +18,7 @@ import com.timeagent.reminders.reminderAccessState
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SettingsPage(title: String, onClose: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
-    Scaffold(topBar = { TopAppBar(title = { Text(title) },
-        navigationIcon = { TextButton(onClick = onClose) { Text("返回") } }) }) { padding ->
+    Scaffold(topBar = { com.timeagent.ui.components.AppTopBar(title, onClose) }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp), content = content)
     }
