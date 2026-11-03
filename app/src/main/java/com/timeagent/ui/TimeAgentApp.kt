@@ -353,6 +353,22 @@ import com.timeagent.ui.navigation.*
                                 onRedo = { model.perform { model.repository.redoLastAction() } },
                                 canRedo = data.history.any { it.undone && it.redoable },
                                 onReminder = { reminderDetail = it },
+                                onDragCommit = { item, result ->
+                                    model.perform {
+                                        when (val entity = item.entity) {
+                                            is ScheduleBlockEntity -> model.repository.savePlan(
+                                                entity.copy(startAt = result.startAt, endAt = result.endAt),
+                                                expectedVersion = entity.version,
+                                                requestId = "timeline-drag:${entity.id}:${entity.version}:${result.startAt}:${result.endAt}",
+                                            )
+                                            is TimeRecordEntity -> model.repository.saveRecord(
+                                                entity.copy(startAt = result.startAt, endAt = result.endAt),
+                                                expectedVersion = entity.version,
+                                                requestId = "timeline-drag:${entity.id}:${entity.version}:${result.startAt}:${result.endAt}",
+                                            )
+                                        }
+                                    }
+                                },
                                 briefing = {
                                     if (fish != null) {
                                         val daily = remember(data, now.epochSecond / 60, zone, briefingSync, workouts) {

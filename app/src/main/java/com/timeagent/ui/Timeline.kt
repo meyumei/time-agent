@@ -41,8 +41,12 @@ import androidx.compose.ui.unit.IntOffset
 import com.timeagent.core.*
 import com.timeagent.data.*
 import com.timeagent.ui.timeline.TimelineDayCountSwitch
+import com.timeagent.ui.timeline.TimelineDragKind
+import com.timeagent.ui.timeline.TimelineDragResult
 import com.timeagent.ui.timeline.TimelineFilterButton
 import com.timeagent.ui.timeline.TimelineFilterState
+import com.timeagent.ui.timeline.minuteDelta
+import com.timeagent.ui.timeline.preview
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -51,6 +55,12 @@ import kotlin.math.roundToInt
 enum class ItemKind(val label: String) { COURSE("课程"), PLAN("计划"), RECORD("实际") }
 data class TimelineItem(val id: String, val kind: ItemKind, val title: String, val span: TimeSpan, val subtitle: String = "", val entity: Any, val colorKey: String = "")
 val TimelineItem.isPoint: Boolean get() = (entity as? ScheduleBlockEntity)?.kind == "POINT"
+private data class ActiveTimelineDrag(
+    val item: TimelineItem,
+    val kind: TimelineDragKind,
+    val deltaPixels: Offset,
+    val result: TimelineDragResult,
+)
 fun LocalSnapshot.timeline(now: Instant, filters: TimelineFilterState = TimelineFilterState()): List<TimelineItem> {
     val taskNames = tasks.associateBy { it.id }
     val courseNames = courses.associateBy { it.id }
@@ -125,6 +135,7 @@ private val DayNames = listOf("周一", "周二", "周三", "周四", "周五", 
     briefing: @Composable () -> Unit = {},
     onVisibleRange: (LocalDate, LocalDate) -> Unit = { _, _ -> },
     defaultDayCount: Int = 3,
+    onDragCommit: (TimelineItem, TimelineDragResult) -> Unit = { _, _ -> },
 ) {
     var showConflicts by remember { mutableStateOf(false) }
     var conflictGroup by remember { mutableStateOf<List<TimelineItem>?>(null) }
@@ -208,6 +219,7 @@ private val DayNames = listOf("周一", "周二", "周三", "周四", "周五", 
                 Modifier.weight(1f), if (busy) null else onCreateAt,
                 resolve = rendered::currentItem, remindersByDate = remindersByDate, onReminder = onReminder,
                 onConflictGroup = { conflictGroup = it }, allDayItems = items.filter(TimelineItem::isAllDay),
+                onDragCommit = onDragCommit,
             )
         }
     }
@@ -351,6 +363,7 @@ private suspend fun PointerInputScope.detectTimelineGestures(
     onReminder: (ReminderEntity) -> Unit = {},
     onConflictGroup: (List<TimelineItem>) -> Unit = {},
     allDayItems: List<TimelineItem> = emptyList(),
+    onDragCommit: (TimelineItem, TimelineDragResult) -> Unit = { _, _ -> },
 ) {
     val latestOnViewport by rememberUpdatedState(onViewport)
     val latestCreate by rememberUpdatedState(onCreateAt)
@@ -359,6 +372,7 @@ private suspend fun PointerInputScope.detectTimelineGestures(
     var dragSelection by remember { mutableStateOf<TimelineSelection?>(null) }
     var pendingSelection by remember { mutableStateOf<TimelineSelection?>(null) }
     var pendingDrag by remember { mutableStateOf<PendingSelectionDrag?>(null) }
+    var activeDrag by remember { mutableStateOf<ActiveTimelineDrag?>(null) }
     BoxWithConstraints(modifier.fillMaxWidth().clipToBounds().testTag("timeline-viewport")) {
         val gutter = 38.dp
         val header = 42.dp
@@ -372,6 +386,39 @@ private suspend fun PointerInputScope.detectTimelineGestures(
         val density = LocalDensity.current
         val widthPx = with(density) { graphWidth.toPx().toDouble() }
         val heightPx = with(density) { graphHeight.toPx().toDouble() }
+        val dayWidthPx = with(density) { dayWidth.toPx() }
+        val minuteHeightPx = with(density) { minuteHeight.toPx() }
+        fun updateDrag(item: TimelineItem, kind: TimelineDragKind, amount: Offset) {
+            if (item.kind == ItemKind.COURSE || item.isPoint || item.isAllDay ||
+                (item.kind == ItemKind.RECORD && (item.entity as? TimeRecordEntity)?.endAt == null)
+            ) return
+            val current = activeDrag
+            val nextPixels = if (current?.item?.layoutKey == item.layoutKey && current.kind == kind) {
+                current.deltaPixels + amount
+            } else {
+                amount
+            }
+            val deltaMinutes = minuteDelta(
+                nextPixels.x / dayWidthPx * 1440f + nextPixels.y / minuteHeightPx,
+                1f,
+            )
+            activeDrag = ActiveTimelineDrag(
+                item,
+                kind,
+                nextPixels,
+                preview(item.span.start.toEpochMilli(), item.span.end.toEpochMilli(), deltaMinutes, kind),
+            )
+        }
+        fun finishDrag(item: TimelineItem) {
+            val drag = activeDrag?.takeIf { it.item.layoutKey == item.layoutKey }
+            activeDrag = null
+            if (drag != null && (drag.result.startAt != item.span.start.toEpochMilli() || drag.result.endAt != item.span.end.toEpochMilli())) {
+                onDragCommit(item, drag.result)
+            }
+        }
+        fun cancelDrag(item: TimelineItem) {
+            if (activeDrag?.item?.layoutKey == item.layoutKey) activeDrag = null
+        }
         val gutterPx = with(density) { gutter.toPx() }
         val topPx = with(density) { (header + allDayHeight + labelInset).toPx() }
         val hitEvent by rememberUpdatedState<(Offset) -> Boolean> { point ->
@@ -474,6 +521,7 @@ private suspend fun PointerInputScope.detectTimelineGestures(
                             rendered.days.getValue(date), placementViewport, dayWidth, minuteHeight, graphHeight,
                             viewport.zoom, viewport.firstMinute, today, now, zone, rendered.conflictingKeys, onSelect,
                             resolve = resolve, reminders = remindersByDate[date].orEmpty(), onReminder = onReminder, onConflictGroup = onConflictGroup,
+                            activeDrag = activeDrag, onDragDelta = ::updateDrag, onDragEnd = ::finishDrag, onDragCancel = ::cancelDrag,
                         )
                     } }
                     (dragSelection ?: pendingSelection)?.takeIf { it.date in dates }?.let { selected ->
@@ -483,6 +531,15 @@ private suspend fun PointerInputScope.detectTimelineGestures(
                         )
                     }
                 }
+            }
+            activeDrag?.let { drag ->
+                Text(
+                    "预览 ${Instant.ofEpochMilli(drag.result.startAt).label(zone)} – ${Instant.ofEpochMilli(drag.result.endAt).label(zone)}",
+                    Modifier.align(Alignment.TopCenter).padding(top = 2.dp)
+                        .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(8.dp))
+                        .padding(horizontal = 8.dp, vertical = 3.dp),
+                    style = MaterialTheme.typography.labelSmall,
+                )
             }
         }
     }
@@ -519,6 +576,10 @@ private suspend fun PointerInputScope.detectTimelineGestures(
     reminders: List<ReminderEntity>,
     onReminder: (ReminderEntity) -> Unit,
     onConflictGroup: (List<TimelineItem>) -> Unit,
+    activeDrag: ActiveTimelineDrag?,
+    onDragDelta: (TimelineItem, TimelineDragKind, Offset) -> Unit,
+    onDragEnd: (TimelineItem) -> Unit,
+    onDragCancel: (TimelineItem) -> Unit,
 ) {
     val visibleMinutes = 1440.0 / zoom
     Box(Modifier.offset {
@@ -543,14 +604,25 @@ private suspend fun PointerInputScope.detectTimelineGestures(
         day.events.forEach { event -> key(event.item.kind, event.item.id) {
             val grouped = event.item.kind != ItemKind.RECORD && event.item.layoutKey in day.groupedKeys
             if (!grouped) {
-                val bounds = day.bounds(event, dayWidth.value.toDouble(), minuteHeight.value.toDouble(), firstMinute, visibleMinutes)
+                val live = resolve(event.item)
+                val dragging = activeDrag?.takeIf { it.item.layoutKey == live.layoutKey }
+                val display = dragging?.let {
+                    live.copy(span = TimeSpan(Instant.ofEpochMilli(it.result.startAt), Instant.ofEpochMilli(it.result.endAt)))
+                } ?: live
+                val displayEvent = if (dragging == null) event else {
+                    val segment = TimelineLayout.split(display.span, zone).firstOrNull { it.date == day.date } ?: event.segment
+                    event.copy(item = display, segment = segment)
+                }
+                val bounds = day.bounds(displayEvent, dayWidth.value.toDouble(), minuteHeight.value.toDouble(), firstMinute, visibleMinutes)
                 if (bounds != null) {
-                    val live = resolve(event.item)
                     TimelineEventCard(
-                        live, zone, zoom, live.layoutKey in conflictingKeys,
+                        display, zone, zoom, display.layoutKey in conflictingKeys,
                         Modifier.offset(x = bounds.x.dp, y = bounds.y.dp).width(bounds.width.dp).height(bounds.height.dp),
                         cardSize = DpSize(bounds.width.dp, bounds.height.dp),
                         onClick = { onSelect(live) },
+                        onDragDelta = { kind, amount -> onDragDelta(live, kind, amount) },
+                        onDragEnd = { onDragEnd(live) },
+                        onDragCancel = { onDragCancel(live) },
                     )
                 }
             }

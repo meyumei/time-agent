@@ -3,6 +3,7 @@ package com.timeagent.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -43,6 +45,8 @@ import androidx.compose.ui.unit.sp
 import com.timeagent.data.CourseOccurrenceEntity
 import com.timeagent.data.ScheduleBlockEntity
 import com.timeagent.data.TimeRecordEntity
+import com.timeagent.ui.timeline.TimelineDragKind
+import androidx.compose.ui.geometry.Offset
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
@@ -125,6 +129,9 @@ fun TimelineEventCard(
     modifier: Modifier = Modifier,
     cardSize: DpSize? = null,
     onClick: () -> Unit,
+    onDragDelta: ((TimelineDragKind, Offset) -> Unit)? = null,
+    onDragEnd: (() -> Unit)? = null,
+    onDragCancel: (() -> Unit)? = null,
 ) {
     val colors = item.paint()
     val description = androidx.compose.runtime.remember(item, zone, conflicting) { item.spokenDescription(zone, conflicting) }
@@ -234,6 +241,16 @@ fun TimelineEventCard(
                     )
                 }
                 .clickable(role = Role.Button, onClick = onClick)
+                .then(if (onDragDelta != null) Modifier.pointerInput(item.id) {
+                    detectDragGesturesAfterLongPress(
+                        onDrag = { change, dragAmount ->
+                            change.consume()
+                            onDragDelta(TimelineDragKind.MOVE, dragAmount)
+                        },
+                        onDragEnd = { onDragEnd?.invoke() },
+                        onDragCancel = { onDragCancel?.invoke() },
+                    )
+                } else Modifier)
                 .semantics(mergeDescendants = true) { contentDescription = description }
         ) {
             Row(Modifier.fillMaxSize()) {
@@ -306,6 +323,42 @@ fun TimelineEventCard(
                         modifier = Modifier.size(9.dp),
                     )
                 }
+            if (onDragDelta != null && item.kind != ItemKind.COURSE && !item.isPoint && !item.isRunningRecord()) {
+                Box(
+                    Modifier
+                        .align(Alignment.TopCenter)
+                        .fillMaxWidth()
+                        .height(24.dp)
+                        .pointerInput(item.id, "start") {
+                            detectDragGesturesAfterLongPress(
+                                onDrag = { change, dragAmount ->
+                                    change.consume()
+                                    onDragDelta(TimelineDragKind.RESIZE_START, dragAmount)
+                                },
+                                onDragEnd = { onDragEnd?.invoke() },
+                                onDragCancel = { onDragCancel?.invoke() },
+                            )
+                        }
+                        .semantics { contentDescription = "拖动调整开始时间" },
+                )
+                Box(
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .height(24.dp)
+                        .pointerInput(item.id, "end") {
+                            detectDragGesturesAfterLongPress(
+                                onDrag = { change, dragAmount ->
+                                    change.consume()
+                                    onDragDelta(TimelineDragKind.RESIZE_END, dragAmount)
+                                },
+                                onDragEnd = { onDragEnd?.invoke() },
+                                onDragCancel = { onDragCancel?.invoke() },
+                            )
+                        }
+                        .semantics { contentDescription = "拖动调整结束时间" },
+                )
+            }
             }
         }
     }
