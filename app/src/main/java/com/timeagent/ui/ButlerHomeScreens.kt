@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -61,6 +63,51 @@ private val planDateTimeFmt = DateTimeFormatter.ofPattern("M月d日 HH:mm")
  */
 @Composable
 fun PlanHubScreen(
+    data: LocalSnapshot,
+    zone: ZoneId,
+    onSelect: (TaskEntity) -> Unit,
+    onCreate: () -> Unit,
+    onStart: (String?) -> Unit,
+    onOpen: (String) -> Unit,
+    reselectRevision: Int = 0,
+    scheduleContent: @Composable () -> Unit = {},
+) {
+    var selectedTab by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableIntStateOf(1) }
+    Column(Modifier.fillMaxSize()) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
+            listOf("日程", "任务", "截止", "项目", "周期").forEachIndexed { index, label ->
+                TextButton(
+                    onClick = {
+                        when (index) {
+                            0, 1 -> selectedTab = index
+                            2 -> onOpen("deadlines")
+                            3 -> onOpen("projects")
+                            else -> onOpen("recurring")
+                        }
+                    },
+                    modifier = Modifier
+                        .heightIn(min = 48.dp)
+                        .testTag("plan-tab-$index")
+                        .semantics { contentDescription = "计划${label}页" },
+                ) {
+                    Text(label, fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Normal)
+                }
+            }
+        }
+        if (selectedTab == 0) scheduleContent() else {
+            PlanHubContent(data, zone, onSelect, onCreate, onStart, onOpen, reselectRevision)
+        }
+    }
+}
+
+@Composable
+private fun PlanHubContent(
     data: LocalSnapshot,
     zone: ZoneId,
     onSelect: (TaskEntity) -> Unit,
@@ -538,5 +585,73 @@ private fun planDateLabel(date: LocalDate, today: LocalDate): String {
         1L -> "明天 · $base"
         -1L -> "昨天 · $base"
         else -> base
+    }
+}
+
+@Composable
+fun PlanScheduleOverview(
+    data: LocalSnapshot,
+    now: Instant,
+    zone: ZoneId,
+    onSelect: (TimelineItem) -> Unit,
+) {
+    var monthText by androidx.compose.runtime.saveable.rememberSaveable {
+        androidx.compose.runtime.mutableStateOf(LocalDate.ofInstant(now, zone).withDayOfMonth(1).toString())
+    }
+    val month = runCatching { LocalDate.parse(monthText).withDayOfMonth(1) }
+        .getOrDefault(LocalDate.ofInstant(now, zone).withDayOfMonth(1))
+    val first = month.minusDays((month.dayOfWeek.value - 1).toLong())
+    val days = (0 until 42).map { first.plusDays(it.toLong()) }
+    val items = remember(data, now) { data.timeline(now).filter { !it.isPoint } }
+    val byDate = remember(items, zone) {
+        items.groupBy { it.span.start.atZone(zone).toLocalDate() }
+    }
+    Column(
+        Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(12.dp)
+            .testTag("plan-schedule-overview"),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(onClick = { monthText = month.minusMonths(1).toString() }) { Text("‹") }
+            Text("${month.year}年${month.monthValue}月", Modifier.weight(1f), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            IconButton(onClick = { monthText = month.plusMonths(1).toString() }) { Text("›") }
+        }
+        Row(Modifier.fillMaxWidth()) {
+            listOf("一", "二", "三", "四", "五", "六", "日").forEach {
+                Text(it, Modifier.weight(1f), textAlign = androidx.compose.ui.text.style.TextAlign.Center, style = MaterialTheme.typography.labelMedium)
+            }
+        }
+        days.chunked(7).forEach { week ->
+            Row(Modifier.fillMaxWidth()) {
+                week.forEach { date ->
+                    val dayItems = byDate[date].orEmpty()
+                    Column(
+                        Modifier
+                            .weight(1f)
+                            .heightIn(min = 76.dp)
+                            .padding(2.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(if (date.month == month.month) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface)
+                            .padding(4.dp),
+                    ) {
+                        Text(date.dayOfMonth.toString(), style = MaterialTheme.typography.labelMedium)
+                        dayItems.take(3).forEach { item ->
+                            TextButton(
+                                onClick = { onSelect(item) },
+                                modifier = Modifier.fillMaxWidth().heightIn(min = 28.dp).padding(0.dp),
+                                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 2.dp, vertical = 0.dp),
+                            ) {
+                                Text(item.title, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.labelSmall)
+                            }
+                        }
+                        if (dayItems.size > 3) Text("+${dayItems.size - 3}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+                    }
+                }
+            }
+        }
+        Text("点击日期中的日程可打开详情；日程时间轴仍支持 1/3/7 日切换。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

@@ -388,7 +388,8 @@ import com.timeagent.ui.navigation.*
                     }
                 }
                 1 -> PlanHubScreen(data, zone, { selected = it }, { editor = EditorRequest(EditorKind.TASK) }, ::startTimer,
-                    { openScreen(it) }, reselectRevision = reselectRevision)
+                    { openScreen(it) }, reselectRevision = reselectRevision,
+                    scheduleContent = { PlanScheduleOverview(data, model.repository.now(), zone) { selected = it } })
                 2 -> Column {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                         TextButton(onClick = { openScreen("health") }) { Text("健康与训练") }
