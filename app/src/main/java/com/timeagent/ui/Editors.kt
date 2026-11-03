@@ -16,6 +16,7 @@ import com.timeagent.core.TimeSpan
 import com.timeagent.core.TimeInput
 import com.timeagent.core.TimelineSelection
 import com.timeagent.data.*
+import com.timeagent.ui.components.DateTimeRangeField
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -100,6 +101,9 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
         if (scheduleAllDay) TimeSpan(LocalDate.parse(date).atStartOfDay(ZoneId.of(plan!!.timezoneId)).toInstant(), LocalDate.parse(endDate).plusDays(1).atStartOfDay(ZoneId.of(plan.timezoneId)).toInstant())
         else TimeSpan(Instant.ofEpochMilli(point(date, startTime, originalStart)), Instant.ofEpochMilli(point(endDate, endTime, originalEnd)))
     }.getOrNull()
+    val componentRange = if (hasTime && !schedulePoint && !scheduleAllDay) runCatching {
+        LocalDateTime.parse("${date}T${startTime}") to LocalDateTime.parse("${endDate}T${endTime}")
+    }.getOrNull() else null
     val entityId = plan?.id ?: record?.id ?: course?.id
     val overlaps = candidate?.let { span -> data.timeline(now).filter { it.id != entityId && !it.isPoint && (if (request.kind == EditorKind.RECORD) it.kind == ItemKind.RECORD else it.kind != ItemKind.RECORD) && span.overlaps(it.span) } }.orEmpty()
     val future = request.kind == EditorKind.RECORD && candidate?.end?.isAfter(now) == true
@@ -182,10 +186,23 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
                 }
                 if (hasTime) {
                     Text("时间以 ${zone.id} 显示", style = MaterialTheme.typography.bodySmall)
-                    OutlinedTextField(date, { date = it }, label = { Text("开始日期 YYYY-MM-DD") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                    if (!scheduleAllDay) OutlinedTextField(startTime, { startTime = it }, label = { Text("开始时间 HH:mm") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                    if (!schedulePoint) OutlinedTextField(endDate, { endDate = it }, label = { Text("结束日期 YYYY-MM-DD") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                    if (!schedulePoint && !scheduleAllDay) OutlinedTextField(endTime, { endTime = it }, label = { Text("结束时间 HH:mm") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                    if (componentRange != null) {
+                        DateTimeRangeField(
+                            start = componentRange.first,
+                            end = componentRange.second,
+                            onChange = { startValue, endValue ->
+                                date = startValue.toLocalDate().toString()
+                                startTime = startValue.toLocalTime().toString().take(5)
+                                endDate = endValue.toLocalDate().toString()
+                                endTime = endValue.toLocalTime().toString().take(5)
+                            },
+                        )
+                    } else {
+                        OutlinedTextField(date, { date = it }, label = { Text("开始日期 YYYY-MM-DD") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                        if (!scheduleAllDay) OutlinedTextField(startTime, { startTime = it }, label = { Text("开始时间 HH:mm") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                        if (!schedulePoint) OutlinedTextField(endDate, { endDate = it }, label = { Text("结束日期 YYYY-MM-DD") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                        if (!schedulePoint && !scheduleAllDay) OutlinedTextField(endTime, { endTime = it }, label = { Text("结束时间 HH:mm") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                    }
                     if (request.kind == EditorKind.PLAN || request.kind == EditorKind.RECORD) {
                         Text("关联任务（可选）", style = MaterialTheme.typography.labelLarge)
                         Column {
