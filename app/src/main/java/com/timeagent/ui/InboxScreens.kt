@@ -29,21 +29,19 @@ data class NoteTarget(val type: String, val id: String, val title: String)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NoteEditorScreen(model: TimeViewModel, data: LocalSnapshot, target: NoteTarget, onClose: () -> Unit) {
+fun NoteEditorScreen(model: TimeViewModel, data: LocalSnapshot, target: NoteTarget, onClose: () -> Unit, onKeepDraft: (() -> Unit)? = null) {
     val busy by model.busy.collectAsState()
     val existing = data.notes.firstOrNull { it.targetType == target.type && it.targetId == target.id }
     var title by rememberSaveable(target.type, target.id) { mutableStateOf(existing?.title.orEmpty()) }
     var body by rememberSaveable(target.type, target.id) { mutableStateOf(existing?.body.orEmpty()) }
-    var confirmDiscard by remember { mutableStateOf(false) }
-    val dirty = title != existing?.title.orEmpty() || body != existing?.body.orEmpty()
-    fun close() { if (dirty) confirmDiscard = true else onClose() }
-    BackHandler { if (!busy) close() }
+    val close = rememberDraftExit("${target.type}:${target.id}", listOf(title, body), busy, onClose, onKeepDraft)
+    BackHandler(onBack = close)
 
     Scaffold(topBar = {
         TopAppBar(
             title = { Text("记笔记 · ${target.title}", maxLines = 1) },
             navigationIcon = {
-                IconButton(onClick = ::close, enabled = !busy, modifier = Modifier.testTag("note-back")) {
+                IconButton(onClick = close, enabled = !busy, modifier = Modifier.testTag("note-back")) {
                     Icon(Icons.AutoMirrored.Rounded.ArrowBack, "返回")
                 }
             },
@@ -85,13 +83,7 @@ fun NoteEditorScreen(model: TimeViewModel, data: LocalSnapshot, target: NoteTarg
         }
     }
 
-    if (confirmDiscard) AlertDialog(
-        onDismissRequest = { confirmDiscard = false },
-        title = { Text("放弃未保存的笔记？") },
-        text = { Text("草稿还没有保存，返回后会丢失。") },
-        confirmButton = { TextButton(onClick = { confirmDiscard = false; onClose() }) { Text("放弃并返回") } },
-        dismissButton = { TextButton(onClick = { confirmDiscard = false }) { Text("继续编辑") } },
-    )
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

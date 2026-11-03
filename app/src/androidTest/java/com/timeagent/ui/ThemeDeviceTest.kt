@@ -80,7 +80,7 @@ class ThemeDeviceTest {
         val activity = compose.activity
         var identity: Any? = null
         compose.setContent {
-            CompositionLocalProvider(LocalContext provides context) {
+            DeviceTestFont { CompositionLocalProvider(LocalContext provides context) {
                 TimeAgentTheme {
                     val runningState = remember { Any() }
                     SideEffect { identity = runningState }
@@ -90,7 +90,7 @@ class ThemeDeviceTest {
                         Text(LocalAppearance.current.presentation.name, Modifier.testTag("theme-mode"))
                     }
                 }
-            }
+            } }
         }
         compose.onNodeWithTag("theme-draft").performTextInput("未提交的任务草稿")
         compose.waitForIdle()

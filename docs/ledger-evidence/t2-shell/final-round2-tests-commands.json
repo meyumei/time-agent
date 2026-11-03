@@ -1,0 +1,9 @@
+{
+  "group": "commands",
+  "fontScale": "1.0",
+  "passed": true,
+  "testCount": 54,
+  "failures": null,
+  "instrumentationProcessExitCode": 0,
+  "elapsedSeconds": 5.6
+}

@@ -15,6 +15,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.timeagent.data.TimeRepository
 import com.timeagent.workout.data.WorkoutDatabase
 import com.timeagent.ui.TimeAgentTheme
+import com.timeagent.ui.returnToButler
 import com.timeagent.workout.data.WorkoutRepository
 import com.timeagent.backup.recoverPersonalDataBeforeOpen
 import dagger.Lazy
@@ -37,7 +38,7 @@ class WorkoutActivity : ComponentActivity() {
                 ) as T
             })
             TimeAgentTheme {
-                WorkoutApp(model, intent.getStringExtra(EXTRA_SESSION_ID), onClose = ::finish)
+                WorkoutApp(model, intent.getStringExtra(EXTRA_SESSION_ID), onClose = ::returnToButler)
             }
         }
         if (Build.VERSION.SDK_INT >= 33 && !getSharedPreferences("workout", MODE_PRIVATE).getBoolean("notificationAsked", false)) {

@@ -16,13 +16,19 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.timeagent.assistant.*
 
+data class HomeVoiceState(
+    val status: SpeechInputStatus, val resultReady: Boolean, val resetSignal: Int,
+    val start: () -> Boolean, val finish: () -> Unit, val cancel: () -> Unit,
+    val tap: () -> Unit,
+)
+
 @Composable
-fun HomeVoiceDock(
-    enabled: Boolean, onRecognized: (String) -> Unit, onMessage: (String) -> Unit, onTextEntry: () -> Unit = {},
+fun rememberHomeVoiceState(
+    enabled: Boolean, onRecognized: (String) -> Unit, onMessage: (String) -> Unit,
     onLiveInput: (SpeechInputStatus, String) -> Unit = { _, _ -> },
     onSuggestion: (String?) -> Unit = {},
     speechFactory: SpeechInputFactory = OfflineSpeechInputFactory,
-) {
+): HomeVoiceState {
     val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current
     val deliver by rememberUpdatedState(onRecognized)
@@ -60,8 +66,17 @@ fun HomeVoiceDock(
         lifecycle.lifecycle.addObserver(observer)
         onDispose { lifecycle.lifecycle.removeObserver(observer); session.cancel(); speech.close(); sessionHolder[0] = null }
     }
-    HoldToTalkButton(enabled, status == SpeechInputStatus.PROCESSING,
-        onStart = {
+    if (helpOpen) AlertDialog(onDismissRequest = { helpOpen = false }, title = { Text("检查语音输入") },
+        text = { Text((failureMessage ?: "离线中文识别尚未就绪，可重新准备后再试。") + "\n\n小米／澎湃 OS：应用管理 → 时间 Agent → 权限管理 → 录音或麦克风，允许使用。也请检查控制中心的麦克风开关。中文识别已内置，无需安装系统语音服务。") },
+        confirmButton = { TextButton(onClick = {
+            helpOpen = false
+            runCatching { context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context.packageName}"))) }
+                .onFailure { showMessage("请在手机设置的应用管理中打开时间 Agent 的麦克风权限。") }
+        }) { Text("打开应用权限") } },
+        dismissButton = { TextButton(onClick = { helpOpen = false; failureMessage = null; session.cancel(); resetSignal++; engineRevision++ }) { Text("重新准备") } })
+
+    return HomeVoiceState(status, resultReady, resetSignal,
+        start = {
             when {
                 status == SpeechInputStatus.PREPARING -> { showMessage("首次使用正在准备离线中文识别，准备好后请重新按住。"); false }
                 status != SpeechInputStatus.IDLE -> { showMessage("正在识别上一段语音，请稍候。"); false }
@@ -71,15 +86,22 @@ fun HomeVoiceDock(
                 }
                 else -> { resultReady = false; liveText = ""; suggest(null); failureMessage = null; session.begin(); status == SpeechInputStatus.LISTENING || status == SpeechInputStatus.STARTING }
             }
-        }, onFinish = session::release, onCancel = { session.cancel(); liveText = ""; suggest(null) },
-        onTap = { if (failureMessage != null) helpOpen = true else showMessage("按住下方圆圈说话，文字会在屏幕上方显示；松开识别，上滑取消。") }, onTextEntry = onTextEntry,
-        resetSignal = resetSignal, preparing = status == SpeechInputStatus.PREPARING, starting = status == SpeechInputStatus.STARTING, resultReady = resultReady)
-    if (helpOpen) AlertDialog(onDismissRequest = { helpOpen = false }, title = { Text("检查语音输入") },
-        text = { Text((failureMessage ?: "离线中文识别尚未就绪，可重新准备后再试。") + "\n\n小米／澎湃 OS：应用管理 → 时间 Agent → 权限管理 → 录音或麦克风，允许使用。也请检查控制中心的麦克风开关。中文识别已内置，无需安装系统语音服务。") },
-        confirmButton = { TextButton(onClick = {
-            helpOpen = false
-            runCatching { context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context.packageName}"))) }
-                .onFailure { showMessage("请在手机设置的应用管理中打开时间 Agent 的麦克风权限。") }
-        }) { Text("打开应用权限") } },
-        dismissButton = { TextButton(onClick = { helpOpen = false; failureMessage = null; session.cancel(); resetSignal++; engineRevision++ }) { Text("重新准备") } })
+        }, finish = session::release,
+        cancel = { session.cancel(); liveText = ""; suggest(null) },
+        tap = { if (failureMessage != null) helpOpen = true else showMessage("长按开始语音输入，松开识别，上滑取消。") })
+}
+
+@Composable
+fun HomeVoiceDock(
+    enabled: Boolean, onRecognized: (String) -> Unit, onMessage: (String) -> Unit,
+    onTextEntry: () -> Unit = {}, onLiveInput: (SpeechInputStatus, String) -> Unit = { _, _ -> },
+    onSuggestion: (String?) -> Unit = {}, speechFactory: SpeechInputFactory = OfflineSpeechInputFactory,
+    onOpenPanel: (() -> Unit)? = null, state: HomeVoiceState? = null,
+) {
+    val control = state ?: rememberHomeVoiceState(enabled, onRecognized, onMessage, onLiveInput, onSuggestion, speechFactory)
+    HoldToTalkButton(enabled, control.status == SpeechInputStatus.PROCESSING,
+        onStart = control.start, onFinish = control.finish, onCancel = control.cancel,
+        onTap = onOpenPanel ?: control.tap, onTextEntry = onTextEntry,
+        resetSignal = control.resetSignal, preparing = control.status == SpeechInputStatus.PREPARING,
+        starting = control.status == SpeechInputStatus.STARTING, resultReady = control.resultReady)
 }

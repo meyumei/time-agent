@@ -30,6 +30,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.timeagent.data.TimeAgentDatabase
 import com.timeagent.backup.recoverPersonalDataBeforeOpen
 import com.timeagent.ui.TimeAgentTheme
+import com.timeagent.ui.returnToButler
 import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -57,11 +58,12 @@ class LedgerActivity : ComponentActivity() {
         val ignore = intent?.getStringExtra(EXTRA_ACTION) == ACTION_IGNORE
         setContent {
             TimeAgentTheme {
+                androidx.activity.compose.BackHandler { returnToButler() }
                 LedgerApp(
                     repository = repo,
                     initialCaptureId = captureId,
                     initialIgnore = ignore,
-                    onClose = { finish() },
+                    onClose = ::returnToButler,
                 )
             }
         }

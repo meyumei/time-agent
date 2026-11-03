@@ -27,6 +27,7 @@ class MainActivity : ComponentActivity() {
     @Inject lateinit var clock: ClockSource
     private var openReminderId by mutableStateOf<String?>(null)
     private var sharedText by mutableStateOf<String?>(null)
+    private var appDestination by mutableStateOf<String?>(null)
     private var fishDestination by mutableStateOf<String?>(null)
     private fun shared(intent: Intent?): String? = if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain") intent.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString() else null
 
@@ -35,6 +36,8 @@ class MainActivity : ComponentActivity() {
         if (!recoverPersonalDataBeforeOpen()) return
         openReminderId = intent?.getStringExtra(ReminderIntents.EXTRA_REMINDER_ID)
         sharedText = shared(intent)
+        appDestination = intent?.getStringExtra("appDestination")
+        intent?.removeExtra("appDestination")
         fishDestination = takeFishDestination(intent)
         enableEdgeToEdge()
         setContent {
@@ -49,6 +52,8 @@ class MainActivity : ComponentActivity() {
                     onOpenReminderConsumed = { openReminderId = null },
                     sharedText = sharedText,
                     onSharedTextConsumed = { sharedText = null },
+                    appDestination = appDestination,
+                    onAppDestinationConsumed = { appDestination = null },
                     fishDestination = fishDestination,
                     onFishDestinationConsumed = { fishDestination = null },
                 )
@@ -61,6 +66,8 @@ class MainActivity : ComponentActivity() {
         setIntent(intent)
         openReminderId = intent.getStringExtra(ReminderIntents.EXTRA_REMINDER_ID)
         sharedText = shared(intent)
+        appDestination = intent?.getStringExtra("appDestination")
+        intent?.removeExtra("appDestination")
         fishDestination = takeFishDestination(intent)
     }
 

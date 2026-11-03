@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit
 class WorkoutAnatomyDeviceTest {
     @Test fun packagedModelLoadsInPhoneWebView() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
-        instrumentation.uiAutomation.executeShellCommand("am start -n com.timeagent/.MainActivity").use { descriptor ->
+        instrumentation.uiAutomation.executeShellCommand("am start -n ${instrumentation.targetContext.packageName}/com.timeagent.MainActivity").use { descriptor ->
             FileInputStream(descriptor.fileDescriptor).bufferedReader().use { it.readText() }
         }
         val foregroundDeadline = System.currentTimeMillis() + 10_000

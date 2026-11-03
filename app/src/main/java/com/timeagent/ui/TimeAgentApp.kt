@@ -51,6 +51,7 @@ import com.timeagent.workout.data.WorkoutRepository
 import kotlinx.coroutines.withContext
 import java.time.*
 import java.util.UUID
+import com.timeagent.ui.navigation.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun TimeAgentApp(
@@ -60,6 +61,8 @@ import java.util.UUID
     onOpenReminderConsumed: () -> Unit = {},
     sharedText: String? = null,
     onSharedTextConsumed: () -> Unit = {},
+    appDestination: String? = null,
+    onAppDestinationConsumed: () -> Unit = {},
     fishDestination: String? = null,
     onFishDestinationConsumed: () -> Unit = {},
 ) {
@@ -74,13 +77,13 @@ import java.util.UUID
         val themeMode = LocalAppearance.current.theme
         TimelineColorEnvironment {
             TimeAgentContent(model, themeMode, speechFactory, openReminderId, onOpenReminderConsumed, sharedText, onSharedTextConsumed,
-                fishDestination, onFishDestinationConsumed) { selected -> appearance.save(selected) }
+                fishDestination, onFishDestinationConsumed, appDestination, onAppDestinationConsumed) { selected -> appearance.save(selected) }
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable private fun TimeAgentContent(
+@Composable internal fun TimeAgentContent(
     model: TimeViewModel,
     themeMode: ThemeMode,
     speechFactory: SpeechInputFactory,
@@ -90,6 +93,8 @@ import java.util.UUID
     onSharedTextConsumed: () -> Unit,
     fishDestination: String?,
     onFishDestinationConsumed: () -> Unit,
+    appDestination: String?,
+    onAppDestinationConsumed: () -> Unit,
     onThemeMode: (ThemeMode) -> Unit,
 ) {
     val data by model.data.collectAsStateWithLifecycle()
@@ -113,29 +118,41 @@ import java.util.UUID
             model.runHealthSync(healthReader, healthSettings, quiet = true)
         }
     }
-    var tab by rememberSaveable { mutableIntStateOf(0) }
-    var editor by remember { mutableStateOf<EditorRequest?>(null) }
+    val navigator = rememberAppNavigator()
+    val tab = navigator.currentTab.index
+    val extraScreen = navigator.page
+    val shellDrafts = androidx.lifecycle.viewmodel.compose.viewModel<ShellDraftViewModel>()
+    var editor by shellDrafts::editor
+    val editorState = rememberSaveableStateHolder()
+    val editorDrafts = shellDrafts.editorDrafts
     var selected by remember { mutableStateOf<Any?>(null) }
     var addMenu by remember { mutableStateOf(false) }
     val screenState = rememberSaveableStateHolder()
-    var screenPath by rememberSaveable { mutableStateOf(emptyList<String>()) }
-    val extraScreen = screenPath.lastOrNull()
     fun openScreen(destination: String) {
-        if (extraScreen != destination) screenPath = screenPath + destination
+        when (destination) {
+            "workout" -> context.startActivity(WorkoutActivity.intent(context))
+            "ledger" -> context.startActivity(android.content.Intent(context, com.timeagent.ledger.LedgerActivity::class.java))
+            "organization" -> context.startActivity(android.content.Intent(context, com.timeagent.organization.OrganizationActivity::class.java))
+            else -> navigator.open(destination)
+        }
     }
-    fun closeScreen() {
-        extraScreen?.let { screenState.removeState("page:$it") }
-        screenPath = screenPath.dropLast(1)
+    fun closeScreen() { navigator.close() }
+    LaunchedEffect(appDestination) {
+        if (appDestination != null) {
+            navigator.awaitReady()
+            if (appDestination == "butler") navigator.returnToRoot(3) else navigator.openDeepLink(appDestination)
+            onAppDestinationConsumed()
+        }
     }
-    BackHandler(enabled = extraScreen != null && editor == null && selected == null) { closeScreen() }
     var extractionText by rememberSaveable { mutableStateOf("") }
     var calendarTitle by rememberSaveable { mutableStateOf("") }
     var calendarStart by rememberSaveable { mutableLongStateOf(0L) }
     var calendarEnd by rememberSaveable { mutableLongStateOf(0L) }
     LaunchedEffect(sharedText) {
         if (sharedText != null) {
+            navigator.awaitReady()
             if (sharedText.length > 20_000) model.report("分享文字超过20000字，请分段粘贴")
-            else { extractionText = sharedText; openScreen("extract"); editor = null; selected = null }
+            else { extractionText = sharedText; navigator.openDeepLink("extract"); editor = null; selected = null }
             onSharedTextConsumed()
         }
     }
@@ -169,9 +186,10 @@ import java.util.UUID
     var assistantExpanded by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(fishDestination) {
         if (fishDestination != null) {
+            navigator.awaitReady()
             if (fishDestination in setOf("chat", "appearance")) {
-                editor = null; selected = null; tab = 3
-                screenPath = if (fishDestination == "appearance") listOf("fish-companion", "fish-appearance") else emptyList()
+                editor = null; selected = null
+                navigator.openDeepLink(if (fishDestination == "appearance") "fish-appearance" else "fish-chat")
                 assistantExpanded = false
             }
             onFishDestinationConsumed()
@@ -195,7 +213,7 @@ import java.util.UUID
     fun sendAssistant(text: String) {
         if (text.isBlank()) return
         editAssistantDraft(text); assistantExpanded = true; voiceMessage = null
-        if (fish != null) { tab = 3; fish.send(text) }
+        if (fish != null) { fish.send(text) }
         else model.sendToAssistant(text, if (assistantSettings.cloudEnabled()) cloud else null)
     }
     LaunchedEffect(voiceMessage) { if (voiceMessage != null) { delay(6000); voiceMessage = null } }
@@ -207,6 +225,9 @@ import java.util.UUID
     var noteType by rememberSaveable { mutableStateOf<String?>(null) }
     var noteId by rememberSaveable { mutableStateOf<String?>(null) }
     var noteTitle by rememberSaveable { mutableStateOf("") }
+    val noteState = rememberSaveableStateHolder()
+    val noteDrafts = shellDrafts.noteDrafts
+    fun closeNote() { noteType = null; noteId = null; noteTitle = "" }
     var notice by remember { mutableStateOf<String?>(null) }
     fun openNote(type: String, id: String, title: String) {
         noteType = type
@@ -242,8 +263,9 @@ import java.util.UUID
     LaunchedEffect(openReminderId, data.reminders, data.loading) {
         val id = openReminderId ?: return@LaunchedEffect
         if (data.loading) return@LaunchedEffect
+        navigator.awaitReady()
         val found = data.reminders.firstOrNull { it.id == id }
-        if (found != null) { reminderDetail = found; notice = null } else notice = "这条提醒已被删除"
+        if (found != null) { navigator.openDeepLink("inbox"); reminderDetail = found; notice = null } else notice = "这条提醒已被删除"
         onOpenReminderConsumed()
     }
     val running = data.records.firstOrNull { it.endAt == null }
@@ -272,8 +294,11 @@ import java.util.UUID
                 onHealth = { openScreen("health") })
         }
     }
-    if (editor == null && extraScreen == null) Scaffold(modifier = Modifier.imePadding(), topBar = {
-        Column(Modifier.statusBarsPadding()) {
+    var voiceSheetOpen by rememberSaveable { mutableStateOf(false) }
+    val voiceControl = rememberHomeVoiceState(!busy && !data.loading && !chat.busy, ::sendAssistant, { voiceMessage = it },
+        { state, text -> voiceStatus = state; liveVoiceText = text }, { voiceSuggestion = it }, speechFactory)
+    Scaffold(modifier = Modifier.imePadding(), topBar = {
+        if (extraScreen == null && editor == null) Column(Modifier.statusBarsPadding()) {
             if (LocalAppearance.current.modeHintPending) {
                 Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text("现在可在外观中切换到工具模式", Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
@@ -290,12 +315,7 @@ import java.util.UUID
             voiceMessage?.let { Text(it, Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary) }
             notice?.let { Text(it, Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error) }
             if (tab != 3) fishMessage?.let { Text(it, Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp), style = MaterialTheme.typography.labelSmall, maxLines = 3, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, color = MaterialTheme.colorScheme.error) }
-            VoiceInputBanner(voiceStatus, liveVoiceText)
-            if (tab != 3 && fish == null) AssistantConversationPanel(chat, voiceText, ::editAssistantDraft, assistantExpanded, { assistantExpanded = it }, ::sendAssistant,
-                onSettings = { assistantSettingsOpen = true }, suggestion = voiceSuggestion,
-                onSuggestion = { voiceSuggestion?.let { sendAssistant(it) }; voiceSuggestion = null },
-                turnDecoration = { turn -> if (fish != null) com.timeagent.fish.FishMessageSticker(turn.text, companionConfig.appearance, size = 56) },
-                inputAccessory = { fish?.let { com.timeagent.fish.FishStickerPicker(it) } })
+            if (!voiceSheetOpen) VoiceInputBanner(voiceStatus, liveVoiceText)
             chat.localDestination?.let { destination -> TextButton(onClick = { openScreen(destination) }, modifier = Modifier.testTag("assistant-local-result")) { Text(if (destination == "history") "查看历史结果与原记录" else "查看个人记忆") } }
             if (tab == 2) WeekHeader(reviewWeek, data, { model.changeReviewWeek(-1) }, { model.changeReviewWeek(1) }, model::currentWeek)
             running?.let { item ->
@@ -304,23 +324,27 @@ import java.util.UUID
             }
         }
     }, bottomBar = {
-        if (WindowInsets.ime.getBottom(LocalDensity.current) == 0) TimeAgentNavigation(tab, onSelect = { tab = it }) {
+        if (editor == null && WindowInsets.ime.getBottom(LocalDensity.current) == 0) TimeAgentNavigation(tab, onSelect = {
+            if (it == tab && extraScreen == null && it == 0) model.currentWeek()
+            navigator.selectTab(it)
+        }) {
             HomeVoiceDock(enabled = !busy && !data.loading && !chat.busy,
-                onRecognized = ::sendAssistant,
-                onMessage = { voiceMessage = it }, onTextEntry = { if (fish != null) tab = 3; assistantExpanded = true },
-                onLiveInput = { state, text -> voiceStatus = state; liveVoiceText = text }, onSuggestion = { voiceSuggestion = it }, speechFactory = speechFactory)
+                onRecognized = ::sendAssistant, onMessage = { voiceMessage = it },
+                onTextEntry = { voiceSheetOpen = true }, onOpenPanel = { voiceSheetOpen = true },
+                state = voiceControl.copy(finish = { voiceControl.finish(); voiceSheetOpen = true }))
         }
     }, floatingActionButton = {
-        if (tab == 2) FloatingActionButton(onClick = { addMenu = true }, containerColor = Indigo) { Icon(Icons.Rounded.Add, "新建", tint = androidx.compose.ui.graphics.Color.White) }
+        if (editor == null && extraScreen == null && tab == 2) FloatingActionButton(onClick = { addMenu = true }, containerColor = Indigo) { Icon(Icons.Rounded.Add, "新建", tint = androidx.compose.ui.graphics.Color.White) }
     }) { padding ->
         Box(Modifier.padding(padding).consumeWindowInsets(padding).fillMaxSize()) {
-            when (tab) {
+            AppNavHost(navigator, motionMillis = com.timeagent.ui.design.LocalPresentation.current.motionMillis, rootContent = { rootTab, reselectRevision ->
+            when (rootTab) {
                 0 -> screenState.SaveableStateProvider("timeline") {
                     TimelineQueryContent(model, week, !data.loading) { timelineData, reportRange ->
                         MinuteClockContent(model) { now ->
                             val briefingSync = briefingHealthStatus(healthSettings.enabled() && (healthSettings.sleepEnabled() || healthSettings.exerciseEnabled()), healthSettings.readReport(), zone, now)
                             TimelineScreen(timelineData, week, now, zone, { selected = it }, model::changeWeek,
-                                onCreate = { addMenu = true }, onAssistant = { if (fish != null) tab = 3; assistantExpanded = true },
+                                onCreate = { addMenu = true }, onAssistant = { voiceSheetOpen = true },
                                 onUndo = { model.perform { model.repository.undoLastAction() } },
                                 canUndo = data.history.any { !it.undone }, busy = busy || data.loading || timelineData.loading,
                                 onVisibleRange = reportRange,
@@ -334,7 +358,7 @@ import java.util.UUID
                                         val daily = remember(data, now.epochSecond / 60, zone, briefingSync, workouts) {
                                             buildDailyBriefing(data, now, zone, briefingSync, workouts)
                                         }
-                                        FishButlerSummary(fish, if (data.loading) "正在读取今天的安排" else collapsedSummary(daily, zone), onOpen = { tab = 3 })
+                                        FishButlerSummary(fish, if (data.loading) "正在读取今天的安排" else collapsedSummary(daily, zone), onOpen = { openScreen("fish-chat") })
                                     } else briefingContent()
                                     Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
                                         TextButton(onClick = { editor = EditorRequest(EditorKind.RECORD) }, modifier = Modifier.testTag("today-record")) { Text("补记时间") }
@@ -348,30 +372,28 @@ import java.util.UUID
                     }
                 }
                 1 -> PlanHubScreen(data, zone, { selected = it }, { editor = EditorRequest(EditorKind.TASK) }, ::startTimer,
-                    { if (it == "workout") context.startActivity(WorkoutActivity.intent(context)) else openScreen(it) })
+                    { openScreen(it) }, reselectRevision = reselectRevision)
                 2 -> Column {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                         TextButton(onClick = { openScreen("health") }) { Text("健康与训练") }
                         TextButton(onClick = { openScreen("history") }) { Text("历史明细") }
                     }
                     MinuteClockContent(model) { now ->
-                        ReviewScreen(data, reviewWeek, now, zone, ::openOriginal, { openScreen("goals") })
+                        ReviewScreen(data, reviewWeek, now, zone, ::openOriginal, { openScreen("goals") }, reselectRevision)
                     }
                 }
-                3 -> if (fish != null) com.timeagent.fish.FishChatScreen(fish,
-                    onSettings = { openScreen("settings") }, onCompanion = { openScreen("fish-companion") },
-                    requestInput = assistantExpanded, onInputFocused = { assistantExpanded = false }, briefing = briefingContent)
-                else TextButton(onClick = { openScreen("settings") }) { Text("打开设置") }
+                3 -> ButlerHub(::openScreen, reselectRevision)
             }
-            if (data.loading) LinearProgressIndicator(Modifier.fillMaxWidth())
-            if (fish != null && WindowInsets.ime.getBottom(LocalDensity.current) == 0) {
-                com.timeagent.fish.FishCompanionOverlay(fish, onOpenChat = { tab = 3; assistantExpanded = true },
-                    onSettings = { openScreen("fish-companion") })
-            }
-        }
-    }
-
-    extraScreen?.let { destination -> screenState.SaveableStateProvider("page:$destination") { when (destination) {
+            }, pageContent = { destination ->
+            when (destination) {
+        "fish-chat" -> if (fish != null) com.timeagent.fish.FishChatScreen(fish,
+            onSettings = { assistantSettingsOpen = true }, onCompanion = { openScreen("fish-companion") },
+            requestInput = assistantExpanded, onInputFocused = { assistantExpanded = false }, briefing = briefingContent)
+            else TextButton(onClick = { assistantSettingsOpen = true }) { Text("AI 与本地输入设置") }
+        "notification-settings" -> NotificationSettingsScreen(::closeScreen)
+        "calendar-settings" -> CalendarSettingsScreen(::closeScreen)
+        "about" -> AboutScreen(::closeScreen)
+        "ai-models" -> Column { TextButton(onClick = ::closeScreen) { Text("返回设置") }; TextButton(onClick = { assistantSettingsOpen = true }) { Text("配置模型与自带 Key") } }
         "fish-memory" -> fish?.let { com.timeagent.fish.FishMemoryScreen(it,onClose=::closeScreen) }
         "fish-platforms" -> fish?.let { com.timeagent.fish.FishPlatformScreen(it,onClose=::closeScreen) }
         "fish-proactive" -> fish?.let { com.timeagent.fish.FishProactiveScreen(it,onClose=::closeScreen) }
@@ -383,9 +405,9 @@ import java.util.UUID
         "fish-appearance" -> fish?.let { com.timeagent.fish.FishCompanionSettingsScreen(it,onClose=::closeScreen) }
         "fish-runtime" -> fish?.let { com.timeagent.fish.FishRuntimeSettingsScreen(it,onModel={assistantSettingsOpen=true},onClose=::closeScreen) }
         "appearance" -> AppearanceScreen(onClose = ::closeScreen)
-        "settings" -> Column(Modifier.fillMaxSize().statusBarsPadding()) {
+        "settings" -> SettingsHub(::openScreen, ::closeScreen)
+        "tools" -> Column(Modifier.fillMaxSize().statusBarsPadding()) {
             TextButton(onClick = ::closeScreen) { Text("返回管家") }
-            TextButton(onClick = { openScreen("appearance") }, modifier = Modifier.testTag("settings-appearance")) { Text("外观 · 模式、深浅色与动态取色") }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                 TextButton(onClick = { context.startActivity(android.content.Intent(context, com.timeagent.organization.OrganizationActivity::class.java)) }) { Text("分类、标签与记录整理") }
                 TextButton(onClick = { context.startActivity(android.content.Intent(context, com.timeagent.ledger.LedgerActivity::class.java)) }) { Text("支付记账") }
@@ -438,7 +460,21 @@ import java.util.UUID
         else -> if (destination.startsWith("project:")) MinuteClockContent(model) { now -> ProjectScreen(data, model, now, zone,
             onTask = { selected = it }, onClose = ::closeScreen, initialProjectId = destination.removePrefix("project:"),
             onSchedule = { editor = EditorRequest(EditorKind.PLAN, taskId = it.id, scheduleRange = true) }) }
-    } } }
+            }
+            })
+            if (data.loading) LinearProgressIndicator(Modifier.fillMaxWidth())
+            if (fish != null && editor == null && WindowInsets.ime.getBottom(LocalDensity.current) == 0) {
+                com.timeagent.fish.FishCompanionOverlay(fish, onOpenChat = { openScreen("fish-chat"); assistantExpanded = true },
+                    onSettings = { openScreen("fish-companion") })
+            }
+        }
+    }
+    BackHandler(enabled = editor == null && selected == null && extraScreen == null && tab != 0) {
+        navigator.resetToToday()
+    }
+    if (voiceSheetOpen) VoiceSheet(chat, voiceText, ::editAssistantDraft, ::sendAssistant, voiceControl,
+        liveVoiceText, voiceSuggestion, { voiceSuggestion?.let(::sendAssistant); voiceSuggestion = null },
+        onClose = { voiceControl.cancel(); voiceSheetOpen = false }, onSettings = { assistantSettingsOpen = true }, fish = fish)
     if (assistantSettingsOpen) ConversationSettingsDialog(assistantSettings, runtimeMode = fish != null, onSaved = { fish?.settingsSaved() }) { assistantSettingsOpen = false }
 
     if (addMenu) AlertDialog(onDismissRequest = { addMenu = false }, title = { Text("留下一段时间") }, text = {
@@ -460,10 +496,21 @@ import java.util.UUID
         }
     }, confirmButton = { TextButton(onClick = { addMenu = false }) { Text("关闭") } })
 
+    val pendingEditors = editorDrafts.values.filter { it.first == tab }.map { it.second }
+    if (editor == null && pendingEditors.isNotEmpty()) androidx.compose.ui.window.Popup(alignment = Alignment.BottomCenter) {
+        Surface(Modifier.padding(bottom = 100.dp), shadowElevation = 6.dp) {
+            Column { pendingEditors.forEachIndexed { index, draft ->
+                TextButton(onClick = { editor = draft }) {
+                    Text(if (pendingEditors.size == 1) "继续编辑草稿" else "继续编辑${draft.kind.title}草稿 ${index + 1}")
+                }
+            } }
+        }
+    }
     editor?.let { request ->
+        editorState.SaveableStateProvider(request.id) {
         MinuteClockContent(model) { now ->
-            EditorScreen(request, data, now, zone, busy, { editor = null }, onSave = { values ->
-                model.perform(onSuccess = { editor = null; selected = null }) {
+            EditorScreen(request, data, now, zone, busy, { editorDrafts.remove(request.id); editorState.removeState(request.id); editor = null }, onSave = { values ->
+                model.perform(onSuccess = { editorDrafts.remove(request.id); editorState.removeState(request.id); editor = null; selected = null }) {
                     when (values.kind ?: request.kind) {
                         EditorKind.TASK -> {
                             val before = request.entity as? TaskEntity
@@ -502,6 +549,8 @@ import java.util.UUID
             }, onSaveReminder = { before, title, at ->
                 val newReminder = before == null
                 model.perform(onSuccess = {
+                    editorDrafts.remove(request.id)
+                    editorState.removeState(request.id)
                     editor = null
                     selected = null
                     reminderDetail = null
@@ -521,7 +570,8 @@ import java.util.UUID
                         )
                     }
                 }
-            }, saveError = error)
+            }, saveError = error, onKeepDraft = { editorDrafts[request.id] = tab to request; editor = null })
+        }
         }
     }
 
@@ -596,7 +646,7 @@ import java.util.UUID
                 value.bundle.courses.forEach { Text("${it.name} · ${it.location}", style = MaterialTheme.typography.bodySmall) }
                 Text("确认后写入本机。重复实例跳过，保留手工修改。", style = MaterialTheme.typography.bodySmall)
             }
-        }, confirmButton = { TextButton(onClick = { model.perform(onSuccess = { preview = null; tab = 0 }) { model.repository.commitImport(value, requestId) } }, enabled = !busy) { Text("确认导入") } }, dismissButton = { TextButton(onClick = { preview = null }, enabled = !busy) { Text("取消") } })
+        }, confirmButton = { TextButton(onClick = { model.perform(onSuccess = { preview = null; navigator.resetToToday() }) { model.repository.commitImport(value, requestId) } }, enabled = !busy) { Text("确认导入") } }, dismissButton = { TextButton(onClick = { preview = null }, enabled = !busy) { Text("取消") } })
     }
     switchTask?.let { target -> AlertDialog(onDismissRequest = { switchTask = null }, title = { Text("切换计时任务？") }, text = { Text("先结束当前计时，再开始新任务。已有记录会保留。") }, confirmButton = { TextButton(onClick = { model.perform(onSuccess = { switchTask = null }) { model.repository.startTimer(target.first, target.second, switchExisting = true) } }, enabled = !busy) { Text("结束并开始") } }, dismissButton = { TextButton(onClick = { switchTask = null }) { Text("取消") } }) }
     deletingTask?.let { task ->
@@ -616,9 +666,21 @@ import java.util.UUID
     val targetType = noteType
     val targetId = noteId
     if (targetType != null && targetId != null) {
-        NoteEditorScreen(model, data, NoteTarget(targetType, targetId, noteTitle), onClose = {
-            noteType = null; noteId = null; noteTitle = ""
-        })
+        val key = "$targetType:$targetId"
+        val target = NoteTarget(targetType, targetId, noteTitle)
+        noteState.SaveableStateProvider(key) {
+            NoteEditorScreen(model, data, target, onClose = {
+                noteDrafts.remove(key); noteState.removeState(key); closeNote()
+            }, onKeepDraft = { noteDrafts[key] = tab to target; closeNote() })
+        }
+    } else if (noteDrafts.values.any { it.first == tab }) {
+        androidx.compose.ui.window.Popup(alignment = Alignment.BottomCenter) {
+            Surface(Modifier.padding(bottom = 160.dp), shadowElevation = 6.dp) {
+                Column { noteDrafts.values.filter { it.first == tab }.forEach { (_, target) ->
+                    TextButton(onClick = { openNote(target.type, target.id, target.title) }) { Text("继续编辑笔记草稿 · ${target.title}") }
+                } }
+            }
+        }
     }
     reminderDetail?.let { reminder ->
         ReminderDetailSheet(
@@ -686,12 +748,17 @@ import java.util.UUID
     }
 }
 
-@Composable private fun ReviewScreen(data: LocalSnapshot, week: WeekState, now: Instant, zone: ZoneId, onOpen: (String,String)->Unit, onGoals: ()->Unit) {
+@Composable private fun ReviewScreen(data: LocalSnapshot, week: WeekState, now: Instant, zone: ZoneId, onOpen: (String,String)->Unit, onGoals: ()->Unit, reselectRevision: Int = 0) {
+    val scroll = rememberScrollState()
+    var consumedReselect by rememberSaveable { mutableIntStateOf(reselectRevision) }
+    LaunchedEffect(reselectRevision) {
+        if (reselectRevision != consumedReselect) { scroll.scrollTo(0); consumedReselect = reselectRevision }
+    }
     val window = week.window(zone)
     val records = data.timeline(now).filter { it.kind == ItemKind.RECORD }
     val stats = TimeStatistics.calculate(records.map { it.span }, window)
     val planned = data.plans.filter { it.deletedAt == null && it.kind != "POINT" }.sumOf { TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(it.endAt)).clip(window)?.seconds ?: 0 } / 60
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+    Column(Modifier.fillMaxSize().verticalScroll(scroll).padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Text("时间留下的痕迹", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
         listOf("计划投入" to planned, "累计记录投入" to stats.recordedMinutes, "去重时间跨度" to stats.elapsedMinutes).forEach { (title, value) ->
             Surface(shape = RoundedCornerShape(18.dp), color = MaterialTheme.colorScheme.surfaceContainer) { Row(Modifier.fillMaxWidth().padding(18.dp), verticalAlignment = Alignment.CenterVertically) { Text(title, Modifier.weight(1f)); Text(value.minutesLabel(), fontWeight = FontWeight.Bold, color = if (title == "计划投入") Indigo else RecordGreen) } }

@@ -1,0 +1,26 @@
+{
+  "matrix": [
+    {
+      "group": "ui",
+      "fontScale": "1.3",
+      "passed": false,
+      "testCount": 13,
+      "failures": 1,
+      "instrumentationProcessExitCode": 0
+    },
+    {
+      "group": "ui",
+      "fontScale": "2.0",
+      "passed": false,
+      "testCount": 13,
+      "failures": 1,
+      "instrumentationProcessExitCode": 0
+    }
+  ],
+  "passed": false,
+  "fontScaleBefore": "1.0",
+  "fontScaleAfter": "1.0",
+  "fontScaleRestored": true,
+  "scope": "Compose LocalDensity in isolated fixture; system font setting unchanged",
+  "elapsedSeconds": 65.95
+}

@@ -26,6 +26,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -65,7 +67,13 @@ fun PlanHubScreen(
     onCreate: () -> Unit,
     onStart: (String?) -> Unit,
     onOpen: (String) -> Unit,
+    reselectRevision: Int = 0,
 ) {
+    val scroll = rememberScrollState()
+    var consumedReselect by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableIntStateOf(reselectRevision) }
+    androidx.compose.runtime.LaunchedEffect(reselectRevision) {
+        if (reselectRevision != consumedReselect) { scroll.scrollTo(0); consumedReselect = reselectRevision }
+    }
     val today = LocalDate.now(zone)
     val tasksById = remember(data.tasks) { data.tasks.associateBy { it.id } }
     val placements = remember(data.placements) { data.placements.associateBy { it.taskId } }
@@ -125,7 +133,7 @@ fun PlanHubScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(scroll)
             .padding(horizontal = 12.dp, vertical = 8.dp)
             .testTag("plan-hub"),
         verticalArrangement = Arrangement.spacedBy(10.dp),

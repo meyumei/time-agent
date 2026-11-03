@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-03",
+  "timezone": "Asia/Shanghai",
+  "deviceAcceptancePassed": false,
+  "productionUpdated": false,
+  "reason": "USB device absent on latest attempt; physical voice-sheet Back assertion requires fresh APK rerun",
+  "hostUnitTestsRun": false,
+  "nodeTestsRun": false,
+  "oldDeviceApkRetestsAreNotFixEvidence": true,
+  "systemFontLastObserved": "1.0",
+  "systemFontCurrentlyVerified": false,
+  "buildExitCode": 0,
+  "lint": {
+    "Warning": 82,
+    "Information": 2
+  },
+  "productionApk": {
+    "bytes": 890642163,
+    "sha256": "3589253daeaa5e199b0229788dbc0030ad45b4742f57c4d9ea6db04ae86ed964",
+    "versionCode": 29,
+    "versionName": "0.16.0-preview",
+    "installed": false
+  }
+}

@@ -17,11 +17,12 @@ android {
     namespace = "com.timeagent"
     compileSdk = 36
     defaultConfig {
-        applicationId = "com.timeagent"
+        // A separately installed device-test copy keeps destructive fixture cleanup away from personal data.
+        applicationId = if (project.hasProperty("isolatedDeviceTests")) "com.timeagent.acceptance" else "com.timeagent"
         minSdk = 26
         targetSdk = 35
-        versionCode = 28
-        versionName = "0.15.2-preview"
+        versionCode = 29
+        versionName = "0.16.0-preview"
         ndk { abiFilters += setOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64") }
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -38,6 +39,8 @@ android {
     sourceSets {
         getByName("benchmark").assets.srcDir(seedBenchmarkData)
         getByName("test").java.srcDir("src/migrationTest/java")
+        getByName("test").java.srcDir("src/commandTest/java")
+        getByName("androidTest").java.srcDir("src/commandTest/java")
         getByName("androidTest").java.srcDir("src/migrationTest/java")
         getByName("androidTest").assets.srcDir("schemas")
     }
@@ -80,6 +83,7 @@ dependencies {
     implementation(project(":core"))
     implementation(platform("androidx.compose:compose-bom:2025.04.01"))
     implementation("androidx.activity:activity-compose:1.10.1")
+    implementation("androidx.navigation:navigation-compose:2.9.0")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.ui:ui-tooling-preview")

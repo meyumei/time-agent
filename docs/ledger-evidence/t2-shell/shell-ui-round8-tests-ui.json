@@ -1,0 +1,9 @@
+{
+  "group": "ui",
+  "fontScale": "1.0",
+  "passed": false,
+  "testCount": 13,
+  "failures": 1,
+  "instrumentationProcessExitCode": 0,
+  "elapsedSeconds": 25.72
+}

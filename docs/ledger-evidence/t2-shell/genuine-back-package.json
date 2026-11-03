@@ -1,0 +1,18 @@
+{
+  "label": "genuine-back-package",
+  "command": [
+    "F:\\261019_时间agent\\gradlew.bat",
+    "-PisolatedDeviceTests",
+    ":app:assembleDebug",
+    ":app:assembleDebugAndroidTest",
+    "--console=plain",
+    "--no-parallel",
+    "--max-workers=2",
+    "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+    "-Dhttps.proxyHost=",
+    "-Dhttp.proxyHost=",
+    "-Djava.net.useSystemProxies=false"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 86.08
+}
