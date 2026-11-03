@@ -28,6 +28,10 @@ internal object ReminderRuntime {
 
 class ReminderReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+        if (intent.action == ReminderIntents.ACTION_NOTIFICATION) {
+            handleNotificationAction(context.applicationContext, intent)
+            return
+        }
         if (intent.action != ReminderIntents.ACTION_FIRE) return
         val pending = goAsync()
         val appContext = context.applicationContext
@@ -44,6 +48,62 @@ class ReminderReceiver : BroadcastReceiver() {
                 Log.e("TimeAgentReminder", "Could not process a local reminder", error)
             } finally {
                 pending?.finish()
+            }
+        }
+    }
+
+    private fun handleNotificationAction(context: Context, intent: Intent) {
+        val pending = goAsync()
+        val id = intent.getStringExtra(ReminderIntents.EXTRA_REMINDER_ID)
+        val action = intent.getStringExtra(ReminderIntents.EXTRA_NOTIFICATION_ACTION)
+        if (id.isNullOrBlank() || action.isNullOrBlank()) {
+            pending.finish()
+            return
+        }
+        ReminderRuntime.scope.launch {
+            try {
+                val repository = ReminderRuntime.repository(context)
+                val reminder = repository.snapshot().reminders.firstOrNull { it.id == id }
+                if (reminder != null) {
+                    when (action) {
+                        ReminderIntents.ACTION_DONE -> {
+                            reminder.taskId?.let { taskId ->
+                                repository.snapshot().tasks.firstOrNull { it.id == taskId }?.let { task ->
+                                    repository.saveTask(task.copy(status = "COMPLETED"), expectedVersion = task.version)
+                                }
+                            }
+                            ReminderNotifications.cancel(context, id)
+                        }
+                        ReminderIntents.ACTION_SNOOZE -> {
+                            repository.saveReminder(
+                                reminder.copy(
+                                    remindAt = System.currentTimeMillis() + 10 * 60_000L,
+                                    deliveredAt = null,
+                                    enabled = true,
+                                ),
+                                expectedVersion = reminder.version,
+                            )
+                            ReminderNotifications.cancel(context, id)
+                            ReminderCoordinator(context, repository).refresh()
+                        }
+                        ReminderIntents.ACTION_START -> {
+                            if (reminder.taskId != null) {
+                                repository.startTimer(
+                                    reminder.taskId,
+                                    requestId = "reminder-start:${reminder.id}:${reminder.version}",
+                                    switchExisting = false,
+                                )
+                                ReminderNotifications.cancel(context, id)
+                            } else {
+                                context.startActivity(ReminderIntents.open(context, id))
+                            }
+                        }
+                    }
+                }
+            } catch (error: Exception) {
+                Log.e("TimeAgentReminder", "Could not process notification action", error)
+            } finally {
+                pending.finish()
             }
         }
     }

@@ -28,6 +28,11 @@ object ReminderIntents {
     const val EXTRA_REMINDER_ID = "reminder_id"
     const val EXTRA_REMIND_AT = "remind_at"
     internal const val ACTION_FIRE = "com.timeagent.reminders.FIRE"
+    internal const val ACTION_NOTIFICATION = "com.timeagent.reminders.NOTIFICATION"
+    internal const val EXTRA_NOTIFICATION_ACTION = "notification_action"
+    internal const val ACTION_DONE = "done"
+    internal const val ACTION_SNOOZE = "snooze"
+    internal const val ACTION_START = "start"
 
     fun alarm(context: Context, id: String, remindAt: Long): Intent = Intent(context, ReminderReceiver::class.java)
         .setAction(ACTION_FIRE)
@@ -39,6 +44,13 @@ object ReminderIntents {
         .setData(Uri.Builder().scheme("timeagent").authority("reminder").appendPath(id).build())
         .putExtra(EXTRA_REMINDER_ID, id)
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+
+    internal fun notificationAction(context: Context, id: String, action: String): Intent =
+        Intent(context, ReminderReceiver::class.java)
+            .setAction(ACTION_NOTIFICATION)
+            .setData(Uri.Builder().scheme("timeagent").authority("reminder-action").appendPath(id).appendPath(action).build())
+            .putExtra(EXTRA_REMINDER_ID, id)
+            .putExtra(EXTRA_NOTIFICATION_ACTION, action)
 }
 
 object ReminderNotifications {
@@ -66,6 +78,17 @@ object ReminderNotifications {
             .setContentTitle("时间 Agent")
             .setContentText("有一条任务提醒")
             .build()
+        fun action(label: String, value: String): Notification.Action =
+            Notification.Action.Builder(
+                null,
+                label,
+                PendingIntent.getBroadcast(
+                    context,
+                    (reminder.id + value).hashCode(),
+                    ReminderIntents.notificationAction(context, reminder.id, value),
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+                ),
+            ).build()
         val notification = Notification.Builder(context, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_popup_reminder)
             .setContentTitle("任务提醒")
@@ -78,6 +101,9 @@ object ReminderNotifications {
             .setOnlyAlertOnce(true)
             .setVisibility(Notification.VISIBILITY_PRIVATE)
             .setPublicVersion(publicVersion)
+            .addAction(action("完成", ReminderIntents.ACTION_DONE))
+            .addAction(action("稍后10分钟", ReminderIntents.ACTION_SNOOZE))
+            .addAction(action("开始计时", ReminderIntents.ACTION_START))
             .build()
         return try {
             context.getSystemService(NotificationManager::class.java).notify(reminder.id, NOTIFICATION_ID, notification)

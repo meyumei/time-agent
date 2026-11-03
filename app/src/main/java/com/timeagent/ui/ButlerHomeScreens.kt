@@ -596,10 +596,10 @@ fun PlanScheduleOverview(
     onSelect: (TimelineItem) -> Unit,
 ) {
     var monthText by androidx.compose.runtime.saveable.rememberSaveable {
-        androidx.compose.runtime.mutableStateOf(LocalDate.ofInstant(now, zone).withDayOfMonth(1).toString())
+        androidx.compose.runtime.mutableStateOf(now.atZone(zone).toLocalDate().withDayOfMonth(1).toString())
     }
     val month = runCatching { LocalDate.parse(monthText).withDayOfMonth(1) }
-        .getOrDefault(LocalDate.ofInstant(now, zone).withDayOfMonth(1))
+        .getOrDefault(now.atZone(zone).toLocalDate().withDayOfMonth(1))
     val first = month.minusDays((month.dayOfWeek.value - 1).toLong())
     val days = (0 until 42).map { first.plusDays(it.toLong()) }
     val items = remember(data, now) { data.timeline(now).filter { !it.isPoint } }
