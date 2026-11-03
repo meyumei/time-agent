@@ -90,6 +90,22 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
                                     "message" to "本次已完成，实际投入未自动生成"))
                                 emptyList()
                             }
+                            is SaveRecurringRule -> {
+                                version("RECURRING_RULE", command.rule.id, command.expectedVersion, command.expectedVersion == null)
+                                RecurringService(repository).saveRuleRaw(command.rule, command.expectedVersion, command.from, command.scope, command.preview)
+                                emptyList()
+                            }
+                            is ActRecurringInstance -> {
+                                version("RECURRING_INSTANCE", command.instanceId, command.expectedVersion)
+                                val instance = requireNotNull(dao.recurringInstance(command.instanceId))
+                                version("TASK", instance.taskId, command.expectedTaskVersion, allowCancelled = command.action.equals("REOPEN", true))
+                                RecurringService(repository).actRaw(command.instanceId, command.expectedVersion, command.action, command.expectedPlans)
+                                emptyList()
+                            }
+                            is MoveRecurringInstance -> {
+                                RecurringService(repository).moveRaw(command.check)
+                                emptyList()
+                            }
                             else -> error("不支持的命令")
                         }
                     }
@@ -134,7 +150,7 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
         CommandResult(command.requestId, CommandStatus.FAILED, message = "操作未保存，请稍后重试；原数据保持不变")
     }
 
-    private suspend fun version(type: String, id: String, expected: Long?, create: Boolean = false) {
+    private suspend fun version(type: String, id: String, expected: Long?, create: Boolean = false, allowCancelled: Boolean = false) {
         val entity: Any? = when (type) {
             "PLAN" -> dao.plan(id)
             "RECORD" -> dao.record(id)
@@ -142,6 +158,8 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
             "IDEA" -> dao.idea(id)
             "REMINDER" -> dao.reminder(id)
             "OCCURRENCE" -> dao.occurrence(id)
+            "RECURRING_RULE" -> dao.recurringRule(id)
+            "RECURRING_INSTANCE" -> dao.recurringInstance(id)
             else -> error("未知实体类型")
         }
         val current = when (entity) {
@@ -151,10 +169,12 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
             is IdeaEntity -> entity.version
             is ReminderEntity -> entity.version
             is CourseOccurrenceEntity -> entity.version
+            is RecurringRuleEntity -> entity.version
+            is RecurringInstanceEntity -> entity.version
             else -> null
         }
         val deleted = when (entity) {
-            is TaskEntity -> entity.deletedAt != null || entity.status == "CANCELLED"
+            is TaskEntity -> entity.deletedAt != null || (!allowCancelled && entity.status == "CANCELLED")
             else -> false
         }
         if (!create && (entity == null || deleted)) throw Rejected(CommandStatus.NOT_FOUND, "内容不存在或已删除，尚未保存")
@@ -282,6 +302,9 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
         is CommitAssistant -> command.preview.title
         is RememberRule -> "保存个人规则"
         is CompleteRecurring -> "完成周期事项"
+        is SaveRecurringRule -> "保存周期规则"
+        is ActRecurringInstance -> "处理周期实例"
+        is MoveRecurringInstance -> "改期周期实例"
         is DeliverReminder -> "投递提醒"
         is ReadTimeData -> "查询"
         is ReadAssistantQuery -> "查询"

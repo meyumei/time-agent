@@ -134,6 +134,32 @@ data class CompleteRecurring(
     override val origin: Origin,
 ) : Command
 
+data class SaveRecurringRule(
+    override val requestId: String,
+    val rule: com.timeagent.data.RecurringRuleEntity,
+    val expectedVersion: Long?,
+    val from: LocalDate,
+    val scope: com.timeagent.recurring.RuleChangeScope,
+    val preview: com.timeagent.recurring.RuleChangePreview? = null,
+    override val origin: Origin = Origin.UI,
+) : Command
+
+data class ActRecurringInstance(
+    override val requestId: String,
+    val instanceId: String,
+    val expectedVersion: Long,
+    val action: String,
+    val expectedTaskVersion: Long,
+    val expectedPlans: Map<String, Long>,
+    override val origin: Origin = Origin.UI,
+) : Command
+
+data class MoveRecurringInstance(
+    override val requestId: String,
+    val check: com.timeagent.recurring.RecurringMovePreview,
+    override val origin: Origin = Origin.UI,
+) : Command
+
 data class DeliverReminder(
     override val requestId: String,
     val id: String,

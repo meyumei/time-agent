@@ -12,7 +12,7 @@ object RecurringValidation {
         require(rule.domain in setOf("HABIT","DEADLINE"))
         val p=requireNotNull(gson.fromJson(rule.patternJson,RecurringPattern::class.java))
         RecurringRules.validate(p);require(p.id==rule.id)
-        require(if(rule.domain=="HABIT") p.frequency in setOf("DAILY","WEEKDAYS","WEEKLY_COUNT") else p.frequency!="WEEKLY_COUNT")
+        require(rule.domain != "DEADLINE" || p.frequency != "WEEKLY_COUNT")
         p
     } catch(e:Exception){throw IllegalArgumentException("周期规则内容无效：${e.message}",e)}
 

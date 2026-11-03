@@ -3,6 +3,7 @@ package com.timeagent.recurring
 import com.google.gson.Gson
 import com.timeagent.core.*
 import com.timeagent.data.*
+import com.timeagent.domain.command.throwIfRejected
 import com.timeagent.memory.PersonalMemoryRules
 import java.time.*
 import kotlinx.coroutines.Dispatchers
@@ -14,30 +15,57 @@ class RecurringService(private val repository: TimeRepository) {
 
     private fun dao() = repository.database.dao()
     private fun span(start:Long,end:Long)=TimeSpan(Instant.ofEpochMilli(start),Instant.ofEpochMilli(end))
-    private data class MoveCheck(val id:String,val version:Long,val at:Long,val planned:Boolean,val taskVersion:Long,val planVersion:Long?,val conflicts:List<Conflict>)
-    private var checkedMove:MoveCheck?=null
+    private var checkedMove:RecurringMovePreview?=null
     private fun today(): LocalDate = repository.now().atZone(repository.zone).toLocalDate()
 
-    // 规则保存与展开必须在同一 batch 内，保证整批可撤销
-    suspend fun saveRule(item: RecurringRuleEntity, expectedVersion: Long?, from: LocalDate, requestId: String) {
-        repository.assistantTransaction(requestId) {
-            val pattern=RecurringValidation.pattern(item).copy(effectiveFrom=from.toString())
+    suspend fun saveRule(item: RecurringRuleEntity, expectedVersion: Long?, from: LocalDate, requestId: String, scope: RuleChangeScope = RuleChangeScope.INCLUDING_PENDING, preview: RuleChangePreview? = null) {
+        repository.commands.executeForRepository(com.timeagent.domain.command.SaveRecurringRule(requestId, item, expectedVersion, from, scope, preview)).throwIfRejected()
+    }
+
+    internal suspend fun saveRuleRaw(item: RecurringRuleEntity, expectedVersion: Long?, from: LocalDate, scope: RuleChangeScope, preview: RuleChangePreview?) {
+        repository.transaction {
+            if (preview != null && previewRuleChange(item.id, from) != preview) throw StaleChange()
+            val effectiveFrom = if (scope == RuleChangeScope.FUTURE_ONLY) firstUnmaterializedDate(item.id, from) else from
+            val pattern=RecurringValidation.pattern(item).copy(effectiveFrom=effectiveFrom.toString())
             val saved=repository.saveRecurringRule(item.copy(patternJson=gson.toJson(pattern)),expectedVersion)
-            val snapshot=gson.toJson(saved)
-            for(instance in dao().recurringInstances().filter{it.ruleId==saved.id && appliesFrom(it,from)}) {
-                if(!untouched(instance))continue
-                val date=LocalDate.parse(instance.originalDate)
-                val end=if(instance.id.contains(":w:"))date.plusDays(6) else date
-                val seed=RecurringRules.expand(pattern.copy(paused=false),date,end).find{it.key==instance.id}
-                when {
-                    pattern.paused || saved.deletedAt!=null -> retire(instance,"SUSPENDED","规则暂停；已有历史保留")
-                    seed==null -> retire(instance,"SUPERSEDED","后续规则已替换；原始依据保留")
-                    else -> update(saved,pattern,seed,instance,snapshot)
+            // FUTURE_ONLY 不改写任何已落地实例、任务、计划、提醒及其快照；只有尚未生成的 seed 使用新规则
+            if(scope==RuleChangeScope.INCLUDING_PENDING) {
+                val snapshot=gson.toJson(saved)
+                for(instance in dao().recurringInstances().filter{it.ruleId==saved.id && appliesFrom(it,from)}) {
+                    if(instance.manualOverride)continue
+                    if(!untouched(instance))continue
+                    val date=LocalDate.parse(instance.originalDate)
+                    val end=if(instance.id.contains(":w:"))date.plusDays(6) else date
+                    val seed=RecurringRules.expand(pattern.copy(paused=false),date,end).find{it.key==instance.id}
+                    when {
+                        pattern.paused || saved.deletedAt!=null -> retire(instance,"SUSPENDED","规则暂停；已有历史保留")
+                        seed==null -> retire(instance,"SUPERSEDED","后续规则已替换；原始依据保留")
+                        else -> update(saved,pattern,seed,instance,snapshot)
+                    }
                 }
             }
             if(saved.deletedAt==null)materialize(saved,pattern)
         }
     }
+
+    suspend fun previewRuleChange(ruleId: String, from: LocalDate): RuleChangePreview = repository.transaction {
+        var editable=0
+        var locked=0
+        val versions = mutableListOf<List<Any?>>()
+        for(instance in dao().recurringInstances()) {
+            if(instance.ruleId!=ruleId || !appliesFrom(instance,from))continue
+            val eligible = untouched(instance)
+            if(eligible)editable++ else locked++
+            versions += listOf(instance.id, instance.version, eligible, dao().task(instance.taskId)?.version,
+                dao().plan("recurring-plan:${instance.id}")?.version, dao().placement(instance.taskId)?.version)
+        }
+        RuleChangePreview(editable,locked,firstUnmaterializedDate(ruleId, from),
+            gson.toJson(versions.sortedBy { it.first().toString() }))
+    }
+    private suspend fun firstUnmaterializedDate(ruleId: String, from: LocalDate): LocalDate =
+        maxOf(from, dao().recurringInstances().filter { it.ruleId == ruleId }.maxOfOrNull {
+            LocalDate.parse(it.originalDate).plusDays(if (it.id.contains(":w:")) 7 else 1)
+        } ?: from)
     suspend fun refresh()=withContext(Dispatchers.IO) { PersonalDataGate.access {
         val rules=dao().recurringRules().filter{it.deletedAt==null}
         if(rules.isEmpty())return@access
@@ -91,17 +119,28 @@ class RecurringService(private val repository: TimeRepository) {
         val saved=repository.saveTask(task.copy(status="CANCELLED"),task.version)
         repository.saveRecurringInstance(item.copy(status=status,taskVersion=saved.version,planVersion=null,scheduleNote=note),item.version)
     }
-    suspend fun act(instanceId: String, expectedVersion: Long, action: String, requestId: String) {
-        repository.assistantTransaction(requestId) {
-            actRaw(instanceId, expectedVersion, action)
+    suspend fun act(instanceId: String, expectedVersion: Long, action: String, requestId: String,
+                    expectedTaskVersion: Long? = null, expectedPlans: Map<String, Long>? = null) {
+        repository.transaction {
+            repository.commands.replay(requestId)?.let { return@transaction }
+            val instance = dao().recurringInstance(instanceId) ?: throw StaleChange()
+            val task = dao().task(instance.taskId) ?: throw StaleChange()
+            repository.commands.executeForRepository(com.timeagent.domain.command.ActRecurringInstance(
+                requestId, instanceId, expectedVersion, action, expectedTaskVersion ?: task.version,
+                expectedPlans ?: activePlans(task.id),
+            )).throwIfRejected()
         }
     }
 
-    internal suspend fun actRaw(instanceId: String, expectedVersion: Long, action: String) {
+    private suspend fun activePlans(taskId: String): Map<String, Long> = dao().plans()
+        .filter { it.taskId == taskId && it.status == "SCHEDULED" && it.deletedAt == null }.associate { it.id to it.version }
+
+    internal suspend fun actRaw(instanceId: String, expectedVersion: Long, action: String, expectedPlans: Map<String, Long>? = null) {
         val instance = dao().recurringInstance(instanceId) ?: throw StaleChange()
         if (instance.version != expectedVersion) throw StaleChange()
         val task = dao().task(instance.taskId) ?: throw StaleChange()
         if (task.deletedAt != null) throw StaleChange()
+        if (action.equals("SKIP", true) && expectedPlans != null && activePlans(task.id) != expectedPlans) throw StaleChange()
         require(dao().runningTimer()?.taskId!=task.id) { "请先结束本次计时，再处理状态" }
         if(action.uppercase() in setOf("COMPLETE","SKIP"))disableReminders(task.id)
         when (action.uppercase()) {
@@ -139,12 +178,20 @@ class RecurringService(private val repository: TimeRepository) {
         require(source.domain!="DEADLINE" || !withPlan) { "生活期限是时间点，请关闭同时安排时段" }
         if(withPlan)PersonalMemoryRules.violation(dao().memories(),task,Instant.ofEpochMilli(targetAt),Instant.ofEpochMilli(targetAt+task.estimatedMinutes*60000L),repository.zone)?.let{throw IllegalArgumentException("与个人约定冲突：${it.text}")}
         val warnings=if(withPlan)repository.conflicts(span(targetAt,targetAt+task.estimatedMinutes*60000L),"recurring-plan:$instanceId")else emptyList()
-        checkedMove=MoveCheck(instanceId,expectedVersion,targetAt,withPlan,task.version,dao().plan("recurring-plan:$instanceId")?.version,warnings)
+        checkedMove=RecurringMovePreview(instanceId,expectedVersion,targetAt,withPlan,task.version,dao().plan("recurring-plan:$instanceId")?.version,warnings)
         warnings
     } }
     suspend fun move(instanceId:String,expectedVersion:Long,targetAt:Long,withPlan:Boolean,expectedConflicts:List<Conflict>,requestId:String) {
-        repository.assistantTransaction(requestId) {
+        repository.transaction {
+            repository.commands.replay(requestId)?.let { return@transaction }
             val check=checkedMove?:throw StaleChange()
+            if(check.id!=instanceId || check.version!=expectedVersion || check.at!=targetAt || check.planned!=withPlan || sorted(check.conflicts)!=sorted(expectedConflicts))throw StaleChange()
+            repository.commands.executeForRepository(com.timeagent.domain.command.MoveRecurringInstance(requestId, check)).throwIfRejected()
+        }
+    }
+    internal suspend fun moveRaw(check: RecurringMovePreview) {
+            val instanceId=check.id; val expectedVersion=check.version; val targetAt=check.at
+            val withPlan=check.planned; val expectedConflicts=check.conflicts
             val (item,task)=movable(instanceId,expectedVersion);val old=dao().plan("recurring-plan:$instanceId")
             if(check.id!=instanceId || check.version!=expectedVersion || check.at!=targetAt || check.planned!=withPlan || check.taskVersion!=task.version || check.planVersion!=old?.version || sorted(check.conflicts)!=sorted(expectedConflicts))throw StaleChange()
             require(targetAt>repository.now().toEpochMilli()) { "改期时间已过，请重新检查" }
@@ -158,7 +205,6 @@ class RecurringService(private val repository: TimeRepository) {
             resyncReminder(item.id,saved.id,saved.title,Slot(saved.dueAt!!,if(withPlan)targetAt else null,targetAt),p)
             repository.saveRecurringInstance(item.copy(status="PENDING",scheduledAt=targetAt,manualOverride=true,taskVersion=saved.version,
                 planVersion=dao().plan("recurring-plan:$instanceId")?.version,scheduleNote="仅本次改期：${Instant.ofEpochMilli(targetAt).atZone(repository.zone).toLocalDateTime()}；${if(withPlan)"计划已保存" else "未安排时段"}"),item.version)
-        }
     }
     private suspend fun create(rule: RecurringRuleEntity, pattern: RecurringPattern, seed: RecurringSeed, snapshot: String) {
         val d = dao()
@@ -263,3 +309,9 @@ class RecurringService(private val repository: TimeRepository) {
         }
     }
 }
+
+enum class RuleChangeScope { FUTURE_ONLY, INCLUDING_PENDING }
+
+data class RuleChangePreview(val editable: Int, val protectedCount: Int, val firstUnmaterializedDate: LocalDate, val versions: String)
+
+data class RecurringMovePreview(val id:String,val version:Long,val at:Long,val planned:Boolean,val taskVersion:Long,val planVersion:Long?,val conflicts:List<Conflict>)

@@ -73,14 +73,27 @@ fun RecurrenceField(
     modifier: Modifier = Modifier,
     seedDate: LocalDate = LocalDate.now(),
     seedId: String = "draft-rule",
+    allowNone: Boolean = true,
+    onValidityChange: (Boolean) -> Unit = {},
 ) {
     val mode = modeOf(value)
     val current = value
     var customOpen by rememberSaveable { mutableStateOf(false) }
+    var lead by rememberSaveable(value?.id, value?.leadMinutes) {
+        mutableStateOf(value?.leadMinutes?.toString().orEmpty())
+    }
+    val leadValid = lead.isBlank() || lead.toIntOrNull()?.let { it in 0..527040 } == true
+    val isValid = current == null || (
+        leadValid &&
+            current.durationMinutes in 1..1440 &&
+            (current.untilDate?.let { it >= current.startDate } != false)
+        )
+    val latestOnValidityChange by rememberUpdatedState(onValidityChange)
+    LaunchedEffect(isValid) { latestOnValidityChange(isValid) }
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(DesignTokens.spacing8)) {
         Text("重复", style = MaterialTheme.typography.titleSmall)
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(DesignTokens.spacing8)) {
-            CHOICES.forEach { m ->
+            CHOICES.filter { allowNone || it != Mode.NONE }.forEach { m ->
                 FilterChip(selected = mode == m, onClick = { onChange(nextPattern(m, current, seedId, seedDate)) },
                     label = { Text(m.label.orEmpty()) }, modifier = Modifier.heightIn(min = DesignTokens.touchTarget))
             }
@@ -146,9 +159,6 @@ fun RecurrenceField(
                 DateField("规则生效日期", LocalDate.parse(current.effectiveFrom), {
                     onChange(current.copy(effectiveFrom = it.toString()))
                 })
-                var lead by rememberSaveable(current.id, current.leadMinutes) {
-                    mutableStateOf(current.leadMinutes?.toString().orEmpty())
-                }
                 OutlinedTextField(lead, { input ->
                     lead = input
                     if (input.isBlank()) onChange(current.copy(leadMinutes = null))

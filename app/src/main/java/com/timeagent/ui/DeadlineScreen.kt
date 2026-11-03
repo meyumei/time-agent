@@ -177,7 +177,8 @@ fun DeadlineScreen(
 
     fun act(instance: RecurringInstanceEntity, action: String) {
         model.perform(action = {
-            service.act(instance.id, instance.version, action, UUID.randomUUID().toString())
+            service.act(instance.id, instance.version, action, UUID.randomUUID().toString(),
+                taskById[instance.taskId]?.version, data.plans.filter { it.taskId == instance.taskId && it.status == "SCHEDULED" && it.deletedAt == null }.associate { it.id to it.version })
         })
     }
 
@@ -393,20 +394,8 @@ fun DeadlineScreen(
                                     zone = zone,
                                     access = access,
                                     onTask = onTask,
-                                    onComplete = {
-                                        scope.launch {
-                                            model.perform(action = {
-                                                service.act(instance.id, instance.version, "COMPLETE", UUID.randomUUID().toString())
-                                            })
-                                        }
-                                    },
-                                    onReopen = {
-                                        scope.launch {
-                                            model.perform(action = {
-                                                service.act(instance.id, instance.version, "REOPEN", UUID.randomUUID().toString())
-                                            })
-                                        }
-                                    },
+                                    onComplete = { act(instance, "COMPLETE") },
+                                    onReopen = { act(instance, "REOPEN") },
                                     onDelay = { delayChoice = instance },
                                 )
                             }
@@ -437,13 +426,7 @@ fun DeadlineScreen(
                                         access = access,
                                         onTask = onTask,
                                         onComplete = {},
-                                        onReopen = {
-                                            scope.launch {
-                                                model.perform(action = {
-                                                    service.act(instance.id, instance.version, "REOPEN", UUID.randomUUID().toString())
-                                                })
-                                            }
-                                        },
+                                        onReopen = { act(instance, "REOPEN") },
                                         onDelay = { delayChoice = instance },
                                     )
                                 }

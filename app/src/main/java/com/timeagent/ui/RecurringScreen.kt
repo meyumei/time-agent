@@ -24,7 +24,11 @@ import com.google.gson.Gson
 import com.timeagent.core.*
 import com.timeagent.data.*
 import com.timeagent.recurring.RecurringService
+import com.timeagent.recurring.RuleChangeScope
+import com.timeagent.recurring.RuleChangePreview
 import com.timeagent.recurring.recurringState
+import com.timeagent.ui.components.DateField
+import com.timeagent.ui.components.RecurrenceField
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -63,6 +67,9 @@ private fun parseAt(text: String, zone: ZoneId): Long? = runCatching {
 private fun freqLabel(p: RecurringPattern): String = when (p.frequency) {
     "WEEKDAYS" -> "每周" + p.weekdays.orEmpty().sorted().joinToString("") { wdName(it) }
     "WEEKLY_COUNT" -> "每周 ${p.weeklyCount} 次"
+    "ONCE" -> "仅一次"
+    "MONTHLY" -> "每月"
+    "YEARLY" -> "每年"
     else -> "每日"
 }
 
@@ -122,39 +129,55 @@ private data class RuleForm(
     val id: String,
     val rule: RecurringRuleEntity?,
     val title: String,
-    val startDate: String,
-    val from: String,
-    val frequency: String,
-    val weekdays: Set<Int>,
-    val count: String,
-    val minute: String,
-    val duration: String,
-    val until: String,
-    val projectId: String?,
-    val paused: Boolean
+    val pattern: RecurringPattern,
+    val projectId: String?
 )
 
-private fun newForm(today: LocalDate) = RuleForm(
-    id = UUID.randomUUID().toString(), rule = null, title = "",
-    startDate = today.toString(), from = today.toString(),
-    frequency = "DAILY", weekdays = emptySet(), count = "1", minute = "",
-    duration = "30", until = "", projectId = null, paused = false
+private data class PendingRuleSave(
+    val entity: RecurringRuleEntity,
+    val expectedVersion: Long?,
+    val from: LocalDate,
+    val scope: RuleChangeScope? = null,
+    val requestId: String
 )
 
-private fun formOf(rule: RecurringRuleEntity, p: RecurringPattern?, defaultFrom: String, today: LocalDate) = RuleForm(
+private fun newForm(today: LocalDate, zoneId: String): RuleForm {
+    val id = UUID.randomUUID().toString()
+    return RuleForm(
+        id = id,
+        rule = null,
+        title = "",
+        pattern = RecurringPattern(
+            id = id,
+            frequency = "DAILY",
+            startDate = today.toString(),
+            effectiveFrom = today.toString(),
+            durationMinutes = 30,
+            zoneId = zoneId
+        ),
+        projectId = null
+    )
+}
+
+private fun formOf(
+    rule: RecurringRuleEntity,
+    p: RecurringPattern?,
+    defaultFrom: String,
+    today: LocalDate,
+    zoneId: String
+) = RuleForm(
     id = rule.id,
     rule = rule,
     title = rule.title,
-    startDate = p?.startDate ?: today.toString(),
-    from = defaultFrom,
-    frequency = p?.frequency ?: "DAILY",
-    weekdays = p?.weekdays.orEmpty().toSet(),
-    count = (p?.weeklyCount ?: 1).toString(),
-    minute = p?.minuteOfDay?.let { hhmm(it) } ?: "",
-    duration = (p?.durationMinutes ?: 30).toString(),
-    until = p?.untilDate ?: "",
-    projectId = rule.projectId,
-    paused = p?.paused ?: false
+    pattern = p?.copy(effectiveFrom = defaultFrom) ?: RecurringPattern(
+        id = rule.id,
+        frequency = "DAILY",
+        startDate = today.toString(),
+        effectiveFrom = defaultFrom,
+        durationMinutes = 30,
+        zoneId = zoneId
+    ),
+    projectId = rule.projectId
 )
 
 private fun ruleSubtitle(rule: RecurringRuleEntity, p: RecurringPattern?, projectName: String?): String {
@@ -181,6 +204,8 @@ fun RecurringScreen(
     var expanded by remember { mutableStateOf<Set<String>>(emptySet()) }
     var history by remember { mutableStateOf<Set<String>>(emptySet()) }
     var form by remember { mutableStateOf<RuleForm?>(null) }
+    var pendingRule by remember { mutableStateOf<PendingRuleSave?>(null) }
+    var pendingPreview by remember { mutableStateOf<RuleChangePreview?>(null) }
     var choice by remember { mutableStateOf<RecurringInstanceEntity?>(null) }
     var moving by remember { mutableStateOf<RecurringInstanceEntity?>(null) }
     var moveInput by remember { mutableStateOf("") }
@@ -213,42 +238,27 @@ fun RecurringScreen(
     fun togglePause(rule: RecurringRuleEntity, p: RecurringPattern?) {
         if (p == null) { model.report("规则数据无法解析"); return }
         val next = p.copy(paused = !p.paused, effectiveFrom = today.toString())
+        pendingPreview = null
+        pendingRule = PendingRuleSave(rule.copy(patternJson = gson.toJson(next)), rule.version, today,
+            requestId = UUID.randomUUID().toString())
         model.perform(action = {
-            service.saveRule(rule.copy(patternJson = gson.toJson(next)), rule.version, today, UUID.randomUUID().toString())
+            pendingPreview = service.previewRuleChange(rule.id, today)
         })
     }
 
     fun saveForm(f: RuleForm) {
         try {
             require(f.title.isNotBlank()) { "标题不能为空" }
-            val start = LocalDate.parse(f.startDate.trim())
-            val from = LocalDate.parse(f.from.trim())
-            val dur = f.duration.trim().toInt()
-            require(dur in 1..1440) { "预计分钟需在 1-1440" }
-            val days = if (f.frequency == "WEEKDAYS") f.weekdays.sorted() else emptyList()
-            require(f.frequency != "WEEKDAYS" || days.isNotEmpty()) { "请选择星期" }
-            val count = if (f.frequency == "WEEKLY_COUNT") f.count.trim().toInt().also {
-                require(it in 1..21) { "每周次数需在 1-21" }
-            } else 1
-            val minute = if (f.frequency == "WEEKLY_COUNT") null else f.minute.trim().takeIf { it.isNotEmpty() }?.let {
-                val t = LocalTime.parse(it, DateTimeFormatter.ofPattern("H:mm").withResolverStyle(java.time.format.ResolverStyle.STRICT))
-                t.hour * 60 + t.minute
-            }
-            val until = f.until.trim().takeIf { it.isNotEmpty() }?.let { LocalDate.parse(it) }
-            val old = f.rule?.let { patternOrNull(gson, it) }
-            val pattern = RecurringPattern(
-                id = f.id,
-                frequency = f.frequency,
+            val p = f.pattern
+            val start = LocalDate.parse(p.startDate.trim())
+            val from = LocalDate.parse(p.effectiveFrom.trim())
+            require(p.durationMinutes in 1..1440) { "预计分钟需在 1-1440" }
+            require(p.frequency != "WEEKDAYS" || p.weekdays.isNotEmpty()) { "请选择星期" }
+            require(p.frequency != "WEEKLY_COUNT" || p.weeklyCount in 1..21) { "每周次数需在 1-21" }
+            val pattern = p.copy(
                 startDate = start.toString(),
-                weekdays = days,
-                weeklyCount = count,
-                minuteOfDay = minute,
-                durationMinutes = dur,
-                zoneId = old?.zoneId ?: zone.id,
-                untilDate = until?.toString(),
-                paused = f.paused,
                 effectiveFrom = from.toString(),
-                leadMinutes = old?.leadMinutes
+                zoneId = p.zoneId.takeIf { !it.isNullOrBlank() } ?: zone.id
             )
             val entity = RecurringRuleEntity(
                 id = f.id,
@@ -263,13 +273,39 @@ fun RecurringScreen(
                 version = f.rule?.version ?: 0L,
                 deletedAt = null
             )
-            model.perform(
-                onSuccess = { form = null },
-                action = { service.saveRule(entity, f.rule?.version, from, UUID.randomUUID().toString()) }
-            )
+            val requestId = UUID.randomUUID().toString()
+            val existing = f.rule
+            if (existing == null) {
+                model.perform(
+                    onSuccess = { form = null },
+                    action = { service.saveRule(entity, null, from, requestId) }
+                )
+            } else {
+                pendingPreview = null
+                pendingRule = PendingRuleSave(entity, existing.version, from, null, requestId)
+                model.perform(action = {
+                    val preview = service.previewRuleChange(entity.id, from)
+                    pendingPreview = preview
+                })
+            }
         } catch (e: Exception) {
             model.report(e.message ?: "请检查输入")
         }
+    }
+
+    fun commitPending(scope: RuleChangeScope) {
+        val pending = pendingRule ?: return
+        val preview = pendingPreview ?: return
+        model.perform(
+            onSuccess = {
+                form = null
+                pendingRule = null
+                pendingPreview = null
+            },
+            action = {
+                service.saveRule(pending.entity, pending.expectedVersion, pending.from, pending.requestId, scope, preview)
+            }
+        )
     }
 
     fun openMove(inst: RecurringInstanceEntity, p: RecurringPattern?) {
@@ -310,7 +346,7 @@ fun RecurringScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Button(
-                onClick = { form = newForm(today) },
+                onClick = { form = newForm(today, zone.id) },
                 modifier = Modifier.weight(1f).testTag("recurring-create")
             ) { Text("新建规则", fontSize = 13.sp) }
             OutlinedButton(
@@ -350,7 +386,8 @@ fun RecurringScreen(
                         onOpen = { task?.let(onTask) },
                         onAct = { action ->
                             model.perform(action = {
-                                service.act(inst.id, inst.version, action, UUID.randomUUID().toString())
+                                service.act(inst.id, inst.version, action, UUID.randomUUID().toString(),
+                                    task?.version, data.plans.filter { it.taskId == inst.taskId && it.status == "SCHEDULED" && it.deletedAt == null }.associate { it.id to it.version })
                             })
                         },
                         onMove = { choice = inst },
@@ -389,7 +426,7 @@ fun RecurringScreen(
                                     )
                                 }
                                 TextButton(
-                                    onClick = { form = formOf(rule, p, today.toString(), today) },
+                                    onClick = { form = formOf(rule, p, today.toString(), today, zone.id) },
                                     modifier = Modifier.testTag("recurring-rule-${rule.id}")
                                 ) { Text("改规则", fontSize = 12.sp) }
                                 TextButton(onClick = { togglePause(rule, p) }) {
@@ -431,7 +468,8 @@ fun RecurringScreen(
                                         onOpen = { taskById[inst.taskId]?.let(onTask) },
                                         onAct = { action ->
                                             model.perform(action = {
-                                                service.act(inst.id, inst.version, action, UUID.randomUUID().toString())
+                                                service.act(inst.id, inst.version, action, UUID.randomUUID().toString(),
+                                                    taskById[inst.taskId]?.version, data.plans.filter { it.taskId == inst.taskId && it.status == "SCHEDULED" && it.deletedAt == null }.associate { it.id to it.version })
                                             })
                                         },
                                         onMove = { choice = inst }
@@ -453,8 +491,67 @@ fun RecurringScreen(
     }
 
     }
-    form?.let { f ->
-        RuleEditor(initial = f, projects = projects, onDismiss = { form = null }, onSave = { saveForm(it) })
+    if (pendingRule == null) {
+        form?.let { f ->
+            RuleEditor(initial = f, projects = projects, onDismiss = { form = null }, onSave = { saveForm(it) })
+        }
+    }
+
+    pendingRule?.let { pending ->
+        val counts = pendingPreview
+        AlertDialog(
+            onDismissRequest = {
+                pendingRule = null
+                pendingPreview = null
+            },
+            title = { Text("从 ${pending.from} 起修改规则？", fontSize = 15.sp) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text("规则将按新设置保存，并影响以后生成的本次事项。", fontSize = 13.sp)
+                    if (counts == null) {
+                        Text("正在统计受影响的本次事项…", fontSize = 13.sp)
+                    } else {
+                        Text("仅以后：从 ${counts.firstUnmaterializedDate} 起生成，已生成条目保持原样。", fontSize = 13.sp)
+                        Text(
+                            "可随规则修改：${counts.editable} 条",
+                            fontSize = 13.sp,
+                            modifier = Modifier.testTag("recurring-preview-editable")
+                        )
+                        Text(
+                            "受保护、不能修改：${counts.protectedCount} 条",
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.testTag("recurring-preview-protected")
+                        )
+                    }
+                    Text(
+                        "受保护的本次（已处理、已跳过或已手改）不能随规则修改，将保持原样。",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = { commitPending(RuleChangeScope.INCLUDING_PENDING) },
+                    enabled = counts != null,
+                    modifier = Modifier.testTag("recurring-save-including-pending")
+                ) { Text("包括已生成但未完成的实例", fontSize = 13.sp) }
+            },
+            dismissButton = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    TextButton(
+                        onClick = { commitPending(RuleChangeScope.FUTURE_ONLY) },
+                        enabled = counts != null,
+                        modifier = Modifier.testTag("recurring-save-future-only")
+                    ) { Text("仅以后的实例", fontSize = 13.sp) }
+                    TextButton(onClick = {
+                        pendingRule = null
+                        pendingPreview = null
+                    }) { Text("取消", fontSize = 13.sp) }
+                }
+            }
+        )
     }
 
     choice?.let { inst ->
@@ -472,7 +569,7 @@ fun RecurringScreen(
             dismissButton = {
                 TextButton(onClick = {
                     choice = null
-                    if (rule != null) form = formOf(rule, patternOrNull(gson, rule), inst.originalDate, today)
+                    if (rule != null) form = formOf(rule, patternOrNull(gson, rule), inst.originalDate, today, zone.id)
                 }) { Text("本次及以后") }
             }
         )
@@ -713,6 +810,7 @@ private fun RuleEditor(
     onSave: (RuleForm) -> Unit
 ) {
     var f by remember(initial) { mutableStateOf(initial) }
+    var recurrenceValid by remember(initial) { mutableStateOf(true) }
     Dialog(onDismissRequest = onDismiss) {
         Surface(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
             Column(
@@ -727,81 +825,21 @@ private fun RuleEditor(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth().testTag("recurring-title")
                 )
-                OutlinedTextField(
-                    value = f.startDate,
-                    onValueChange = { f = f.copy(startDate = it) },
-                    label = { Text("规则开始日期 yyyy-MM-dd") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
                 if (initial.rule != null) {
-                    OutlinedTextField(
-                        value = f.from,
-                        onValueChange = { f = f.copy(from = it) },
-                        label = { Text("本次及以后生效日期 yyyy-MM-dd") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                    DateField(
+                        "本次及以后生效日期 yyyy-MM-dd",
+                        runCatching { LocalDate.parse(f.pattern.effectiveFrom) }.getOrDefault(LocalDate.now()),
+                        { f = f.copy(pattern = f.pattern.copy(effectiveFrom = it.toString())) }
                     )
                 }
-                Text("频率", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    listOf("DAILY" to "每日", "WEEKDAYS" to "指定星期", "WEEKLY_COUNT" to "每周频次")
-                        .forEach { (value, label) ->
-                            FilterChip(
-                                selected = f.frequency == value,
-                                onClick = { f = f.copy(frequency = value) },
-                                label = { Text(label, fontSize = 12.sp) }
-                            )
-                        }
-                }
-                if (f.frequency == "WEEKDAYS") {
-                    Row(
-                        Modifier.horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        (1..7).forEach { d ->
-                            FilterChip(
-                                selected = f.weekdays.contains(d),
-                                onClick = {
-                                    f = f.copy(weekdays = if (f.weekdays.contains(d)) f.weekdays - d else f.weekdays + d)
-                                },
-                                label = { Text(wdName(d), fontSize = 12.sp) }
-                            )
-                        }
-                    }
-                }
-                if (f.frequency == "WEEKLY_COUNT") {
-                    OutlinedTextField(
-                        value = f.count,
-                        onValueChange = { f = f.copy(count = it) },
-                        label = { Text("每周次数 1-21") },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.fillMaxWidth().testTag("recurring-count")
-                    )
-                } else {
-                    OutlinedTextField(
-                        value = f.minute,
-                        onValueChange = { f = f.copy(minute = it) },
-                        label = { Text("固定时刻 HH:mm（可空）") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                OutlinedTextField(
-                    value = f.duration,
-                    onValueChange = { f = f.copy(duration = it) },
-                    label = { Text("预计分钟 1-1440") },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                OutlinedTextField(
-                    value = f.until,
-                    onValueChange = { f = f.copy(until = it) },
-                    label = { Text("结束日期 yyyy-MM-dd（可空）") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                RecurrenceField(
+                    value = f.pattern,
+                    onChange = { next -> if (next != null) f = f.copy(pattern = next) },
+                    modifier = Modifier.fillMaxWidth(),
+                    seedDate = runCatching { LocalDate.parse(f.pattern.startDate) }.getOrDefault(LocalDate.now()),
+                    seedId = f.id,
+                    allowNone = false,
+                    onValidityChange = { recurrenceValid = it }
                 )
                 Text("关联项目", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Row(
@@ -823,7 +861,7 @@ private fun RuleEditor(
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     TextButton(onClick = onDismiss) { Text("取消", fontSize = 13.sp) }
-                    Button(onClick = { onSave(f) }, modifier = Modifier.testTag("recurring-save")) {
+                    Button(onClick = { onSave(f) }, enabled = recurrenceValid, modifier = Modifier.testTag("recurring-save")) {
                         Text("保存", fontSize = 13.sp)
                     }
                 }
