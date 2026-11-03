@@ -40,7 +40,6 @@ import com.timeagent.assistant.SpeechInputStatus
 import com.timeagent.assistant.SpeechInputFactory
 import com.timeagent.assistant.OfflineSpeechInputFactory
 import com.timeagent.imports.CourseImportScreen
-import com.timeagent.reminders.ReminderCoordinator
 import com.timeagent.health.*
 import com.timeagent.workout.WorkoutActivity
 import com.timeagent.suggestions.SuggestionCoordinator
@@ -69,8 +68,6 @@ import com.timeagent.ui.navigation.*
     val context = LocalContext.current
     val appearance = remember(context) { ThemePreference(context) }
     val appScope = rememberCoroutineScope()
-    val coordinator = remember(context, model) { ReminderCoordinator(context.applicationContext, model.repository) }
-    LaunchedEffect(coordinator) { coordinator.start(appScope) }
     val suggestionCoordinator = remember(context, model) { SuggestionCoordinator(context.applicationContext, model.repository) }
     LaunchedEffect(suggestionCoordinator) { suggestionCoordinator.start(appScope) }
     TimeAgentTheme {

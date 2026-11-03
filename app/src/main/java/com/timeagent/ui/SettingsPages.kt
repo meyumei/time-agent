@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.timeagent.reminders.reminderAccessState
+import com.timeagent.ui.components.StatusBanner
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,6 +31,11 @@ fun NotificationSettingsScreen(onClose: () -> Unit) {
     var access by remember { mutableStateOf(reminderAccessState(context)) }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { access = reminderAccessState(context) }
     SettingsPage("提醒与通知", onClose) {
+        val impacts = buildList {
+            if (!access.notificationsAllowed) add("通知权限未开启，到点的提醒不会显示。")
+            if (!access.exactAlarmsAllowed) add("精确闹钟权限未开启，提醒可能延迟，无法保证准点。")
+        }
+        if (impacts.isNotEmpty()) StatusBanner(impacts.joinToString("") + "提醒仍会保存在本机。")
         Text("通知权限：${if (access.notificationsAllowed) "已允许" else "未允许"}")
         Text("精确闹钟：${if (access.exactAlarmsAllowed) "已允许" else "未允许"}")
         Text("提醒的声音、震动和锁屏显示在系统通知设置中调整。")
