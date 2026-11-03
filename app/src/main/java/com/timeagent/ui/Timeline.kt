@@ -40,6 +40,9 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import com.timeagent.core.*
 import com.timeagent.data.*
+import com.timeagent.ui.timeline.TimelineDayCountSwitch
+import com.timeagent.ui.timeline.TimelineFilterButton
+import com.timeagent.ui.timeline.TimelineFilterState
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -48,13 +51,13 @@ import kotlin.math.roundToInt
 enum class ItemKind(val label: String) { COURSE("课程"), PLAN("计划"), RECORD("实际") }
 data class TimelineItem(val id: String, val kind: ItemKind, val title: String, val span: TimeSpan, val subtitle: String = "", val entity: Any, val colorKey: String = "")
 val TimelineItem.isPoint: Boolean get() = (entity as? ScheduleBlockEntity)?.kind == "POINT"
-fun LocalSnapshot.timeline(now: Instant): List<TimelineItem> {
+fun LocalSnapshot.timeline(now: Instant, filters: TimelineFilterState = TimelineFilterState()): List<TimelineItem> {
     val taskNames = tasks.associateBy { it.id }
     val courseNames = courses.associateBy { it.id }
     // TimeSpan requires positive duration; POINT uses a display anchor and never enters duration/conflict calculations.
-    return plans.filter { it.deletedAt == null }.map { TimelineItem(it.id, ItemKind.PLAN, it.displayTitle(taskNames[it.taskId]), TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(if (it.kind == "POINT") it.startAt + 1 else it.endAt)), subtitle = it.notes, entity = it, colorKey = taskNames[it.taskId]?.timelineColorSubject() ?: "schedule:${it.id}") } +
-        records.map { TimelineItem(it.id, ItemKind.RECORD, it.title.takeIf(String::isNotBlank) ?: taskNames[it.taskId]?.title ?: it.notes.takeIf(String::isNotBlank)?.lineSequence()?.firstOrNull() ?: "自由记录", TimeSpan(Instant.ofEpochMilli(it.startAt), maxOf(Instant.ofEpochMilli(it.startAt).plusMillis(1), it.endAt?.let(Instant::ofEpochMilli) ?: now)), if (it.endAt == null) "计时中" else it.notes, it, colorKey = taskNames[it.taskId]?.timelineColorSubject().orEmpty()) } +
-        occurrences.filter { it.status != "CANCELLED" }.map {
+    return plans.filter { filters.plan && it.deletedAt == null }.map { TimelineItem(it.id, ItemKind.PLAN, it.displayTitle(taskNames[it.taskId]), TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(if (it.kind == "POINT") it.startAt + 1 else it.endAt)), subtitle = it.notes, entity = it, colorKey = taskNames[it.taskId]?.timelineColorSubject() ?: "schedule:${it.id}") } +
+        records.filter { (it.source == "HEALTH_SYNC" && filters.health) || (it.source != "HEALTH_SYNC" && filters.record) }.map { TimelineItem(it.id, ItemKind.RECORD, it.title.takeIf(String::isNotBlank) ?: taskNames[it.taskId]?.title ?: it.notes.takeIf(String::isNotBlank)?.lineSequence()?.firstOrNull() ?: "自由记录", TimeSpan(Instant.ofEpochMilli(it.startAt), maxOf(Instant.ofEpochMilli(it.startAt).plusMillis(1), it.endAt?.let(Instant::ofEpochMilli) ?: now)), if (it.endAt == null) "计时中" else it.notes, it, colorKey = taskNames[it.taskId]?.timelineColorSubject().orEmpty()) } +
+        occurrences.filter { filters.course && it.status != "CANCELLED" }.map {
             val definition = courseNames[it.courseId]
             val location = it.locationOverride ?: definition?.location.orEmpty()
             val teacher = it.teacherOverride ?: definition?.teacher.orEmpty()
@@ -121,11 +124,13 @@ private val DayNames = listOf("周一", "周二", "周三", "周四", "周五", 
     onReminder: (ReminderEntity) -> Unit = {},
     briefing: @Composable () -> Unit = {},
     onVisibleRange: (LocalDate, LocalDate) -> Unit = { _, _ -> },
+    defaultDayCount: Int = 3,
 ) {
     var showConflicts by remember { mutableStateOf(false) }
     var conflictGroup by remember { mutableStateOf<List<TimelineItem>?>(null) }
     var listMode by rememberSaveable { mutableStateOf(false) }
-    var viewport by rememberSaveable(stateSaver = ViewportSaver) { mutableStateOf(TimelineViewport.fit(week.selectedWeekStart)) }
+    var viewport by rememberSaveable(stateSaver = ViewportSaver) { mutableStateOf(TimelineViewport.fit(week.selectedWeekStart, defaultDayCount)) }
+    var filterState by rememberSaveable { mutableStateOf(TimelineFilterState()) }
     var requestedWeek by rememberSaveable { mutableLongStateOf(week.selectedWeekStart.toEpochDay()) }
     var appliedNavigationRevision by rememberSaveable { mutableLongStateOf(navigationRevision) }
     var navigationPending by remember { mutableStateOf(false) }
@@ -134,12 +139,12 @@ private val DayNames = listOf("周一", "周二", "周三", "周四", "周五", 
             appliedNavigationRevision = navigationRevision
             requestedWeek = week.selectedWeekStart.toEpochDay()
             navigationPending = false
-            viewport = TimelineViewport.fit(week.selectedWeekStart)
+            viewport = TimelineViewport.fit(week.selectedWeekStart, viewport.dayCount)
         } else if (navigationPending) {
             if (requestedWeek == week.selectedWeekStart.toEpochDay()) navigationPending = false
         } else if (requestedWeek != week.selectedWeekStart.toEpochDay()) {
             requestedWeek = week.selectedWeekStart.toEpochDay()
-            viewport = TimelineViewport.fit(week.selectedWeekStart)
+            viewport = TimelineViewport.fit(week.selectedWeekStart, viewport.dayCount)
         }
     }
     fun syncReviewWeek(firstDate: LocalDate) {
@@ -157,7 +162,7 @@ private val DayNames = listOf("周一", "周二", "周三", "周四", "周五", 
         syncReviewWeek(LocalDate.ofEpochDay(kotlin.math.floor(viewport.firstDay).toLong()))
     }
     val renderCache = remember { TimelineRenderCache() }
-    val rendered = renderCache.window(data, now, viewport, zone)
+    val rendered = renderCache.window(data, now, viewport, zone, filterState)
     val dates = rendered.dates
     val reportDate by rememberUpdatedState(onVisibleDate)
     LaunchedEffect(dates.first()) { reportDate(dates.first()) }
@@ -178,10 +183,14 @@ private val DayNames = listOf("周一", "周二", "周三", "周四", "周五", 
             onPrevious = { moveWeek(-1) }, onNext = { moveWeek(1) },
             onCurrent = {
                 val current = WeekState.startOfWeek(week.today)
-                viewport = TimelineViewport.fit(current)
+                viewport = TimelineViewport.fit(current, viewport.dayCount)
                 syncReviewWeek(current)
             },
-            onFit = { viewport = TimelineViewport.fit(LocalDate.ofEpochDay(kotlin.math.floor(viewport.firstDay).toLong())) },
+            onFit = { viewport = TimelineViewport.fit(LocalDate.ofEpochDay(kotlin.math.floor(viewport.firstDay).toLong()), viewport.dayCount) },
+            dayCount = viewport.dayCount,
+            onDayCount = { count -> viewport = TimelineViewport.withDayCount(viewport, count) },
+            filterState = filterState,
+            onFilterState = { filterState = it },
             onToggleList = { listMode = !listMode },
             themeMode = themeMode, onThemeMode = onThemeMode,
             conflicts = conflicts.size, onConflicts = { showConflicts = true },
@@ -198,7 +207,7 @@ private val DayNames = listOf("周一", "周二", "周三", "周四", "周五", 
                 rendered, viewport, week.today, now, zone, onSelect, { transform -> viewport = transform(viewport) },
                 Modifier.weight(1f), if (busy) null else onCreateAt,
                 resolve = rendered::currentItem, remindersByDate = remindersByDate, onReminder = onReminder,
-                onConflictGroup = { conflictGroup = it },
+                onConflictGroup = { conflictGroup = it }, allDayItems = items.filter(TimelineItem::isAllDay),
             )
         }
     }
@@ -293,6 +302,7 @@ private suspend fun PointerInputScope.detectTimelineGestures(
     onRedo: () -> Unit, canRedo: Boolean,
     onPrevious: () -> Unit, onNext: () -> Unit, onCurrent: () -> Unit, onFit: () -> Unit, onToggleList: () -> Unit,
     themeMode: ThemeMode, onThemeMode: (ThemeMode) -> Unit, conflicts: Int, onConflicts: () -> Unit,
+    dayCount: Int, onDayCount: (Int) -> Unit, filterState: TimelineFilterState, onFilterState: (TimelineFilterState) -> Unit,
 ) {
     val first = dates.first()
     val last = dates.last()
@@ -310,6 +320,7 @@ private suspend fun PointerInputScope.detectTimelineGestures(
             IconButton(onClick = onCreate, enabled = !busy, modifier = Modifier.size(48.dp)) { Icon(Icons.Rounded.Add, "新建", Modifier.size(25.dp)) }
         }
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).heightIn(min = 48.dp), verticalAlignment = Alignment.CenterVertically) {
+            TimelineDayCountSwitch(dayCount, onDayCount)
             IconButton(onClick = onPrevious, modifier = Modifier.size(48.dp)) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "上一周") }
             TextButton(onClick = onCurrent, modifier = Modifier.heightIn(min = 48.dp)) { Text("本周") }
             IconButton(onClick = onNext, modifier = Modifier.size(48.dp)) { Icon(Icons.AutoMirrored.Rounded.ArrowForward, "下一周") }
@@ -326,6 +337,7 @@ private suspend fun PointerInputScope.detectTimelineGestures(
                 Text("${(zoom * 100).roundToInt()}%")
             }
             TextButton(onClick = onToggleList, modifier = Modifier.heightIn(min = 48.dp)) { Text(if (listMode) "时间轴" else "列表") }
+            TimelineFilterButton(filterState, onFilterState)
         }
     }
 }
@@ -338,6 +350,7 @@ private suspend fun PointerInputScope.detectTimelineGestures(
     remindersByDate: Map<LocalDate, List<ReminderEntity>> = emptyMap(),
     onReminder: (ReminderEntity) -> Unit = {},
     onConflictGroup: (List<TimelineItem>) -> Unit = {},
+    allDayItems: List<TimelineItem> = emptyList(),
 ) {
     val latestOnViewport by rememberUpdatedState(onViewport)
     val latestCreate by rememberUpdatedState(onCreateAt)
@@ -351,15 +364,16 @@ private suspend fun PointerInputScope.detectTimelineGestures(
         val header = 42.dp
         val labelInset = 7.dp
         val graphWidth = (maxWidth - gutter - 3.dp).coerceAtLeast(1.dp)
-        val bodyHeight = (maxHeight - header).coerceAtLeast(16.dp)
+        val allDayHeight = if (allDayItems.isEmpty()) 0.dp else 44.dp
+        val bodyHeight = (maxHeight - header - allDayHeight).coerceAtLeast(16.dp)
         val graphHeight = (bodyHeight - labelInset * 2).coerceAtLeast(1.dp)
-        val dayWidth = graphWidth * (viewport.zoom / 7).toFloat()
+        val dayWidth = graphWidth * (viewport.zoom / viewport.dayCount).toFloat()
         val minuteHeight = graphHeight * (viewport.zoom / 1440).toFloat()
         val density = LocalDensity.current
         val widthPx = with(density) { graphWidth.toPx().toDouble() }
         val heightPx = with(density) { graphHeight.toPx().toDouble() }
         val gutterPx = with(density) { gutter.toPx() }
-        val topPx = with(density) { (header + labelInset).toPx() }
+        val topPx = with(density) { (header + allDayHeight + labelInset).toPx() }
         val hitEvent by rememberUpdatedState<(Offset) -> Boolean> { point ->
             rendered.isOccupiedAt(
                 placementViewport.value, graphWidth.value.toDouble(), graphHeight.value.toDouble(),
@@ -425,7 +439,19 @@ private suspend fun PointerInputScope.detectTimelineGestures(
                     TimelineDateHeader(date, today, dayWidth, header, placementViewport)
                 } }
             }
-            Box(Modifier.offset(y = header).fillMaxWidth().height(bodyHeight).clipToBounds()) {
+            if (allDayItems.isNotEmpty()) {
+                TimelineAllDayRow(
+                    items = allDayItems,
+                    dates = dates,
+                    viewport = placementViewport,
+                    dayWidth = dayWidth,
+                    height = allDayHeight,
+                    zone = zone,
+                    onSelect = onSelect,
+                    modifier = Modifier.offset(x = gutter, y = header).width(graphWidth),
+                )
+            }
+            Box(Modifier.offset(y = header + allDayHeight).fillMaxWidth().height(bodyHeight).clipToBounds()) {
                 TimelineHourLabels(gutter, bodyHeight, labelInset, minuteHeight, viewport.firstMinute)
                 Box(Modifier.offset(x = gutter, y = labelInset).width(graphWidth).height(graphHeight).clipToBounds()) {
                     Canvas(Modifier.matchParentSize()) {

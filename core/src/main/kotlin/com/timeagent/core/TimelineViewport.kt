@@ -48,7 +48,7 @@ data class TimelineViewport(
         val day = (firstDay + x / oldDayWidth - (x + dx) / nextDayWidth).coerceIn(MIN_DAY, MAX_DAY)
         val minute = (firstMinute + y / oldMinuteHeight - (y + dy) / nextMinuteHeight)
             .coerceIn(0.0, MINUTES_PER_DAY - MINUTES_PER_DAY / nextZoom)
-        return TimelineViewport(day, nextZoom, minute)
+        return TimelineViewport(day, nextZoom, minute, dayCount)
     }
 
     fun visibleDates(): List<LocalDate> {

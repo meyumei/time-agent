@@ -6,7 +6,9 @@ import com.timeagent.core.TimeSpan
 import com.timeagent.core.TimelineLayout
 import com.timeagent.core.TimelineViewport
 import com.timeagent.data.LocalSnapshot
+import com.timeagent.data.ScheduleBlockEntity
 import com.timeagent.data.TimeRecordEntity
+import com.timeagent.ui.timeline.TimelineFilterState
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -14,6 +16,7 @@ import kotlin.math.ceil
 import kotlin.math.floor
 
 internal val TimelineItem.layoutKey: String get() = "${kind}:$id"
+internal val TimelineItem.isAllDay: Boolean get() = (entity as? ScheduleBlockEntity)?.kind == "ALL_DAY"
 
 internal data class TimelineEventLayout(
     val item: TimelineItem,
@@ -161,15 +164,21 @@ internal class TimelineRenderCache {
     private val dayCache = LinkedHashMap<LocalDate, TimelineDayLayout>(32, .75f, true)
     private var renderedWindow: TimelineRenderWindow? = null
 
-    fun window(data: LocalSnapshot, now: Instant, viewport: TimelineViewport, zone: ZoneId): TimelineRenderWindow {
-        updateSource(data, now)
+    fun window(
+        data: LocalSnapshot,
+        now: Instant,
+        viewport: TimelineViewport,
+        zone: ZoneId,
+        filter: TimelineFilterState = TimelineFilterState(),
+    ): TimelineRenderWindow {
+        updateSource(data, now, filter)
         if (localZone != zone) {
             localZone = zone
             dayCache.clear()
             renderedWindow = null
         }
         val firstDay = floor(viewport.firstDay).toLong()
-        val lastDay = ceil(viewport.firstDay + 7.0 / viewport.zoom).toLong() - 1
+        val lastDay = ceil(viewport.firstDay + viewport.dayCount.toDouble() / viewport.zoom).toLong() - 1
         renderedWindow?.let { current ->
             if (current.dates.first().toEpochDay() == firstDay && current.dates.last().toEpochDay() == lastDay) return current
         }
@@ -181,24 +190,29 @@ internal class TimelineRenderCache {
                 while (dayCache.size > 32) dayCache.remove(dayCache.keys.first())
             }
         }
-        val items = days.values.flatMap { day -> day.events.map { it.item } }.distinctBy { it.layoutKey }.sortedBy { it.span.start }
+        val items = (sourceItems.filter { it.isAllDay } + days.values.flatMap { day -> day.events.map { it.item } })
+            .distinctBy { it.layoutKey }.sortedBy { it.span.start }
         val conflicts = days.values.flatMap { it.conflicts }.distinctBy { it.first.layoutKey to it.second.layoutKey }
         return TimelineRenderWindow(dates, days, items, conflicts, itemSource).also { renderedWindow = it }
     }
 
-    private fun updateSource(data: LocalSnapshot, now: Instant) {
+    private var sourceFilter = TimelineFilterState()
+
+    private fun updateSource(data: LocalSnapshot, now: Instant, filter: TimelineFilterState) {
         val previous = source
         val sameEntities = previous != null && previous.tasks === data.tasks && previous.plans === data.plans &&
-            previous.records === data.records && previous.courses === data.courses && previous.occurrences === data.occurrences
+            previous.records === data.records && previous.courses === data.courses &&
+            previous.occurrences === data.occurrences && sourceFilter == filter
         source = data
         if (!sameEntities) {
-            sourceItems = data.timeline(now).sortedBy { it.span.start }
+            sourceItems = data.timeline(now, filter).sortedBy { it.span.start }
             itemSource.replace(sourceItems)
             runningIndices = sourceItems.indices.filter { index ->
                 val item = sourceItems[index]
                 item.kind == ItemKind.RECORD && (item.entity as? TimeRecordEntity)?.endAt == null
             }
             sourceNow = now
+            sourceFilter = filter
             dayCache.clear()
             renderedWindow = null
         } else if (runningIndices.isNotEmpty() && sourceNow != now) {
@@ -228,7 +242,7 @@ internal class TimelineRenderCache {
 
     private fun buildDay(date: LocalDate, zone: ZoneId): TimelineDayLayout {
         val window = TimeSpan(date.atStartOfDay(zone).toInstant(), date.plusDays(1).atStartOfDay(zone).toInstant())
-        val visible = sourceItems.filter { it.span.overlaps(window) }
+        val visible = sourceItems.filter { !it.isAllDay && it.span.overlaps(window) }
         val conflicts = timelineConflicts(visible)
         val conflicting = conflicts.flatMap { listOf(it.first.layoutKey, it.second.layoutKey) }.toSet()
         val scheduled = visible.filter { it.kind != ItemKind.RECORD }

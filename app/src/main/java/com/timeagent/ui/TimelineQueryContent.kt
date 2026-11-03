@@ -16,7 +16,7 @@ internal fun TimelineQueryContent(
     content: @Composable (LocalSnapshot, (LocalDate, LocalDate) -> Unit) -> Unit,
 ) {
     var range by remember(model) {
-        mutableStateOf(TimelineRange.visible(week.selectedWeekStart, week.selectedWeekStart.plusDays(6), model.zone))
+        mutableStateOf(TimelineRange.visible(week.selectedWeekStart, week.selectedWeekStart.plusDays(2), model.zone))
     }
     val query = remember(model, range) { model.timeline(range) }
     val data = key(query) { query.collectAsStateWithLifecycle(LocalSnapshot()).value }
