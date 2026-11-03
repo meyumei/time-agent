@@ -464,6 +464,15 @@ import com.timeagent.ui.navigation.*
                 onSchedule = { editor = EditorRequest(EditorKind.PLAN, taskId = it.id, scheduleRange = true) })
         }
         "goals" -> MinuteClockContent(model) { now -> WeeklyGoalsScreen(data,model,now,zone,onClose=::closeScreen) }
+        "courses" -> CourseScheduleScreen(
+            data = data,
+            zone = zone,
+            onImport = { openScreen("import") },
+            onSelect = { occurrence ->
+                selected = data.timeline(model.clock.now()).firstOrNull { it.id == occurrence.id }
+            },
+            onClose = ::closeScreen,
+        )
         "import" -> CourseImportScreen(model, onClose = ::closeScreen)
         "activities" -> ActivityTemplatesScreen(
             model,

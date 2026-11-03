@@ -344,7 +344,7 @@ fun ButlerHub(
                 SettingsLink(
                     title = "课表与导入",
                     subtitle = "管理课表并导入已有安排。",
-                    route = "tools",
+                    route = "courses",
                     onOpen = onOpen,
                     tagPrefix = "butler-link",
                 )
