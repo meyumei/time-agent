@@ -62,6 +62,7 @@ class TimeViewModel(
     val visibleWeekStart = _visibleWeekStart.asStateFlow()
     private val _timelineNavigationRevision = MutableStateFlow(0L)
     val timelineNavigationRevision = _timelineNavigationRevision.asStateFlow()
+    val timelineNavigationOwner = java.util.UUID.randomUUID().toString()
     val week = combine(_weekStart, now) { selected, now -> WeekState(now.atZone(zone).toLocalDate(), selected) }
         .stateIn(viewModelScope, SharingStarted.Eagerly, WeekState(clock.now().atZone(zone).toLocalDate()))
     private val _error = MutableStateFlow<String?>(null)

@@ -14,10 +14,10 @@ data class TimelineSelection(val date: LocalDate, val startMinute: Int, val endM
         return TimeSpan(at(startMinute), at(endMinute))
     }
     companion object {
-        fun at(viewport: TimelineViewport, x: Double, y: Double, width: Double, height: Double): TimelineSelection? {
+        fun at(viewport: TimelineViewport, x: Double, y: Double, width: Double, height: Double, density: Double = 1.0): TimelineSelection? {
             if (listOf(x, y, width, height).any { !it.isFinite() } || width <= 0 || height <= 0 || x < 0 || x >= width || y < 0 || y >= height) return null
             val date = LocalDate.ofEpochDay(floor(viewport.firstDay + x / viewport.dayWidth(width)).toLong())
-            val start = (((viewport.firstMinute + y / viewport.minuteHeight(height)) / 15).roundToInt() * 15).coerceIn(0, 1425)
+            val start = (((viewport.firstMinute + y / viewport.minuteHeight(height, density)) / 15).roundToInt() * 15).coerceIn(0, 1425)
             return TimelineSelection(date, start, (start + 60).coerceAtMost(1440))
         }
         fun range(date: LocalDate, firstMinute: Int, lastMinute: Int): TimelineSelection {

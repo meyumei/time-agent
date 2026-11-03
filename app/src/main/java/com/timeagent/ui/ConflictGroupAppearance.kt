@@ -148,7 +148,6 @@ fun TimelineConflictGroupSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scheduledItems = remember(items) {
         items
-            .filter { it.kind != ItemKind.RECORD }
             .distinctBy { it.kind to it.id }
             .sortedBy { it.span.start }
     }
@@ -175,13 +174,15 @@ fun TimelineConflictGroupSheet(
             ) {
                 Column {
                     Text(
-                        text = "冲突组 · ${scheduledItems.size} 项",
+                        text = if (scheduledItems.any { it.kind == ItemKind.RECORD }) "同一时段 · ${scheduledItems.size} 项"
+                            else "冲突组 · ${scheduledItems.size} 项",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "共 ${scheduledItems.size} 项冲突日程",
+                        text = if (scheduledItems.any { it.kind == ItemKind.RECORD }) "选择要查看的日程或实际记录"
+                            else "共 ${scheduledItems.size} 项冲突日程",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

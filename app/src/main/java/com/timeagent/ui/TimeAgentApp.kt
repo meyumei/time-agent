@@ -349,6 +349,7 @@ import com.timeagent.ui.navigation.*
                                 canUndo = data.history.any { !it.undone }, busy = busy || data.loading || timelineData.loading,
                                 onVisibleRange = reportRange,
                                 onVisibleDate = model::reportVisibleDate, navigationRevision = timelineNavigationRevision,
+                                navigationOwner = model.timelineNavigationOwner,
                                 onCreateAt = { model.dismissError(); editor = EditorRequest(EditorKind.PLAN, selection = it, scheduleRange = true) }, themeMode = themeMode, onThemeMode = onThemeMode,
                                 onRedo = { model.perform { model.repository.redoLastAction() } },
                                 canRedo = data.history.any { it.undone && it.redoable },
@@ -486,7 +487,7 @@ import com.timeagent.ui.navigation.*
             }
         }
     }
-    BackHandler(enabled = editor == null && selected == null && extraScreen == null && tab != 0) {
+    BackHandler(enabled = !voiceSheetOpen && editor == null && selected == null && extraScreen == null && tab != 0) {
         navigator.resetToToday()
     }
     if (voiceSheetOpen) VoiceSheet(chat, voiceText, ::editAssistantDraft, ::sendAssistant, voiceControl,

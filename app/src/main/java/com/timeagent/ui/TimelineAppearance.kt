@@ -132,8 +132,15 @@ fun TimelineEventCard(
     onDragDelta: ((TimelineDragKind, Offset) -> Unit)? = null,
     onDragEnd: (() -> Unit)? = null,
     onDragCancel: (() -> Unit)? = null,
+    overlayPlan: Boolean = false,
+    compactView: Boolean = false,
 ) {
-    val colors = item.paint()
+    val originalColors = item.paint()
+    val outlinedPlan = overlayPlan && item.kind != ItemKind.RECORD
+    val colors = if (outlinedPlan) originalColors.copy(
+        container = Color.Transparent, content = MaterialTheme.colorScheme.onSurface,
+        secondary = MaterialTheme.colorScheme.onSurfaceVariant,
+    ) else originalColors
     val description = androidx.compose.runtime.remember(item, zone, conflicting) { item.spokenDescription(zone, conflicting) }
     val muted = colors.secondary
 
@@ -182,7 +189,7 @@ fun TimelineEventCard(
         val sparePx = (roomPx - titlePx).coerceAtLeast(0f)
         val timeBlockPx = with(density) { (timeSize.value * 1.25f).sp.toPx() + 1.dp.toPx() }
         // Metadata is revealed only once the whole title is visible, never instead of it.
-        val showTime = fullTitleFits && innerWidth >= 34.dp && sparePx >= timeBlockPx
+        val showTime = !compactView && fullTitleFits && innerWidth >= 34.dp && sparePx >= timeBlockPx
         val showFullTime = showTime && innerWidth >= 90.dp
         val noteSpacingPx = with(density) { 2.dp.toPx() }
         val remainingNotePx = sparePx - timeBlockPx - noteSpacingPx
@@ -218,12 +225,12 @@ fun TimelineEventCard(
             showTime -> item.span.start.clockText(zone) + (if (item.isRunningRecord()) " 起" else "")
             else -> ""
         }
-        val showTitle = measuredTitle != null
-        val borderWidth = if (conflicting) 1.5.dp else 0.8.dp
+        val showTitle = measuredTitle != null && (!compactView || height >= 24.dp)
+        val borderWidth = if (conflicting || outlinedPlan) 1.5.dp else 0.8.dp
         val borderColor = if (conflicting) {
             com.timeagent.ui.design.LocalSemanticColors.current.conflict.copy(alpha = 0.85f)
         } else {
-            colors.accent.copy(alpha = 0.30f)
+            colors.accent.copy(alpha = if (outlinedPlan) 1f else .30f)
         }
 
         Box(
@@ -268,7 +275,10 @@ fun TimelineEventCard(
                     ) {
                         Text(
                             text = item.title,
-                            modifier = Modifier.width(measureWidth),
+                            modifier = Modifier.width(measureWidth).then(
+                                if (outlinedPlan) Modifier.background(MaterialTheme.colorScheme.surface.copy(alpha = .9f))
+                                else Modifier,
+                            ),
                             style = MaterialTheme.typography.labelLarge.copy(
                                 fontSize = titleSize,
                                 lineHeight = (titleSize.value * 1.18f).sp,

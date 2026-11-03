@@ -48,7 +48,7 @@ internal data class TimelineDayLayout(
         val start = maxOf(group.startMinute, firstMinute)
         val end = minOf(group.endMinute, firstMinute + visibleMinutes)
         if (end <= start) return null
-        val actualWidth = if (group.splitActualLane) (dayWidth * .18).coerceAtLeast(7.0).coerceAtMost(dayWidth * .3) else 0.0
+        val actualWidth = if (group.splitActualLane) dayWidth / 2.0 else 0.0
         return TimelineCardBounds(
             x = 1.0,
             y = minuteHeight * (start - firstMinute),
@@ -62,7 +62,7 @@ internal data class TimelineDayLayout(
         val start = maxOf(event.segment.startMinute.toDouble(), firstMinute)
         val end = minOf(event.segment.endMinute.toDouble(), firstMinute + visibleMinutes)
         if (end <= start) return null
-        val actualWidth = if (event.splitActualLane) (dayWidth * .18).coerceAtLeast(7.0).coerceAtMost(dayWidth * .3) else 0.0
+        val actualWidth = if (event.splitActualLane) dayWidth / 2.0 else 0.0
         val scheduledWidth = dayWidth - actualWidth
         val actual = event.item.kind == ItemKind.RECORD
         val regionWidth = if (!event.splitActualLane) dayWidth else if (actual) actualWidth else scheduledWidth
@@ -130,10 +130,10 @@ internal data class TimelineRenderWindow(
         val date = LocalDate.ofEpochDay(floor(viewport.firstDay + x / dayWidth).toLong())
         val day = days[date] ?: return false
         val dayX = dayWidth * (date.toEpochDay() - viewport.firstDay)
-        return day.conflictGroups.any { group ->
-            day.groupBounds(group, dayWidth, viewport.minuteHeight(height), viewport.firstMinute, 1440.0 / viewport.zoom)
+        return (viewport.dayCount != 7 && day.conflictGroups.any { group ->
+            day.groupBounds(group, dayWidth, viewport.minuteHeight(height), viewport.firstMinute, viewport.visibleMinutes(height))
                 ?.contains(x - dayX, y) == true
-        } || itemAt(viewport, width, height, x, y) != null
+        }) || itemAt(viewport, width, height, x, y) != null
     }
 
     /** Resolve from the live viewport at touch time, rather than keeping stale screen rectangles. */
@@ -144,7 +144,7 @@ internal data class TimelineRenderWindow(
         val day = days[date] ?: return null
         val dayX = dayWidth * (date.toEpochDay() - viewport.firstDay)
         return day.events.firstOrNull { event ->
-            day.bounds(event, dayWidth, viewport.minuteHeight(height), viewport.firstMinute, 1440.0 / viewport.zoom)
+            day.bounds(event, dayWidth, viewport.minuteHeight(height), viewport.firstMinute, viewport.visibleMinutes(height))
                 ?.contains(x - dayX, y) == true
         }?.item?.let(::currentItem)
     }
@@ -172,13 +172,14 @@ internal class TimelineRenderCache {
         filter: TimelineFilterState = TimelineFilterState(),
     ): TimelineRenderWindow {
         updateSource(data, now, filter)
-        if (localZone != zone) {
+        if (localZone != zone || sourceDayCount != viewport.dayCount) {
+            sourceDayCount = viewport.dayCount
             localZone = zone
             dayCache.clear()
             renderedWindow = null
         }
         val firstDay = floor(viewport.firstDay).toLong()
-        val lastDay = ceil(viewport.firstDay + viewport.dayCount.toDouble() / viewport.zoom).toLong() - 1
+        val lastDay = ceil(viewport.firstDay + viewport.dayCount.toDouble()).toLong() - 1
         renderedWindow?.let { current ->
             if (current.dates.first().toEpochDay() == firstDay && current.dates.last().toEpochDay() == lastDay) return current
         }
@@ -190,13 +191,14 @@ internal class TimelineRenderCache {
                 while (dayCache.size > 32) dayCache.remove(dayCache.keys.first())
             }
         }
-        val items = (sourceItems.filter { it.isAllDay } + days.values.flatMap { day -> day.events.map { it.item } })
+        val items = (sourceItems.filter { (it.isAllDay || it.isPoint) && it.span.overlaps(viewport.window(zone)) } + days.values.flatMap { day -> day.events.map { it.item } })
             .distinctBy { it.layoutKey }.sortedBy { it.span.start }
         val conflicts = days.values.flatMap { it.conflicts }.distinctBy { it.first.layoutKey to it.second.layoutKey }
         return TimelineRenderWindow(dates, days, items, conflicts, itemSource).also { renderedWindow = it }
     }
 
     private var sourceFilter = TimelineFilterState()
+    private var sourceDayCount = 0
 
     private fun updateSource(data: LocalSnapshot, now: Instant, filter: TimelineFilterState) {
         val previous = source
@@ -242,7 +244,7 @@ internal class TimelineRenderCache {
 
     private fun buildDay(date: LocalDate, zone: ZoneId): TimelineDayLayout {
         val window = TimeSpan(date.atStartOfDay(zone).toInstant(), date.plusDays(1).atStartOfDay(zone).toInstant())
-        val visible = sourceItems.filter { !it.isAllDay && it.span.overlaps(window) }
+        val visible = sourceItems.filter { !it.isAllDay && !it.isPoint && it.span.overlaps(window) }
         val conflicts = timelineConflicts(visible)
         val conflicting = conflicts.flatMap { listOf(it.first.layoutKey, it.second.layoutKey) }.toSet()
         val scheduled = visible.filter { it.kind != ItemKind.RECORD }
@@ -271,7 +273,7 @@ internal class TimelineRenderCache {
             // Clip before splitting: a decades-long timer still creates just this one local day.
             val segment = TimelineLayout.split(requireNotNull(item.span.clip(window)), zone).single()
             val lane = (if (item.kind == ItemKind.RECORD) actualLanes else scheduledLanes).getValue(item.layoutKey)
-            TimelineEventLayout(item, segment, lane, item.layoutKey in conflicting, item.layoutKey in mixedKeys)
+            TimelineEventLayout(item, segment, lane, item.layoutKey in conflicting, sourceDayCount != 7)
         }
         val conflictSegments = conflicts.flatMap { conflict -> TimelineLayout.split(requireNotNull(conflict.overlap.clip(window)), zone) }
         val eventsByKey = events.associateBy { it.item.layoutKey }

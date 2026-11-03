@@ -23,6 +23,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.*
+import androidx.compose.ui.platform.LocalContext
+import com.timeagent.ui.timeline.TimelinePreference
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.platform.ViewConfiguration
@@ -55,7 +57,7 @@ import kotlin.math.roundToInt
 enum class ItemKind(val label: String) { COURSE("课程"), PLAN("计划"), RECORD("实际") }
 data class TimelineItem(val id: String, val kind: ItemKind, val title: String, val span: TimeSpan, val subtitle: String = "", val entity: Any, val colorKey: String = "")
 val TimelineItem.isPoint: Boolean get() = (entity as? ScheduleBlockEntity)?.kind == "POINT"
-private data class ActiveTimelineDrag(
+internal data class ActiveTimelineDrag(
     val item: TimelineItem,
     val kind: TimelineDragKind,
     val deltaPixels: Offset,
@@ -107,10 +109,11 @@ fun Long.minutesLabel(): String = if (this < 60) "${this} 分钟" else "${this /
 }
 
 private val ViewportSaver = listSaver<TimelineViewport, Double>(
-    save = { listOf(it.firstDay, it.zoom, it.firstMinute, it.dayCount.toDouble()) },
-    restore = { TimelineViewport(it[0], it[1], it[2], it.getOrNull(3)?.toInt() ?: 7) },
+    save = { listOf(it.firstDay, it.zoom, it.firstMinute, it.dayCount.toDouble(), if (it.overview) 1.0 else 0.0, it.selectedDay) },
+    restore = { TimelineViewport(it[0], it[1].coerceIn(.5, 2.5), it[2], it.getOrNull(3)?.toInt() ?: 7, it.getOrNull(4) == 1.0,
+        it.getOrNull(5) ?: (it[0] + (it.getOrNull(3)?.toInt() ?: 7) / 2)) },
 )
-private val DayNames = listOf("周一", "周二", "周三", "周四", "周五", "周六", "周日")
+internal val DayNames = listOf("周一", "周二", "周三", "周四", "周五", "周六", "周日")
 
 @Composable fun TimelineScreen(
     data: LocalSnapshot,
@@ -126,6 +129,7 @@ private val DayNames = listOf("周一", "周二", "周三", "周四", "周五", 
     busy: Boolean = false,
     onVisibleDate: (LocalDate) -> Unit = {},
     navigationRevision: Long = 0L,
+    navigationOwner: String = "",
     onCreateAt: (TimelineSelection) -> Unit = {},
     themeMode: ThemeMode = ThemeMode.SYSTEM,
     onThemeMode: (ThemeMode) -> Unit = {},
@@ -136,26 +140,47 @@ private val DayNames = listOf("周一", "周二", "周三", "周四", "周五", 
     onVisibleRange: (LocalDate, LocalDate) -> Unit = { _, _ -> },
     defaultDayCount: Int = 3,
     onDragCommit: (TimelineItem, TimelineDragResult) -> Unit = { _, _ -> },
+    preferenceKey: String = "today",
 ) {
+    val context = LocalContext.current
+    val preference = remember(context, preferenceKey) { TimelinePreference(context, preferenceKey) }
+    fun selectedDate(): LocalDate = if (week.selectedWeekStart == WeekState.startOfWeek(week.today)) week.today else week.selectedWeekStart
+    fun initialViewport(): TimelineViewport = TimelineViewport.centered(selectedDate(), preference.dayCount(defaultDayCount)).copy(
+        zoom = preference.density() / 64.0,
+        firstMinute = if (selectedDate() == week.today) (now.atZone(zone).hour * 60 + now.atZone(zone).minute - 60).coerceAtLeast(0).toDouble() else 480.0,
+    )
     var showConflicts by remember { mutableStateOf(false) }
     var conflictGroup by remember { mutableStateOf<List<TimelineItem>?>(null) }
-    var listMode by rememberSaveable { mutableStateOf(false) }
-    var viewport by rememberSaveable(stateSaver = ViewportSaver) { mutableStateOf(TimelineViewport.fit(week.selectedWeekStart, defaultDayCount)) }
-    var filterState by rememberSaveable { mutableStateOf(TimelineFilterState()) }
+    var listMode by rememberSaveable { mutableStateOf(preference.listMode()) }
+    var viewport by rememberSaveable(stateSaver = ViewportSaver) { mutableStateOf(initialViewport()) }
+    var filterState by rememberSaveable(stateSaver = listSaver<TimelineFilterState, Boolean>(
+        save = { listOf(it.plan, it.record, it.course, it.health) },
+        restore = { TimelineFilterState(it[0], it[1], it[2], it[3]) },
+    )) { mutableStateOf(preference.filters()) }
+    LaunchedEffect(viewport.dayCount, viewport.zoom, filterState, listMode) {
+        preference.save(viewport.dayCount, viewport.vertical.hourHeightDp, filterState, listMode)
+    }
     var requestedWeek by rememberSaveable { mutableLongStateOf(week.selectedWeekStart.toEpochDay()) }
     var appliedNavigationRevision by rememberSaveable { mutableLongStateOf(navigationRevision) }
     var navigationPending by remember { mutableStateOf(false) }
-    LaunchedEffect(week.selectedWeekStart, navigationRevision) {
+    var savedNavigationOwner by rememberSaveable { mutableStateOf(navigationOwner) }
+    LaunchedEffect(week.selectedWeekStart, navigationRevision, navigationOwner) {
+        if (savedNavigationOwner != navigationOwner) {
+            savedNavigationOwner = navigationOwner
+            requestedWeek = week.selectedWeekStart.toEpochDay()
+            appliedNavigationRevision = navigationRevision
+            return@LaunchedEffect
+        }
         if (appliedNavigationRevision != navigationRevision) {
             appliedNavigationRevision = navigationRevision
             requestedWeek = week.selectedWeekStart.toEpochDay()
             navigationPending = false
-            viewport = TimelineViewport.fit(week.selectedWeekStart, viewport.dayCount)
+            viewport = TimelineViewport.centered(selectedDate(), viewport.dayCount).copy(zoom = viewport.zoom, firstMinute = viewport.firstMinute)
         } else if (navigationPending) {
             if (requestedWeek == week.selectedWeekStart.toEpochDay()) navigationPending = false
         } else if (requestedWeek != week.selectedWeekStart.toEpochDay()) {
             requestedWeek = week.selectedWeekStart.toEpochDay()
-            viewport = TimelineViewport.fit(week.selectedWeekStart, viewport.dayCount)
+            viewport = TimelineViewport.centered(selectedDate(), viewport.dayCount).copy(zoom = viewport.zoom, firstMinute = viewport.firstMinute)
         }
     }
     fun syncReviewWeek(firstDate: LocalDate) {
@@ -169,7 +194,8 @@ private val DayNames = listOf("周一", "周二", "周三", "周四", "周五", 
         }
     }
     fun moveWeek(delta: Long) {
-        viewport = viewport.shiftDays(delta * 7)
+        val step = delta * if (viewport.dayCount == 7) 7 else 1
+        viewport = viewport.shiftDays(step)
         syncReviewWeek(LocalDate.ofEpochDay(kotlin.math.floor(viewport.firstDay).toLong()))
     }
     val renderCache = remember { TimelineRenderCache() }
@@ -193,11 +219,12 @@ private val DayNames = listOf("周一", "周二", "周三", "周四", "周五", 
             onRedo = onRedo, canRedo = canRedo,
             onPrevious = { moveWeek(-1) }, onNext = { moveWeek(1) },
             onCurrent = {
-                val current = WeekState.startOfWeek(week.today)
-                viewport = TimelineViewport.fit(current, viewport.dayCount)
+                val current = week.today
+                viewport = TimelineViewport.centered(current, viewport.dayCount).copy(zoom = viewport.zoom, firstMinute = (now.atZone(zone).hour * 60 - 60).coerceAtLeast(0).toDouble())
                 syncReviewWeek(current)
             },
-            onFit = { viewport = TimelineViewport.fit(LocalDate.ofEpochDay(kotlin.math.floor(viewport.firstDay).toLong()), viewport.dayCount) },
+            onFit = { viewport = viewport.copy(overview = true, firstMinute = 0.0) },
+            onDensity = { factor -> viewport = viewport.copy(zoom = (viewport.zoom * factor).coerceIn(.5, 2.5), overview = false) },
             dayCount = viewport.dayCount,
             onDayCount = { count -> viewport = TimelineViewport.withDayCount(viewport, count) },
             filterState = filterState,
@@ -209,12 +236,15 @@ private val DayNames = listOf("周一", "周二", "周三", "周四", "周五", 
         if (listMode) {
             Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (items.isEmpty()) EmptyHint("这几天，还留着很多可能", "创建一个任务，为它安排时间，或开始记录此刻。")
-                items.forEach { item -> key(item.kind, item.id) {
-                    TimelineAgendaCard(item, zone, item.layoutKey in rendered.conflictingKeys, onClick = { onSelect(item) })
-                } }
+                items.groupBy { it.span.start.atZone(zone).toLocalDate() }.forEach { (date, entries) ->
+                    Text(date.toString(), style = MaterialTheme.typography.titleSmall)
+                    entries.forEach { item -> key(item.kind, item.id) {
+                        TimelineAgendaCard(item, zone, item.layoutKey in rendered.conflictingKeys, onClick = { onSelect(item) })
+                    } }
+                }
             }
         } else {
-            TimelineGrid(
+            TimelineCanvas(
                 rendered, viewport, week.today, now, zone, onSelect, { transform -> viewport = transform(viewport) },
                 Modifier.weight(1f), if (busy) null else onCreateAt,
                 resolve = rendered::currentItem, remindersByDate = remindersByDate, onReminder = onReminder,
@@ -226,434 +256,6 @@ private val DayNames = listOf("周一", "周二", "周三", "周四", "周五", 
     if (showConflicts) TimelineConflictsSheet(conflicts, zone, onSelect, onClose = { showConflicts = false })
     conflictGroup?.let { group ->
         TimelineConflictGroupSheet(group, zone, onSelect = onSelect, onClose = { conflictGroup = null })
-    }
-}
-
-/** Short date drags retain their initial travel once a deliberate gesture is recognized. */
-private suspend fun PointerInputScope.detectTimelineGestures(
-    onTap: (Offset) -> Unit,
-    onSelectionPress: (Offset) -> Boolean,
-    onSelectionStart: (Offset) -> Boolean,
-    onSelectionMove: (Offset) -> Unit,
-    onSelectionEnd: (Boolean) -> Unit,
-    onTransform: (Offset, Offset, Float) -> Unit,
-) {
-    val threshold = minOf(viewConfiguration.touchSlop, 4.dp.toPx())
-    awaitEachGesture {
-        val down = awaitFirstDown(requireUnconsumed = false)
-        val downWasConsumed = down.isConsumed
-        var active = false
-        var hadMultiplePointers = false
-        var selecting = onSelectionPress(down.position)
-        if (selecting) down.consume()
-        var waited = selecting
-        var selectionMoved = false
-        var origin: Offset? = null
-        var travel = Offset.Zero
-        var lastTime = down.uptimeMillis
-        try { while (true) {
-            val remaining = (down.uptimeMillis + viewConfiguration.longPressTimeoutMillis - lastTime).coerceAtLeast(1)
-            val event = if (!active && !selecting && !waited) withTimeoutOrNull(remaining) { awaitPointerEvent() } else awaitPointerEvent()
-            if (event == null) {
-                waited = true
-                selecting = !downWasConsumed && onSelectionStart(down.position)
-                continue
-            }
-            lastTime = event.changes.firstOrNull()?.uptimeMillis ?: lastTime
-            if (event.changes.count { it.pressed } > 1) {
-                hadMultiplePointers = true
-                active = true
-                waited = true
-                if (selecting) { onSelectionEnd(false); selecting = false }
-            }
-            // A second down may be consumed by a clickable child; the calendar owns multitouch.
-            if (event.changes.any { it.isConsumed } && !hadMultiplePointers && !selecting) return@awaitEachGesture
-            if (selecting) {
-                if (event.changes.count { it.pressed } > 1) { onSelectionEnd(false); selecting = false; active = true }
-                else {
-                    event.changes.firstOrNull { it.id == down.id }?.let {
-                        if (it.positionChanged() && (selectionMoved || (it.position - down.position).getDistance() > threshold)) {
-                            selectionMoved = true
-                            onSelectionMove(it.position)
-                        }
-                    }
-                    event.changes.forEach { it.consume() }
-                    if (event.changes.none { it.pressed }) { onSelectionEnd(true); selecting = false; break }
-                    continue
-                }
-            }
-            val focus = event.calculateCentroid(useCurrent = false)
-            val pan = event.calculatePan()
-            val scale = event.calculateZoom()
-            if (focus != Offset.Unspecified && (pan != Offset.Zero || scale != 1f)) {
-                if (active) onTransform(focus, pan, scale)
-                else if (event.changes.count { it.pressed && it.previousPressed } >= 2) {
-                    active = true
-                    onTransform(focus, pan, scale)
-                } else {
-                    if (origin == null) origin = focus
-                    travel += pan
-                    if (travel.getDistance() > threshold) {
-                        active = true
-                        onTransform(requireNotNull(origin), travel, 1f)
-                    }
-                }
-            }
-            if (active) event.changes.filter { it.positionChanged() }.forEach { it.consume() }
-            if (event.changes.none { it.pressed }) {
-                if (!active) onTap(down.position)
-                break
-            }
-        } } finally { if (selecting) onSelectionEnd(false) }
-    }
-}
-
-@Composable private fun TimelineToolbar(
-    data: LocalSnapshot, dates: List<LocalDate>, today: LocalDate, zoom: Double, listMode: Boolean,
-    busy: Boolean, canUndo: Boolean, onCreate: () -> Unit, onAssistant: () -> Unit, onUndo: () -> Unit,
-    onRedo: () -> Unit, canRedo: Boolean,
-    onPrevious: () -> Unit, onNext: () -> Unit, onCurrent: () -> Unit, onFit: () -> Unit, onToggleList: () -> Unit,
-    themeMode: ThemeMode, onThemeMode: (ThemeMode) -> Unit, conflicts: Int, onConflicts: () -> Unit,
-    dayCount: Int, onDayCount: (Int) -> Unit, filterState: TimelineFilterState, onFilterState: (TimelineFilterState) -> Unit,
-) {
-    val first = dates.first()
-    val last = dates.last()
-    Column(Modifier.fillMaxWidth().padding(horizontal = 10.dp)) {
-        Row(Modifier.fillMaxWidth().height(48.dp), verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) {
-                Text("${first.monthValue}月${first.dayOfMonth}日 — ${if (first.month == last.month) "" else "${last.monthValue}月"}${last.dayOfMonth}日", fontSize = 17.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text("${first.year} · 今天 ${today.monthValue}月${today.dayOfMonth}日 ${DayNames[today.dayOfWeek.value - 1]}", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            }
-            if (busy) CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp)
-            IconButton(onClick = onUndo, enabled = !busy && canUndo, modifier = Modifier.size(48.dp)) { Icon(Icons.AutoMirrored.Rounded.Undo, "撤销最近操作", Modifier.size(20.dp)) }
-            IconButton(onClick = onRedo, enabled = !busy && canRedo, modifier = Modifier.size(48.dp)) { Icon(Icons.AutoMirrored.Rounded.Redo, "重做", Modifier.size(20.dp)) }
-            ThemeSwitch(themeMode, onThemeMode)
-            IconButton(onClick = onAssistant, modifier = Modifier.size(48.dp)) { Icon(Icons.Rounded.KeyboardAlt, "语音助手", Modifier.size(20.dp)) }
-            IconButton(onClick = onCreate, enabled = !busy, modifier = Modifier.size(48.dp)) { Icon(Icons.Rounded.Add, "新建", Modifier.size(25.dp)) }
-        }
-        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).heightIn(min = 48.dp), verticalAlignment = Alignment.CenterVertically) {
-            TimelineDayCountSwitch(dayCount, onDayCount)
-            IconButton(onClick = onPrevious, modifier = Modifier.size(48.dp)) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "上一周") }
-            TextButton(onClick = onCurrent, modifier = Modifier.heightIn(min = 48.dp)) { Text("本周") }
-            IconButton(onClick = onNext, modifier = Modifier.size(48.dp)) { Icon(Icons.AutoMirrored.Rounded.ArrowForward, "下一周") }
-            if (conflicts > 0) TextButton(onClick = onConflicts, modifier = Modifier.heightIn(min = 48.dp).semantics { contentDescription = "查看时间冲突" }) {
-                Icon(Icons.Rounded.WarningAmber, null, tint = MaterialTheme.colorScheme.error)
-                Text(conflicts.toString(), color = MaterialTheme.colorScheme.error)
-            }
-            ItemKind.entries.forEach { kind ->
-                Icon(kind.legendIcon(), null, Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text(kind.label, Modifier.padding(start = 4.dp, end = 8.dp), style = MaterialTheme.typography.bodyMedium)
-            }
-            TextButton(onClick = onFit, modifier = Modifier.heightIn(min = 48.dp).semantics { contentDescription = "适合屏幕" }) {
-                Icon(Icons.Rounded.FitScreen, null)
-                Text("${(zoom * 100).roundToInt()}%")
-            }
-            TextButton(onClick = onToggleList, modifier = Modifier.heightIn(min = 48.dp)) { Text(if (listMode) "时间轴" else "列表") }
-            TimelineFilterButton(filterState, onFilterState)
-        }
-    }
-}
-
-@Composable private fun TimelineGrid(
-    rendered: TimelineRenderWindow, viewport: TimelineViewport, today: LocalDate, now: Instant, zone: ZoneId,
-    onSelect: (TimelineItem) -> Unit, onViewport: ((TimelineViewport) -> TimelineViewport) -> Unit, modifier: Modifier = Modifier,
-    onCreateAt: ((TimelineSelection) -> Unit)? = null,
-    resolve: (TimelineItem) -> TimelineItem = { it },
-    remindersByDate: Map<LocalDate, List<ReminderEntity>> = emptyMap(),
-    onReminder: (ReminderEntity) -> Unit = {},
-    onConflictGroup: (List<TimelineItem>) -> Unit = {},
-    allDayItems: List<TimelineItem> = emptyList(),
-    onDragCommit: (TimelineItem, TimelineDragResult) -> Unit = { _, _ -> },
-) {
-    val latestOnViewport by rememberUpdatedState(onViewport)
-    val latestCreate by rememberUpdatedState(onCreateAt)
-    val placementViewport = rememberUpdatedState(viewport)
-    var anchor by remember { mutableStateOf<TimelineSelection?>(null) }
-    var dragSelection by remember { mutableStateOf<TimelineSelection?>(null) }
-    var pendingSelection by remember { mutableStateOf<TimelineSelection?>(null) }
-    var pendingDrag by remember { mutableStateOf<PendingSelectionDrag?>(null) }
-    var activeDrag by remember { mutableStateOf<ActiveTimelineDrag?>(null) }
-    BoxWithConstraints(modifier.fillMaxWidth().clipToBounds().testTag("timeline-viewport")) {
-        val gutter = 38.dp
-        val header = 42.dp
-        val labelInset = 7.dp
-        val graphWidth = (maxWidth - gutter - 3.dp).coerceAtLeast(1.dp)
-        val allDayHeight = if (allDayItems.isEmpty()) 0.dp else 44.dp
-        val bodyHeight = (maxHeight - header - allDayHeight).coerceAtLeast(16.dp)
-        val graphHeight = (bodyHeight - labelInset * 2).coerceAtLeast(1.dp)
-        val dayWidth = graphWidth * (viewport.zoom / viewport.dayCount).toFloat()
-        val minuteHeight = graphHeight * (viewport.zoom / 1440).toFloat()
-        val density = LocalDensity.current
-        val widthPx = with(density) { graphWidth.toPx().toDouble() }
-        val heightPx = with(density) { graphHeight.toPx().toDouble() }
-        val dayWidthPx = with(density) { dayWidth.toPx() }
-        val minuteHeightPx = with(density) { minuteHeight.toPx() }
-        fun updateDrag(item: TimelineItem, kind: TimelineDragKind, amount: Offset) {
-            if (item.kind == ItemKind.COURSE || item.isPoint || item.isAllDay ||
-                (item.kind == ItemKind.RECORD && (item.entity as? TimeRecordEntity)?.endAt == null)
-            ) return
-            val current = activeDrag
-            val nextPixels = if (current?.item?.layoutKey == item.layoutKey && current.kind == kind) {
-                current.deltaPixels + amount
-            } else {
-                amount
-            }
-            val deltaMinutes = minuteDelta(
-                nextPixels.x / dayWidthPx * 1440f + nextPixels.y / minuteHeightPx,
-                1f,
-            )
-            activeDrag = ActiveTimelineDrag(
-                item,
-                kind,
-                nextPixels,
-                preview(item.span.start.toEpochMilli(), item.span.end.toEpochMilli(), deltaMinutes, kind),
-            )
-        }
-        fun finishDrag(item: TimelineItem) {
-            val drag = activeDrag?.takeIf { it.item.layoutKey == item.layoutKey }
-            activeDrag = null
-            if (drag != null && (drag.result.startAt != item.span.start.toEpochMilli() || drag.result.endAt != item.span.end.toEpochMilli())) {
-                onDragCommit(item, drag.result)
-            }
-        }
-        fun cancelDrag(item: TimelineItem) {
-            if (activeDrag?.item?.layoutKey == item.layoutKey) activeDrag = null
-        }
-        val gutterPx = with(density) { gutter.toPx() }
-        val topPx = with(density) { (header + allDayHeight + labelInset).toPx() }
-        val hitEvent by rememberUpdatedState<(Offset) -> Boolean> { point ->
-            rendered.isOccupiedAt(
-                placementViewport.value, graphWidth.value.toDouble(), graphHeight.value.toDouble(),
-                ((point.x - gutterPx) / density.density).toDouble(), ((point.y - topPx) / density.density).toDouble(),
-            )
-        }
-        val pick by rememberUpdatedState<(Offset) -> TimelineSelection?> { point ->
-            TimelineSelection.at(placementViewport.value, (point.x - gutterPx).toDouble(), (point.y - topPx).toDouble(), widthPx, heightPx)
-        }
-        val minuteAt by rememberUpdatedState<(Offset) -> Int> { point ->
-            val current = placementViewport.value
-            (current.firstMinute + (point.y - topPx) / current.minuteHeight(heightPx)).roundToInt().coerceIn(0, 1440)
-        }
-        val pressSelection by rememberUpdatedState<(Offset) -> Boolean> { point ->
-            val pending = pendingSelection
-            val hit = pending?.let {
-                selectionUiBounds(it, placementViewport.value, graphWidth.value.toDouble(), graphHeight.value.toDouble())
-                    .hit(((point.x - gutterPx) / density.density).toDouble(), ((point.y - topPx) / density.density).toDouble())
-            }
-            if (latestCreate != null && pending != null && hit != null) {
-                pendingDrag = PendingSelectionDrag(pending, minuteAt(point), hit)
-                dragSelection = pending
-                true
-            } else {
-                if (pending != null) pendingSelection = null
-                false
-            }
-        }
-        fun addPending() {
-            val picked = pendingSelection ?: return
-            pendingSelection = null; pendingDrag = null; dragSelection = null; anchor = null
-            latestCreate?.invoke(picked)
-        }
-        val dates = rendered.dates
-        val gridColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = .55f)
-        Box(Modifier.fillMaxSize().pointerInput(widthPx, heightPx) {
-            detectTimelineGestures(
-                onTap = { point -> if (latestCreate != null && !hitEvent(point)) pendingSelection = pick(point) },
-                onSelectionPress = { pressSelection(it) },
-                onSelectionStart = { point ->
-                    val slot = if (latestCreate != null && !hitEvent(point)) pick(point) else null
-                    pendingSelection = null; pendingDrag = null
-                    anchor = slot; dragSelection = slot
-                    slot != null
-                },
-                onSelectionMove = { point ->
-                    val draft = pendingDrag
-                    if (draft != null) dragSelection = draft.update(minuteAt(point))
-                    else anchor?.let { dragSelection = TimelineSelection.range(it.date, it.startMinute, minuteAt(point)) }
-                },
-                onSelectionEnd = { commit ->
-                    val picked = dragSelection
-                    anchor = null; dragSelection = null; pendingDrag = null; pendingSelection = null
-                    if (commit && picked != null) latestCreate?.invoke(picked)
-                },
-            ) { centroid, pan, zoom ->
-                pendingSelection = null
-                latestOnViewport { current -> current.transform(pan.x.toDouble(), pan.y.toDouble(), zoom.toDouble(), (centroid.x - gutterPx).toDouble(), (centroid.y - topPx).toDouble(), widthPx, heightPx) }
-            }
-        }.semantics { contentDescription = "连续时间轴"; stateDescription = "缩放${(viewport.zoom * 100).roundToInt()}%，左右滑动日期，双指缩放，点空白选时段，再点加号或拖动松手添加" }) {
-            Box(Modifier.offset(x = gutter).width(graphWidth).height(header).clipToBounds()) {
-                dates.forEach { date -> key(date) {
-                    TimelineDateHeader(date, today, dayWidth, header, placementViewport)
-                } }
-            }
-            if (allDayItems.isNotEmpty()) {
-                TimelineAllDayRow(
-                    items = allDayItems,
-                    dates = dates,
-                    viewport = placementViewport,
-                    dayWidth = dayWidth,
-                    height = allDayHeight,
-                    zone = zone,
-                    onSelect = onSelect,
-                    modifier = Modifier.offset(x = gutter, y = header).width(graphWidth),
-                )
-            }
-            Box(Modifier.offset(y = header + allDayHeight).fillMaxWidth().height(bodyHeight).clipToBounds()) {
-                TimelineHourLabels(gutter, bodyHeight, labelInset, minuteHeight, viewport.firstMinute)
-                Box(Modifier.offset(x = gutter, y = labelInset).width(graphWidth).height(graphHeight).clipToBounds()) {
-                    Canvas(Modifier.matchParentSize()) {
-                        val current = placementViewport.value
-                        val dayWidthPx = dayWidth.toPx()
-                        val minuteHeightPx = minuteHeight.toPx()
-                        dates.forEach { date ->
-                            val x = (dayWidthPx * (date.toEpochDay() - current.firstDay)).toFloat()
-                            drawLine(gridColor, Offset(x, 0f), Offset(x, size.height), 1f)
-                        }
-                        val right = (dayWidthPx * (dates.last().toEpochDay() + 1 - current.firstDay)).toFloat()
-                        drawLine(gridColor, Offset(right, 0f), Offset(right, size.height), 1f)
-                        repeat(25) { hour ->
-                            val y = (minuteHeightPx * (hour * 60 - current.firstMinute)).toFloat()
-                            drawLine(gridColor.copy(alpha = if (hour % 6 == 0) .65f else .3f), Offset(0f, y), Offset(size.width, y), 1f)
-                        }
-                    }
-                    dates.forEach { date -> key(date) {
-                        TimelineDay(
-                            rendered.days.getValue(date), placementViewport, dayWidth, minuteHeight, graphHeight,
-                            viewport.zoom, viewport.firstMinute, today, now, zone, rendered.conflictingKeys, onSelect,
-                            resolve = resolve, reminders = remindersByDate[date].orEmpty(), onReminder = onReminder, onConflictGroup = onConflictGroup,
-                            activeDrag = activeDrag, onDragDelta = ::updateDrag, onDragEnd = ::finishDrag, onDragCancel = ::cancelDrag,
-                        )
-                    } }
-                    (dragSelection ?: pendingSelection)?.takeIf { it.date in dates }?.let { selected ->
-                        TimelineSelectionOverlay(
-                            selectionUiBounds(selected, viewport, graphWidth.value.toDouble(), graphHeight.value.toDouble()), selected,
-                            pending = pendingSelection != null, onAdd = ::addPending,
-                        )
-                    }
-                }
-            }
-            activeDrag?.let { drag ->
-                Text(
-                    "预览 ${Instant.ofEpochMilli(drag.result.startAt).label(zone)} – ${Instant.ofEpochMilli(drag.result.endAt).label(zone)}",
-                    Modifier.align(Alignment.TopCenter).padding(top = 2.dp)
-                        .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(8.dp))
-                        .padding(horizontal = 8.dp, vertical = 3.dp),
-                    style = MaterialTheme.typography.labelSmall,
-                )
-            }
-        }
-    }
-}
-
-/** Read fractional x only during placement so a date drag can skip its text composition. */
-@Composable private fun TimelineDateHeader(date: LocalDate, today: LocalDate, dayWidth: Dp, header: Dp, viewport: State<TimelineViewport>) {
-    val isToday = date == today
-    Column(Modifier.offset {
-        IntOffset((dayWidth.toPx() * (date.toEpochDay() - viewport.value.firstDay)).roundToInt(), 0)
-    }.width(dayWidth).height(header).semantics { contentDescription = "$date ${DayNames[date.dayOfWeek.value - 1]}" }, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-        Text(DayNames[date.dayOfWeek.value - 1], fontSize = 10.sp, lineHeight = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
-        Surface(color = if (isToday) MaterialTheme.colorScheme.primary else Color.Transparent, shape = RoundedCornerShape(7.dp)) {
-            Text(date.dayOfMonth.toString(), Modifier.padding(horizontal = 7.dp, vertical = 2.dp), fontSize = 13.sp, lineHeight = 17.sp, fontWeight = FontWeight.SemiBold, color = if (isToday) Color.White else MaterialTheme.colorScheme.onSurface)
-        }
-    }
-}
-
-@Composable private fun TimelineHourLabels(gutter: Dp, bodyHeight: Dp, labelInset: Dp, minuteHeight: Dp, firstMinute: Double) {
-    repeat(25) { hour ->
-        val y = labelInset + minuteHeight * (hour * 60 - firstMinute).toFloat()
-        if (y >= 0.dp && y <= bodyHeight) {
-            Text("%02d:00".format(hour), Modifier.offset(y = (y - 7.dp).coerceIn(0.dp, bodyHeight - 14.dp)).width(gutter - 5.dp), fontSize = 9.sp, lineHeight = 12.sp, textAlign = TextAlign.End, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-    }
-}
-
-/** A complete day's lane assignment stays fixed while its parent moves horizontally. */
-@Composable private fun TimelineDay(
-    day: TimelineDayLayout, viewport: State<TimelineViewport>, dayWidth: Dp, minuteHeight: Dp, graphHeight: Dp,
-    zoom: Double, firstMinute: Double, today: LocalDate, now: Instant, zone: ZoneId, conflictingKeys: Set<String>,
-    onSelect: (TimelineItem) -> Unit,
-    resolve: (TimelineItem) -> TimelineItem,
-    reminders: List<ReminderEntity>,
-    onReminder: (ReminderEntity) -> Unit,
-    onConflictGroup: (List<TimelineItem>) -> Unit,
-    activeDrag: ActiveTimelineDrag?,
-    onDragDelta: (TimelineItem, TimelineDragKind, Offset) -> Unit,
-    onDragEnd: (TimelineItem) -> Unit,
-    onDragCancel: (TimelineItem) -> Unit,
-) {
-    val visibleMinutes = 1440.0 / zoom
-    Box(Modifier.offset {
-        IntOffset((dayWidth.toPx() * (day.date.toEpochDay() - viewport.value.firstDay)).roundToInt(), 0)
-    }.width(dayWidth).height(graphHeight)) {
-        day.conflictGroups.forEach { group ->
-            val bounds = day.groupBounds(group, dayWidth.value.toDouble(), minuteHeight.value.toDouble(), firstMinute, visibleMinutes)
-            if (bounds != null) {
-                TimelineConflictGroupCard(
-                    items = group.items,
-                    zone = zone,
-                    modifier = Modifier
-                        .offset(x = bounds.x.dp, y = bounds.y.dp)
-                        .width(bounds.width.dp)
-                        .height(bounds.height.dp)
-                        .testTag("timeline-conflict-group"),
-                    cardSize = DpSize(bounds.width.dp, bounds.height.dp),
-                    onClick = { onConflictGroup(group.items.map(resolve)) },
-                )
-            }
-        }
-        day.events.forEach { event -> key(event.item.kind, event.item.id) {
-            val grouped = event.item.kind != ItemKind.RECORD && event.item.layoutKey in day.groupedKeys
-            if (!grouped) {
-                val live = resolve(event.item)
-                val dragging = activeDrag?.takeIf { it.item.layoutKey == live.layoutKey }
-                val display = dragging?.let {
-                    live.copy(span = TimeSpan(Instant.ofEpochMilli(it.result.startAt), Instant.ofEpochMilli(it.result.endAt)))
-                } ?: live
-                val displayEvent = if (dragging == null) event else {
-                    val segment = TimelineLayout.split(display.span, zone).firstOrNull { it.date == day.date } ?: event.segment
-                    event.copy(item = display, segment = segment)
-                }
-                val bounds = day.bounds(displayEvent, dayWidth.value.toDouble(), minuteHeight.value.toDouble(), firstMinute, visibleMinutes)
-                if (bounds != null) {
-                    TimelineEventCard(
-                        display, zone, zoom, display.layoutKey in conflictingKeys,
-                        Modifier.offset(x = bounds.x.dp, y = bounds.y.dp).width(bounds.width.dp).height(bounds.height.dp),
-                        cardSize = DpSize(bounds.width.dp, bounds.height.dp),
-                        onClick = { onSelect(live) },
-                        onDragDelta = { kind, amount -> onDragDelta(live, kind, amount) },
-                        onDragEnd = { onDragEnd(live) },
-                        onDragCancel = { onDragCancel(live) },
-                    )
-                }
-            }
-        } }
-        reminders.forEach { reminder ->
-            val minute = Instant.ofEpochMilli(reminder.remindAt).atZone(zone).toLocalTime().toSecondOfDay() / 60.0
-            val y = minuteHeight * (minute - firstMinute).toFloat()
-            if (y in 0.dp..graphHeight) {
-                Box(
-                    Modifier.offset(x = dayWidth - 15.dp, y = y).size(12.dp)
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(MaterialTheme.colorScheme.primary)
-                        .clickable(role = androidx.compose.ui.semantics.Role.Button) { onReminder(reminder) }
-                        .semantics { contentDescription = "提醒 ${reminder.title}" }
-                        .testTag("timeline-reminder-${reminder.id}"),
-                )
-            }
-        }
-        if (day.date == today) {
-            val minute = now.atZone(zone).toLocalTime().toSecondOfDay() / 60.0
-            val y = minuteHeight * (minute - firstMinute).toFloat()
-            if (y in 0.dp..graphHeight) Box(Modifier.offset(y = y).width(dayWidth).height(1.dp).background(MaterialTheme.colorScheme.error))
-        }
-    }
-}
-
-@Composable fun EmptyHint(title: String, description: String) {
-    Column(Modifier.fillMaxWidth().padding(vertical = 32.dp, horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(Icons.Rounded.AutoAwesome, null, Modifier.size(32.dp), tint = Indigo)
-        Spacer(Modifier.height(12.dp)); Text(title, fontWeight = FontWeight.SemiBold)
-        Spacer(Modifier.height(8.dp)); Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
