@@ -43,13 +43,14 @@ fun FishSprite(
     appearance: FishAppearance, presence: FishPresence, modifier: Modifier = Modifier,
     animate: Boolean = true, fixedFrame: Int? = null,
 ) {
+    val motion = animate && com.timeagent.ui.design.LocalPresentation.current.animateCharacter
     val context = LocalContext.current
     val resource = if (appearance == FishAppearance.CHIBI) R.drawable.fish_chibi_atlas else R.drawable.fish_elegant_atlas
     val atlas = remember(resource) { ImageBitmap.imageResource(context.resources, resource) }
     val frames = remember(presence.activity, presence.mood) { FishCompanion.frames(presence) }
     var position by remember(frames, appearance) { mutableIntStateOf(0) }
-    LaunchedEffect(frames, appearance, animate) {
-        if (animate) while (true) {
+    LaunchedEffect(frames, appearance, motion) {
+        if (motion) while (true) {
             val index = frames[position]
             delay(when (index) { 1, 2 -> 100L; 4, 5, 6 -> 280L; else -> 700L })
             position = (position + 1) % frames.size
@@ -59,11 +60,15 @@ fun FishSprite(
     var previous by remember { mutableIntStateOf(target) }
     var current by remember { mutableIntStateOf(target) }
     val mix = remember { Animatable(1f) }
-    LaunchedEffect(target, appearance) {
-        if (current != target) {
+    LaunchedEffect(target, appearance, motion) {
+        if (!motion) {
+            previous = target
+            current = target
+            mix.snapTo(1f)
+        } else if (current != target) {
             previous = current; current = target
             mix.snapTo(0f)
-            mix.animateTo(1f, tween(if (target in 1..2) 70 else 180))
+            mix.animateTo(1f, tween(if (!motion) 0 else if (target in 1..2) 70 else 180))
         }
     }
     // Add premultiplied layers in one surface so the character never dims mid-transition.

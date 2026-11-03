@@ -73,13 +73,14 @@ class T0BaselineDeviceTest {
             assertEquals(1, repository.snapshot().records.size)
             call("time_undo")
             assertEquals("TODO", repository.snapshot().tasks.single().status)
-            assertTrue(call("time_quick_action", JSONObject().put("text", "\u67e5\u770b\u4efb\u52a1"))
-                .has("needsConfirmation"))
+            val quick = call("time_quick_action", JSONObject().put("text", "\u67e5\u770b\u4efb\u52a1"))
+            assertEquals("APPLIED", quick.getString("status"))
+            assertTrue(quick.getString("message").contains("T0_DEVICE_TASK"))
             assertEquals(10, results.length())
             try {
                 tools.execute("time_schedule", JSONObject().put("date", "invalid"))
                 fail("Invalid date accepted")
-            } catch (_: java.time.format.DateTimeParseException) {
+            } catch (_: IllegalArgumentException) {
                 assertEquals(1, repository.snapshot().records.size)
             }
             evidence("ten-native-time-tools", JSONObject().put("calls", results)
@@ -139,6 +140,7 @@ class T0BaselineDeviceTest {
     @Test
     @SdkSuppress(minSdkVersion = 34)
     fun actualTimezoneBroadcastRestoresExistingAndRecurringReminders() = runBlocking {
+        require(context.packageName.endsWith(".acceptance")) { "Timezone fixture must run in the isolated device-test application" }
         val originalZone = shell("getprop persist.sys.timezone").trim()
         val originalAutomatic = shell("settings get global auto_time_zone").trim()
         assertTrue(originalZone.matches(Regex("[A-Za-z_]+/[A-Za-z_]+")))
@@ -149,8 +151,9 @@ class T0BaselineDeviceTest {
         val coordinator = ReminderCoordinator(context, repository)
         val alarms = context.getSystemService(AlarmManager::class.java)
         // Removal history repeats the same tag; count only standalone pending-alarm tag lines.
-        fun pendingCount(): Int = shell("dumpsys alarm").lineSequence()
-            .count { it.trim() == "tag=*walarm*:com.timeagent.reminders.FIRE" }
+        fun pendingCount(): Int = shell("dumpsys alarm").lines().windowed(2)
+            .count { (header, tag) -> header.trim().endsWith(" ${context.packageName}}") &&
+                tag.trim() == "tag=*walarm*:com.timeagent.reminders.FIRE" }
         suspend fun awaitCount(expected: Int) {
             withTimeout(8_000) {
                 while (pendingCount() != expected) delay(150)

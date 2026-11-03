@@ -431,7 +431,7 @@ class BusinessDeviceTest {
             ),
         )
 
-        val tables = BackupTables.mainForVersion(12)
+        val tables = BackupTables.mainForVersion(db.openHelper.writableDatabase.version)
         val captured = BackupTables.capture(db.openHelper.writableDatabase.backupSql(), tables)
         assertEquals(1, captured.tables.getValue("ledger_transactions").rows.size)
         assertEquals(1, captured.tables.getValue("record_tags").rows.size)

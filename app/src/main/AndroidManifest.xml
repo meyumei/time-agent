@@ -44,15 +44,15 @@
             android:grantUriPermissions="true">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/attachment_paths" />
         </provider>
-        <activity android:name=".organization.OrganizationActivity" android:exported="false" />
-        <activity android:name=".ledger.LedgerActivity" android:exported="false" />
+        <activity android:name=".organization.OrganizationActivity" android:exported="false" android:parentActivityName=".MainActivity" />
+        <activity android:name=".ledger.LedgerActivity" android:exported="false" android:parentActivityName=".MainActivity" />
         <service android:name=".ledger.PaymentNotificationListener" android:exported="true" android:label="时间 Agent 支付记账"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
-        <activity android:name=".workout.WorkoutActivity" android:exported="false" />
+        <activity android:name=".workout.WorkoutActivity" android:exported="false" android:parentActivityName=".MainActivity" />
         <receiver android:name=".workout.WorkoutTimerReceiver" android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

@@ -16,6 +16,9 @@ import android.app.Activity
 import android.content.ContextWrapper
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import androidx.compose.ui.platform.LocalContext
+import com.timeagent.ui.design.PresentationMode
+import android.os.Build
 
 @Composable
 fun MatchThemeSystemBars(dark: Boolean) {
@@ -35,13 +38,27 @@ fun MatchThemeSystemBars(dark: Boolean) {
 @Composable
 fun ThemeSwitch(mode: ThemeMode, onSelect: (ThemeMode) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
-    IconButton(onClick = { expanded = true }, modifier = Modifier.size(36.dp).semantics { stateDescription = mode.label }) {
-        Icon(when (mode) { ThemeMode.SYSTEM -> Icons.Rounded.BrightnessAuto; ThemeMode.LIGHT -> Icons.Rounded.LightMode; ThemeMode.DARK -> Icons.Rounded.DarkMode }, "切换深浅色", Modifier.size(20.dp))
+    val context = LocalContext.current
+    val preference = remember(context) { ThemePreference(context) }
+    val appearance = LocalAppearance.current
+    IconButton(onClick = { expanded = true }, modifier = Modifier.size(48.dp).semantics { stateDescription = "${appearance.presentation.label}，${mode.label}" }) {
+        Icon(when (mode) { ThemeMode.SYSTEM -> Icons.Rounded.BrightnessAuto; ThemeMode.LIGHT -> Icons.Rounded.LightMode; ThemeMode.DARK -> Icons.Rounded.DarkMode }, "外观设置", Modifier.size(20.dp))
         DropdownMenu(expanded, onDismissRequest = { expanded = false }) {
+            PresentationMode.entries.forEach { option ->
+                DropdownMenuItem(text = { Text(option.label) },
+                    trailingIcon = { if (option == appearance.presentation) Icon(Icons.Rounded.Check, null) },
+                    onClick = { preference.savePresentation(option); expanded = false })
+            }
+            HorizontalDivider()
             ThemeMode.entries.forEach { option ->
                 DropdownMenuItem(text = { Text(option.label) }, trailingIcon = { if (option == mode) Icon(Icons.Rounded.Check, null) },
                     onClick = { onSelect(option); expanded = false })
             }
+            HorizontalDivider()
+            DropdownMenuItem(text = { Text(if (Build.VERSION.SDK_INT >= 31) "动态取色" else "动态取色需 Android 12") },
+                enabled = Build.VERSION.SDK_INT >= 31,
+                trailingIcon = { if (appearance.dynamicColor) Icon(Icons.Rounded.Check, null) },
+                onClick = { preference.saveDynamicColor(!appearance.dynamicColor); expanded = false })
         }
     }
 }

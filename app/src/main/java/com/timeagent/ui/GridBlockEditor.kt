@@ -32,6 +32,7 @@ fun GridBlockEditorScreen(
     saveError: String?,
     onDismiss: () -> Unit,
     onSave: (EditValues) -> Unit,
+    onKeepDraft: (() -> Unit)? = null,
 ) {
     val initial = requireNotNull(request.selection).span(zone)
     val timeFormat = remember { DateTimeFormatter.ofPattern("HH:mm") }
@@ -88,7 +89,8 @@ fun GridBlockEditorScreen(
             }
         }
     }
-    val dismiss: () -> Unit = { if (!saving) onDismiss() }
+    val dismiss = rememberDraftExit(request.id, listOf(kindName, newTask, independent, selectedTask, title, notes,
+        category, startDate, startTime, endDate, endTime, futureConfirmed), saving, onDismiss, onKeepDraft)
     BackHandler(onBack = dismiss)
     Scaffold(modifier = Modifier.fillMaxSize().testTag("grid-block-editor"), topBar = {
         TopAppBar(title = { Text("添加日程", fontWeight = FontWeight.Bold) },

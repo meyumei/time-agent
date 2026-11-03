@@ -48,9 +48,10 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
     onSave: (EditValues) -> Unit,
     onSaveReminder: (ReminderEntity?, String, Long) -> Unit = { _, _, _ -> },
     saveError: String? = null,
+    onKeepDraft: (() -> Unit)? = null,
 ) {
     if (request.selection != null && request.entity == null) {
-        GridBlockEditorScreen(request, data, now, zone, busy, saveError, onDismiss, onSave)
+        GridBlockEditorScreen(request, data, now, zone, busy, saveError, onDismiss, onSave, onKeepDraft)
         return
     }
     val task = request.entity as? TaskEntity
@@ -66,12 +67,12 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
     val newPlan = request.kind == EditorKind.PLAN && request.entity == null && request.selection == null && !request.scheduleRange
     val showModeSwitch = newPlan
     var pointMode by rememberSaveable(request.id) { mutableStateOf(request.kind == EditorKind.REMINDER || newPlan) }
-    val initialStart = plan?.startAt ?: record?.startAt ?: course?.startAt ?: reminder?.remindAt
+    val initialStart = rememberSaveable(request.id) { plan?.startAt ?: record?.startAt ?: course?.startAt ?: reminder?.remindAt
         ?: selectedSpan?.start?.toEpochMilli()
         ?: if (newPlan || request.kind == EditorKind.REMINDER) now.plusSeconds(3600).toEpochMilli()
-        else now.minusSeconds(if (request.kind == EditorKind.RECORD) 1800 else 0).toEpochMilli()
-    val initialEnd = plan?.endAt ?: record?.endAt ?: course?.endAt ?: reminder?.remindAt?.plus(1_800_000L)
-        ?: selectedSpan?.end?.toEpochMilli() ?: if (request.kind == EditorKind.RECORD) now.toEpochMilli() else now.plusSeconds(1800).toEpochMilli()
+        else now.minusSeconds(if (request.kind == EditorKind.RECORD) 1800 else 0).toEpochMilli() }
+    val initialEnd = rememberSaveable(request.id) { plan?.endAt ?: record?.endAt ?: course?.endAt ?: reminder?.remindAt?.plus(1_800_000L)
+        ?: selectedSpan?.end?.toEpochMilli() ?: if (request.kind == EditorKind.RECORD) now.toEpochMilli() else now.plusSeconds(1800).toEpochMilli() }
     val timeFormat = DateTimeFormatter.ofPattern("HH:mm")
     val initialTitle = plan?.displayTitle(data.tasks.firstOrNull { it.id == plan.taskId }) ?: record?.title?.takeIf(String::isNotBlank) ?: task?.title ?: activity?.fullName(data.activities).orEmpty().takeIf { it.isNotBlank() }
         ?: reminder?.title ?: request.title.orEmpty()
@@ -124,7 +125,10 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
             validation = e.message?.takeIf { it.contains("提醒") || it.contains("内容") } ?: "请检查提醒日期和时间格式"
         }
     }
-    BackHandler { if (!busy) onDismiss() }
+    val dismiss = rememberDraftExit(request.id, listOf(title, notes, estimated, priority, dueDate, dueTime,
+        date, endDate, startTime, endTime, selectedTask, category, activityId, location, teacher, pointMode, futureConfirmed),
+        busy, onDismiss, onKeepDraft)
+    BackHandler(onBack = dismiss)
     val pointScreen = pointMode
     val titleText = when {
         request.kind == EditorKind.REMINDER -> if (reminder == null) "新建提醒" else "编辑提醒"
@@ -132,7 +136,7 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
         else -> (if (request.entity == null) "新建" else "编辑") + request.kind.title + if (request.scheduleNewTask) "并安排" else ""
     }
     Scaffold(topBar = {
-        TopAppBar(title = { Text(titleText, fontWeight = FontWeight.Bold) }, navigationIcon = { TextButton(onClick = onDismiss, enabled = !busy) { Text("取消") } }, actions = {
+        TopAppBar(title = { Text(titleText, fontWeight = FontWeight.Bold) }, navigationIcon = { TextButton(onClick = dismiss, enabled = !busy) { Text("取消") } }, actions = {
             TextButton(
                 onClick = if (pointScreen) savePoint else save,
                 enabled = !busy && (pointScreen || !future || futureConfirmed),

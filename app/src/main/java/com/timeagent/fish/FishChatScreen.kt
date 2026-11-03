@@ -21,6 +21,10 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.timeagent.ui.LocalAppearance
+import com.timeagent.ui.ThemePreference
+import com.timeagent.ui.ThemeSwitch
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun FishChatScreen(
@@ -59,11 +63,17 @@ fun FishChatScreen(
     }
     Column(Modifier.fillMaxSize().padding(horizontal=14.dp), verticalArrangement=Arrangement.spacedBy(6.dp)) {
         Row(Modifier.fillMaxWidth().height(54.dp).testTag("fish-chat-header"), verticalAlignment = Alignment.CenterVertically) {
+            val presentation = com.timeagent.ui.design.LocalPresentation.current
+            Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) {
+                CharacterSprite(session, Modifier.size(presentation.avatarSize))
+            }
             Column(Modifier.weight(1f)) {
                 Text(profile.name, style=MaterialTheme.typography.titleLarge)
                 Text(if (voice.speaking) "正在说话" else if (chat.busy) "正在陪你处理" else if (runtime.ready) "你的管家 · 我在" else runtime.stage,
                     style=MaterialTheme.typography.labelSmall, maxLines=1, overflow=TextOverflow.Ellipsis)
             }
+            val appearanceContext = LocalContext.current
+            ThemeSwitch(LocalAppearance.current.theme) { ThemePreference(appearanceContext).save(it) }
             IconButton(onClick=onCompanion) { Icon(Icons.Rounded.MoreHoriz, "大肥鱼的一切") }
         }
         (runtime.error ?: message ?: tool)?.let { Text(it,style=MaterialTheme.typography.bodySmall,

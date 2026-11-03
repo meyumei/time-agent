@@ -1,0 +1,9 @@
+{
+  "cliVersion": "2.171.0",
+  "exitCode": 0,
+  "requestedModel": "deepseek-v4.1-flash",
+  "requestedEffort": "max",
+  "serverReportedEffort": null,
+  "maxToolCalls": 3,
+  "elapsedSeconds": 663.37
+}

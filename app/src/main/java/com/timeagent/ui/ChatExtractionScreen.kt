@@ -6,32 +6,46 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.timeagent.extraction.*
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+private class ChatExtractionViewModel(initialText: String) : ViewModel() {
+    val text = mutableStateOf(initialText)
+    val preview = mutableStateOf<ExtractionPreview?>(null)
+    val edits = mutableStateOf<Map<String, ExtractionCandidate>>(emptyMap())
+    val checked = mutableStateOf<Set<String>>(emptySet())
+    val editing = mutableStateOf<String?>(null)
+    val localError = mutableStateOf<String?>(if (initialText.length > 20_000) "聊天文字最多20000字，请删减后提取" else null)
+    val lastSaved = mutableStateOf<ExtractionSaveResult?>(null)
+}
+
+private class ChatExtractionViewModelFactory(private val initialText: String) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatExtractionViewModel(initialText) as T
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatExtractionScreen(model: TimeViewModel, initialText: String = "", onClose: () -> Unit, onReply: ((String) -> Unit)? = null) {
+    val state: ChatExtractionViewModel = viewModel(factory = ChatExtractionViewModelFactory(initialText))
     val busy by model.busy.collectAsState()
     val modelError by model.error.collectAsState()
-    var text by remember { mutableStateOf(initialText) }
-    var preview by remember { mutableStateOf<ExtractionPreview?>(null) }
-    var edits by remember { mutableStateOf<Map<String, ExtractionCandidate>>(emptyMap()) }
-    var checked by remember { mutableStateOf<Set<String>>(emptySet()) }
-    var editing by remember { mutableStateOf<String?>(null) }
-    var localError by remember { mutableStateOf<String?>(if (initialText.length > 20_000) "聊天文字最多20000字，请删减后提取" else null) }
-    var lastSaved by remember { mutableStateOf<ExtractionSaveResult?>(null) }
-    LaunchedEffect(initialText) {
-        if (initialText.isNotBlank() && initialText != text) {
-            text = initialText; preview = null; edits = emptyMap(); checked = emptySet(); lastSaved = null
-            localError = if (initialText.length > 20_000) "聊天文字最多20000字，请删减后提取" else null
-        }
-    }
+    var text by state.text
+    var preview by state.preview
+    var edits by state.edits
+    var checked by state.checked
+    var editing by state.editing
+    var localError by state.localError
+    var lastSaved by state.lastSaved
     BackHandler(enabled = !busy) { onClose() }
     Scaffold(topBar = { TopAppBar(title = { Text("聊天文字提取") }, navigationIcon = {
         TextButton(onClick = onClose, enabled = !busy) { Text("返回") }
@@ -117,12 +131,12 @@ private fun timeSummary(item: ExtractionCandidate, zone: java.time.ZoneId): Stri
 
 @Composable
 private fun ExtractionEditDialog(item: ExtractionCandidate, zone: java.time.ZoneId, onDismiss: () -> Unit, onSave: (ExtractionCandidate) -> Unit) {
-    var title by remember(item.id) { mutableStateOf(item.title) }
-    var kind by remember(item.id) { mutableStateOf(item.kind) }
-    var date by remember(item.id) { mutableStateOf(item.dueAt?.let { Instant.ofEpochMilli(it).atZone(zone).toLocalDate().toString() }.orEmpty()) }
-    var start by remember(item.id) { mutableStateOf(item.startAt?.let { dateTimeFormat.format(Instant.ofEpochMilli(it).atZone(zone)) }.orEmpty()) }
-    var end by remember(item.id) { mutableStateOf(item.endAt?.let { dateTimeFormat.format(Instant.ofEpochMilli(it).atZone(zone)) }.orEmpty()) }
-    var error by remember { mutableStateOf<String?>(null) }
+    var title by rememberSaveable(item.id) { mutableStateOf(item.title) }
+    var kind by rememberSaveable(item.id) { mutableStateOf(item.kind) }
+    var date by rememberSaveable(item.id) { mutableStateOf(item.dueAt?.let { Instant.ofEpochMilli(it).atZone(zone).toLocalDate().toString() }.orEmpty()) }
+    var start by rememberSaveable(item.id) { mutableStateOf(item.startAt?.let { dateTimeFormat.format(Instant.ofEpochMilli(it).atZone(zone)) }.orEmpty()) }
+    var end by rememberSaveable(item.id) { mutableStateOf(item.endAt?.let { dateTimeFormat.format(Instant.ofEpochMilli(it).atZone(zone)) }.orEmpty()) }
+    var error by rememberSaveable(item.id) { mutableStateOf<String?>(null) }
     AlertDialog(onDismissRequest = onDismiss, title = { Text("修改候选事项") }, text = {
         Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text("原文：${item.original}", style = MaterialTheme.typography.bodySmall)

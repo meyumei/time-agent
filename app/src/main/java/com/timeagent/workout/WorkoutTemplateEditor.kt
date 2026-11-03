@@ -40,7 +40,7 @@ import java.util.UUID
                 fun setValue(setId: String, transform: (WorkoutSet) -> WorkoutSet) { movement(item.id) { move -> move.copy(sets = move.sets.map { if (it.id == setId) transform(it) else it }) } }
                 val weighted = item.exercise.metric in listOf(WorkoutMetric.WEIGHT_REPS, WorkoutMetric.BODYWEIGHT_REPS, WorkoutMetric.ASSISTED_REPS)
                 val factor = if (pounds) 2.2046226218 else 1.0
-                Surface(shape = RoundedCornerShape(20.dp), color = Color.White) { Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Surface(shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.surface) { Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         ExercisePicture(item.exercise, Modifier.size(56.dp))
                         Column(Modifier.weight(1f)) { Text(item.exercise.name, fontWeight = FontWeight.Bold); if (item.supersetId != null) Text("超级组", color = WorkoutBlue, style = MaterialTheme.typography.labelSmall) }

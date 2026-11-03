@@ -59,9 +59,11 @@ data class TimelinePaint(
 private val ClockFormat = DateTimeFormatter.ofPattern("HH:mm")
 private val DateClockFormat = DateTimeFormatter.ofPattern("M月d日 HH:mm")
 
-fun TimelinePreset.paint(dark: Boolean): TimelinePaint =
-    if (dark) TimelinePaint(Color(darkArgb), Color(darkContentArgb), Color(darkAccentArgb), Color(darkSecondaryArgb))
-    else TimelinePaint(Color(argb), Color(contentArgb), Color(accentArgb), Color(secondaryArgb))
+fun TimelinePreset.paint(dark: Boolean): TimelinePaint {
+    val background = Color(if (dark) darkArgb else argb)
+    val content = com.timeagent.ui.design.readableContentColor(background)
+    return TimelinePaint(background, content, Color(if (dark) darkAccentArgb else accentArgb), content)
+}
 
 /** Course/activity identity owns the hue across weeks, plans and completed records. */
 @Composable
@@ -212,7 +214,7 @@ fun TimelineEventCard(
         val showTitle = measuredTitle != null
         val borderWidth = if (conflicting) 1.5.dp else 0.8.dp
         val borderColor = if (conflicting) {
-            MaterialTheme.colorScheme.error.copy(alpha = 0.85f)
+            com.timeagent.ui.design.LocalSemanticColors.current.conflict.copy(alpha = 0.85f)
         } else {
             colors.accent.copy(alpha = 0.30f)
         }
@@ -294,13 +296,13 @@ fun TimelineEventCard(
                         .padding(top = 2.dp, end = 2.dp)
                         .size(12.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.90f)),
+                        .background(com.timeagent.ui.design.LocalSemanticColors.current.conflict.copy(alpha = 0.90f)),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.WarningAmber,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onErrorContainer,
+                        tint = com.timeagent.ui.design.LocalSemanticColors.current.onConflict,
                         modifier = Modifier.size(9.dp),
                     )
                 }
@@ -344,7 +346,7 @@ fun TimelineAgendaCard(
             .background(colors.container)
             .border(
                 width = if (conflicting) 1.5.dp else 0.8.dp,
-                color = if (conflicting) MaterialTheme.colorScheme.error.copy(alpha = 0.80f) else colors.accent.copy(alpha = 0.20f),
+                color = if (conflicting) com.timeagent.ui.design.LocalSemanticColors.current.conflict.copy(alpha = 0.80f) else colors.accent.copy(alpha = 0.20f),
                 shape = shape,
             )
             .clickable(role = Role.Button, onClick = onClick)
@@ -394,14 +396,14 @@ fun TimelineAgendaCard(
                 Row(
                     Modifier
                         .clip(RoundedCornerShape(6.dp))
-                        .background(MaterialTheme.colorScheme.errorContainer)
+                        .background(com.timeagent.ui.design.LocalSemanticColors.current.conflict)
                         .padding(horizontal = 6.dp, vertical = 2.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.WarningAmber,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onErrorContainer,
+                        tint = com.timeagent.ui.design.LocalSemanticColors.current.onConflict,
                         modifier = Modifier.size(11.dp),
                     )
                     Spacer(Modifier.width(3.dp))
@@ -409,7 +411,7 @@ fun TimelineAgendaCard(
                         text = "时间冲突",
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        color = com.timeagent.ui.design.LocalSemanticColors.current.onConflict,
                     )
                 }
                 Spacer(Modifier.width(8.dp))

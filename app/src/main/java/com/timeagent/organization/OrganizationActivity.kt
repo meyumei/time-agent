@@ -68,6 +68,7 @@ import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import com.timeagent.ui.TimeAgentTheme
+import com.timeagent.ui.returnToButler
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
@@ -107,7 +108,7 @@ class OrganizationActivity : ComponentActivity() {
                     repository = repository,
                     organization = organization,
                     refreshTick = resumeTick,
-                    onClose = { finish() },
+                    onClose = ::returnToButler,
                 )
             }
         }

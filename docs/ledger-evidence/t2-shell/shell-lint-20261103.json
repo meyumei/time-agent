@@ -1,0 +1,18 @@
+{
+  "label": "shell-lint-20261103",
+  "command": [
+    "F:\\261019_时间agent\\gradlew.bat",
+    ":app:assembleDebug",
+    ":app:assembleDebugAndroidTest",
+    ":app:lintDebug",
+    "--console=plain",
+    "--no-parallel",
+    "--max-workers=2",
+    "-Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=GBK",
+    "-Dhttps.proxyHost=",
+    "-Dhttp.proxyHost=",
+    "-Djava.net.useSystemProxies=false"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 258.1
+}

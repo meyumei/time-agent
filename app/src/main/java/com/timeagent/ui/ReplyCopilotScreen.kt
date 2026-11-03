@@ -11,30 +11,56 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.timeagent.extraction.*
 import com.timeagent.reply.*
 import java.time.*
 import java.time.format.DateTimeFormatter
 
+private class ReplyCopilotViewModel(initialText: String, initialDay: String) : ViewModel() {
+    val source = mutableStateOf(initialText)
+    val preview = mutableStateOf<ExtractionPreview?>(null)
+    val selected = mutableStateOf<String?>(null)
+    val day = mutableStateOf(initialDay)
+    val from = mutableStateOf("08:00")
+    val until = mutableStateOf("22:00")
+    val minutes = mutableStateOf("30")
+    val check = mutableStateOf<ReplyAvailability?>(null)
+    val draft = mutableStateOf<ReplyDraft?>(null)
+    val reply = mutableStateOf("")
+    val mine = mutableStateOf(false)
+    val notice = mutableStateOf<String?>(null)
+    val saved = mutableStateOf(false)
+}
+
+private class ReplyCopilotViewModelFactory(private val initialText: String, private val initialDay: String) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = ReplyCopilotViewModel(initialText, initialDay) as T
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReplyCopilotScreen(model: TimeViewModel, initialText: String, onClose: () -> Unit) {
+    val initialDay = remember { model.repository.now().atZone(model.zone).toLocalDate().toString() }
+    val state: ReplyCopilotViewModel = viewModel(factory = ReplyCopilotViewModelFactory(initialText, initialDay))
     val busy by model.busy.collectAsState()
     val error by model.error.collectAsState()
     val clipboard = LocalClipboardManager.current
-    var source by remember { mutableStateOf(initialText) }
-    var preview by remember { mutableStateOf<ExtractionPreview?>(null) }
-    var selected by remember { mutableStateOf<String?>(null) }
-    var day by remember { mutableStateOf(model.repository.now().atZone(model.zone).toLocalDate().toString()) }
-    var from by remember { mutableStateOf("08:00") }
-    var until by remember { mutableStateOf("22:00") }
-    var minutes by remember { mutableStateOf("30") }
-    var check by remember { mutableStateOf<ReplyAvailability?>(null) }
-    var draft by remember { mutableStateOf<ReplyDraft?>(null) }
-    var reply by remember { mutableStateOf("") }
-    var mine by remember { mutableStateOf(false) }
-    var notice by remember { mutableStateOf<String?>(null) }
-    var saved by remember { mutableStateOf(false) }
+    var source by state.source
+    var preview by state.preview
+    var selected by state.selected
+    var day by state.day
+    var from by state.from
+    var until by state.until
+    var minutes by state.minutes
+    var check by state.check
+    var draft by state.draft
+    var reply by state.reply
+    var mine by state.mine
+    var notice by state.notice
+    var saved by state.saved
     val formatter = remember { DateTimeFormatter.ofPattern("M月d日 HH:mm") }
     fun period(slot: com.timeagent.core.TimeSpan) = "${formatter.format(slot.start.atZone(model.zone))}–${slot.end.atZone(model.zone).toLocalTime()}"
     fun invalidate() { check = null; draft = null; mine = false; saved = false }
