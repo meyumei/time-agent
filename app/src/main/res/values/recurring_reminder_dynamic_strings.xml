@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 周期方式 -->
+    <string name="rr_mode_none" formatted="false">"不重复"</string>
+    <string name="rr_mode_once" formatted="false">"仅一次"</string>
+    <string name="rr_mode_daily" formatted="false">"每天"</string>
+    <string name="rr_mode_workdays" formatted="false">"工作日"</string>
+    <string name="rr_mode_weekdays" formatted="false">"每周几"</string>
+    <string name="rr_mode_monthly" formatted="false">"每月"</string>
+    <string name="rr_mode_yearly" formatted="false">"每年"</string>
+    <string name="rr_mode_weekly_count" formatted="false">"每周频次"</string>
+
+    <!-- 星期 -->
+    <string-array name="rr_day_names_short">
+        <item>一</item>
+        <item>二</item>
+        <item>三</item>
+        <item>四</item>
+        <item>五</item>
+        <item>六</item>
+        <item>日</item>
+    </string-array>
+    <string name="rr_day_content_description">周%1$s</string>
+    <string name="rr_day_separator" formatted="false">"、"</string>
+
+    <!-- 每周次数 -->
+    <string name="rr_weekly_count">每周 %1$d 次</string>
+    <string name="rr_weekly_count_decrease" formatted="false">"减少每周次数"</string>
+    <string name="rr_weekly_count_increase" formatted="false">"增加每周次数"</string>
+
+    <!-- 规则摘要 -->
+    <string name="rr_summary_once">仅 %1$s 一次</string>
+    <string name="rr_summary_weekly_selected">每周%1$s</string>
+    <string name="rr_summary_weekly_unselected" formatted="false">"每周（未选日期）"</string>
+    <string name="rr_summary_monthly">每月 %1$d 日（短月取月末）</string>
+    <string name="rr_summary_yearly">每年 %1$d 月 %2$d 日</string>
+    <string name="rr_summary_custom">自定义：%1$s</string>
+    <string name="rr_summary_with_time">%1$s %2$s</string>
+    <string name="rr_timezone">时区：%1$s</string>
+
+    <!-- 自定义规则面板 -->
+    <string name="rr_custom_expand" formatted="false">"自定义：日期、时段与提醒"</string>
+    <string name="rr_custom_collapse" formatted="false">"收起自定义规则"</string>
+    <string name="rr_label_start_date" formatted="false">"开始日期"</string>
+    <string name="rr_label_end_date" formatted="false">"结束日期"</string>
+    <string name="rr_label_effective_from" formatted="false">"规则生效日期"</string>
+    <string name="rr_label_time" formatted="false">"发生时间"</string>
+    <string name="rr_duration_range_error" formatted="false">"每次时长须为 1–1440 分钟"</string>
+    <string name="rr_until_before_start_error" formatted="false">"重复结束日期早于开始"</string>
+
+    <!-- 提醒 -->
+    <string name="rr_duration_at_start" formatted="false">"开始时"</string>
+    <string name="rr_duration_days">%1$d 天</string>
+    <string name="rr_duration_hours">%1$d 小时</string>
+    <string name="rr_duration_minutes">%1$d 分钟</string>
+    <string name="rr_reminder_at_start" formatted="false">"事件开始时"</string>
+    <string name="rr_reminder_advance">提前 %1$s</string>
+    <string name="component_date_display_pattern">yyyy年M月d日</string>
+    <string name="component_time_dial">表盘选择</string>
+    <string name="component_time_keyboard">键盘输入</string>
+    <string name="component_start_time">开始时间</string>
+    <string name="component_end_time">结束时间</string>
+    <string name="component_duration_summary">时长：%1$s</string>
+    <string name="component_duration_hours_minutes">%1$d小时%2$d分钟</string>
+    <string name="component_duration_hours">%1$d小时</string>
+    <string name="component_duration_minutes">%1$d分钟</string>
+</resources>

@@ -79,11 +79,12 @@ data class UndoMessage(val id: String, val message: String, val token: String)
 
 @Composable
 fun UndoSnackbar(host: SnackbarHostState, message: UndoMessage?, onUndo: (String) -> Unit, onConsumed: (String) -> Unit) {
+    val undoLabel = androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_undo)
     LaunchedEffect(message?.id) {
         val item = message ?: return@LaunchedEffect
         host.currentSnackbarData?.dismiss()
         val result = withTimeoutOrNull(8_000) {
-            host.showSnackbar(item.message, actionLabel = "撤销", withDismissAction = true, duration = SnackbarDuration.Indefinite)
+            host.showSnackbar(item.message, actionLabel = undoLabel, withDismissAction = true, duration = SnackbarDuration.Indefinite)
         }
         if (result == SnackbarResult.ActionPerformed) onUndo(item.token)
         onConsumed(item.id)
