@@ -41,9 +41,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import com.timeagent.ui.design.DesignTokens
+import com.timeagent.R
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
@@ -52,7 +54,6 @@ import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
-private val DateDisplayFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy年M月d日")
 private val TimeDisplayFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
 @Composable
@@ -101,7 +102,9 @@ fun DateField(
     error: String? = null,
 ) {
     var showDialog by rememberSaveable { mutableStateOf(false) }
-    FieldShell(label, value.format(DateDisplayFormat), error, { showDialog = true }, modifier)
+    val datePattern = stringResource(R.string.component_date_display_pattern)
+    val dateDisplayFormat = remember(datePattern) { DateTimeFormatter.ofPattern(datePattern) }
+    FieldShell(label, value.format(dateDisplayFormat), error, { showDialog = true }, modifier)
     if (showDialog) {
         val state = rememberDatePickerState(
             initialSelectedDateMillis = value.toUtcMillis(),
@@ -147,7 +150,7 @@ fun TimeField(
                 Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                         TextButton(onClick = { keyboard = !keyboard }) {
-                            Text(if (keyboard) "表盘选择" else "键盘输入")
+                            Text(stringResource(if (keyboard) R.string.component_time_dial else R.string.component_time_keyboard))
                         }
                     }
                     Row(Modifier.horizontalScroll(rememberScrollState())) {
@@ -183,12 +186,12 @@ fun DateTimeRangeField(
 
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(DesignTokens.spacing8)) {
         Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.spacing8)) {
-            DateField("开始日期", startDate, { onChange(LocalDateTime.of(it, startTime), end) }, Modifier.weight(1f))
-            TimeField("开始时间", startTime, { onChange(LocalDateTime.of(startDate, it), end) }, Modifier.weight(1f))
+            DateField(stringResource(R.string.rr_label_start_date), startDate, { onChange(LocalDateTime.of(it, startTime), end) }, Modifier.weight(1f))
+            TimeField(stringResource(R.string.component_start_time), startTime, { onChange(LocalDateTime.of(startDate, it), end) }, Modifier.weight(1f))
         }
         Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.spacing8)) {
-            DateField("结束日期", endDate, { onChange(start, LocalDateTime.of(it, endTime)) }, Modifier.weight(1f))
-            TimeField("结束时间", endTime, { onChange(start, LocalDateTime.of(endDate, it)) }, Modifier.weight(1f))
+            DateField(stringResource(R.string.rr_label_end_date), endDate, { onChange(start, LocalDateTime.of(it, endTime)) }, Modifier.weight(1f))
+            TimeField(stringResource(R.string.component_end_time), endTime, { onChange(start, LocalDateTime.of(endDate, it)) }, Modifier.weight(1f))
         }
         if (showCrossDay) {
             Row(
@@ -212,7 +215,7 @@ fun DateTimeRangeField(
         }
         if (valid) {
             Text(
-                "时长：${durationText(Duration.between(start, end))}",
+                stringResource(R.string.component_duration_summary, durationText(Duration.between(start, end))),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -254,7 +257,7 @@ fun DurationField(
                 FilterChip(
                     selected = minutes == preset,
                     onClick = { internalText = preset.toString(); onTextChange?.invoke(preset.toString()); onChange(preset) },
-                    label = { Text("$preset 分钟") },
+                    label = { Text(stringResource(R.string.rr_duration_minutes, preset)) },
                 )
             }
         }
@@ -285,13 +288,14 @@ private fun LocalDate.toUtcMillis(): Long =
 private fun Long.toUtcDate(): LocalDate =
     Instant.ofEpochMilli(this).atZone(ZoneOffset.UTC).toLocalDate()
 
+@Composable
 private fun durationText(duration: Duration): String {
     val totalMinutes = duration.toMinutes().coerceAtLeast(0)
     val hours = totalMinutes / 60
     val rest = totalMinutes % 60
     return when {
-        hours > 0 && rest > 0 -> "${hours}小时${rest}分钟"
-        hours > 0 -> "${hours}小时"
-        else -> "${rest}分钟"
+        hours > 0 && rest > 0 -> stringResource(R.string.component_duration_hours_minutes, hours, rest)
+        hours > 0 -> stringResource(R.string.component_duration_hours, hours)
+        else -> stringResource(R.string.component_duration_minutes, rest)
     }
 }

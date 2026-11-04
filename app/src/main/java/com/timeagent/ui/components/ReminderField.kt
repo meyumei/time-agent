@@ -135,17 +135,19 @@ fun ReminderField(
 
 private fun normalizeReminderMinutes(values: List<Int>): List<Int> = values.distinct().sorted()
 
+@Composable
 private fun durationText(minutes: Int): String {
-    if (minutes == 0) return "开始时"
+    if (minutes == 0) return androidx.compose.ui.res.stringResource(com.timeagent.R.string.rr_duration_at_start)
     val days = minutes / 1440
     val hours = (minutes % 1440) / 60
     val rest = minutes % 60
-    return buildList {
-        if (days > 0) add("$days 天")
-        if (hours > 0) add("$hours 小时")
-        if (rest > 0) add("$rest 分钟")
-    }.joinToString(" ")
+    val dayText = if (days > 0) androidx.compose.ui.res.stringResource(com.timeagent.R.string.rr_duration_days, days) else null
+    val hourText = if (hours > 0) androidx.compose.ui.res.stringResource(com.timeagent.R.string.rr_duration_hours, hours) else null
+    val restText = if (rest > 0) androidx.compose.ui.res.stringResource(com.timeagent.R.string.rr_duration_minutes, rest) else null
+    return listOfNotNull(dayText, hourText, restText).joinToString(" ")
 }
 
+@Composable
 private fun reminderText(minutes: Int): String =
-    if (minutes == 0) "事件开始时" else "提前 ${durationText(minutes)}"
+    if (minutes == 0) androidx.compose.ui.res.stringResource(com.timeagent.R.string.rr_reminder_at_start)
+    else androidx.compose.ui.res.stringResource(com.timeagent.R.string.rr_reminder_advance, durationText(minutes))

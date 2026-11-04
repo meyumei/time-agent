@@ -308,3 +308,16 @@ L03/L04/L05/L20：任务项目与标签筛选、排序偏好、滑动操作、�
 L01/L34：新建任务并安排为一个命令；新增无优先级保留旧优先级含义，备份内容校验同步。没有 schema 变更，未新增任何真机或迁移通过项。
 
 本批只有源码检查和 Kotlin 编译，测试／手机操作继续暂停。DS 的产物和未取得最终报告的审查分别记录，不互相替代。详情及剩余缺口见 `t4.1-tasklist-followup.md` 和 `ledger-evidence/t4.1-tasklist-20261104/development.json`。收到安全检查点暂停要求，提交当前批次后停止派发与开发。
+
+## 2026-11-05 接续开发与前端协作
+
+用户已在新聊天恢复开发，全部测试与手机操作继续暂停。本节只登记源码实现、编译证据和待验收步骤，不修改历史基线结果。
+
+| 账本 | 本日改动 | 核对与真实证据 | 尚未执行 |
+| --- | --- | --- | --- |
+| L03/L05/L20 | 项目截止/周起始日期、预计耗时/周目标分钟统一组件；保留旧无效草稿和所见版本 | `t4.1-project-editor-controls.md`；`ledger-evidence/development-20261105/project-controls.json`，编译退出0 | 时区、非周一、版本冲突、草稿、200%字体/TalkBack |
+| L01/L06/L07 | 周期拖动区别日程增量与规则日期位移，保留月末/闰日锚点和每周ordinal | `t3.3-recurring-anchor-followup.md`；`ledger-evidence/development-20261105/recurring-anchor.json`，编译退出0 | 跨日/时区、多次改期、手工例外、去重、撤销重做 |
+| L03/L05/L07/L12，关联L01 | 子任务拖动/显示顺序/草稿、新子任务；任务提醒与附件缩略图/关联；安排时间同命令保存 | `t4.1-task-editor-relations.md`；`ledger-evidence/development-20261105/task-editor-relations-final.json`，编译退出0 | 真实手势、版本冲突整次回滚、整组撤销、重复提醒、附件原件、进程恢复 |
+| L01/L03/L04/L06/L07及共享编辑器调用页 | 共享日期/时长、周期摘要/星期/语义描述、提醒时长与撤销动作文字资源化 | `t2.4-component-dynamic-copy.md`及对应本日编译记录 | lint分析、字形/格式、屏幕阅读器与设备界面 |
+
+未改鱼名字形象、Linux/DSH、BYOK 或共同记忆；主库仍v22。普通任务转换周期/重复入口、其余模块反馈和剩余阶段2–5缺口继续登记在 `development-through-phase5.md`，不能以本节编译记录宣布全项完成。
