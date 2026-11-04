@@ -20,12 +20,18 @@ fun FishMemoryScreen(session: FishSession, onClose: () -> Unit) {
     val discoveries by session.discoveries.collectAsStateWithLifecycle()
     val loading by session.memoryLoading.collectAsStateWithLifecycle()
     val message by session.message.collectAsStateWithLifecycle()
+    val runtime by session.runtime.state.collectAsStateWithLifecycle()
+    val readOnly by session.memoryReadOnly.collectAsStateWithLifecycle()
     var query by remember { mutableStateOf("") }
+    var editing by remember { mutableStateOf<FishMemory?>(null) }
+    var deleting by remember { mutableStateOf<FishMemory?>(null) }
+    var editedText by remember { mutableStateOf("") }
     LaunchedEffect(session) { session.loadMemories() }
     Column(Modifier.fillMaxSize().statusBarsPadding().padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
         TextButton(onClick=onClose) { Text("返回管家") }
         Text("共同记忆",style=MaterialTheme.typography.headlineSmall)
         Text("这里是同一个角色保存的交流与经历。日程事实仍以今天、计划中的原记录为准。",style=MaterialTheme.typography.bodySmall)
+        if (readOnly && !runtime.ready) Text("缓存，可能不是最新。启动内置角色后可刷新和编辑。",style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.secondary)
         Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
             OutlinedTextField(query,{query=it},modifier=Modifier.weight(1f),placeholder={Text("寻找一段共同经历")},singleLine=true)
             Button(onClick={session.loadMemories(query)},enabled=!loading) { Text("查找") }
@@ -40,9 +46,29 @@ fun FishMemoryScreen(session: FishSession, onClose: () -> Unit) {
             if(!loading && memories.isEmpty()) item { Text("还没有找到记忆。先和它聊聊，真实的共同经历会逐渐留下来。") }
             items(memories,key={it.id}) { memory ->
                 Surface(shape=MaterialTheme.shapes.medium,color=MaterialTheme.colorScheme.surfaceContainerLow) {
-                    Column(Modifier.fillMaxWidth().padding(12.dp)) { Text(memory.text);Text(memory.tier,style=MaterialTheme.typography.labelSmall) }
+                    Column(Modifier.fillMaxWidth().padding(12.dp)) {
+                        Text(memory.text);Text(memory.tier,style=MaterialTheme.typography.labelSmall)
+                        Row {
+                            TextButton(enabled = runtime.ready && !loading, onClick = { editing = memory; editedText = memory.text }) { Text("编辑") }
+                            TextButton(enabled = runtime.ready && !loading, onClick = { deleting = memory }) { Text("删除") }
+                        }
+                    }
                 }
             }
         }
+    }
+    editing?.let { memory ->
+        AlertDialog(onDismissRequest = { editing = null }, title = { Text("编辑共同记忆") },
+            text = { OutlinedTextField(editedText, { editedText = it }, label = { Text("内容") }) },
+            confirmButton = { TextButton(enabled = runtime.ready && editedText.isNotBlank(), onClick = {
+                session.editMemory(memory, editedText); editing = null
+            }) { Text("保存") } },
+            dismissButton = { TextButton(onClick = { editing = null }) { Text("取消") } })
+    }
+    deleting?.let { memory ->
+        AlertDialog(onDismissRequest = { deleting = null }, title = { Text("删除共同记忆？") },
+            text = { Text(memory.text) },
+            confirmButton = { TextButton(enabled = runtime.ready, onClick = { session.deleteMemory(memory); deleting = null }) { Text("删除") } },
+            dismissButton = { TextButton(onClick = { deleting = null }) { Text("取消") } })
     }
 }

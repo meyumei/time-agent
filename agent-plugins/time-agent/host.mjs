@@ -166,6 +166,7 @@ try {
   await history();
   emit({type:'ready',runtime:'deepseek-harness-sdk-runtime',dshVersion:'0.2.1-rc.2',memory:'dsh-remembers',sessionId});
   const lines=createInterface({input:process.stdin});
+  const localContext=[];
   lines.on('line',line=>{
     let message;
     try{message=JSON.parse(line);}catch{emit({type:'error',message:'输入格式无效'});return;}
@@ -174,6 +175,10 @@ try {
       pending.delete(message.id);clearTimeout(request.timeout);request.res.end(JSON.stringify(message.result));return;
     }
     void (async()=>{
+      if(message.action==='local_context'){
+        localContext.push(validateInput(message.text));
+        return;
+      }
       if(message.action==='stop'){lines.close();await stop();return;}
       if(message.action==='cancel'){await invoke('/cancel','POST');return;}
       if(message.action==='history'){await history();return;}
@@ -217,6 +222,16 @@ try {
         const discoveries=await memoryCall('/browse');
         emit({type:'memories',...result,discoveries});return;
       }
+      if(message.action==='memory_edit'||message.action==='memory_delete'){
+        const operation=message.action==='memory_edit'?'edit':'delete';
+        const result=await memoryCall(`/memories/${operation}`,'POST',{
+          id:message.id,expectedText:message.expectedText,text:message.text,
+        });
+        emit({type:'memory_changed',...result});
+        const memories=await memoryCall('/memories?limit=100&q=');
+        const discoveries=await memoryCall('/browse');
+        emit({type:'memories',...memories,discoveries});return;
+      }
       if(message.action==='proactive'){
         const op=message.operation ?? 'get';
         let payload;
@@ -246,9 +261,12 @@ try {
       }
       if(message.action!=='send')throw new Error('未知会话操作');
       if(running)throw new Error('上一轮还在回复');
-      const text=validateInput(message.text);running=true;emit({type:'busy',busy:true});
+      const text=validateInput(message.text);
+      const context=localContext.splice(0);
+      const prompt=context.length ? `以下是用户在本机已确认的操作结果，仅作为上下文，不要再次执行：\n${context.join('\n')}\n\n用户消息：${text}` : text;
+      running=true;emit({type:'busy',busy:true});
       try {
-        const result=await session.run(text);
+        const result=await session.run(prompt);
         await history();
         throwIfTurnFailed(result.events);
         emit({type:'done',sessionId});

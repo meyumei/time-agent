@@ -109,6 +109,15 @@ fun FishChatScreen(
                 }
             }
         }
+        chat.pending?.let { preview ->
+            com.timeagent.ui.StructuredDraftPreview(preview.title, preview.before, preview.after, preview.warnings) {
+                Row {
+                    TextButton(onClick = { session.send("确认保存") }, enabled = !chat.busy) { Text("确认保存") }
+                    TextButton(onClick = { session.send("取消") }, enabled = !chat.busy) { Text("取消") }
+                }
+            }
+        }
+        chat.undoId?.let { TextButton(onClick = { session.send("撤销") }, enabled = !chat.busy) { Text("撤销本地操作") } }
         if(chat.busy) Row { CircularProgressIndicator(Modifier.size(20.dp),strokeWidth=2.dp);TextButton(onClick={session.cancel()}) { Text("停止本轮回复") } }
         if (voice.message.isNotBlank()) Row(verticalAlignment=Alignment.CenterVertically) {
             Text(voice.message, Modifier.weight(1f), style=MaterialTheme.typography.labelSmall)
@@ -117,7 +126,7 @@ fun FishChatScreen(
         Row(Modifier.fillMaxWidth().padding(bottom=8.dp),horizontalArrangement=Arrangement.spacedBy(6.dp),verticalAlignment=Alignment.CenterVertically) {
             FishStickerPicker(session)
             OutlinedTextField(draft,session::editDraft,modifier=Modifier.weight(1f).focusRequester(input).testTag("fish-chat-input"),placeholder={Text("说说你正在想的事…")},maxLines=3)
-            Button(onClick={session.send(draft)},enabled=draft.isNotBlank() && runtime.ready && !chat.busy) { Text("发送") }
+            Button(onClick={session.send(draft)},enabled=draft.isNotBlank() && !chat.busy) { Text("发送") }
         }
     }
 }

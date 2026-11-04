@@ -20,7 +20,8 @@ class TimeViewModel(
     val clock: ClockSource = SystemClockSource(repository::now, android.os.SystemClock::elapsedRealtime),
 ) : ViewModel() {
     val fish by lazy { appContext?.let { com.timeagent.fish.FishSession.get(it, repository) } }
-    val assistant = AssistantConversation(repository)
+    private val offlineAssistant by lazy { AssistantConversation(repository) }
+    val assistant get() = fish?.localAssistant ?: offlineAssistant
     private var assistantJob: Job? = null
     private val _historyAnswer = MutableStateFlow<HistoryAnswer?>(null)
     val historyAnswer = _historyAnswer.asStateFlow()
