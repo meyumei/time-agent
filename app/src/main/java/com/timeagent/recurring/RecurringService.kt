@@ -53,18 +53,24 @@ class RecurringService(private val repository: TimeRepository) {
             taskVersion = savedTask.version, planVersion = dao().plan(before.id)?.version,
             scheduleNote = if (command.includingFuture) "此次及以后调整；保留原始规则依据" else "仅此次调整"), instance.version)
         if (command.includingFuture) {
-            val changed = pattern.copy(startDate = target.toLocalDate().toString(),
-                weekdays = pattern.weekdays.map { Math.floorMod(it - 1 + days.toInt(), 7) + 1 },
-                minuteOfDay = target.hour * 60 + target.minute, durationMinutes = duration,
-                untilDate = pattern.untilDate?.let { LocalDate.parse(it).plusDays(days).toString() },
-                effectiveFrom = target.toLocalDate().toString())
+            // A previous "only this occurrence" move must not become the rule's date anchor.
+            val weeklyCount = pattern.frequency == "WEEKLY_COUNT"
+            val ruleDays = if (weeklyCount) 0L else java.time.temporal.ChronoUnit.DAYS.between(from, target.toLocalDate())
+            val effectiveFrom = if (weeklyCount) from else target.toLocalDate()
+            val changed = pattern.copy(
+                // Keep 31st/leap-day anchors when a clipped instance changes only its time.
+                startDate = if (ruleDays == 0L) pattern.startDate else target.toLocalDate().toString(),
+                weekdays = pattern.weekdays.map { Math.floorMod(it - 1 + ruleDays.toInt(), 7) + 1 },
+                minuteOfDay = if (weeklyCount) null else target.hour * 60 + target.minute, durationMinutes = duration,
+                untilDate = pattern.untilDate?.let { LocalDate.parse(it).plusDays(ruleDays).toString() },
+                effectiveFrom = effectiveFrom.toString())
             // The selected identity remains an exception; later untouched seeds stay automatic.
             saveRuleRaw(rule.copy(patternJson = gson.toJson(changed)), rule.version, from,
-                RuleChangeScope.INCLUDING_PENDING, null, target.toLocalDate())
+                RuleChangeScope.INCLUDING_PENDING, null, effectiveFrom)
             for (kept in protected) {
-                val shiftedDate = LocalDate.parse(kept.originalDate).plusDays(days)
+                val shiftedDate = LocalDate.parse(kept.originalDate).plusDays(ruleDays)
                 val seeds = RecurringRules.expand(changed.copy(paused = false), shiftedDate, shiftedDate)
-                for (seed in seeds) {
+                for (seed in seeds.filter { it.ordinal == kept.ordinal }) {
                     val duplicate = dao().recurringInstance(seed.key) ?: continue
                     if (duplicate.id == kept.id || protected.any { it.id == duplicate.id } || !untouched(duplicate)) continue
                     retire(duplicate, "SKIPPED", "保留已调整或手工修改的原实例，不另建重复日程")
