@@ -269,13 +269,27 @@ fun FishRuntimeSettingsScreen(session: FishSession, onModel: () -> Unit, onClose
     val runtime by session.runtime.state.collectAsStateWithLifecycle()
     val message by session.message.collectAsStateWithLifecycle()
     val chat by session.chat.collectAsStateWithLifecycle()
+    val status by session.runtime.status.collectAsStateWithLifecycle()
+    val autoStart by session.runtime.autoStart.collectAsStateWithLifecycle()
+    val restartSuspended by session.runtime.restartSuspended.collectAsStateWithLifecycle()
+    val runtimeLog by session.runtime.log.collectAsStateWithLifecycle()
+    var showLog by remember { mutableStateOf(false) }
     CharacterPage("运行设置", onClose) {
         Text(runtime.error ?: message ?: runtime.stage)
         runtime.progress?.let { LinearProgressIndicator(progress = { it.coerceIn(0f, 1f) }, modifier = Modifier.fillMaxWidth()) }
         Row {
-            Button(onClick = { session.start() }, enabled = !chat.busy) { Text(if (runtime.ready) "重新连接" else "准备并启动") }
+            if (status.primaryAction == FishRuntimeAction.ENTER_KEY) Button(onClick = onModel) { Text("填写 API Key") }
+            else if (status.canStart) Button(onClick = { session.start() }, enabled = !chat.busy) { Text(if (status is FishRuntimeStatus.Failed) "重试启动" else "准备并启动") }
             if (runtime.ready) TextButton(onClick = { session.stop() }) { Text("停止") }
         }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("需要时自动启动", Modifier.weight(1f))
+            Switch(checked = autoStart, onCheckedChange = session.runtime::setAutoStart)
+        }
+        if (restartSuspended) Text("连续失败三次，已停止自动重启。查看原因后可手动重试。")
+        if (status is FishRuntimeStatus.UnsupportedDevice) Text("内置运行环境需要 arm64 设备；时间管理等本地业务仍可使用。")
+        TextButton(onClick = { showLog = !showLog }) { Text(if (showLog) "收起运行日志" else "查看运行日志") }
+        if (showLog) runtimeLog.forEach { Text(it, style = MaterialTheme.typography.bodySmall) }
         TextButton(onClick = onModel) { Text("模型设置") }
     }
 }

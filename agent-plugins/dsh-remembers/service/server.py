@@ -514,6 +514,26 @@ class Handler(BaseHTTPRequestHandler):
             self._guard(lambda: self._ingest())
         elif path == "/search":
             self._guard(lambda: self._search())
+        elif path in ("/memories/edit", "/memories/delete"):
+            body = self._body()
+            mem_id = int(body["id"])
+            with _lock:
+                current = store.conn.execute("SELECT text FROM memory WHERE id=?", (mem_id,)).fetchone()
+                if current is None:
+                    self._json(404, {"error": "共同记忆不存在"})
+                    return
+                if current["text"] != str(body.get("expectedText", "")):
+                    self._json(409, {"error": "共同记忆已变化，请刷新后重新编辑"})
+                    return
+                if path.endswith("/edit"):
+                    text = str(body.get("text", "")).strip()
+                    if not text or len(text) > 20000:
+                        self._json(400, {"error": "记忆内容须为1至20000字"})
+                        return
+                    store.update_text(mem_id, text, summary="")
+                else:
+                    store.forget(mem_id)
+            self._json(200, {"ok": True, "id": mem_id})
         elif path.startswith("/forget/"):
             mem_id = path.rsplit("/", 1)[-1]
             self._guard(lambda: self._forget(mem_id))
