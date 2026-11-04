@@ -174,6 +174,16 @@ private fun AttachmentDetails(item: AttachmentEntity, data: LocalSnapshot, servi
 }
 
 @Composable
+internal fun TaskEditorAttachmentPreview(item: AttachmentEntity, repository: com.timeagent.data.TimeRepository) {
+    val context = LocalContext.current
+    val service = remember(repository, context) { AttachmentService(context, repository) }
+    val available by produceState<Boolean?>(null, item.id, item.version) {
+        value = service.readableFile(item) != null
+    }
+    if (item.mimeType.startsWith("image/")) AttachmentThumbnail(item, service, available)
+}
+
+@Composable
 private fun AttachmentThumbnail(item: AttachmentEntity, service: AttachmentService, fileAvailable: Boolean?) {
     val bitmap by produceState<ImageBitmap?>(null, item.id, item.version, fileAvailable) {
         value = if (fileAvailable != true) null else withContext(Dispatchers.IO) {

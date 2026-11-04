@@ -73,6 +73,18 @@ class TaskListPreferences(context: Context) {
         preferences.edit().putString(orderKey(projectId, tagId), value).apply()
     }
 
+    fun loadSubtaskOrder(taskId: String, currentIds: List<String>): List<String> {
+        val current = currentIds.toSet()
+        val stored = preferences.getString(SUBTASK_ORDER_PREFIX + taskId, null)
+            ?.split(ORDER_SEPARATOR)?.filter { it in current }?.distinct().orEmpty()
+        return stored + currentIds.filterNot { it in stored }
+    }
+
+    fun saveSubtaskOrder(taskId: String, order: List<String>) {
+        preferences.edit().putString(SUBTASK_ORDER_PREFIX + taskId,
+            order.distinct().joinToString(ORDER_SEPARATOR)).apply()
+    }
+
     private fun orderKey(projectId: String?, tagId: String?): String =
         "$ORDER_KEY_PREFIX${projectId ?: "*"}\u0001${tagId ?: "*"}"
 
@@ -87,6 +99,7 @@ class TaskListPreferences(context: Context) {
         private const val KEY_SORT = "sort"
         private const val KEY_SHOW_DONE = "showDone"
         private const val ORDER_KEY_PREFIX = "order\u0001"
+        private const val SUBTASK_ORDER_PREFIX = "subtasks\u0001"
         private const val ORDER_SEPARATOR = "\n"
         private val SORTS = setOf(SORT_DUE, SORT_PRIORITY, SORT_MANUAL)
     }

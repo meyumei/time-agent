@@ -1,0 +1,10 @@
+{
+  "date": "2026-11-05",
+  "command": "./scripts/build.ps1 -Tasks @(':app:compileDebugKotlin')",
+  "exitCode": 0,
+  "durationSeconds": 83.36,
+  "log": ".tmp/development-20261105/compile-task-editor-relations-1.log",
+  "testsRun": [],
+  "deviceOperations": [],
+  "limitations": "Kotlin compilation only; interaction, transactional and device checks pending"
+}
