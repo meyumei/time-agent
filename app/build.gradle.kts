@@ -78,6 +78,7 @@ if (project.hasProperty("withoutWorkout")) {
 }
 ksp { arg("room.schemaLocation", "$projectDir/schemas") }
 dependencies {
+    lintChecks(project(":lint-rules"))
     implementation(files("libs/sherpa-onnx-2.0.1.aar"))
     implementation(project(":agent-runtime"))
     implementation(project(":core"))

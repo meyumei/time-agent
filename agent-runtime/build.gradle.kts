@@ -29,6 +29,7 @@ android {
 }
 
 dependencies {
+    lintChecks(project(":lint-rules"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     implementation("org.apache.commons:commons-compress:1.27.1")
     testImplementation("junit:junit:4.13.2")
