@@ -99,6 +99,10 @@ data class ReminderEntity(
     @PrimaryKey val id: String, val title: String, val remindAt: Long, val taskId: String? = null,
     val enabled: Boolean = true, val deliveredAt: Long? = null,
     val createdAt: Long = 0, val updatedAt: Long = 0, val version: Long = 0,
+    @ColumnInfo(defaultValue = "'REMINDER'") val ownerType: String = "REMINDER",
+    val ownerId: String? = null,
+    val repeatIntervalMinutes: Int? = null,
+    val repeatMaxCount: Int? = null,
 )
 
 @Entity(tableName = "ideas")

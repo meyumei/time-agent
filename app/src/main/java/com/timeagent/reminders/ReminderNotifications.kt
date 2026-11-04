@@ -27,8 +27,14 @@ fun reminderAccessState(context: Context): ReminderAccessState {
 object ReminderIntents {
     const val EXTRA_REMINDER_ID = "reminder_id"
     const val EXTRA_REMIND_AT = "remind_at"
+    const val EXTRA_INSTANCE_ID = "reminder_instance_id"
+
+    /** MainActivity opens the snooze sheet when this boolean extra is true. */
+    const val EXTRA_SNOOZE_REQUEST = "reminder_snooze_request"
+
     internal const val ACTION_FIRE = "com.timeagent.reminders.FIRE"
     internal const val ACTION_NOTIFICATION = "com.timeagent.reminders.NOTIFICATION"
+    internal const val ACTION_OPEN = "com.timeagent.reminders.OPEN"
     internal const val EXTRA_NOTIFICATION_ACTION = "notification_action"
     internal const val ACTION_DONE = "done"
     internal const val ACTION_SNOOZE = "snooze"
@@ -40,16 +46,57 @@ object ReminderIntents {
         .putExtra(EXTRA_REMINDER_ID, id)
         .putExtra(EXTRA_REMIND_AT, remindAt)
 
-    internal fun open(context: Context, id: String): Intent = Intent(context, MainActivity::class.java)
-        .setData(Uri.Builder().scheme("timeagent").authority("reminder").appendPath(id).build())
-        .putExtra(EXTRA_REMINDER_ID, id)
-        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+    internal fun alarmInstance(context: Context, instanceId: String, reminderId: String, fireAt: Long): Intent =
+        Intent(context, ReminderReceiver::class.java)
+            .setAction(ACTION_FIRE)
+            .setData(Uri.Builder().scheme("timeagent").authority("reminder-instance").appendPath(instanceId).build())
+            .putExtra(EXTRA_INSTANCE_ID, instanceId)
+            .putExtra(EXTRA_REMINDER_ID, reminderId)
+            .putExtra(EXTRA_REMIND_AT, fireAt)
 
-    internal fun notificationAction(context: Context, id: String, action: String): Intent =
+    internal fun open(context: Context, id: String, snooze: Boolean = false, instanceId: String? = null): Intent {
+        val data = Uri.Builder()
+            .scheme("timeagent")
+            .authority(if (snooze) "reminder-snooze" else "reminder")
+            .appendPath(id)
+            .apply { instanceId?.let { appendPath(it) } }
+            .build()
+        return Intent(context, MainActivity::class.java)
+            .setData(data)
+            .putExtra(EXTRA_REMINDER_ID, id)
+            .putExtra(EXTRA_INSTANCE_ID, instanceId)
+            .putExtra(EXTRA_SNOOZE_REQUEST, snooze)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+    }
+
+    internal fun openRequest(context: Context, id: String, instanceId: String?): Intent =
+        Intent(context, ReminderReceiver::class.java)
+            .setAction(ACTION_OPEN)
+            .setData(
+                Uri.Builder()
+                    .scheme("timeagent")
+                    .authority("reminder-open")
+                    .appendPath(id)
+                    .appendPath(instanceId ?: "legacy")
+                    .build(),
+            )
+            .putExtra(EXTRA_REMINDER_ID, id)
+            .putExtra(EXTRA_INSTANCE_ID, instanceId)
+
+    internal fun notificationAction(context: Context, id: String, action: String, instanceId: String? = null): Intent =
         Intent(context, ReminderReceiver::class.java)
             .setAction(ACTION_NOTIFICATION)
-            .setData(Uri.Builder().scheme("timeagent").authority("reminder-action").appendPath(id).appendPath(action).build())
+            .setData(
+                Uri.Builder()
+                    .scheme("timeagent")
+                    .authority("reminder-action")
+                    .appendPath(id)
+                    .appendPath(action)
+                    .appendPath(instanceId ?: "legacy")
+                    .build(),
+            )
             .putExtra(EXTRA_REMINDER_ID, id)
+            .putExtra(EXTRA_INSTANCE_ID, instanceId)
             .putExtra(EXTRA_NOTIFICATION_ACTION, action)
 }
 
@@ -57,26 +104,49 @@ object ReminderNotifications {
     const val CHANNEL_ID = "task_point_reminders"
     private const val NOTIFICATION_ID = 1
 
+    private data class Content(
+        val reminderId: String,
+        val instanceId: String?,
+        val title: String,
+        val fireAt: Long,
+        val repeat: Boolean,
+    )
+
     fun ensureChannel(context: Context) {
         val manager = context.getSystemService(NotificationManager::class.java)
         if (manager.getNotificationChannel(CHANNEL_ID) == null) {
             manager.createNotificationChannel(NotificationChannel(CHANNEL_ID, "任务点提醒", NotificationManager.IMPORTANCE_DEFAULT).apply {
-                description = "在你设置的时间发送一次任务提醒"
+                description = "在设定时间发送任务或日程提醒；可重复或稍后提醒"
                 lockscreenVisibility = Notification.VISIBILITY_PRIVATE
             })
         }
     }
 
-    internal fun post(context: Context, reminder: ReminderEntity): Boolean {
+    /** Legacy entry point retained for the one remaining old alarm/notification path. */
+    internal fun post(context: Context, reminder: ReminderEntity): Boolean =
+        post(context, Content(reminder.id, null, reminder.title, reminder.remindAt, repeat = false))
+
+    internal fun post(context: Context, event: ReminderFireEvent): Boolean =
+        post(context, Content(
+            event.reminderId,
+            event.instanceId,
+            event.title,
+            event.fireAt,
+            repeat = event.kind == REMINDER_INSTANCE_REPEAT,
+        ))
+
+    private fun post(context: Context, content: Content): Boolean {
         ensureChannel(context)
         val click = PendingIntent.getActivity(
-            context, 0, ReminderIntents.open(context, reminder.id),
+            context,
+            reminderInstanceRequestCode("open:${content.reminderId}:${content.instanceId.orEmpty()}"),
+            ReminderIntents.open(context, content.reminderId, instanceId = content.instanceId),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
         val publicVersion = Notification.Builder(context, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_popup_reminder)
             .setContentTitle("时间 Agent")
-            .setContentText("有一条任务提醒")
+            .setContentText("有一条提醒")
             .build()
         fun action(label: String, value: String): Notification.Action =
             Notification.Action.Builder(
@@ -84,29 +154,35 @@ object ReminderNotifications {
                 label,
                 PendingIntent.getBroadcast(
                     context,
-                    (reminder.id + value).hashCode(),
-                    ReminderIntents.notificationAction(context, reminder.id, value),
+                    reminderInstanceRequestCode("$value:${content.reminderId}:${content.instanceId.orEmpty()}"),
+                    ReminderIntents.notificationAction(context, content.reminderId, value, content.instanceId),
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
                 ),
             ).build()
+        val snooze = PendingIntent.getActivity(
+            context,
+            reminderInstanceRequestCode("snooze-open:${content.reminderId}:${content.instanceId.orEmpty()}"),
+            ReminderIntents.open(context, content.reminderId, snooze = true, instanceId = content.instanceId),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
         val notification = Notification.Builder(context, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_popup_reminder)
-            .setContentTitle("任务提醒")
-            .setContentText(reminder.title)
-            .setStyle(Notification.BigTextStyle().bigText(reminder.title))
+            .setContentTitle(if (content.repeat) "重复提醒" else "任务提醒")
+            .setContentText(content.title)
+            .setStyle(Notification.BigTextStyle().bigText(content.title))
             .setCategory(Notification.CATEGORY_REMINDER)
             .setContentIntent(click)
-            .setWhen(reminder.remindAt)
+            .setWhen(content.fireAt)
             .setAutoCancel(true)
-            .setOnlyAlertOnce(true)
+            .setOnlyAlertOnce(!content.repeat)
             .setVisibility(Notification.VISIBILITY_PRIVATE)
             .setPublicVersion(publicVersion)
             .addAction(action("完成", ReminderIntents.ACTION_DONE))
-            .addAction(action("稍后10分钟", ReminderIntents.ACTION_SNOOZE))
+            .addAction(Notification.Action.Builder(null, "稍后", snooze).build())
             .addAction(action("开始计时", ReminderIntents.ACTION_START))
             .build()
         return try {
-            context.getSystemService(NotificationManager::class.java).notify(reminder.id, NOTIFICATION_ID, notification)
+            context.getSystemService(NotificationManager::class.java).notify(content.reminderId, NOTIFICATION_ID, notification)
             true
         } catch (_: SecurityException) {
             // A permission revocation can race the preflight check. Never report success here.
@@ -135,4 +211,7 @@ object ReminderNotifications {
             }
         }
     }
+
+    /** Kept for sources that need a deterministic request code without an instance id. */
+    internal fun notificationRequestCode(key: String): Int = reminderInstanceRequestCode(key)
 }

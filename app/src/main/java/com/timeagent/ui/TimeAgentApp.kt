@@ -161,10 +161,14 @@ private data class WorkoutTimerSwitch(
         }
     }
     fun closeScreen() { navigator.close() }
+    var snoozeReminderId by rememberSaveable { mutableStateOf<String?>(null) }
+    var repeatReminderId by rememberSaveable { mutableStateOf<String?>(null) }
     LaunchedEffect(appDestination) {
         if (appDestination != null) {
             navigator.awaitReady()
-            if (appDestination == "butler") navigator.returnToRoot(3) else navigator.openDeepLink(appDestination)
+            if (appDestination.startsWith("reminder-snooze:")) {
+                snoozeReminderId = appDestination.removePrefix("reminder-snooze:")
+            } else if (appDestination == "butler") navigator.returnToRoot(3) else navigator.openDeepLink(appDestination)
             onAppDestinationConsumed()
         }
     }
@@ -291,6 +295,13 @@ private data class WorkoutTimerSwitch(
         if (data.loading) return@LaunchedEffect
         navigator.awaitReady()
         val found = data.reminders.firstOrNull { it.id == id }
+        if (found != null) {
+            runCatching {
+                com.timeagent.reminders.ReminderInstanceRepository(model.repository).act(
+                    found.id, found.version, requestId = "reminder-open:${found.id}:${found.version}",
+                )
+            }.onFailure { model.report(it.message ?: "提醒处理状态未保存，请重试") }
+        }
         if (found != null) { navigator.openDeepLink("inbox"); reminderDetail = found; notice = null } else notice = "这条提醒已被删除"
         onOpenReminderConsumed()
     }
@@ -812,7 +823,25 @@ private data class WorkoutTimerSwitch(
                 confirmation = "删除后可以撤销恢复。" to { model.perform { model.repository.deleteReminder(reminder.id, reminder.version) } }
             },
             onClose = { reminderDetail = null },
+            onSnooze = { snoozeReminderId = reminder.id; reminderDetail = null },
+            onRepeat = { repeatReminderId = reminder.id; reminderDetail = null },
         )
+    }
+    snoozeReminderId?.let { id ->
+        data.reminders.firstOrNull { it.id == id }?.let { reminder ->
+            com.timeagent.reminders.ReminderSnoozeSheet(
+                reminder.title, onDismiss = { snoozeReminderId = null },
+                now = model.repository.now(), zone = zone,
+                onSnooze = { at -> model.perform(onSuccess = { snoozeReminderId = null }) {
+                    com.timeagent.reminders.ReminderInstanceRepository(model.repository).snooze(id, at, reminder.version)
+                } },
+            )
+        }
+    }
+    repeatReminderId?.let { id ->
+        data.reminders.firstOrNull { it.id == id }?.let { reminder ->
+            ReminderRepeatDialog(model, reminder, onClose = { repeatReminderId = null })
+        }
     }
 }
 

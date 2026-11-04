@@ -331,6 +331,8 @@ fun ReminderDetailSheet(
     onToggle: () -> Unit,
     onDelete: () -> Unit,
     onClose: () -> Unit,
+    onSnooze: () -> Unit = {},
+    onRepeat: () -> Unit = {},
 ) {
     ModalBottomSheet(onDismissRequest = onClose) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp).padding(bottom = 32.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -350,6 +352,10 @@ fun ReminderDetailSheet(
                 TextButton(onClick = onEdit) { Text("编辑") }
                 TextButton(onClick = onToggle) { Text(if (reminder.enabled) "关闭提醒" else "重新开启") }
                 TextButton(onClick = onDelete) { Text("删除") }
+            }
+            Row {
+                TextButton(onClick = onSnooze) { Text("稍后提醒") }
+                TextButton(onClick = onRepeat) { Text("重复提醒设置") }
             }
         }
     }
