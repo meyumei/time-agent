@@ -183,17 +183,17 @@ private fun OrganizationScreen(
 
     Scaffold(topBar = {
         TopAppBar(
-            title = { Text("分类与记录整理", maxLines = 1, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold) },
-            navigationIcon = { TextButton(onClick = onClose, enabled = !busy) { Text("返回") } },
+            title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_001), maxLines = 1, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold) },
+            navigationIcon = { TextButton(onClick = onClose, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_back)) } },
             actions = {
                 TextButton(
                     onClick = { perform { repository.undoLastAction() } },
                     enabled = !busy && snapshot?.history?.any { !it.undone } == true,
-                ) { Text("撤销") }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_undo)) }
                 TextButton(
                     onClick = { perform { repository.redoLastAction() } },
                     enabled = !busy && snapshot?.history?.any { it.undone && it.redoable } == true,
-                ) { Text("重做") }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_redo)) }
             },
         )
     }) { padding ->
@@ -212,7 +212,7 @@ private fun OrganizationScreen(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onErrorContainer,
                         )
-                        TextButton(onClick = { error = null }) { Text("关闭错误提示") }
+                        TextButton(onClick = { error = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_002)) }
                     }
                 }
             }
@@ -221,10 +221,10 @@ private fun OrganizationScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         CircularProgressIndicator()
                         Spacer(Modifier.size(12.dp))
-                        Text("正在读取分类和标签…", style = MaterialTheme.typography.bodyMedium)
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_003), style = MaterialTheme.typography.bodyMedium)
                         if (error != null) {
                             Spacer(Modifier.size(8.dp))
-                            Button(onClick = { perform { } }, enabled = !busy) { Text("重新读取") }
+                            Button(onClick = { perform { } }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_proactive_screen_011)) }
                         }
                     }
                 }
@@ -508,10 +508,10 @@ private fun CategoriesTab(
         item {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("分类", Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
-                    Button(onClick = onCreate, enabled = !busy) { Text("新建分类") }
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_reshape_dialogs_003), Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+                    Button(onClick = onCreate, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_004)) }
                 }
-                Text("归档或删除分类都不会删除任务、记录和笔记。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_005), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
         item {
@@ -525,11 +525,11 @@ private fun CategoriesTab(
                 TextButton(
                     onClick = onAssignCategory,
                     enabled = !busy && (selectedTaskCount > 0 || selectedRecordCount > 0),
-                ) { Text("批量设置分类") }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_006)) }
             }
         }
         if (data.categories.isEmpty()) {
-            item { Text("还没有分类，先新建一个分类。", style = MaterialTheme.typography.bodyMedium) }
+            item { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_007), style = MaterialTheme.typography.bodyMedium) }
         }
         items(data.categories, key = { it.id }) { item ->
             CategoryRow(
@@ -551,9 +551,9 @@ private fun CategoriesTab(
                     Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text("已选 ${selectedCategoryIds.size} 个分类", style = MaterialTheme.typography.labelLarge)
                         Row(Modifier.horizontalScroll(rememberScrollState())) {
-                            TextButton(onClick = onMerge, enabled = !busy) { Text("合并所选分类") }
-                            TextButton(onClick = onBatchArchive, enabled = !busy) { Text("批量归档") }
-                            TextButton(onClick = onBatchDelete, enabled = !busy) { Text("批量删除") }
+                            TextButton(onClick = onMerge, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_008)) }
+                            TextButton(onClick = onBatchArchive, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_009)) }
+                            TextButton(onClick = onBatchDelete, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_010)) }
                         }
                     }
                 }
@@ -561,7 +561,7 @@ private fun CategoriesTab(
         }
         item {
             Text(
-                "删除分类时可以选择把内容移到另一个分类，或只取消归类。合并会把所选分类的内容改到目标分类。归档分类不再出现在新建选择中，历史内容保留。",
+                androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_011),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -602,9 +602,9 @@ private fun CategoryRow(
                 }
             }
             Row(Modifier.horizontalScroll(rememberScrollState())) {
-                TextButton(onClick = onEdit, enabled = !busy) { Text("编辑分类") }
+                TextButton(onClick = onEdit, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_012)) }
                 TextButton(onClick = onArchive, enabled = !busy) { Text(if (item.isArchived) "恢复分类" else "归档分类") }
-                TextButton(onClick = onDelete, enabled = !busy) { Text("删除分类") }
+                TextButton(onClick = onDelete, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_013)) }
             }
         }
     }
@@ -640,10 +640,10 @@ private fun TagsTab(
         item {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("标签", Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
-                    Button(onClick = onCreate, enabled = !busy) { Text("新建标签") }
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_014), Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+                    Button(onClick = onCreate, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_015)) }
                 }
-                Text("标签必须实际贴到任务或记录上；删除标签不会删除任务和记录。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_016), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
         item {
@@ -657,15 +657,15 @@ private fun TagsTab(
                 TextButton(
                     onClick = onAddTags,
                     enabled = !busy && (selectedTaskCount > 0 || selectedRecordCount > 0),
-                ) { Text("为所选添加标签") }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_017)) }
                 TextButton(
                     onClick = onRemoveTags,
                     enabled = !busy && (selectedTaskCount > 0 || selectedRecordCount > 0),
-                ) { Text("从所选移除标签") }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_018)) }
             }
         }
         if (data.tags.isEmpty()) {
-            item { Text("还没有标签，先新建一个标签。", style = MaterialTheme.typography.bodyMedium) }
+            item { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_019), style = MaterialTheme.typography.bodyMedium) }
         }
         items(data.tags, key = { it.id }) { item ->
             TagRow(
@@ -685,8 +685,8 @@ private fun TagsTab(
                     Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text("已选 ${selectedTagIds.size} 个标签", style = MaterialTheme.typography.labelLarge)
                         Row(Modifier.horizontalScroll(rememberScrollState())) {
-                            TextButton(onClick = onMerge, enabled = !busy) { Text("合并所选标签") }
-                            TextButton(onClick = onBatchDelete, enabled = !busy) { Text("批量删除标签") }
+                            TextButton(onClick = onMerge, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_020)) }
+                            TextButton(onClick = onBatchDelete, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_021)) }
                         }
                     }
                 }
@@ -694,7 +694,7 @@ private fun TagsTab(
         }
         item {
             Text(
-                "合并标签会把所选标签的关联改到目标标签，再删除原标签。批量删除只移除标签和关联，可用撤销恢复。",
+                androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_022),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -729,8 +729,8 @@ private fun TagRow(
                 }
             }
             Row(Modifier.horizontalScroll(rememberScrollState())) {
-                TextButton(onClick = onEdit, enabled = !busy) { Text("编辑标签") }
-                TextButton(onClick = onDelete, enabled = !busy) { Text("删除标签") }
+                TextButton(onClick = onEdit, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_023)) }
+                TextButton(onClick = onDelete, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_024)) }
             }
         }
     }
@@ -756,9 +756,9 @@ private fun RecordsTab(
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         item {
-            Text("记录整理", style = MaterialTheme.typography.titleMedium)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_025), style = MaterialTheme.typography.titleMedium)
             Text(
-                "合并只支持同一任务、同一分类、时间连续或重叠的已完成记录；不会填补中间空档。拆分保留原记录编号作为前半段。操作都不会修改任何计划。",
+                androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_026),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -767,13 +767,13 @@ private fun RecordsTab(
             Surface(shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.surfaceContainerHigh) {
                 Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text("已选 ${selectedRecordIds.size} 条记录用于合并", style = MaterialTheme.typography.labelLarge)
-                    Text("勾选至少两条记录后先预览，确认合并前后的时长。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    TextButton(onClick = onPreviewMerge, enabled = !busy && selectedRecordIds.size >= 2) { Text("预览合并记录") }
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_027), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    TextButton(onClick = onPreviewMerge, enabled = !busy && selectedRecordIds.size >= 2) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_028)) }
                 }
             }
         }
         if (data.records.isEmpty()) {
-            item { Text("还没有实际记录。", style = MaterialTheme.typography.bodyMedium) }
+            item { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_029), style = MaterialTheme.typography.bodyMedium) }
         }
         items(data.records, key = { it.id }) { record ->
             RecordRow(
@@ -820,19 +820,19 @@ private fun RecordRow(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     if (record.source == "HEALTH_SYNC") {
-                        Text("同步来源记录", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_030), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
                     }
                     if (tagNames.isNotEmpty()) {
                         Text(tagNames.joinToString("、"), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     if (running) {
-                        Text("计时中的记录不能合并或拆分。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_031), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
                     }
                 }
             }
             if (!running) {
                 Row(Modifier.horizontalScroll(rememberScrollState())) {
-                    TextButton(onClick = onSplit, enabled = !busy) { Text("拆分为两段") }
+                    TextButton(onClick = onSplit, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_032)) }
                 }
             }
         }
@@ -854,13 +854,13 @@ private fun SelectionSummary(
         Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text("批量选择：$taskCount 个任务 · $recordCount 条记录", style = MaterialTheme.typography.labelLarge)
             Text(
-                "先勾选任务或实际记录，再执行批量分类或标签操作。",
+                androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_033),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Row(Modifier.horizontalScroll(rememberScrollState()), verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onClick = onOpenPicker, enabled = !busy) { Text("选择任务和记录") }
-                TextButton(onClick = onClear, enabled = !busy && (taskCount > 0 || recordCount > 0)) { Text("清空所选") }
+                TextButton(onClick = onOpenPicker, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_034)) }
+                TextButton(onClick = onClear, enabled = !busy && (taskCount > 0 || recordCount > 0)) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_035)) }
                 actions()
             }
         }
@@ -885,14 +885,14 @@ private fun ItemPickerDialog(
                 Modifier.fillMaxWidth().heightIn(max = 560.dp).padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Text("选择任务和记录", style = MaterialTheme.typography.titleMedium)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_034), style = MaterialTheme.typography.titleMedium)
                 Text(
                     "已选 ${selectedTaskIds.size} 个任务 · ${selectedRecordIds.size} 条记录",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    item { Text("任务", style = MaterialTheme.typography.labelLarge) }
+                    item { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_036), style = MaterialTheme.typography.labelLarge) }
                     items(tasks, key = { "task-${it.id}" }) { task ->
                         Row(
                             Modifier.fillMaxWidth().clickable { onToggleTask(task.id) },
@@ -909,7 +909,7 @@ private fun ItemPickerDialog(
                             }
                         }
                     }
-                    item { Text("实际记录", style = MaterialTheme.typography.labelLarge) }
+                    item { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_037), style = MaterialTheme.typography.labelLarge) }
                     items(data.records, key = { "record-${it.id}" }) { record ->
                         Row(
                             Modifier.fillMaxWidth().clickable { onToggleRecord(record.id) },
@@ -931,7 +931,7 @@ private fun ItemPickerDialog(
                         }
                     }
                 }
-                TextButton(onClick = onDismiss, modifier = Modifier.align(Alignment.End)) { Text("完成选择") }
+                TextButton(onClick = onDismiss, modifier = Modifier.align(Alignment.End)) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_038)) }
             }
         }
     }
@@ -965,7 +965,7 @@ private fun NameColorDialog(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
-                Text("颜色", style = MaterialTheme.typography.labelLarge)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_039), style = MaterialTheme.typography.labelLarge)
                 Row(Modifier.horizontalScroll(rememberScrollState())) {
                     OrganizationPalette.forEach { value ->
                         Box(
@@ -988,9 +988,9 @@ private fun NameColorDialog(
             }
         },
         confirmButton = {
-            TextButton(enabled = !busy && name.isNotBlank(), onClick = { onConfirm(name, color) }) { Text("保存") }
+            TextButton(enabled = !busy && name.isNotBlank(), onClick = { onConfirm(name, color) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) }
         },
-        dismissButton = { TextButton(enabled = !busy, onClick = onDismiss) { Text("取消") } },
+        dismissButton = { TextButton(enabled = !busy, onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }
 
@@ -1016,10 +1016,10 @@ private fun DeleteCategoryDialog(
             ) {
                 Text("将删除：${deleting.joinToString("、") { it.name }}")
                 Text(
-                    "任务、实际记录、笔记和活动模板都会保留，不会删除任何内容。请选择这些内容的去向：",
+                    androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_040),
                     style = MaterialTheme.typography.bodySmall,
                 )
-                FilterChip(selected = moveTo == null, onClick = { moveTo = null }, label = { Text("仅取消归类") })
+                FilterChip(selected = moveTo == null, onClick = { moveTo = null }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_041)) })
                 targets.forEach { item ->
                     FilterChip(
                         selected = moveTo == item.id,
@@ -1028,15 +1028,15 @@ private fun DeleteCategoryDialog(
                     )
                 }
                 if (targets.isEmpty()) {
-                    Text("没有其他可用分类，将只取消归类。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_042), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 DialogError(error)
             }
         },
         confirmButton = {
-            TextButton(enabled = !busy, onClick = { onConfirm(moveTo) }) { Text("确认删除分类") }
+            TextButton(enabled = !busy, onClick = { onConfirm(moveTo) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_043)) }
         },
-        dismissButton = { TextButton(enabled = !busy, onClick = onDismiss) { Text("取消") } },
+        dismissButton = { TextButton(enabled = !busy, onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }
 
@@ -1054,7 +1054,7 @@ private fun MergeCategoryDialog(
     var targetId by remember(sourceIds) { mutableStateOf<String?>(targets.firstOrNull()?.id) }
     AlertDialog(
         onDismissRequest = { if (!busy) onDismiss() },
-        title = { Text("合并分类") },
+        title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_044)) },
         text = {
             Column(
                 Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState()),
@@ -1062,7 +1062,7 @@ private fun MergeCategoryDialog(
             ) {
                 Text("所选分类：${sources.joinToString("、") { it.name }}")
                 Text(
-                    "合并后，任务、实际记录和活动模板会改用目标分类，原分类删除；笔记保留。",
+                    androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_045),
                     style = MaterialTheme.typography.bodySmall,
                 )
                 targets.forEach { item ->
@@ -1073,15 +1073,15 @@ private fun MergeCategoryDialog(
                     )
                 }
                 if (targets.isEmpty()) {
-                    Text("没有可用的目标分类，请先新建或恢复一个分类。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_046), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
                 }
                 DialogError(error)
             }
         },
         confirmButton = {
-            TextButton(enabled = !busy && targetId != null, onClick = { targetId?.let(onConfirm) }) { Text("确认合并分类") }
+            TextButton(enabled = !busy && targetId != null, onClick = { targetId?.let(onConfirm) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_047)) }
         },
-        dismissButton = { TextButton(enabled = !busy, onClick = onDismiss) { Text("取消") } },
+        dismissButton = { TextButton(enabled = !busy, onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }
 
@@ -1096,17 +1096,17 @@ private fun BulkCategoryDialog(
     var targetId by remember { mutableStateOf<String?>(null) }
     AlertDialog(
         onDismissRequest = { if (!busy) onDismiss() },
-        title = { Text("批量设置分类") },
+        title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_006)) },
         text = {
             Column(
                 Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 Text(
-                    "把所选任务和实际记录设为同一分类。只改分类，不改标题、时间、备注或计划。",
+                    androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_048),
                     style = MaterialTheme.typography.bodySmall,
                 )
-                FilterChip(selected = targetId == null, onClick = { targetId = null }, label = { Text("不设置分类") })
+                FilterChip(selected = targetId == null, onClick = { targetId = null }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_049)) })
                 categories.filter { !it.isArchived }.forEach { item ->
                     FilterChip(
                         selected = targetId == item.id,
@@ -1115,13 +1115,13 @@ private fun BulkCategoryDialog(
                     )
                 }
                 if (categories.none { !it.isArchived }) {
-                    Text("没有可用分类，将只取消归类。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_050), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 DialogError(error)
             }
         },
-        confirmButton = { TextButton(enabled = !busy, onClick = { onConfirm(targetId) }) { Text("应用分类") } },
-        dismissButton = { TextButton(enabled = !busy, onClick = onDismiss) { Text("取消") } },
+        confirmButton = { TextButton(enabled = !busy, onClick = { onConfirm(targetId) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_051)) } },
+        dismissButton = { TextButton(enabled = !busy, onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }
 
@@ -1142,14 +1142,14 @@ private fun DeleteTagDialog(
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text("将删除：${deleting.joinToString("、") { it.name }}")
                 Text(
-                    "只删除标签和标签关联；任务、实际记录和笔记都会保留。撤销可以恢复标签和原有关联。",
+                    androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_052),
                     style = MaterialTheme.typography.bodySmall,
                 )
                 DialogError(error)
             }
         },
-        confirmButton = { TextButton(enabled = !busy, onClick = onConfirm) { Text("确认删除标签") } },
-        dismissButton = { TextButton(enabled = !busy, onClick = onDismiss) { Text("取消") } },
+        confirmButton = { TextButton(enabled = !busy, onClick = onConfirm) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_053)) } },
+        dismissButton = { TextButton(enabled = !busy, onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }
 
@@ -1167,7 +1167,7 @@ private fun MergeTagDialog(
     var targetId by remember(sourceIds) { mutableStateOf<String?>(targets.firstOrNull()?.id) }
     AlertDialog(
         onDismissRequest = { if (!busy) onDismiss() },
-        title = { Text("合并标签") },
+        title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_054)) },
         text = {
             Column(
                 Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState()),
@@ -1175,7 +1175,7 @@ private fun MergeTagDialog(
             ) {
                 Text("所选标签：${sources.joinToString("、") { it.name }}")
                 Text(
-                    "这些标签在任务和记录上的关联会改到目标标签，然后删除所选标签。",
+                    androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_055),
                     style = MaterialTheme.typography.bodySmall,
                 )
                 targets.forEach { item ->
@@ -1186,15 +1186,15 @@ private fun MergeTagDialog(
                     )
                 }
                 if (targets.isEmpty()) {
-                    Text("没有可用的目标标签，请先新建一个标签。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_056), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
                 }
                 DialogError(error)
             }
         },
         confirmButton = {
-            TextButton(enabled = !busy && targetId != null, onClick = { targetId?.let(onConfirm) }) { Text("确认合并标签") }
+            TextButton(enabled = !busy && targetId != null, onClick = { targetId?.let(onConfirm) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_057)) }
         },
-        dismissButton = { TextButton(enabled = !busy, onClick = onDismiss) { Text("取消") } },
+        dismissButton = { TextButton(enabled = !busy, onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }
 
@@ -1228,7 +1228,7 @@ private fun BulkTagDialog(
                     )
                 }
                 if (tags.isEmpty()) {
-                    Text("还没有标签，请先在标签页新建标签。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_058), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 DialogError(error)
             }
@@ -1238,7 +1238,7 @@ private fun BulkTagDialog(
                 Text(if (adding) "添加标签" else "移除标签")
             }
         },
-        dismissButton = { TextButton(enabled = !busy, onClick = onDismiss) { Text("取消") } },
+        dismissButton = { TextButton(enabled = !busy, onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }
 
@@ -1253,7 +1253,7 @@ private fun MergeRecordsDialog(
 ) {
     AlertDialog(
         onDismissRequest = { if (!busy) onDismiss() },
-        title = { Text("确认合并记录") },
+        title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_059)) },
         text = {
             Column(
                 Modifier.heightIn(max = 440.dp).verticalScroll(rememberScrollState()),
@@ -1264,14 +1264,14 @@ private fun MergeRecordsDialog(
                 Text("合并后跨度：${durationText(preview.endAt - preview.startAt)}")
                 Text("时间范围：${recordTime(preview.startAt, zone)} – ${recordTime(preview.endAt, zone)}")
                 Text("保留标题：${preview.title.ifBlank { "（无标题）" }}")
-                if (preview.notes.isNotBlank()) Text("备注文字会按时间顺序保留。")
-                Text("标签会合并到保留记录；不会修改任何计划。")
-                if (preview.movesNote) Text("已有的一条笔记会移动到保留记录。")
+                if (preview.notes.isNotBlank()) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_060))
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_061))
+                if (preview.movesNote) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_062))
                 DialogError(error)
             }
         },
-        confirmButton = { TextButton(enabled = !busy, onClick = onConfirm) { Text("确认合并") } },
-        dismissButton = { TextButton(enabled = !busy, onClick = onDismiss) { Text("取消") } },
+        confirmButton = { TextButton(enabled = !busy, onClick = onConfirm) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_063)) } },
+        dismissButton = { TextButton(enabled = !busy, onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }
 
@@ -1295,31 +1295,31 @@ private fun SplitRecordDialog(
     val valid = parsed != null && parsed > record.startAt && parsed < end
     AlertDialog(
         onDismissRequest = { if (!busy) onDismiss() },
-        title = { Text("拆分为两段") },
+        title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_032)) },
         text = {
             Column(
                 Modifier.heightIn(max = 460.dp).verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text("原记录：${recordTime(record.startAt, zone)} – ${recordTime(end, zone)} · ${durationText(end - record.startAt)}")
-                Text("原记录编号和时间范围保留为前半段；新记录保存后半段。", style = MaterialTheme.typography.bodySmall)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_064), style = MaterialTheme.typography.bodySmall)
                 OutlinedTextField(
                     value = date,
                     onValueChange = { date = it },
-                    label = { Text("拆分日期 YYYY-MM-DD") },
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_065)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
                 OutlinedTextField(
                     value = time,
                     onValueChange = { time = it },
-                    label = { Text("拆分时间 HH:mm") },
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_066)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
                 when {
-                    parsed == null -> Text("请按 YYYY-MM-DD 和 HH:mm 填写日期和时间。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
-                    parsed <= record.startAt || parsed >= end -> Text("拆分时间必须严格位于记录开始和结束之间。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                    parsed == null -> Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_067), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                    parsed <= record.startAt || parsed >= end -> Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_068), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
                     else -> {
                         Text("前半段：${recordTime(record.startAt, zone)} – ${recordTime(parsed, zone)} · ${durationText(parsed - record.startAt)}")
                         Text("后半段：${recordTime(parsed, zone)} – ${recordTime(end, zone)} · ${durationText(end - parsed)}")
@@ -1329,9 +1329,9 @@ private fun SplitRecordDialog(
             }
         },
         confirmButton = {
-            TextButton(enabled = !busy && valid && parsed != null, onClick = { parsed?.let(onConfirm) }) { Text("确认拆分") }
+            TextButton(enabled = !busy && valid && parsed != null, onClick = { parsed?.let(onConfirm) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_069)) }
         },
-        dismissButton = { TextButton(enabled = !busy, onClick = onDismiss) { Text("取消") } },
+        dismissButton = { TextButton(enabled = !busy, onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }
 

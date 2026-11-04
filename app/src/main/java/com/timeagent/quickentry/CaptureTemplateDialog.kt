@@ -30,11 +30,11 @@ fun CaptureTemplateDialog(repository: TimeRepository, plans: List<ScheduleBlockE
     var busy by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
     AlertDialog(onDismissRequest = { if (!busy) onClose() },
-        title = { Text("将所选日程存为模板") },
+        title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_capture_template_dialog_001)) },
         text = {
             Column(Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState())) {
-                OutlinedTextField(name, { name = it }, label = { Text("模板名称") }, modifier = Modifier.fillMaxWidth())
-                Text("保留相对日期、时间、项目、标签和提前提醒。")
+                OutlinedTextField(name, { name = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_capture_template_dialog_002)) }, modifier = Modifier.fillMaxWidth())
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_capture_template_dialog_003))
                 plans.forEach { Text(it.title.ifBlank { "日程" }) }
                 error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
             }
@@ -48,6 +48,6 @@ fun CaptureTemplateDialog(repository: TimeRepository, plans: List<ScheduleBlockE
                     catch (failure: Exception) { error = failure.message }
                     finally { busy = false }
                 }
-            }) { Text("保存模板") }
-        }, dismissButton = { TextButton(enabled = !busy, onClick = onClose) { Text("取消") } })
+            }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_capture_template_dialog_004)) }
+        }, dismissButton = { TextButton(enabled = !busy, onClick = onClose) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } })
 }

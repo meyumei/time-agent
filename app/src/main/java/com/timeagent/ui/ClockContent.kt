@@ -49,7 +49,7 @@ internal fun RunningTimerBar(
                 Text("计时中 · ${"%02d:%02d:%02d".format(seconds / 3600, seconds / 60 % 60, seconds % 60)}", style = MaterialTheme.typography.bodySmall)
             }
             TextButton(onClick = onStop, enabled = !busy,
-                colors = androidx.compose.material3.ButtonDefaults.textButtonColors(contentColor = semantic.onRunning)) { Text("结束计时") }
+                colors = androidx.compose.material3.ButtonDefaults.textButtonColors(contentColor = semantic.onRunning)) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_clock_content_001)) }
         }
     }
 }
@@ -79,7 +79,7 @@ internal fun RunningWorkoutBar(
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
-            Text("继续训练", style = MaterialTheme.typography.labelLarge)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_clock_content_002), style = MaterialTheme.typography.labelLarge)
         }
     }
 }

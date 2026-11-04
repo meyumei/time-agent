@@ -29,12 +29,12 @@ import java.util.UUID
         if (index < 0 || index + delta !in current.movements.indices) current
         else current.copy(movements = current.movements.toMutableList().apply { java.util.Collections.swap(this, index, index + delta) })
     } }
-    Scaffold(containerColor = WorkoutBackground, topBar = { TopAppBar(title = { Text("训练模板") }, navigationIcon = { IconButton(onClick = { focus.clearFocus(); onBack() }) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "返回") } }, actions = {
-        TextButton(onClick = { focus.clearFocus(); onSave() }, enabled = !busy && draft.movements.isNotEmpty(), modifier = Modifier.testTag("workout-save-template")) { Text("保存") }
+    Scaffold(containerColor = WorkoutBackground, topBar = { TopAppBar(title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_template_editor_001)) }, navigationIcon = { IconButton(onClick = { focus.clearFocus(); onBack() }) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "返回") } }, actions = {
+        TextButton(onClick = { focus.clearFocus(); onSave() }, enabled = !busy && draft.movements.isNotEmpty(), modifier = Modifier.testTag("workout-save-template")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) }
     }) }) { padding ->
         LazyColumn(Modifier.padding(padding).fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            item { OutlinedTextField(draft.title, { value -> onChange { it.copy(title = value.take(200)) } }, label = { Text("模板名称") }, modifier = Modifier.fillMaxWidth()) }
-            item { OutlinedTextField(draft.notes, { value -> onChange { it.copy(notes = value.take(20_000)) } }, label = { Text("训练说明") }, modifier = Modifier.fillMaxWidth()) }
+            item { OutlinedTextField(draft.title, { value -> onChange { it.copy(title = value.take(200)) } }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_capture_template_dialog_002)) }, modifier = Modifier.fillMaxWidth()) }
+            item { OutlinedTextField(draft.notes, { value -> onChange { it.copy(notes = value.take(20_000)) } }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_template_editor_002)) }, modifier = Modifier.fillMaxWidth()) }
             itemsIndexed(draft.movements, key = { _, item -> item.id }) { index, item ->
                 var menu by remember { mutableStateOf(false) }; var note by remember { mutableStateOf(false) }; var cardio by remember { mutableStateOf(false) }
                 fun setValue(setId: String, transform: (WorkoutSet) -> WorkoutSet) { movement(item.id) { move -> move.copy(sets = move.sets.map { if (it.id == setId) transform(it) else it }) } }
@@ -43,14 +43,14 @@ import java.util.UUID
                 Surface(shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.surface) { Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         ExercisePicture(item.exercise, Modifier.size(56.dp))
-                        Column(Modifier.weight(1f)) { Text(item.exercise.name, fontWeight = FontWeight.Bold); if (item.supersetId != null) Text("超级组", color = WorkoutBlue, style = MaterialTheme.typography.labelSmall) }
+                        Column(Modifier.weight(1f)) { Text(item.exercise.name, fontWeight = FontWeight.Bold); if (item.supersetId != null) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_template_editor_003), color = WorkoutBlue, style = MaterialTheme.typography.labelSmall) }
                         Box {
                             IconButton(onClick = { focus.clearFocus(); menu = true }) { Icon(Icons.Rounded.MoreVert, "模板动作设置：${item.exercise.name}") }
                             DropdownMenu(menu, { menu = false }) {
-                                if (index > 0) DropdownMenuItem(text = { Text("上移") }, onClick = { menu = false; reorder(item.id, -1) })
+                                if (index > 0) DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_task_list_content_003)) }, onClick = { menu = false; reorder(item.id, -1) })
                                 if (index < draft.movements.lastIndex) {
-                                    DropdownMenuItem(text = { Text("下移") }, onClick = { menu = false; reorder(item.id, 1) })
-                                    DropdownMenuItem(text = { Text("与下个动作组成超级组") }, onClick = { menu = false; onChange { current ->
+                                    DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_task_list_content_004)) }, onClick = { menu = false; reorder(item.id, 1) })
+                                    DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_017)) }, onClick = { menu = false; onChange { current ->
                                         val position = current.movements.indexOfFirst { it.id == item.id }
                                         if (position < 0 || position >= current.movements.lastIndex) current else {
                                             val group = current.movements[position].supersetId ?: UUID.randomUUID().toString()
@@ -59,13 +59,13 @@ import java.util.UUID
                                         }
                                     } })
                                 }
-                                if (item.supersetId != null) DropdownMenuItem(text = { Text("解除超级组") }, onClick = { menu = false; onChange { current -> current.copy(movements = current.movements.map { if (it.supersetId == item.supersetId) it.copy(supersetId = null) else it }) } })
+                                if (item.supersetId != null) DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_018)) }, onClick = { menu = false; onChange { current -> current.copy(movements = current.movements.map { if (it.supersetId == item.supersetId) it.copy(supersetId = null) else it }) } })
                                 if (weighted) {
                                     DropdownMenuItem(text = { Text(if (item.singleSide) "关闭左右重量分开记录" else "左右重量分开记录") }, onClick = { menu = false; movement(item.id) { it.copy(singleSide = !it.singleSide) } })
                                     DropdownMenuItem(text = { Text(if (item.oneSide) "取消单侧计量" else "单侧计量（容量乘二）") }, onClick = { menu = false; movement(item.id) { it.copy(oneSide = !it.oneSide) } })
                                 }
-                                DropdownMenuItem(text = { Text("动作笔记") }, onClick = { menu = false; note = true })
-                                DropdownMenuItem(text = { Text("移除动作") }, onClick = { menu = false; onChange { current -> current.copy(movements = current.movements.filterNot { it.id == item.id }) } })
+                                DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_014)) }, onClick = { menu = false; note = true })
+                                DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_019)) }, onClick = { menu = false; onChange { current -> current.copy(movements = current.movements.filterNot { it.id == item.id }) } })
                             }
                         }
                     }
@@ -104,17 +104,17 @@ import java.util.UUID
                                         IconButton(onClick = { setValue(set.id) { it.copy(dropSegments = it.dropSegments.filterIndexed { i, _ -> i != dropIndex }) } }, modifier = Modifier.size(24.dp)) { Icon(Icons.Rounded.Close, "移除递减段") }
                                     }
                                 }
-                                TextButton(onClick = { setValue(set.id) { it.copy(dropSegments = it.dropSegments + WorkoutDropSegment()) } }) { Text("＋ 递减段") }
+                                TextButton(onClick = { setValue(set.id) { it.copy(dropSegments = it.dropSegments + WorkoutDropSegment()) } }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_024)) }
                             }
                         }
                         if (stage) TabataDialog(set.tabata ?: WorkoutTabata(), onDismiss = { stage = false }, onSave = { value -> setValue(set.id) { it.copy(tabata = value) }; stage = false })
                     } }
-                    TextButton(onClick = { focus.clearFocus(); movement(item.id) { it.copy(sets = it.sets + WorkoutSet(tabata = if (item.exercise.metric == WorkoutMetric.TABATA) WorkoutTabata() else null)) } }) { Text("＋ 添加一组") }
+                    TextButton(onClick = { focus.clearFocus(); movement(item.id) { it.copy(sets = it.sets + WorkoutSet(tabata = if (item.exercise.metric == WorkoutMetric.TABATA) WorkoutTabata() else null)) } }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_023)) }
                 } }
                 if (note) WorkoutTextDialog("动作笔记", item.notes, onDismiss = { note = false }, onSave = { value -> movement(item.id) { it.copy(notes = value) }; note = false })
                 if (cardio) CardioFieldsDialog(item.exercise.recordFieldKeys, onDismiss = { cardio = false }, onSave = { value -> movement(item.id) { it.copy(exercise = it.exercise.copy(recordFieldKeys = value)) }; cardio = false })
             }
-            item { Button(onClick = { focus.clearFocus(); onAdd() }, modifier = Modifier.fillMaxWidth()) { Text("添加动作") } }
+            item { Button(onClick = { focus.clearFocus(); onAdd() }, modifier = Modifier.fillMaxWidth()) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_template_editor_004)) } }
         }
     }
 }

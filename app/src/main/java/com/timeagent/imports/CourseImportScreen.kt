@@ -87,39 +87,39 @@ fun CourseImportScreen(model: TimeViewModel, onClose: () -> Unit) {
 
     Column(Modifier.fillMaxSize().safeDrawingPadding().imePadding().padding(horizontal = 16.dp)) {
         Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("导入学校课表", style = MaterialTheme.typography.titleLarge)
-            TextButton(onClick = onClose, enabled = !busy) { Text("关闭") }
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_import_screen_001), style = MaterialTheme.typography.titleLarge)
+            TextButton(onClick = onClose, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_close)) }
         }
         if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
         if (preview == null) error?.let { Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(vertical = 8.dp)) }
         result?.let { Text(it, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(vertical = 8.dp)) }
         LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxSize().testTag("course-import-list")) {
             item {
-                Text("先选择来源，再核对学期、节次时间和课程。确认预览后才保存。", style = MaterialTheme.typography.bodyMedium)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_import_screen_002), style = MaterialTheme.typography.bodyMedium)
                 Spacer(Modifier.height(8.dp))
-                Button(onClick = { pdfPicker.launch(arrayOf("application/pdf")) }, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text("选择课表 PDF") }
-                OutlinedButton(onClick = { official = true }, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text("华工官方教务导入（需登录）") }
-                TextButton(onClick = { accept(CourseImportDraft(listOf(EditableCourseRow()))) }, enabled = !busy) { Text("手工补录") }
+                Button(onClick = { pdfPicker.launch(arrayOf("application/pdf")) }, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_import_screen_003)) }
+                OutlinedButton(onClick = { official = true }, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_import_screen_004)) }
+                TextButton(onClick = { accept(CourseImportDraft(listOf(EditableCourseRow()))) }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_import_screen_005)) }
             }
             val current = draft
             if (current != null) {
                 current.warnings.forEach { warning -> item { Text(warning, color = MaterialTheme.colorScheme.tertiary, style = MaterialTheme.typography.bodySmall) } }
                 item {
-                    Text("学期与节次", style = MaterialTheme.typography.titleMedium)
-                    Text("本次所有课程统一使用你选择的五山作息，可在下方修改。第一教学周和每节时间仍须核对确认。", style = MaterialTheme.typography.bodySmall)
-                    if (current.termIdHint == "2026-2027-1") Text("2026–2027 学年第 1 学期按学校开课新闻预填 2026-08-31，仍可修改。", style = MaterialTheme.typography.bodySmall)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_import_screen_006), style = MaterialTheme.typography.titleMedium)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_import_screen_007), style = MaterialTheme.typography.bodySmall)
+                    if (current.termIdHint == "2026-2027-1") Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_import_screen_008), style = MaterialTheme.typography.bodySmall)
                     ImportField("学期标识（同一学期保持一致）", termId, busy) { termId = it; invalidatePreview() }
                     ImportField("学期名称", termName, busy) { termName = it; invalidatePreview() }
                     ImportField("第一教学周周一（YYYY-MM-DD）", monday, busy) { monday = it; invalidatePreview() }
                     ImportField("学期教学周数", teachingWeeks, busy) { teachingWeeks = it; invalidatePreview() }
                     ImportField("时区", zone, busy) { zone = it; invalidatePreview() }
-                    OutlinedButton(onClick = { timings = ScutImportPresets.WUSHAN_PERIODS; invalidatePreview() }, enabled = !busy) { Text("使用五山作息") }
-                    Text("第 1–10 节按你的截图；第 11 节参考学校公开作息索引 20:50–21:35，请核对后确认。", style = MaterialTheme.typography.bodySmall)
+                    OutlinedButton(onClick = { timings = ScutImportPresets.WUSHAN_PERIODS; invalidatePreview() }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_import_screen_009)) }
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_import_screen_010), style = MaterialTheme.typography.bodySmall)
                     OutlinedTextField(
                         value = timings, onValueChange = { timings = it; invalidatePreview() }, enabled = !busy,
-                        label = { Text("学校节次时间（每行一节）") },
-                        placeholder = { Text("格式示例，请替换为学校实际时间：\n1=08:00-08:45\n2=08:55-09:40") },
-                        supportingText = { Text("课程用到的每一节都要填写；预填作息可以逐行修改。") },
+                        label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_import_screen_011)) },
+                        placeholder = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_import_screen_012)) },
+                        supportingText = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_import_screen_013)) },
                         modifier = Modifier.fillMaxWidth().padding(top = 6.dp), minLines = 4,
                     )
                 }
@@ -131,10 +131,10 @@ fun CourseImportScreen(model: TimeViewModel, onClose: () -> Unit) {
                     )
                 }
                 item {
-                    OutlinedButton(onClick = { edit(current.copy(rows = current.rows + EditableCourseRow())) }, enabled = !busy) { Text("添加课程行") }
+                    OutlinedButton(onClick = { edit(current.copy(rows = current.rows + EditableCourseRow())) }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_import_screen_014)) }
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         Checkbox(checked = reviewed, onCheckedChange = { reviewed = it }, enabled = !busy)
-                        Text("我已核对第一教学周、每节时间和课程行", modifier = Modifier.padding(top = 12.dp), style = MaterialTheme.typography.bodyMedium)
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_import_screen_015), modifier = Modifier.padding(top = 12.dp), style = MaterialTheme.typography.bodyMedium)
                     }
                     Button(
                         modifier = Modifier.fillMaxWidth(), enabled = !busy && current.rows.isNotEmpty(),
@@ -159,7 +159,7 @@ fun CourseImportScreen(model: TimeViewModel, onClose: () -> Unit) {
     preview?.let { value ->
         AlertDialog(
             onDismissRequest = { if (!busy) dismissPreview() },
-            title = { Text("课表导入预览") },
+            title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_import_screen_016)) },
             text = {
                 Column(Modifier.heightIn(max = 430.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
@@ -182,7 +182,7 @@ fun CourseImportScreen(model: TimeViewModel, onClose: () -> Unit) {
                     preview = null
                 } }) { Text(if (busy) "正在导入…" else "确认导入") }
             },
-            dismissButton = { TextButton(onClick = ::dismissPreview, enabled = !busy) { Text("返回修改") } },
+            dismissButton = { TextButton(onClick = ::dismissPreview, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_import_screen_017)) } },
         )
     }
 }
@@ -198,12 +198,12 @@ private fun CourseRowEditor(index: Int, row: EditableCourseRow, busy: Boolean, o
         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("第 ${index + 1} 行", style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(top = 10.dp))
-                TextButton(onClick = onDelete, enabled = !busy) { Text("删除此行") }
+                TextButton(onClick = onDelete, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_import_screen_018)) }
             }
             ImportField("课程名称", row.name, busy) { onChange(row.copy(name = it)) }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(row.dayOfWeek, { onChange(row.copy(dayOfWeek = it)) }, label = { Text("星期 1–7") }, enabled = !busy, singleLine = true, modifier = Modifier.weight(1f))
-                OutlinedTextField(row.periods, { onChange(row.copy(periods = it)) }, label = { Text("节次，如 1-2") }, enabled = !busy, singleLine = true, modifier = Modifier.weight(1f))
+                OutlinedTextField(row.dayOfWeek, { onChange(row.copy(dayOfWeek = it)) }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_import_screen_019)) }, enabled = !busy, singleLine = true, modifier = Modifier.weight(1f))
+                OutlinedTextField(row.periods, { onChange(row.copy(periods = it)) }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_import_screen_020)) }, enabled = !busy, singleLine = true, modifier = Modifier.weight(1f))
             }
             ImportField("周次，如 1-16周(单),18周", row.weeks, busy) { onChange(row.copy(weeks = it)) }
             ImportField("教师", row.teacher, busy) { onChange(row.copy(teacher = it)) }

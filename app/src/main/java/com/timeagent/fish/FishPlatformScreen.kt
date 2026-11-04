@@ -67,24 +67,24 @@ fun FishPlatformScreen(session:FishSession,onClose:()->Unit) {
     }
     val drawing=remember(qr) { if(qr.isBlank())null else qrDrawing(qr) }
     Column(Modifier.fillMaxSize().statusBarsPadding().verticalScroll(rememberScrollState()).padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
-        TextButton(onClick={if (selected != null) selected=null else onClose()}) {Text("返回")}
-        Text("平台连接",style=MaterialTheme.typography.headlineSmall)
+        TextButton(onClick={if (selected != null) selected=null else onClose()}) {Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_back))}
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_platform_screen_001),style=MaterialTheme.typography.headlineSmall)
         if (selected == null) {
-            ListItem(headlineContent={Text("B站")}, supportingContent={Text("扫码连接、读取公开内容和分享见闻")}, modifier=Modifier.clickable { selected="bili" })
-            ListItem(headlineContent={Text("QQ群聊")}, supportingContent={Text("OneBot连接、授权群与语音转文字")}, modifier=Modifier.clickable { selected="qq" })
+            ListItem(headlineContent={Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_platform_screen_002))}, supportingContent={Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_platform_screen_003))}, modifier=Modifier.clickable { selected="bili" })
+            ListItem(headlineContent={Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_platform_screen_004))}, supportingContent={Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_platform_screen_005))}, modifier=Modifier.clickable { selected="qq" })
         }
         if (selected == "bili") {
-        Text("B站",style=MaterialTheme.typography.titleLarge)
-        Text("同一个角色把发现的内容自然带回聊天。会尝试读取简介、可用字幕和评论；画面理解尚未接入。",style=MaterialTheme.typography.bodySmall)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_platform_screen_002),style=MaterialTheme.typography.titleLarge)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_platform_screen_006),style=MaterialTheme.typography.bodySmall)
         Text(status)
         if (lastError.isNotBlank()) Text(lastError, color=MaterialTheme.colorScheme.error)
-        if(busy) { LinearProgressIndicator(Modifier.fillMaxWidth()); Text("正在读取，请稍候…",style=MaterialTheme.typography.bodySmall) }
+        if(busy) { LinearProgressIndicator(Modifier.fillMaxWidth()); Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_platform_screen_007),style=MaterialTheme.typography.bodySmall) }
         message?.let {Text(it,color=MaterialTheme.colorScheme.error)}
         Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-            Button(onClick={session.platformAction("qr")},enabled=runtime.ready && !busy) {Text("生成登录二维码")}
-            TextButton(onClick={status="正在读取本机连接配置…";session.platformAction("status")},enabled=runtime.ready && !busy) {Text("刷新状态")}
+            Button(onClick={session.platformAction("qr")},enabled=runtime.ready && !busy) {Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_platform_screen_008))}
+            TextButton(onClick={status="正在读取本机连接配置…";session.platformAction("status")},enabled=runtime.ready && !busy) {Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_platform_screen_009))}
         }
-        Button(onClick={session.platformAction("discover")},enabled=runtime.ready && !busy) { Text("看看公开内容，和我聊聊") }
+        Button(onClick={session.platformAction("discover")},enabled=runtime.ready && !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_platform_screen_010)) }
         if(event.optString("operation")=="discover") {
             val items=event.optJSONObject("payload")?.optJSONArray("items")
             if(items!=null) for(index in 0 until items.length()) {
@@ -95,8 +95,8 @@ fun FishPlatformScreen(session:FishSession,onClose:()->Unit) {
         drawing?.let { data -> Canvas(Modifier.size(260.dp).background(Color.White)) {
             scale(size.width/data.width,size.height/data.height,pivot=Offset.Zero) {data.paths.forEach {drawPath(it,Color.Black)}}
         } }
-        if(key.isNotBlank()) TextButton(onClick={session.platformAction("poll",key=key)},enabled=runtime.ready && !busy) {Text("检查登录")}
-        Row {Text("允许主动看看 B站",Modifier.weight(1f));Switch(checked=enabled,onCheckedChange={session.platformAction("enable",enabled=it)},enabled=runtime.ready && !busy)}
+        if(key.isNotBlank()) TextButton(onClick={session.platformAction("poll",key=key)},enabled=runtime.ready && !busy) {Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_platform_screen_011))}
+        Row {Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_platform_screen_012),Modifier.weight(1f));Switch(checked=enabled,onCheckedChange={session.platformAction("enable",enabled=it)},enabled=runtime.ready && !busy)}
         }
         if (selected == "qq") FishQQSettings(session)
     }

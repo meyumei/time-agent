@@ -1,0 +1,1053 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_acknowledge" formatted="false">"知道了"</string>
+    <string name="action_archive" formatted="false">"归档"</string>
+    <string name="action_back" formatted="false">"返回"</string>
+    <string name="action_cancel" formatted="false">"取消"</string>
+    <string name="action_close" formatted="false">"关闭"</string>
+    <string name="action_confirm" formatted="false">"确认"</string>
+    <string name="action_delete" formatted="false">"删除"</string>
+    <string name="action_done" formatted="false">"完成"</string>
+    <string name="action_edit" formatted="false">"编辑"</string>
+    <string name="action_new_task" formatted="false">"新建任务"</string>
+    <string name="action_redo" formatted="false">"重做"</string>
+    <string name="action_restore" formatted="false">"恢复"</string>
+    <string name="action_save" formatted="false">"保存"</string>
+    <string name="action_undo" formatted="false">"撤销"</string>
+    <string name="field_notes" formatted="false">"备注"</string>
+    <string name="filter_all" formatted="false">"全部"</string>
+    <string name="state_no_data" formatted="false">"无数据"</string>
+    <string name="text_activities_001" formatted="false">"活动名称"</string>
+    <string name="text_activities_002" formatted="false">"建议耗时（分钟）"</string>
+    <string name="text_activities_003" formatted="false">"从模板新建时会带入名称、时长和分类，仍可以修改。"</string>
+    <string name="text_activities_004" formatted="false">"活动模板"</string>
+    <string name="text_activities_005" formatted="false">"先准备常用活动，再选择它创建任务、安排计划或计时。"</string>
+    <string name="text_activities_006" formatted="false">"新增大模块"</string>
+    <string name="text_activities_007" formatted="false">"记笔记"</string>
+    <string name="text_activities_008" formatted="false">"添加子模块"</string>
+    <string name="text_activities_009" formatted="false">"归档大模块"</string>
+    <string name="text_activities_010" formatted="false">"已归档模板不再出现在新建列表，历史任务保留关联。刚才的归档可用右上角撤销恢复。"</string>
+    <string name="text_activities_011" formatted="false">"保留历史任务中的活动关联。大模块有未归档的子模块时，需要先处理子模块。"</string>
+    <string name="text_ai_availability_banner_001" formatted="false">"AI 暂不可用"</string>
+    <string name="text_ai_availability_banner_002" formatted="false">"去设置"</string>
+    <string name="text_appearance_screen_001" formatted="false">"呈现模式"</string>
+    <string name="text_appearance_screen_002" formatted="false">"切换外观会保留草稿、计时和聊天。"</string>
+    <string name="text_appearance_screen_003" formatted="false">"深浅色"</string>
+    <string name="text_appearance_screen_004" formatted="false">"动态取色"</string>
+    <string name="text_appearance_screen_005" formatted="false">"字体大小跟随系统；角色形象、朗读和悬浮窗在“AI 与鱼”中分别设置。"</string>
+    <string name="text_assistant_conversation_panel_001" formatted="false">"按住下方圆圈说话，或输入一句话。记想法、设提醒、安排日程会直接执行，可随时说“撤销”或“恢复刚才撤销的操作”。"</string>
+    <string name="text_assistant_conversation_panel_002" formatted="false">"继续说，或输入补充…"</string>
+    <string name="text_assistant_conversation_panel_004" formatted="false">"撤销这次"</string>
+    <string name="text_assistant_conversation_panel_005" formatted="false">"语音在本机识别。与内置角色交流时，文字、相关共同记忆和它按需查询的业务结果会用于模型回复。修改运行中的模型设置后，需要重新启动角色，历史会保留。"</string>
+    <string name="text_assistant_conversation_panel_006" formatted="false">"中文语音在本机识别。明确的记录、任务和计划无需 API Key，可直接执行并撤销。"</string>
+    <string name="text_assistant_conversation_panel_007" formatted="false">"智能理解 · DeepSeek"</string>
+    <string name="text_assistant_conversation_panel_008" formatted="false">"开启后，本地未理解的表达会自动发送给 DeepSeek，含本次文字、最近 8 条对话，以及有限的任务、课程、计划、记录活动名与时间、提醒和想法标题。不发送录音、任务描述、记录备注、想法或笔记正文、操作历史。"</string>
+    <string name="text_assistant_conversation_panel_009" formatted="false">"模型名"</string>
+    <string name="text_assistant_screen_001" formatted="false">"时间助手"</string>
+    <string name="text_assistant_screen_002" formatted="false">"说一句，先预览再确认"</string>
+    <string name="text_assistant_screen_003" formatted="false">"本地常用指令可以直接使用，自由表达可选 DeepSeek。可以记录想法、设置单点提醒、记录睡眠，也可以撤销或恢复刚才撤销的操作。"</string>
+    <string name="text_assistant_screen_004" formatted="false">"输入内容 · 可修改"</string>
+    <string name="text_assistant_screen_005" formatted="false">"例如：记个想法 周末去骑车"</string>
+    <string name="text_assistant_screen_006" formatted="false">"DeepSeek 设置"</string>
+    <string name="text_assistant_screen_007" formatted="false">"Key 由本机 Android Keystore 加密保存，不进入备份。应用不会显示已保存的 Key。"</string>
+    <string name="text_assistant_screen_008" formatted="false">"保存配置"</string>
+    <string name="text_assistant_screen_009" formatted="false">"删除密钥"</string>
+    <string name="text_assistant_screen_010" formatted="false">"本地解析"</string>
+    <string name="text_assistant_screen_011" formatted="false">"首页底部按住说话，顶部实时显示文字；松开后可在上方修改。中文识别在本机完成，音频不保存也不上传。"</string>
+    <string name="text_assistant_screen_012" formatted="false">"同意将本次文字和有限清单发送给 DeepSeek 理解"</string>
+    <string name="text_assistant_screen_013" formatted="false">"仅发送当前输入、时间、所选周、最多 50 项任务信息、50 条记录活动名与时间、70 项计划时间、70 节课程时间、30 条提醒标题与时间、30 条想法标题、内置示例课程数量及运行计时起点。任务描述、记录备注、想法正文、笔记正文和操作历史不发送。"</string>
+    <string name="text_assistant_screen_014" formatted="false">"配置 DeepSeek API Key"</string>
+    <string name="text_assistant_screen_015" formatted="false">"用 DeepSeek 理解"</string>
+    <string name="text_assistant_screen_016" formatted="false">"取消请求"</string>
+    <string name="text_assistant_screen_017" formatted="false">"我确认将未来时间保存为实际记录"</string>
+    <string name="text_assistant_screen_018" formatted="false">"确认保存"</string>
+    <string name="text_assistant_screen_019" formatted="false">"取消预览"</string>
+    <string name="text_assistant_screen_020" formatted="false">"修改输入"</string>
+    <string name="text_assistant_screen_021" formatted="false">"可以这样说"</string>
+    <string name="text_attachment_screen_001" formatted="false">"选择文件或截图"</string>
+    <string name="text_attachment_screen_002" formatted="false">"主动选取后复制到应用私有存储。单件最多8 MiB，总空间12 MiB。图片可识别为可修正草稿。"</string>
+    <string name="text_attachment_screen_003" formatted="false">"全部附件"</string>
+    <string name="text_attachment_screen_004" formatted="false">"回收站"</string>
+    <string name="text_attachment_screen_005" formatted="false">"筛选文件名或草稿"</string>
+    <string name="text_attachment_screen_006" formatted="false">"原件已清除 · 文字保留"</string>
+    <string name="text_attachment_screen_007" formatted="false">"查看原件"</string>
+    <string name="text_attachment_screen_008" formatted="false">"修改关联"</string>
+    <string name="text_attachment_screen_009" formatted="false">"此类型可保存附件；文字识别仅支持图片。"</string>
+    <string name="text_attachment_screen_010" formatted="false">"文字草稿（可修正）"</string>
+    <string name="text_attachment_screen_011" formatted="false">"保存草稿"</string>
+    <string name="text_attachment_screen_012" formatted="false">"提取候选事项"</string>
+    <string name="text_attachment_screen_013" formatted="false">"提取后还需逐条确认，附件不会自动归属到项目或任务。"</string>
+    <string name="text_attachment_screen_014" formatted="false">"移入回收站"</string>
+    <string name="text_attachment_screen_015" formatted="false">"恢复附件"</string>
+    <string name="text_attachment_screen_016" formatted="false">"彻底清除原件"</string>
+    <string name="text_attachment_screen_017" formatted="false">"彻底清除附件原件？"</string>
+    <string name="text_attachment_screen_018" formatted="false">"应用内的原文件将永久删除，无法撤销。文字草稿和条目信息仍保留。重新导入或恢复含此原件的备份才能找回原文件；原选取位置的文件不受影响。"</string>
+    <string name="text_attachment_screen_019" formatted="false">"永久清除"</string>
+    <string name="text_attachment_screen_020" formatted="false">"放弃未保存的草稿？"</string>
+    <string name="text_attachment_screen_021" formatted="false">"识别或修正的文字尚未保存。"</string>
+    <string name="text_attachment_screen_022" formatted="false">"放弃并返回"</string>
+    <string name="text_attachment_screen_023" formatted="false">"继续编辑"</string>
+    <string name="text_attachment_screen_024" formatted="false">"明确选择关联对象"</string>
+    <string name="text_attachment_screen_025" formatted="false">"选择项目或任务中的一个，保存后生效。"</string>
+    <string name="text_attachment_screen_026" formatted="false">"筛选名称"</string>
+    <string name="text_attachment_screen_027" formatted="false">"未关联"</string>
+    <string name="text_attachment_screen_028" formatted="false">"保存关联"</string>
+    <string name="text_backup_recovery_ui_001" formatted="false">"数据恢复等待完成回退"</string>
+    <string name="text_backup_recovery_ui_002" formatted="false">"操作前的数据回退文件仍保留。完成回退前暂停写入，避免把两份数据库混用。"</string>
+    <string name="text_backup_recovery_ui_003" formatted="false">"重试本地回退"</string>
+    <string name="text_backup_screen_001" formatted="false">"完整本地备份 / 恢复"</string>
+    <string name="text_backup_screen_002" formatted="false">"任务、项目、周目标、周期实例、实际、课程、想法、笔记、提醒、附件与操作历史，连同训练记录、自定义动作和个人设置一起保存。"</string>
+    <string name="text_backup_screen_003" formatted="false">"动作媒体和 3D 模型随安装包提供。密钥、云端授权和手机权限不写进个人备份；恢复后需重选 GB 文件，并核对健康、通知和闹钟授权。"</string>
+    <string name="text_backup_screen_004" formatted="false">"导出本地备份"</string>
+    <string name="text_backup_screen_005" formatted="false">"选择备份，先校验和预览"</string>
+    <string name="text_backup_screen_006" formatted="false">"文件完整性、版本、字段及数据关联校验通过"</string>
+    <string name="text_backup_screen_007" formatted="false">"恢复会把本机两套数据库、附件原件和个人设置替换为这份备份的内容。建议先导出当前副本；恢复不会合并记录。"</string>
+    <string name="text_backup_screen_008" formatted="false">"我已核对内容，确认替换本机数据"</string>
+    <string name="text_backup_screen_009" formatted="false">"确认恢复"</string>
+    <string name="text_backup_screen_010" formatted="false">"完成并返回"</string>
+    <string name="text_butler_home_screens_001" formatted="false">"把未来的事放回项目、习惯、期限与本周目标里。"</string>
+    <string name="text_butler_home_screens_002" formatted="false">"正在读取本地数据…"</string>
+    <string name="text_butler_home_screens_004" formatted="false">"收集想法"</string>
+    <string name="text_butler_home_screens_005" formatted="false">"附件"</string>
+    <string name="text_butler_home_screens_006" formatted="false">"开始训练"</string>
+    <string name="text_butler_home_screens_007" formatted="false">"大肥鱼"</string>
+    <string name="text_butler_home_screens_008" formatted="false">"形象、声音与角色档案可自定义"</string>
+    <string name="text_butler_home_screens_009" formatted="false">"和大肥鱼聊聊"</string>
+    <string name="text_butler_home_screens_010" formatted="false">"设置"</string>
+    <string name="text_butler_home_screens_011" formatted="false">"共同记忆与角色约定"</string>
+    <string name="text_butler_home_screens_012" formatted="false">"点击日期中的日程可打开详情；日程时间轴仍支持 1/3/7 日切换。"</string>
+    <string name="text_calendar_handoff_screen_001" formatted="false">"交给系统日历"</string>
+    <string name="text_calendar_handoff_screen_002" formatted="false">"打开后请在系统日历中确认并保存。此处无法核实是否保存。"</string>
+    <string name="text_calendar_handoff_screen_003" formatted="false">"日历说明（选填）"</string>
+    <string name="text_calendar_handoff_screen_004" formatted="false">"打开系统日历确认"</string>
+    <string name="text_calendar_sync_screen_001" formatted="false">"系统日历与云账户的同步由系统和账户应用负责，时间 Agent 无法保证云端同步时效。"</string>
+    <string name="text_calendar_sync_screen_002" formatted="false">"日历权限已关闭，同步暂停。已有映射和日程保留。"</string>
+    <string name="text_calendar_sync_screen_003" formatted="false">"允许日历读写"</string>
+    <string name="text_calendar_sync_screen_004" formatted="false">"立即同步"</string>
+    <string name="text_calendar_sync_screen_005" formatted="false">"创建时间 Agent 本地日历"</string>
+    <string name="text_calendar_sync_screen_006" formatted="false">"同步范围 · 过去天数（可为 0）"</string>
+    <string name="text_calendar_sync_screen_007" formatted="false">"同步范围 · 未来天数"</string>
+    <string name="text_calendar_sync_screen_008" formatted="false">"保存同步范围"</string>
+    <string name="text_calendar_sync_screen_009" formatted="false">"断开此日历"</string>
+    <string name="text_calendar_sync_screen_010" formatted="false">"实际记录默认不导出。开启后单向写入独立日历，以本地记录为准；专注只导出专注片段，休息和暂停不导出。"</string>
+    <string name="text_calendar_sync_screen_011" formatted="false">"新建并启用实际记录独立日历"</string>
+    <string name="text_calendar_sync_screen_012" formatted="false">"关闭实际记录导出（保留已导出内容）"</string>
+    <string name="text_calendar_sync_screen_013" formatted="false">"在系统日历中查看周期"</string>
+    <string name="text_calendar_sync_screen_014" formatted="false">"部分系统日历不提供真实修改时刻；保留的双方快照可在此核对并选择。"</string>
+    <string name="text_calendar_sync_screen_015" formatted="false">"改用本地"</string>
+    <string name="text_calendar_sync_screen_016" formatted="false">"改用系统日历"</string>
+    <string name="text_calendar_sync_screen_017" formatted="false">"确认删除远端事件"</string>
+    <string name="text_calendar_sync_screen_018" formatted="false">"保留远端事件"</string>
+    <string name="text_calendar_sync_screen_019" formatted="false">"保留已导入日程并转为本地"</string>
+    <string name="text_calendar_sync_screen_020" formatted="false">"删除由时间 Agent 导出的远端事件"</string>
+    <string name="text_calendar_sync_screen_021" formatted="false">"断开同步"</string>
+    <string name="text_capture_template_dialog_001" formatted="false">"将所选日程存为模板"</string>
+    <string name="text_capture_template_dialog_002" formatted="false">"模板名称"</string>
+    <string name="text_capture_template_dialog_003" formatted="false">"保留相对日期、时间、项目、标签和提前提醒。"</string>
+    <string name="text_capture_template_dialog_004" formatted="false">"保存模板"</string>
+    <string name="text_chat_extraction_screen_001" formatted="false">"聊天文字提取"</string>
+    <string name="text_chat_extraction_screen_002" formatted="false">"粘贴或分享聊天文字后，逐条检查并确认属于你的事项。文字仅在本机处理。"</string>
+    <string name="text_chat_extraction_screen_003" formatted="false">"聊天文字（最多20000字）"</string>
+    <string name="text_chat_extraction_screen_004" formatted="false">"结合空档起草回复"</string>
+    <string name="text_chat_extraction_screen_005" formatted="false">"确认为我的事项"</string>
+    <string name="text_chat_extraction_screen_006" formatted="false">"修改"</string>
+    <string name="text_chat_extraction_screen_007" formatted="false">"仅有日期的事项会作为任务，截止时间取该日期的23:59:59；可在保存前修改。"</string>
+    <string name="text_chat_extraction_screen_008" formatted="false">"撤销本批保存"</string>
+    <string name="text_chat_extraction_screen_009" formatted="false">"修改候选事项"</string>
+    <string name="text_chat_extraction_screen_010" formatted="false">"截止日期 yyyy-MM-dd（必填）"</string>
+    <string name="text_chat_extraction_screen_011" formatted="false">"结束 yyyy-MM-dd HH:mm"</string>
+    <string name="text_chat_extraction_screen_012" formatted="false">"应用"</string>
+    <string name="text_clock_content_001" formatted="false">"结束计时"</string>
+    <string name="text_clock_content_002" formatted="false">"继续训练"</string>
+    <string name="text_conflict_group_appearance_001" formatted="false">"重叠"</string>
+    <string name="text_conflict_layout_sample_001" formatted="false">"冲突课程排版样例"</string>
+    <string name="text_conflict_layout_sample_002" formatted="false">"合成课程，仅用于排版对比"</string>
+    <string name="text_conflict_layout_sample_003" formatted="false">"10月21日 · 周三"</string>
+    <string name="text_conflict_layout_sample_004" formatted="false">"聚焦日预览 · 08:00–10:40"</string>
+    <string name="text_conflict_layout_sample_005" formatted="false">"3 门冲突"</string>
+    <string name="text_conflict_layout_sample_006" formatted="false">"重叠课程 · 3 门"</string>
+    <string name="text_conflict_layout_sample_007" formatted="false">"周三 · 三课共同重叠 09:00–09:40"</string>
+    <string name="text_conflict_layout_sample_008" formatted="false">"一个时段，三门课程"</string>
+    <string name="text_conflict_layout_sample_009" formatted="false">"重叠课程收成一组，轻点看完整信息"</string>
+    <string name="text_conflict_layout_sample_010" formatted="false">"展开 3 张完整课程卡"</string>
+    <string name="text_conflict_layout_sample_011" formatted="false">"按开始时间错层排列，时长以卡片文字为准"</string>
+    <string name="text_conflict_layout_sample_012" formatted="false">"三课共同重叠：09:00–09:40"</string>
+    <string name="text_course_import_screen_001" formatted="false">"导入学校课表"</string>
+    <string name="text_course_import_screen_002" formatted="false">"先选择来源，再核对学期、节次时间和课程。确认预览后才保存。"</string>
+    <string name="text_course_import_screen_003" formatted="false">"选择课表 PDF"</string>
+    <string name="text_course_import_screen_004" formatted="false">"华工官方教务导入（需登录）"</string>
+    <string name="text_course_import_screen_005" formatted="false">"手工补录"</string>
+    <string name="text_course_import_screen_006" formatted="false">"学期与节次"</string>
+    <string name="text_course_import_screen_007" formatted="false">"本次所有课程统一使用你选择的五山作息，可在下方修改。第一教学周和每节时间仍须核对确认。"</string>
+    <string name="text_course_import_screen_008" formatted="false">"2026–2027 学年第 1 学期按学校开课新闻预填 2026-08-31，仍可修改。"</string>
+    <string name="text_course_import_screen_009" formatted="false">"使用五山作息"</string>
+    <string name="text_course_import_screen_010" formatted="false">"第 1–10 节按你的截图；第 11 节参考学校公开作息索引 20:50–21:35，请核对后确认。"</string>
+    <string name="text_course_import_screen_011" formatted="false">"学校节次时间（每行一节）"</string>
+    <string name="text_course_import_screen_012" formatted="false">"格式示例，请替换为学校实际时间：\n1=08:00-08:45\n2=08:55-09:40"</string>
+    <string name="text_course_import_screen_013" formatted="false">"课程用到的每一节都要填写；预填作息可以逐行修改。"</string>
+    <string name="text_course_import_screen_014" formatted="false">"添加课程行"</string>
+    <string name="text_course_import_screen_015" formatted="false">"我已核对第一教学周、每节时间和课程行"</string>
+    <string name="text_course_import_screen_016" formatted="false">"课表导入预览"</string>
+    <string name="text_course_import_screen_017" formatted="false">"返回修改"</string>
+    <string name="text_course_import_screen_018" formatted="false">"删除此行"</string>
+    <string name="text_course_import_screen_019" formatted="false">"星期 1–7"</string>
+    <string name="text_course_import_screen_020" formatted="false">"节次，如 1-2"</string>
+    <string name="text_course_schedule_screen_001" formatted="false">"上一周"</string>
+    <string name="text_course_schedule_screen_002" formatted="false">"下一周"</string>
+    <string name="text_course_schedule_screen_003" formatted="false">"回到本周"</string>
+    <string name="text_course_schedule_screen_004" formatted="false">"导入课表"</string>
+    <string name="text_daily_briefing_001" formatted="false">"今日管家简报 · 正在读取本机记录"</string>
+    <string name="text_daily_briefing_002" formatted="false">"简报"</string>
+    <string name="text_daily_briefing_003" formatted="false">"临近截止项目（含逾期）"</string>
+    <string name="text_daily_briefing_004" formatted="false">"今天没有到期任务"</string>
+    <string name="text_daily_briefing_005" formatted="false">"今天 08:00–22:00 内，扣除安排与实际记录，保留至少 15 分钟的空档。"</string>
+    <string name="text_daily_briefing_006" formatted="false">"暂无可用的空闲时段"</string>
+    <string name="text_daily_briefing_007" formatted="false">"其他来源（未相加）："</string>
+    <string name="text_daily_briefing_008" formatted="false">"打开睡眠记录"</string>
+    <string name="text_daily_briefing_009" formatted="false">"打开这段睡眠记录"</string>
+    <string name="text_daily_briefing_010" formatted="false">"查看健康同步"</string>
+    <string name="text_data_export_screen_001" formatted="false">"格式"</string>
+    <string name="text_data_export_screen_002" formatted="false">"时间范围"</string>
+    <string name="text_data_export_screen_003" formatted="false">"包含首尾两天；实际抓取按设备时区从开始日 00:00 到结束日次日 00:00。"</string>
+    <string name="text_data_export_screen_004" formatted="false">"数据类型"</string>
+    <string name="text_data_export_screen_005" formatted="false">"将生成"</string>
+    <string name="text_data_export_screen_006" formatted="false">"取消导出"</string>
+    <string name="text_data_export_screen_007" formatted="false">"选择保存位置并开始导出"</string>
+    <string name="text_data_export_screen_008" formatted="false">"已知晓清理提示"</string>
+    <string name="text_data_export_screen_009" formatted="false">"取消时会清理缓存和未完成文件。若文件提供方拒绝清理，会提示你到所选位置手动删除。"</string>
+    <string name="text_data_export_screen_010" formatted="false">"确定"</string>
+    <string name="text_date_time_fields_001" formatted="false">"使用日期"</string>
+    <string name="text_date_time_fields_002" formatted="false">"选择时间"</string>
+    <string name="text_date_time_fields_003" formatted="false">"使用时间"</string>
+    <string name="text_date_time_fields_004" formatted="false">"跨到次日"</string>
+    <string name="text_date_time_fields_005" formatted="false">"结束时间必须晚于开始时间"</string>
+    <string name="text_date_time_fields_006" formatted="false">"时长"</string>
+    <string name="text_date_time_fields_007" formatted="false">"自定义时长（分钟）"</string>
+    <string name="text_date_time_fields_008" formatted="false">"请输入大于 0 的整数"</string>
+    <string name="text_deadline_screen_001" formatted="false">"生活期限"</string>
+    <string name="text_deadline_screen_002" formatted="false">"新建期限"</string>
+    <string name="text_deadline_screen_003" formatted="false">"重新登记"</string>
+    <string name="text_deadline_screen_004" formatted="false">"按本次到期日分组；处理只改状态，延期只改这一条。"</string>
+    <string name="text_deadline_screen_005" formatted="false">"通知显示受系统与省电设置影响，可在通知设置中核对权限。"</string>
+    <string name="text_deadline_screen_006" formatted="false">"仅处理你主动填写的期限。月末取当月最后一天；2月29在平年按2月28、闰年回到29。"</string>
+    <string name="text_deadline_screen_007" formatted="false">"没有待处理的期限。"</string>
+    <string name="text_deadline_screen_008" formatted="false">"仅显示最近 5 条，其余在规则详情查看"</string>
+    <string name="text_deadline_screen_009" formatted="false">"全部规则"</string>
+    <string name="text_deadline_screen_010" formatted="false">"规则编辑影响以后；已处理或手改的本次保持原样。"</string>
+    <string name="text_deadline_screen_011" formatted="false">"暂无生活期限。"</string>
+    <string name="text_deadline_screen_012" formatted="false">"改规则"</string>
+    <string name="text_deadline_screen_013" formatted="false">"暂无关联期限。"</string>
+    <string name="text_deadline_screen_014" formatted="false">"延期"</string>
+    <string name="text_deadline_screen_015" formatted="false">"仅本次调整这一条的时间点；本次及以后会打开规则编辑，从原始日期生效，已完成或手改的实例保持原样。"</string>
+    <string name="text_deadline_screen_016" formatted="false">"仅本次延期"</string>
+    <string name="text_deadline_screen_017" formatted="false">"本次及以后"</string>
+    <string name="text_deadline_screen_018" formatted="false">"打开任务"</string>
+    <string name="text_deadline_screen_019" formatted="false">"处理"</string>
+    <string name="text_deadline_screen_020" formatted="false">"重新打开"</string>
+    <string name="text_deadline_screen_021" formatted="false">"原任务已删"</string>
+    <string name="text_deadline_screen_022" formatted="false">"新时间 yyyy-MM-dd HH:mm"</string>
+    <string name="text_deadline_screen_023" formatted="false">"时间点已检查；只改本次期限，不创建计划时段。"</string>
+    <string name="text_deadline_screen_024" formatted="false">"请先检查，修改文字后必须重新检查。"</string>
+    <string name="text_deadline_screen_025" formatted="false">"检查"</string>
+    <string name="text_deadline_screen_026" formatted="false">"确认延期"</string>
+    <string name="text_deadline_screen_027" formatted="false">"类别"</string>
+    <string name="text_deadline_screen_028" formatted="false">"日期 yyyy-MM-dd"</string>
+    <string name="text_deadline_screen_029" formatted="false">"时间 HH:mm"</string>
+    <string name="text_deadline_screen_030" formatted="false">"提前天数（空=不提醒，0=到点）"</string>
+    <string name="text_deadline_screen_031" formatted="false">"从哪天生效 yyyy-MM-dd"</string>
+    <string name="text_deadline_screen_032" formatted="false">"不关联"</string>
+    <string name="text_deadline_screen_033" formatted="false">"关联资料文字/链接（不会自动读取外部文件）"</string>
+    <string name="text_deadline_screen_034" formatted="false">"月末取当月最后一天；2月29在平年按2月28、闰年回到29。一次期限的过期日期也会保留为待处理。"</string>
+    <string name="text_draft_exit_001" formatted="false">"保留未保存的修改？"</string>
+    <string name="text_draft_exit_002" formatted="false">"保留后可回到当前页面继续编辑，尚未写入记录。"</string>
+    <string name="text_draft_exit_003" formatted="false">"保留草稿"</string>
+    <string name="text_draft_exit_004" formatted="false">"丢弃修改"</string>
+    <string name="text_editors_001" formatted="false">"单时点"</string>
+    <string name="text_editors_002" formatted="false">"时段"</string>
+    <string name="text_editors_003" formatted="false">"提醒内容"</string>
+    <string name="text_editors_004" formatted="false">"提醒日期 YYYY-MM-DD"</string>
+    <string name="text_editors_005" formatted="false">"只发送一次系统通知；声音、锁屏显示和省电策略由系统设置决定。"</string>
+    <string name="text_editors_006" formatted="false">"这条提醒已经向系统提交过通知。"</string>
+    <string name="text_editors_007" formatted="false">"日程名称"</string>
+    <string name="text_editors_008" formatted="false">"取消活动关联"</string>
+    <string name="text_editors_009" formatted="false">"任务名称"</string>
+    <string name="text_editors_010" formatted="false">"预计耗时（分钟）"</string>
+    <string name="text_editors_011" formatted="false">"截止日期（可选）"</string>
+    <string name="text_editors_012" formatted="false">"截止时间 HH:mm"</string>
+    <string name="text_editors_013" formatted="false">"开始日期 YYYY-MM-DD"</string>
+    <string name="text_editors_014" formatted="false">"开始时间 HH:mm"</string>
+    <string name="text_editors_015" formatted="false">"结束日期 YYYY-MM-DD"</string>
+    <string name="text_editors_016" formatted="false">"结束时间 HH:mm"</string>
+    <string name="text_editors_017" formatted="false">"关联任务（可选）"</string>
+    <string name="text_editors_018" formatted="false">"教室"</string>
+    <string name="text_editors_019" formatted="false">"教师"</string>
+    <string name="text_editors_020" formatted="false">"只修改这一次课程，重新导入会保留本次修改。"</string>
+    <string name="text_editors_021" formatted="false">"这条记录包含未来时间；如尚未发生，建议改建计划。"</string>
+    <string name="text_editors_022" formatted="false">"我确认仍作为实际记录保存"</string>
+    <string name="text_editors_023" formatted="false">"未分类"</string>
+    <string name="text_entity_picker_001" formatted="false">"清除选择"</string>
+    <string name="text_entity_picker_002" formatted="false">"已选"</string>
+    <string name="text_feedback_components_001" formatted="false">"更多"</string>
+    <string name="text_fish_character_screens_002" formatted="false">"你的管家，也是一直陪着你的那条鱼。"</string>
+    <string name="text_fish_character_screens_003" formatted="false">"这里定义你自己的管家。修改会用于同一个角色在应用和群聊里的表达，共同经历继续保留。"</string>
+    <string name="text_fish_character_screens_004" formatted="false">"名字"</string>
+    <string name="text_fish_character_screens_005" formatted="false">"介绍与背景"</string>
+    <string name="text_fish_character_screens_006" formatted="false">"性格与说话口吻"</string>
+    <string name="text_fish_character_screens_007" formatted="false">"与你的关系、怎样称呼你"</string>
+    <string name="text_fish_character_screens_008" formatted="false">"问候语"</string>
+    <string name="text_fish_character_screens_009" formatted="false">"说话示例"</string>
+    <string name="text_fish_character_screens_010" formatted="false">"保存档案"</string>
+    <string name="text_fish_character_screens_011" formatted="false">"导入角色卡"</string>
+    <string name="text_fish_character_screens_012" formatted="false">"导出角色卡"</string>
+    <string name="text_fish_character_screens_013" formatted="false">"兼容 Character Card V2 JSON。档案负责角色设定；过去的聊天和记忆不会被角色卡覆盖。"</string>
+    <string name="text_fish_character_screens_014" formatted="false">"换的是形象，仍然是同一位管家。建议导入透明 PNG，动图也可以。"</string>
+    <string name="text_fish_character_screens_015" formatted="false">"移除"</string>
+    <string name="text_fish_character_screens_016" formatted="false">"添加自己的形象"</string>
+    <string name="text_fish_character_screens_017" formatted="false">"导入动图，或按顺序选择多张图片作为连续动作。选择触发场景后，会在对应状态使用；同场景以最后添加的为准。"</string>
+    <string name="text_fish_character_screens_018" formatted="false">"新增表情动作"</string>
+    <string name="text_fish_character_screens_019" formatted="false">"结束预览"</string>
+    <string name="text_fish_character_screens_020" formatted="false">"预览"</string>
+    <string name="text_fish_character_screens_021" formatted="false">"你补充的动作参考"</string>
+    <string name="text_fish_character_screens_022" formatted="false">"加入动作"</string>
+    <string name="text_fish_character_screens_023" formatted="false">"参考图保留原样；带背景的图片会显示背景。透明图适合悬浮角色。"</string>
+    <string name="text_fish_character_screens_024" formatted="false">"名称"</string>
+    <string name="text_fish_character_screens_025" formatted="false">"用在什么时候"</string>
+    <string name="text_fish_character_screens_026" formatted="false">"每帧毫秒数（80–3000）"</string>
+    <string name="text_fish_character_screens_027" formatted="false">"给管家选择说话的声音。在线音色沿用原仓库的 Edge TTS，会把要朗读的文字发送给语音服务；系统语音由手机已有引擎处理。"</string>
+    <string name="text_fish_character_screens_028" formatted="false">"Edge在线声音"</string>
+    <string name="text_fish_character_screens_029" formatted="false">"系统语音"</string>
+    <string name="text_fish_character_screens_030" formatted="false">"自动朗读新回复"</string>
+    <string name="text_fish_character_screens_031" formatted="false">"仅在应用前台朗读新回复；历史消息可逐条点朗读。"</string>
+    <string name="text_fish_character_screens_032" formatted="false">"试听声音"</string>
+    <string name="text_fish_character_screens_033" formatted="false">"停止播放"</string>
+    <string name="text_fish_character_screens_034" formatted="false">"这里选择的是合成音色，还不是对角色原声的复刻。"</string>
+    <string name="text_fish_character_screens_035" formatted="false">"填写 API Key"</string>
+    <string name="text_fish_character_screens_036" formatted="false">"停止"</string>
+    <string name="text_fish_character_screens_037" formatted="false">"需要时自动启动"</string>
+    <string name="text_fish_character_screens_038" formatted="false">"连续失败三次，已停止自动重启。查看原因后可手动重试。"</string>
+    <string name="text_fish_character_screens_039" formatted="false">"内置运行环境需要 arm64 设备；时间管理等本地业务仍可使用。"</string>
+    <string name="text_fish_character_screens_040" formatted="false">"模型设置"</string>
+    <string name="text_fish_chat_screen_001" formatted="false">"准备并启动"</string>
+    <string name="text_fish_chat_screen_002" formatted="false">"朗读"</string>
+    <string name="text_fish_chat_screen_003" formatted="false">"撤销本地操作"</string>
+    <string name="text_fish_chat_screen_004" formatted="false">"打开本地操作结果"</string>
+    <string name="text_fish_chat_screen_005" formatted="false">"停止本轮回复"</string>
+    <string name="text_fish_chat_screen_006" formatted="false">"说说你正在想的事…"</string>
+    <string name="text_fish_chat_screen_007" formatted="false">"发送"</string>
+    <string name="text_fish_companion_overlay_001" formatted="false">"Q版"</string>
+    <string name="text_fish_companion_overlay_002" formatted="false">"御姐版"</string>
+    <string name="text_fish_companion_overlay_003" formatted="false">"陪伴设置"</string>
+    <string name="text_fish_companion_overlay_004" formatted="false">"陪伴与作息"</string>
+    <string name="text_fish_companion_overlay_005" formatted="false">"拖动可调整位置，点击进入管家对话，长按打开「大肥鱼的一切」。"</string>
+    <string name="text_fish_companion_overlay_006" formatted="false">"应用内显示大肥鱼"</string>
+    <string name="text_fish_companion_overlay_007" formatted="false">"全局悬浮陪伴"</string>
+    <string name="text_fish_companion_overlay_008" formatted="false">"在桌面和其他应用上陪着你"</string>
+    <string name="text_fish_companion_overlay_009" formatted="false">"首次开启需授权“显示在其他应用上层”。全局角色可拖动，点击继续管家对话，长按返回这里；通知栏也可关闭。锁屏时隐藏，回到主界面使用原来的悬浮鱼。"</string>
+    <string name="text_fish_companion_overlay_010" formatted="false">"起床（0–23时）"</string>
+    <string name="text_fish_companion_overlay_011" formatted="false">"睡觉（0–23时）"</string>
+    <string name="text_fish_companion_overlay_012" formatted="false">"睡前会犯困，睡眠时安静休息。你发来消息时会醒来；正在执行事务时保持工作。主动聊天的时段与频率在「主动话题」里设置。"</string>
+    <string name="text_fish_companion_overlay_013" formatted="false">"保存作息"</string>
+    <string name="text_fish_memory_screen_001" formatted="false">"返回管家"</string>
+    <string name="text_fish_memory_screen_002" formatted="false">"共同记忆"</string>
+    <string name="text_fish_memory_screen_003" formatted="false">"编辑与删除历史 · 可恢复"</string>
+    <string name="text_fish_memory_screen_004" formatted="false">"这里是同一个角色保存的交流与经历。日程事实仍以今天、计划中的原记录为准。"</string>
+    <string name="text_fish_memory_screen_005" formatted="false">"缓存，可能不是最新。启动内置角色后可刷新和编辑。"</string>
+    <string name="text_fish_memory_screen_006" formatted="false">"寻找一段共同经历"</string>
+    <string name="text_fish_memory_screen_007" formatted="false">"查找"</string>
+    <string name="text_fish_memory_screen_008" formatted="false">"最近的 B站见闻 · 公开来源"</string>
+    <string name="text_fish_memory_screen_009" formatted="false">"还没有找到记忆。先和它聊聊，真实的共同经历会逐渐留下来。"</string>
+    <string name="text_fish_memory_screen_012" formatted="false">"共同记忆历史"</string>
+    <string name="text_fish_memory_screen_013" formatted="false">"还没有编辑或删除记录"</string>
+    <string name="text_fish_memory_screen_014" formatted="false">"编辑共同记忆"</string>
+    <string name="text_fish_memory_screen_015" formatted="false">"内容"</string>
+    <string name="text_fish_memory_screen_016" formatted="false">"删除共同记忆？"</string>
+    <string name="text_fish_platform_screen_001" formatted="false">"平台连接"</string>
+    <string name="text_fish_platform_screen_002" formatted="false">"B站"</string>
+    <string name="text_fish_platform_screen_003" formatted="false">"扫码连接、读取公开内容和分享见闻"</string>
+    <string name="text_fish_platform_screen_004" formatted="false">"QQ群聊"</string>
+    <string name="text_fish_platform_screen_005" formatted="false">"OneBot连接、授权群与语音转文字"</string>
+    <string name="text_fish_platform_screen_006" formatted="false">"同一个角色把发现的内容自然带回聊天。会尝试读取简介、可用字幕和评论；画面理解尚未接入。"</string>
+    <string name="text_fish_platform_screen_007" formatted="false">"正在读取，请稍候…"</string>
+    <string name="text_fish_platform_screen_008" formatted="false">"生成登录二维码"</string>
+    <string name="text_fish_platform_screen_009" formatted="false">"刷新状态"</string>
+    <string name="text_fish_platform_screen_010" formatted="false">"看看公开内容，和我聊聊"</string>
+    <string name="text_fish_platform_screen_011" formatted="false">"检查登录"</string>
+    <string name="text_fish_platform_screen_012" formatted="false">"允许主动看看 B站"</string>
+    <string name="text_fish_proactive_screen_001" formatted="false">"主动话题"</string>
+    <string name="text_fish_proactive_screen_002" formatted="false">"沿用共同记忆和当前会话。运行环境开启时，它可以在允许的时间里主动聊聊；关闭后不再自动唤醒或探索 B站。"</string>
+    <string name="text_fish_proactive_screen_003" formatted="false">"允许主动活动"</string>
+    <string name="text_fish_proactive_screen_004" formatted="false">"允许主动找我聊天"</string>
+    <string name="text_fish_proactive_screen_005" formatted="false">"开始"</string>
+    <string name="text_fish_proactive_screen_006" formatted="false">"结束"</string>
+    <string name="text_fish_proactive_screen_007" formatted="false">"可跨午夜；开始与结束相同表示全天。时间窗外保持安静。"</string>
+    <string name="text_fish_proactive_screen_008" formatted="false">"最短间隔（分）"</string>
+    <string name="text_fish_proactive_screen_009" formatted="false">"最长间隔（分）"</string>
+    <string name="text_fish_proactive_screen_010" formatted="false">"保存主动设置"</string>
+    <string name="text_fish_proactive_screen_011" formatted="false">"重新读取"</string>
+    <string name="text_fish_proactive_screen_012" formatted="false">"让它先聊一句"</string>
+    <string name="text_fish_proactive_screen_013" formatted="false">"B站的浏览开关在平台连接中；公开发布与评论没有随此开关启用。持续后台的实际时长以本机运行情况为准。"</string>
+    <string name="text_fish_q_q_settings_001" formatted="false">"同一个大肥鱼，各群保留独立上下文，沿用共同人格和记忆。先填已有的 OneBot HTTP 地址；检查连接只读取登录状态。"</string>
+    <string name="text_fish_q_q_settings_002" formatted="false">"先返回管家启动内置角色，再读取和保存QQ设置。"</string>
+    <string name="text_fish_q_q_settings_003" formatted="false">"OneBot HTTP 地址"</string>
+    <string name="text_fish_q_q_settings_004" formatted="false">"http://主机地址:3000"</string>
+    <string name="text_fish_q_q_settings_005" formatted="false">"授权群号，用逗号分隔"</string>
+    <string name="text_fish_q_q_settings_006" formatted="false">"读取授权群的新消息"</string>
+    <string name="text_fish_q_q_settings_007" formatted="false">"允许向授权群回复"</string>
+    <string name="text_fish_q_q_settings_008" formatted="false">"语音消息转文字"</string>
+    <string name="text_fish_q_q_settings_009" formatted="false">"启用接收后，只转写新收到的语音，再按相同接话规则处理。使用内置离线中文模型，不调用云转写；支持最多60秒。"</string>
+    <string name="text_fish_q_q_settings_010" formatted="false">"正在转写群语音…"</string>
+    <string name="text_fish_q_q_settings_011" formatted="false">"只开接收时不会调用模型或发消息。允许回复后，按下面的接话方式、时段和频率工作；不主动给未授权联系人发消息。"</string>
+    <string name="text_fish_q_q_settings_012" formatted="false">"被@或回复时接话"</string>
+    <string name="text_fish_q_q_settings_013" formatted="false">"也接明确叫名提问"</string>
+    <string name="text_fish_q_q_settings_014" formatted="false">"回复间隔（秒）"</string>
+    <string name="text_fish_q_q_settings_015" formatted="false">"每小时最多"</string>
+    <string name="text_fish_q_q_settings_016" formatted="false">"开始（0–23）"</string>
+    <string name="text_fish_q_q_settings_017" formatted="false">"结束（0–23）"</string>
+    <string name="text_fish_q_q_settings_018" formatted="false">"保存QQ设置"</string>
+    <string name="text_fish_q_q_settings_019" formatted="false">"检查连接"</string>
+    <string name="text_fish_stickers_001" formatted="false">"表情"</string>
+    <string name="text_focus_screen_002" formatted="false">"专注结束后自动生成一条实际记录；暂停和休息不计入实际时长。"</string>
+    <string name="text_focus_screen_003" formatted="false">"专注名称"</string>
+    <string name="text_focus_screen_004" formatted="false">"开始后保存本次配置，供下次使用。默认 25 分钟专注、5 分钟短休息，每 4 轮长休息 15 分钟。"</string>
+    <string name="text_focus_screen_005" formatted="false">"精确闹钟未开启，后台阶段提醒可能延迟；专注时长仍按实际经过时间计算。"</string>
+    <string name="text_focus_screen_006" formatted="false">"开始专注"</string>
+    <string name="text_focus_screen_007" formatted="false">"结束并开始"</string>
+    <string name="text_focus_screen_008" formatted="false">"专注状态已变化"</string>
+    <string name="text_focus_screen_009" formatted="false">"另一个操作已经更新了这次专注，本次操作未保存。当前状态已重新读取，请核对后再操作。"</string>
+    <string name="text_focus_screen_010" formatted="false">"暂停"</string>
+    <string name="text_focus_screen_011" formatted="false">"继续"</string>
+    <string name="text_focus_screen_012" formatted="false">"跳过休息"</string>
+    <string name="text_focus_screen_013" formatted="false">"结束这次专注？"</string>
+    <string name="text_focus_screen_014" formatted="false">"不保存"</string>
+    <string name="text_focus_screen_015" formatted="false">"保存并结束"</string>
+    <string name="text_focus_screen_016" formatted="false">"继续专注"</string>
+    <string name="text_focus_screen_017" formatted="false">"打开"</string>
+    <string name="text_grid_block_editor_001" formatted="false">"添加日程"</string>
+    <string name="text_grid_block_editor_002" formatted="false">"计划"</string>
+    <string name="text_grid_block_editor_003" formatted="false">"关联已有任务"</string>
+    <string name="text_grid_block_editor_004" formatted="false">"独立日程"</string>
+    <string name="text_grid_block_editor_005" formatted="false">"还没有可关联的任务，可以切换为新建任务。"</string>
+    <string name="text_habit_screen_001" formatted="false">"操作未完成"</string>
+    <string name="text_habit_screen_002" formatted="false">"新建习惯"</string>
+    <string name="text_habit_screen_003" formatted="false">"把想坚持的事交给已发生过的时间"</string>
+    <string name="text_habit_screen_004" formatted="false">"自动习惯从实际记录、训练、睡眠与专注推导，不重复存储结果；手动习惯只记录打卡。"</string>
+    <string name="text_habit_screen_006" formatted="false">"本周"</string>
+    <string name="text_habit_screen_007" formatted="false">"所选时间范围内没有源数据。没有数据不等于未达成。"</string>
+    <string name="text_habit_screen_008" formatted="false">"归档习惯"</string>
+    <string name="text_habit_screen_009" formatted="false">"归档后不再出现在列表，历史与打卡仍可查看，可随时恢复。"</string>
+    <string name="text_habit_screen_011" formatted="false">"备注（可选）"</string>
+    <string name="text_habit_screen_012" formatted="false">"取消打卡"</string>
+    <string name="text_habit_screen_013" formatted="false">"横轴为最近 12 周（含本周）。无数据的周显示为浅色短柱。"</string>
+    <string name="text_habit_screen_014" formatted="false">"习惯名称"</string>
+    <string name="text_habit_screen_015" formatted="false">"例如：每天学习 2 小时"</string>
+    <string name="text_habit_screen_016" formatted="false">"YYYY-MM-DD；此日期之前不计入"</string>
+    <string name="text_habit_screen_017" formatted="false">"未达成时 21:00 提醒"</string>
+    <string name="text_habit_screen_018" formatted="false">"可选。已达成或非统计日不提醒。"</string>
+    <string name="text_habit_screen_019" formatted="false">"自动习惯不需要手动打卡，统计始终来自源数据；修改历史记录后数字立即更新。"</string>
+    <string name="text_health_sync_screen_001" formatted="false">"健康数据同步"</string>
+    <string name="text_health_sync_screen_002" formatted="false">"睡眠和健身记录自动进入时间轴"</string>
+    <string name="text_health_sync_screen_003" formatted="false">"来源应用无关：小米运动健康、华为、Keep、训记等写入 Health Connect 的记录都会同步。数据只在本机读取，不上传。"</string>
+    <string name="text_health_sync_screen_004" formatted="false">"Gadgetbridge 数据文件（推荐）"</string>
+    <string name="text_health_sync_screen_005" formatted="false">"让 Gadgetbridge 把数据库导出到文件后，本应用直接读取，睡眠经夜间聚合后进入时间轴——不依赖 Health Connect。在 Gadgetbridge 设置 → 自动化 → 自动导出里启用并把位置设为同一文件。"</string>
+    <string name="text_health_sync_screen_006" formatted="false">"断开"</string>
+    <string name="text_health_sync_screen_007" formatted="false">"睡眠来源偏好"</string>
+    <string name="text_health_sync_screen_008" formatted="false">"选中的来源会替换其他来源记录的同一晚睡眠；手工修改过的记录始终保留。"</string>
+    <string name="text_health_sync_screen_009" formatted="false">"同步范围（最近）"</string>
+    <string name="text_health_sync_screen_010" formatted="false">"已同步条目"</string>
+    <string name="text_health_sync_screen_011" formatted="false">"还没有同步过记录。"</string>
+    <string name="text_history_screen_001" formatted="false">"历史问答 · 本地查询"</string>
+    <string name="text_history_screen_002" formatted="false">"统计直接查询本机记录；只有点“让大肥鱼解读”时，才把当前问题与结果交给鱼。"</string>
+    <string name="text_history_screen_003" formatted="false">"直接问历史，或用下方筛选"</string>
+    <string name="text_history_screen_004" formatted="false">"全部历史"</string>
+    <string name="text_history_screen_005" formatted="false">"近 7 天"</string>
+    <string name="text_history_screen_006" formatted="false">"上周"</string>
+    <string name="text_history_screen_007" formatted="false">"起始日期 yyyy-MM-dd，空表示不限"</string>
+    <string name="text_history_screen_008" formatted="false">"结束日期，含当天；空表示截至当前"</string>
+    <string name="text_history_screen_009" formatted="false">"关键词：标题、活动、备注、笔记"</string>
+    <string name="text_history_screen_010" formatted="false">"查询结果"</string>
+    <string name="text_history_screen_011" formatted="false">"让大肥鱼解读"</string>
+    <string name="text_history_screen_012" formatted="false">"不限"</string>
+    <string name="text_history_screen_013" formatted="false">"打开所属事项"</string>
+    <string name="text_home_voice_dock_001" formatted="false">"检查语音输入"</string>
+    <string name="text_home_voice_dock_002" formatted="false">"打开应用权限"</string>
+    <string name="text_home_voice_dock_003" formatted="false">"重新准备"</string>
+    <string name="text_inbox_conversion_screen_001" formatted="false">"转为记账"</string>
+    <string name="text_inbox_conversion_screen_002" formatted="false">"管理账户与分类"</string>
+    <string name="text_inbox_screens_001" formatted="false">"只关联到这一条内容，可随时回来继续编辑。"</string>
+    <string name="text_inbox_screens_002" formatted="false">"笔记标题（可选）"</string>
+    <string name="text_inbox_screens_003" formatted="false">"笔记内容"</string>
+    <string name="text_inbox_screens_004" formatted="false">"任务点 / 未安排"</string>
+    <string name="text_inbox_screens_005" formatted="false">"助手建议"</string>
+    <string name="text_inbox_screens_006" formatted="false">"根据你的任务、日程和睡眠自动生成；忽略后同类建议不会再出现。"</string>
+    <string name="text_inbox_screens_007" formatted="false">"未安排"</string>
+    <string name="text_inbox_screens_008" formatted="false">"想法"</string>
+    <string name="text_inbox_screens_009" formatted="false">"先收下灵感，不占日历时间；需要时再安排为任务点提醒。"</string>
+    <string name="text_inbox_screens_010" formatted="false">"还没有未安排的想法。"</string>
+    <string name="text_inbox_screens_011" formatted="false">"安排为提醒"</string>
+    <string name="text_inbox_screens_012" formatted="false">"转为"</string>
+    <string name="text_inbox_screens_013" formatted="false">"任务点提醒"</string>
+    <string name="text_inbox_screens_014" formatted="false">"提醒"</string>
+    <string name="text_inbox_screens_015" formatted="false">"到点只发一次系统通知，不占用日历时段，也不会自动补出一小时。"</string>
+    <string name="text_inbox_screens_016" formatted="false">"还没有任务点提醒。"</string>
+    <string name="text_inbox_screens_017" formatted="false">"删除这条提醒？"</string>
+    <string name="text_inbox_screens_018" formatted="false">"删除后可以撤销恢复。"</string>
+    <string name="text_inbox_screens_019" formatted="false">"删除这条想法？"</string>
+    <string name="text_inbox_screens_020" formatted="false">"想法会移出收件箱，不生成任务、日程或记账；删除后可撤销恢复。"</string>
+    <string name="text_inbox_screens_021" formatted="false">"补充（可选）"</string>
+    <string name="text_inbox_screens_022" formatted="false">"重复提醒设置"</string>
+    <string name="text_ledger_reshape_dialogs_001" formatted="false">"来源：手动记录"</string>
+    <string name="text_ledger_reshape_dialogs_002" formatted="false">"原账目的来源与完整交易号会全部保留。"</string>
+    <string name="text_ledger_reshape_dialogs_003" formatted="false">"分类"</string>
+    <string name="text_ledger_reshape_dialogs_004" formatted="false">"没有可用于该方向的分类。"</string>
+    <string name="text_ledger_reshape_dialogs_005" formatted="false">"商户"</string>
+    <string name="text_ledger_reshape_dialogs_007" formatted="false">"合并后发生时间"</string>
+    <string name="text_ledger_reshape_dialogs_008" formatted="false">"提交时使用打开本页时看到的版本；若账目已被修改，会保留本页并提示。"</string>
+    <string name="text_ledger_reshape_dialogs_009" formatted="false">"增加分项"</string>
+    <string name="text_ledger_reshape_dialogs_010" formatted="false">"只有每个分项为正数且合计等于原金额时才能提交。提交使用打开本页时看到的版本。"</string>
+    <string name="text_ledger_screen_001" formatted="false">"账本"</string>
+    <string name="text_ledger_screen_004" formatted="false">"正在读取本地账本…"</string>
+    <string name="text_ledger_screen_005" formatted="false">"忽略这笔草稿？"</string>
+    <string name="text_ledger_screen_006" formatted="false">"不会写入账本。可用右上角“撤销”恢复为待确认。"</string>
+    <string name="text_ledger_screen_007" formatted="false">"忽略"</string>
+    <string name="text_ledger_screen_008" formatted="false">"删除这笔账目？"</string>
+    <string name="text_ledger_screen_009" formatted="false">"会从统计中移除，并可用“撤销”恢复。"</string>
+    <string name="text_ledger_screen_010" formatted="false">"新账目不能再选择它，历史账目保留。可用“撤销”恢复。"</string>
+    <string name="text_ledger_screen_011" formatted="false">"关于系统通知使用权"</string>
+    <string name="text_ledger_screen_012" formatted="false">"仅读取微信、支付宝的“支付完成”通知，在本机解析成待确认草稿；"</string>
+    <string name="text_ledger_screen_013" formatted="false">"支付自动捕获"</string>
+    <string name="text_ledger_screen_014" formatted="false">"只读取微信、支付宝的支付完成通知，先形成待确认草稿，不直接入账。"</string>
+    <string name="text_ledger_screen_015" formatted="false">"打开系统通知使用权设置"</string>
+    <string name="text_ledger_screen_016" formatted="false">"允许应用通知"</string>
+    <string name="text_ledger_screen_017" formatted="false">"确认前需要至少一个账户和一个分类。"</string>
+    <string name="text_ledger_screen_018" formatted="false">"去添加账户与分类"</string>
+    <string name="text_ledger_screen_019" formatted="false">"导入账单 CSV"</string>
+    <string name="text_ledger_screen_020" formatted="false">"手动记一笔"</string>
+    <string name="text_ledger_screen_021" formatted="false">"未开启通知使用权时仍可手动记账；开启后不会回放历史通知。"</string>
+    <string name="text_ledger_screen_022" formatted="false">"暂无待确认支付。"</string>
+    <string name="text_ledger_screen_023" formatted="false">"选择分类并确认"</string>
+    <string name="text_ledger_screen_024" formatted="false">"本月"</string>
+    <string name="text_ledger_screen_026" formatted="false">"记一笔"</string>
+    <string name="text_ledger_screen_027" formatted="false">"导出 CSV"</string>
+    <string name="text_ledger_screen_028" formatted="false">"只能合并同一账户、同一方向，至少两笔。"</string>
+    <string name="text_ledger_screen_029" formatted="false">"合并所选"</string>
+    <string name="text_ledger_screen_030" formatted="false">"这个时间范围还没有账目。"</string>
+    <string name="text_ledger_screen_031" formatted="false">"拆分"</string>
+    <string name="text_ledger_screen_032" formatted="false">"账户"</string>
+    <string name="text_ledger_screen_033" formatted="false">"新增账户"</string>
+    <string name="text_ledger_screen_034" formatted="false">"还没有账户，确认支付草稿前请先添加。"</string>
+    <string name="text_ledger_screen_035" formatted="false">"已归档账户（历史账目保留，可用撤销恢复）"</string>
+    <string name="text_ledger_screen_036" formatted="false">"新增分类"</string>
+    <string name="text_ledger_screen_037" formatted="false">"还没有分类，确认支付草稿前请先添加。"</string>
+    <string name="text_ledger_screen_038" formatted="false">"已归档分类"</string>
+    <string name="text_ledger_screen_039" formatted="false">"归档只影响新建账目时的选择，不会改写历史账目。"</string>
+    <string name="text_ledger_screen_040" formatted="false">"请先在“账户与分类”中添加至少一个账户和一个分类。"</string>
+    <string name="text_ledger_screen_041" formatted="false">"确认后写入账本，可用“撤销”回到待确认。"</string>
+    <string name="text_ledger_screen_042" formatted="false">"请先添加账户和分类。"</string>
+    <string name="text_ledger_screen_043" formatted="false">"账户名称"</string>
+    <string name="text_ledger_screen_044" formatted="false">"类型"</string>
+    <string name="text_ledger_screen_045" formatted="false">"币种（CNY）"</string>
+    <string name="text_ledger_screen_046" formatted="false">"账户已有历史账目，币种保持不变；其他币种请新增账户。"</string>
+    <string name="text_ledger_screen_047" formatted="false">"分类名称"</string>
+    <string name="text_ledger_screen_048" formatted="false">"图标标记（可选）"</string>
+    <string name="text_ledger_screen_049" formatted="false">"方向"</string>
+    <string name="text_ledger_screen_050" formatted="false">"暂无可选项"</string>
+    <string name="text_ledger_screen_051" formatted="false">"发生时间"</string>
+    <string name="text_money_amount_field_001" formatted="false">"正/负"</string>
+    <string name="text_notification_access_001" formatted="false">"允许通知"</string>
+    <string name="text_notification_access_002" formatted="false">"通知设置"</string>
+    <string name="text_notification_access_003" formatted="false">"设置提醒精度"</string>
+    <string name="text_official_school_import_001" formatted="false">"华工教务导入"</string>
+    <string name="text_official_school_import_002" formatted="false">"请自行登录学校账号，再进入本学期完整课表，看到课程后点击提取。学校可能要求校内网络或 VPN。"</string>
+    <string name="text_official_school_import_003" formatted="false">"当前学校登录后的课表尚待真机验收。若连接失败，可返回使用教务导出的 PDF。"</string>
+    <string name="text_official_school_import_004" formatted="false">"统一认证"</string>
+    <string name="text_official_school_import_005" formatted="false">"学生教务"</string>
+    <string name="text_onboarding_screen_001" formatted="false">"时间 Agent"</string>
+    <string name="text_onboarding_screen_002" formatted="false">"跳过"</string>
+    <string name="text_onboarding_screen_003" formatted="false">"上一步"</string>
+    <string name="text_onboarding_screen_004" formatted="false">"选择呈现模式"</string>
+    <string name="text_onboarding_screen_005" formatted="false">"两种模式的页面和功能完全一致，随时可以在 管家 → 设置 → 外观 中切换。"</string>
+    <string name="text_onboarding_screen_006" formatted="false">"鱼"</string>
+    <string name="text_onboarding_screen_007" formatted="false">"3 个计划 · 1 条实际记录"</string>
+    <string name="text_onboarding_screen_008" formatted="false">"大肥鱼会安静地待在这里，需要时再出现。"</string>
+    <string name="text_onboarding_screen_009" formatted="false">"拖动这里的示例块、点开始计时都只发生在演示里，不会写入你的数据。"</string>
+    <string name="text_onboarding_screen_010" formatted="false">"第一次计时"</string>
+    <string name="text_onboarding_screen_011" formatted="false">"在“今天”顶部点开始计时，结束时会自动生成一条实际记录。计时中即使离开页面或杀进程，回来后仍会继续。"</string>
+    <string name="text_onboarding_screen_012" formatted="false">"计划 · 晨间专注"</string>
+    <string name="text_onboarding_screen_013" formatted="false">"麦克风、日历、健康、通知监听、悬浮窗不会在引导中申请。"</string>
+    <string name="text_onboarding_screen_014" formatted="false">"已允许"</string>
+    <string name="text_onboarding_screen_015" formatted="false">"可以以后再说，不影响时间管理。"</string>
+    <string name="text_onboarding_screen_016" formatted="false">"现在设置"</string>
+    <string name="text_onboarding_screen_017" formatted="false">"在 管家 → 设置 → AI 中填写 Key 和模型。Key 只保存在本机，不经过官方代理。"</string>
+    <string name="text_onboarding_screen_018" formatted="false">"打开 AI 设置"</string>
+    <string name="text_onboarding_screen_019" formatted="false">"也可以稍后从 管家 → 设置 → AI 进入。"</string>
+    <string name="text_onboarding_screen_020" formatted="false">"没有 Key 时，大肥鱼不会假装回答；计划、实际、任务、提醒、复盘等本地功能仍然可用。"</string>
+    <string name="text_onboarding_screen_021" formatted="false">"从空白开始"</string>
+    <string name="text_onboarding_screen_022" formatted="false">"示例只用于理解界面，不会进入日历同步、公共导出或备份；复盘以外的统计会排除它们。"</string>
+    <string name="text_onboarding_screen_023" formatted="false">"示例数据"</string>
+    <string name="text_onboarding_screen_025" formatted="false">"新手引导"</string>
+    <string name="text_onboarding_screen_026" formatted="false">"重新查看计划/实际演示、权限说明和 AI 设置说明。老用户不会看到示例数据步骤。"</string>
+    <string name="text_onboarding_screen_027" formatted="false">"重新查看引导"</string>
+    <string name="text_onboarding_screen_028" formatted="false">"当前页面没有接入引导导航，请在应用设置中重新打开。"</string>
+    <string name="text_onboarding_screen_029" formatted="false">"示例一周"</string>
+    <string name="text_onboarding_screen_030" formatted="false">"清除示例数据"</string>
+    <string name="text_onboarding_screen_031" formatted="false">"还没有示例数据。加载后会出现在本周时间轴、任务和项目列表中，可随时清除。"</string>
+    <string name="text_onboarding_screen_032" formatted="false">"确认清除"</string>
+    <string name="text_onboarding_screen_033" formatted="false">"以下内容已被你编辑："</string>
+    <string name="text_onboarding_screen_034" formatted="false">"一并删除"</string>
+    <string name="text_onboarding_screen_035" formatted="false">"保留为我的数据"</string>
+    <string name="text_onboarding_screen_036" formatted="false">"保留只会移除示例标记，不删除内容；与它关联的示例任务或项目也会一并保留。"</string>
+    <string name="text_onboarding_screen_037" formatted="false">"示例数据不会进入日历同步、公共导出或备份。复盘可以查看示例；其他统计会把它们排除。"</string>
+    <string name="text_organization_activity_001" formatted="false">"分类与记录整理"</string>
+    <string name="text_organization_activity_002" formatted="false">"关闭错误提示"</string>
+    <string name="text_organization_activity_003" formatted="false">"正在读取分类和标签…"</string>
+    <string name="text_organization_activity_004" formatted="false">"新建分类"</string>
+    <string name="text_organization_activity_005" formatted="false">"归档或删除分类都不会删除任务、记录和笔记。"</string>
+    <string name="text_organization_activity_006" formatted="false">"批量设置分类"</string>
+    <string name="text_organization_activity_007" formatted="false">"还没有分类，先新建一个分类。"</string>
+    <string name="text_organization_activity_008" formatted="false">"合并所选分类"</string>
+    <string name="text_organization_activity_009" formatted="false">"批量归档"</string>
+    <string name="text_organization_activity_010" formatted="false">"批量删除"</string>
+    <string name="text_organization_activity_011" formatted="false">"删除分类时可以选择把内容移到另一个分类，或只取消归类。合并会把所选分类的内容改到目标分类。归档分类不再出现在新建选择中，历史内容保留。"</string>
+    <string name="text_organization_activity_012" formatted="false">"编辑分类"</string>
+    <string name="text_organization_activity_013" formatted="false">"删除分类"</string>
+    <string name="text_organization_activity_014" formatted="false">"标签"</string>
+    <string name="text_organization_activity_015" formatted="false">"新建标签"</string>
+    <string name="text_organization_activity_016" formatted="false">"标签必须实际贴到任务或记录上；删除标签不会删除任务和记录。"</string>
+    <string name="text_organization_activity_017" formatted="false">"为所选添加标签"</string>
+    <string name="text_organization_activity_018" formatted="false">"从所选移除标签"</string>
+    <string name="text_organization_activity_019" formatted="false">"还没有标签，先新建一个标签。"</string>
+    <string name="text_organization_activity_020" formatted="false">"合并所选标签"</string>
+    <string name="text_organization_activity_021" formatted="false">"批量删除标签"</string>
+    <string name="text_organization_activity_022" formatted="false">"合并标签会把所选标签的关联改到目标标签，再删除原标签。批量删除只移除标签和关联，可用撤销恢复。"</string>
+    <string name="text_organization_activity_023" formatted="false">"编辑标签"</string>
+    <string name="text_organization_activity_024" formatted="false">"删除标签"</string>
+    <string name="text_organization_activity_025" formatted="false">"记录整理"</string>
+    <string name="text_organization_activity_026" formatted="false">"合并只支持同一任务、同一分类、时间连续或重叠的已完成记录；不会填补中间空档。拆分保留原记录编号作为前半段。操作都不会修改任何计划。"</string>
+    <string name="text_organization_activity_027" formatted="false">"勾选至少两条记录后先预览，确认合并前后的时长。"</string>
+    <string name="text_organization_activity_028" formatted="false">"预览合并记录"</string>
+    <string name="text_organization_activity_029" formatted="false">"还没有实际记录。"</string>
+    <string name="text_organization_activity_030" formatted="false">"同步来源记录"</string>
+    <string name="text_organization_activity_031" formatted="false">"计时中的记录不能合并或拆分。"</string>
+    <string name="text_organization_activity_032" formatted="false">"拆分为两段"</string>
+    <string name="text_organization_activity_033" formatted="false">"先勾选任务或实际记录，再执行批量分类或标签操作。"</string>
+    <string name="text_organization_activity_034" formatted="false">"选择任务和记录"</string>
+    <string name="text_organization_activity_035" formatted="false">"清空所选"</string>
+    <string name="text_organization_activity_036" formatted="false">"任务"</string>
+    <string name="text_organization_activity_037" formatted="false">"实际记录"</string>
+    <string name="text_organization_activity_038" formatted="false">"完成选择"</string>
+    <string name="text_organization_activity_039" formatted="false">"颜色"</string>
+    <string name="text_organization_activity_040" formatted="false">"任务、实际记录、笔记和活动模板都会保留，不会删除任何内容。请选择这些内容的去向："</string>
+    <string name="text_organization_activity_041" formatted="false">"仅取消归类"</string>
+    <string name="text_organization_activity_042" formatted="false">"没有其他可用分类，将只取消归类。"</string>
+    <string name="text_organization_activity_043" formatted="false">"确认删除分类"</string>
+    <string name="text_organization_activity_044" formatted="false">"合并分类"</string>
+    <string name="text_organization_activity_045" formatted="false">"合并后，任务、实际记录和活动模板会改用目标分类，原分类删除；笔记保留。"</string>
+    <string name="text_organization_activity_046" formatted="false">"没有可用的目标分类，请先新建或恢复一个分类。"</string>
+    <string name="text_organization_activity_047" formatted="false">"确认合并分类"</string>
+    <string name="text_organization_activity_048" formatted="false">"把所选任务和实际记录设为同一分类。只改分类，不改标题、时间、备注或计划。"</string>
+    <string name="text_organization_activity_049" formatted="false">"不设置分类"</string>
+    <string name="text_organization_activity_050" formatted="false">"没有可用分类，将只取消归类。"</string>
+    <string name="text_organization_activity_051" formatted="false">"应用分类"</string>
+    <string name="text_organization_activity_052" formatted="false">"只删除标签和标签关联；任务、实际记录和笔记都会保留。撤销可以恢复标签和原有关联。"</string>
+    <string name="text_organization_activity_053" formatted="false">"确认删除标签"</string>
+    <string name="text_organization_activity_054" formatted="false">"合并标签"</string>
+    <string name="text_organization_activity_055" formatted="false">"这些标签在任务和记录上的关联会改到目标标签，然后删除所选标签。"</string>
+    <string name="text_organization_activity_056" formatted="false">"没有可用的目标标签，请先新建一个标签。"</string>
+    <string name="text_organization_activity_057" formatted="false">"确认合并标签"</string>
+    <string name="text_organization_activity_058" formatted="false">"还没有标签，请先在标签页新建标签。"</string>
+    <string name="text_organization_activity_059" formatted="false">"确认合并记录"</string>
+    <string name="text_organization_activity_060" formatted="false">"备注文字会按时间顺序保留。"</string>
+    <string name="text_organization_activity_061" formatted="false">"标签会合并到保留记录；不会修改任何计划。"</string>
+    <string name="text_organization_activity_062" formatted="false">"已有的一条笔记会移动到保留记录。"</string>
+    <string name="text_organization_activity_063" formatted="false">"确认合并"</string>
+    <string name="text_organization_activity_064" formatted="false">"原记录编号和时间范围保留为前半段；新记录保存后半段。"</string>
+    <string name="text_organization_activity_065" formatted="false">"拆分日期 YYYY-MM-DD"</string>
+    <string name="text_organization_activity_066" formatted="false">"拆分时间 HH:mm"</string>
+    <string name="text_organization_activity_067" formatted="false">"请按 YYYY-MM-DD 和 HH:mm 填写日期和时间。"</string>
+    <string name="text_organization_activity_068" formatted="false">"拆分时间必须严格位于记录开始和结束之间。"</string>
+    <string name="text_organization_activity_069" formatted="false">"确认拆分"</string>
+    <string name="text_pending_payment_card_001" formatted="false">"去确认"</string>
+    <string name="text_personal_memory_screen_001" formatted="false">"个人记忆"</string>
+    <string name="text_personal_memory_screen_002" formatted="false">"记忆用于保存你明确提供或从实际记录中提出的内容。普通文字不会自动限制排程；只有设置了排程约定规则的记忆才会参与检查。"</string>
+    <string name="text_personal_memory_screen_003" formatted="false">"添加记忆"</string>
+    <string name="text_personal_memory_screen_004" formatted="false">"从最近实际记录提出候选"</string>
+    <string name="text_personal_memory_screen_005" formatted="false">"导出个人记忆 JSON"</string>
+    <string name="text_personal_memory_screen_006" formatted="false">"还没有个人记忆。"</string>
+    <string name="text_personal_memory_screen_007" formatted="false">"确认候选"</string>
+    <string name="text_personal_memory_screen_008" formatted="false">"查看记录"</string>
+    <string name="text_personal_memory_screen_009" formatted="false">"删除这条记忆？"</string>
+    <string name="text_personal_memory_screen_010" formatted="false">"类型：偏好 / 可核对事实 / 当前约定"</string>
+    <string name="text_personal_memory_screen_011" formatted="false">"记忆内容"</string>
+    <string name="text_personal_memory_screen_012" formatted="false">"来源原文（可选）"</string>
+    <string name="text_personal_memory_screen_013" formatted="false">"生效日期 YYYY-MM-DD（可选）"</string>
+    <string name="text_personal_memory_screen_014" formatted="false">"失效日期，含当天（可选）"</string>
+    <string name="text_personal_memory_screen_015" formatted="false">"排程规则"</string>
+    <string name="text_personal_memory_screen_016" formatted="false">"适用任务关键词"</string>
+    <string name="text_personal_memory_screen_017" formatted="false">"星期 1–7（周一至周日）"</string>
+    <string name="text_personal_memory_screen_018" formatted="false">"开始 HH:mm"</string>
+    <string name="text_personal_memory_screen_019" formatted="false">"结束 HH:mm"</string>
+    <string name="text_plan_template_screen_001" formatted="false">"计划模板"</string>
+    <string name="text_plan_template_screen_002" formatted="false">"把一天存成模板"</string>
+    <string name="text_plan_template_screen_003" formatted="false">"保存该日已有的日程，之后选一个起始日期预览并勾选要创建的内容。应用是一次事务、一次撤销。"</string>
+    <string name="text_plan_template_screen_004" formatted="false">"将某天保存为模板"</string>
+    <string name="text_plan_template_screen_005" formatted="false">"新建模板"</string>
+    <string name="text_plan_template_screen_006" formatted="false">"还没有计划模板。先用“将某天保存为模板”，或从时间轴多选后保存。"</string>
+    <string name="text_plan_template_screen_007" formatted="false">"模板条目会一起删除；此操作可撤销，已有日程不会受影响。"</string>
+    <string name="text_plan_template_screen_008" formatted="false">"选择日期并应用"</string>
+    <string name="text_plan_template_screen_009" formatted="false">"说明（可选）"</string>
+    <string name="text_plan_template_screen_010" formatted="false">"会把这一天的日程（包括提醒点、全天日程）保存为第 1 天；事务和提醒设置不会复制。"</string>
+    <string name="text_plan_template_screen_011" formatted="false">"请填写模板名称"</string>
+    <string name="text_plan_template_screen_012" formatted="false">"第 1 天对应上面选择的日期；未勾选的内容不会创建。"</string>
+    <string name="text_plan_template_screen_013" formatted="false">"模板读取失败，请关闭后重试"</string>
+    <string name="text_plan_template_screen_014" formatted="false">"全选"</string>
+    <string name="text_plan_template_screen_015" formatted="false">"全不选"</string>
+    <string name="text_plan_template_screen_016" formatted="false">"至少勾选一条内容"</string>
+    <string name="text_project_review_001" formatted="false">"项目与周目标"</string>
+    <string name="text_project_review_002" formatted="false">"设置 / 编辑每周投入目标"</string>
+    <string name="text_project_review_003" formatted="false">"周从周一开始；计划与实际分开。实际裁剪至当前时刻，含进行中计时；重叠记录累计相加，去重时间取并集。完成子任务不会自动完成父任务或项目。点击数值查看来源。"</string>
+    <string name="text_project_review_004" formatted="false">"本周未查到相应事项"</string>
+    <string name="text_project_screens_001" formatted="false">"新建项目"</string>
+    <string name="text_project_screens_002" formatted="false">"还没有项目，先新建一个。"</string>
+    <string name="text_project_screens_003" formatted="false">"安排下一步"</string>
+    <string name="text_project_screens_004" formatted="false">"删除项目"</string>
+    <string name="text_project_screens_005" formatted="false">"确认删除"</string>
+    <string name="text_project_screens_006" formatted="false">"加入已有任务"</string>
+    <string name="text_project_screens_007" formatted="false">"缩进的行是一级子任务。点「打开」进入任务详情后可计时、排程或完成；完成子任务不会自动完成父任务。"</string>
+    <string name="text_project_screens_008" formatted="false">"该项目暂无归属任务，可用上方按钮新建或加入已有任务。"</string>
+    <string name="text_project_screens_009" formatted="false">"解除归属"</string>
+    <string name="text_project_screens_010" formatted="false">"新增子任务"</string>
+    <string name="text_project_screens_011" formatted="false">"项目名称"</string>
+    <string name="text_project_screens_012" formatted="false">"截止日期 yyyy-MM-dd（可留空）"</string>
+    <string name="text_project_screens_013" formatted="false">"状态"</string>
+    <string name="text_project_screens_014" formatted="false">"只列出未归属任何项目的任务；已在其他项目里的任务不会显示，子任务也不能单独移入。"</string>
+    <string name="text_project_screens_015" formatted="false">"暂无可加入的任务。"</string>
+    <string name="text_project_screens_016" formatted="false">"加入"</string>
+    <string name="text_project_screens_017" formatted="false">"预计分钟"</string>
+    <string name="text_project_screens_018" formatted="false">"父任务（可选，仅支持一级子任务）"</string>
+    <string name="text_project_screens_019" formatted="false">"作为根任务"</string>
+    <string name="text_project_screens_020" formatted="false">"目标类型（二选一）"</string>
+    <string name="text_project_screens_021" formatted="false">"暂无活动模板。"</string>
+    <string name="text_project_screens_022" formatted="false">"周起始（周一）yyyy-MM-dd"</string>
+    <string name="text_project_screens_023" formatted="false">"目标分钟数"</string>
+    <string name="text_project_screens_024" formatted="false">"同一周、同一对象已有目标时会编辑原目标，可撤销。目标不会生成实际记录。"</string>
+    <string name="text_quick_entry_screen_001" formatted="false">"快捷记录"</string>
+    <string name="text_quick_entry_screen_002" formatted="false">"新建快捷"</string>
+    <string name="text_quick_entry_screen_003" formatted="false">"还没有快捷记录"</string>
+    <string name="text_quick_entry_screen_004" formatted="false">"把常用活动做成一个芯片：开始计时、开始专注，或预填一条日程/实际记录。"</string>
+    <string name="text_quick_entry_screen_005" formatted="false">"添加第一条"</string>
+    <string name="text_quick_entry_screen_006" formatted="false">"使用"</string>
+    <string name="text_quick_entry_screen_007" formatted="false">"活动（沿用现有活动模板，不另建分类）"</string>
+    <string name="text_quick_entry_screen_008" formatted="false">"显示名称（可选，留空用活动名）"</string>
+    <string name="text_quick_entry_screen_009" formatted="false">"图标（一个字符，可选）"</string>
+    <string name="text_quick_entry_screen_010" formatted="false">"点击芯片后"</string>
+    <string name="text_quick_entry_screen_011" formatted="false">"默认时长（分钟，可选）"</string>
+    <string name="text_quick_entry_screen_012" formatted="false">"上下文（可选）"</string>
+    <string name="text_quick_entry_screen_013" formatted="false">"不关联项目"</string>
+    <string name="text_quick_entry_screen_014" formatted="false">"不关联任务"</string>
+    <string name="text_quick_entry_screen_015" formatted="false">"标签（可选）"</string>
+    <string name="text_quick_entry_screen_016" formatted="false">"固定到“今天”快捷区"</string>
+    <string name="text_quick_entry_screen_017" formatted="false">"结束当前主计时并开始？"</string>
+    <string name="text_quick_entry_screen_018" formatted="false">"若列表已变化，本次不会开始；请重新点击芯片。"</string>
+    <string name="text_quick_entry_screen_019" formatted="false">"快捷"</string>
+    <string name="text_quick_entry_screen_020" formatted="false">"管理"</string>
+    <string name="text_quick_entry_screen_021" formatted="false">"添加快捷记录"</string>
+    <string name="text_recurrence_field_001" formatted="false">"重复"</string>
+    <string name="text_recurrence_field_002" formatted="false">"固定时间"</string>
+    <string name="text_recurrence_field_003" formatted="false">"每次时长范围为 1–1440 分钟"</string>
+    <string name="text_recurrence_field_004" formatted="false">"设置结束日期"</string>
+    <string name="text_recurrence_field_005" formatted="false">"提前提醒分钟数（留空关闭）"</string>
+    <string name="text_recurrence_field_006" formatted="false">"0 表示开始时；最多提前 527040 分钟"</string>
+    <string name="text_recurrence_field_007" formatted="false">"暂停规则"</string>
+    <string name="text_recurring_screen_001" formatted="false">"周期任务与习惯"</string>
+    <string name="text_recurring_screen_002" formatted="false">"本次与以后规则分开处理"</string>
+    <string name="text_recurring_screen_003" formatted="false">"新建规则"</string>
+    <string name="text_recurring_screen_004" formatted="false">"刷新"</string>
+    <string name="text_recurring_screen_005" formatted="false">"暂无周期规则"</string>
+    <string name="text_recurring_screen_006" formatted="false">"只改这一次：在上方本次事项点“仅本次改期”。“改规则”从生效日期起影响以后；已处理或手改的本次保持原样。完成只改状态，时长请计时或补录。"</string>
+    <string name="text_recurring_screen_007" formatted="false">"暂无记录"</string>
+    <string name="text_recurring_screen_008" formatted="false">"仅显示前 50 条，其余请在任务页或复盘查看"</string>
+    <string name="text_recurring_screen_009" formatted="false">"规则将按新设置保存，并影响以后生成的本次事项。"</string>
+    <string name="text_recurring_screen_010" formatted="false">"正在统计受影响的本次事项…"</string>
+    <string name="text_recurring_screen_011" formatted="false">"受保护的本次（已处理、已跳过或已手改）不能随规则修改，将保持原样。"</string>
+    <string name="text_recurring_screen_012" formatted="false">"包括已生成但未完成的实例"</string>
+    <string name="text_recurring_screen_013" formatted="false">"仅以后的实例"</string>
+    <string name="text_recurring_screen_014" formatted="false">"修改安排"</string>
+    <string name="text_recurring_screen_015" formatted="false">"仅修改本次，或从本次日期起修改整个规则。"</string>
+    <string name="text_recurring_screen_016" formatted="false">"仅本次改期"</string>
+    <string name="text_recurring_screen_017" formatted="false">"同时安排时段"</string>
+    <string name="text_recurring_screen_018" formatted="false">"检查改期"</string>
+    <string name="text_recurring_screen_019" formatted="false">"未发现冲突。"</string>
+    <string name="text_recurring_screen_020" formatted="false">"确认后提交改期，不会自动保存。"</string>
+    <string name="text_recurring_screen_021" formatted="false">"重新填写"</string>
+    <string name="text_recurring_screen_022" formatted="false">"查看规则"</string>
+    <string name="text_recurring_screen_023" formatted="false">"本次完成"</string>
+    <string name="text_recurring_screen_024" formatted="false">"关联项目"</string>
+    <string name="text_reminder_field_001" formatted="false">"提醒时间"</string>
+    <string name="text_reminder_field_002" formatted="false">"0 表示事件开始时提醒；可多选，也可添加自定义分钟数。"</string>
+    <string name="text_reminder_field_003" formatted="false">"通知权限未开启，提醒可能无法送达。"</string>
+    <string name="text_reminder_field_004" formatted="false">"开启通知权限"</string>
+    <string name="text_reminder_field_005" formatted="false">"通知权限已开启"</string>
+    <string name="text_reminder_field_006" formatted="false">"自定义分钟数（正整数）"</string>
+    <string name="text_reminder_field_007" formatted="false">"添加自定义提醒"</string>
+    <string name="text_reminder_field_008" formatted="false">"已选提醒（按提前时间升序）"</string>
+    <string name="text_reminder_field_009" formatted="false">"尚未选择提醒时间。"</string>
+    <string name="text_reminder_repeat_dialog_001" formatted="false">"未处理时重复提醒"</string>
+    <string name="text_reminder_repeat_dialog_002" formatted="false">"打开详情或完成后停止重复；稍后提醒不会移动日程。"</string>
+    <string name="text_reminder_repeat_dialog_003" formatted="false">"每隔多少分钟"</string>
+    <string name="text_reminder_repeat_dialog_004" formatted="false">"最多重复次数"</string>
+    <string name="text_reminder_snooze_sheet_001" formatted="false">"稍后提醒"</string>
+    <string name="text_reminder_snooze_sheet_002" formatted="false">"只推迟提醒，不会修改原日程或原提醒时间。"</string>
+    <string name="text_reminder_snooze_sheet_003" formatted="false">"设置自定义两项"</string>
+    <string name="text_reminder_snooze_sheet_004" formatted="false">"自定义稍后时长"</string>
+    <string name="text_reminder_snooze_sheet_005" formatted="false">"填写分钟数（1–10080），两项会出现在稍后提醒列表中。"</string>
+    <string name="text_reminder_snooze_sheet_006" formatted="false">"自定义 1（分钟）"</string>
+    <string name="text_reminder_snooze_sheet_007" formatted="false">"自定义 2（分钟）"</string>
+    <string name="text_reply_copilot_screen_001" formatted="false">"回复副驾"</string>
+    <string name="text_reply_copilot_screen_002" formatted="false">"文字在本机处理。空档仅依据本应用的计划、课程、实际记录和个人约定；外部日历未同步。"</string>
+    <string name="text_reply_copilot_screen_003" formatted="false">"粘贴或分享的原文"</string>
+    <string name="text_reply_copilot_screen_004" formatted="false">"提取候选"</string>
+    <string name="text_reply_copilot_screen_005" formatted="false">"查询日期 yyyy-MM-dd"</string>
+    <string name="text_reply_copilot_screen_006" formatted="false">"从 HH:mm"</string>
+    <string name="text_reply_copilot_screen_007" formatted="false">"至 HH:mm"</string>
+    <string name="text_reply_copilot_screen_008" formatted="false">"另约时长（分钟，请核对）"</string>
+    <string name="text_reply_copilot_screen_009" formatted="false">"核对空档"</string>
+    <string name="text_reply_copilot_screen_010" formatted="false">"存在尚未结束的计时，其后的查询时段暂按占用；结束计时后可重新核对。"</string>
+    <string name="text_reply_copilot_screen_011" formatted="false">"原文无明确起止时间，或原时段不空闲，不能直接接受。"</string>
+    <string name="text_reply_copilot_screen_012" formatted="false">"当前查询范围没有可推荐空档，可换日期或先确认。"</string>
+    <string name="text_reply_copilot_screen_013" formatted="false">"先确认具体时间"</string>
+    <string name="text_reply_copilot_screen_014" formatted="false">"可编辑回复草稿"</string>
+    <string name="text_reply_copilot_screen_015" formatted="false">"编辑回复不会改变下方安排；复制后请在聊天应用自行核对并发送。"</string>
+    <string name="text_reply_copilot_screen_016" formatted="false">"复制回复"</string>
+    <string name="text_reply_copilot_screen_017" formatted="false">"这是我的安排"</string>
+    <string name="text_reply_copilot_screen_018" formatted="false">"单独保存这个安排"</string>
+    <string name="text_reply_copilot_screen_019" formatted="false">"撤销此次安排"</string>
+    <string name="text_report_screen_001" formatted="false">"正在本机计算报表…"</string>
+    <string name="text_report_screen_002" formatted="false">"数据说明"</string>
+    <string name="text_report_screen_003" formatted="false">"数字均按本机原始记录计算；缺失的数据显示为“无数据”，不按 0 处理。"</string>
+    <string name="text_report_screen_004" formatted="false">"总览"</string>
+    <string name="text_report_screen_005" formatted="false">"计划、实际和覆盖均按区间裁剪；实际与计划各自先合并重叠区间再比较。"</string>
+    <string name="text_report_screen_007" formatted="false">"计划 vs 实际偏差最大 5 项"</string>
+    <string name="text_report_screen_008" formatted="false">"按任务或标题匹配；正值为实际超过计划，负值为少于计划。"</string>
+    <string name="text_report_screen_009" formatted="false">"无计划数据"</string>
+    <string name="text_report_screen_010" formatted="false">"截止"</string>
+    <string name="text_report_screen_011" formatted="false">"所选区间没有截止"</string>
+    <string name="text_report_screen_012" formatted="false">"习惯达成"</string>
+    <string name="text_report_screen_013" formatted="false">"未设置习惯"</string>
+    <string name="text_report_screen_014" formatted="false">"周目标"</string>
+    <string name="text_report_screen_015" formatted="false">"无周目标"</string>
+    <string name="text_report_screen_016" formatted="false">"训练"</string>
+    <string name="text_report_screen_017" formatted="false">"无数据（训练数据库不可用）"</string>
+    <string name="text_report_screen_018" formatted="false">"无训练记录"</string>
+    <string name="text_report_screen_019" formatted="false">"记账"</string>
+    <string name="text_report_screen_020" formatted="false">"无记账记录"</string>
+    <string name="text_report_screen_021" formatted="false">"大肥鱼点评（可选）"</string>
+    <string name="text_report_screen_022" formatted="false">"点评由大肥鱼根据上方本地统计生成，与数字分开展示；数字始终以本地计算为准。"</string>
+    <string name="text_report_screen_023" formatted="false">"正在请大肥鱼写点评…"</string>
+    <string name="text_report_screen_024" formatted="false">"AI 点评，仅供参考；不改变上方数字。"</string>
+    <string name="text_report_screen_025" formatted="false">"重新生成"</string>
+    <string name="text_report_screen_026" formatted="false">"未连接大肥鱼；本次只显示本地统计，不生成点评。"</string>
+    <string name="text_report_screen_027" formatted="false">"让大肥鱼写一段点评"</string>
+    <string name="text_report_screen_028" formatted="false">"分享"</string>
+    <string name="text_report_screen_029" formatted="false">"分享长图"</string>
+    <string name="text_report_screen_030" formatted="false">"分享 PDF"</string>
+    <string name="text_report_screen_031" formatted="false">"正在生成分享文件…"</string>
+    <string name="text_report_screen_032" formatted="false">"长图与 PDF 使用当前可见板块和真实内容绘制；内容过长时会分成多张长图或 PDF 多页，不截断。"</string>
+    <string name="text_report_screen_033" formatted="false">"板块显示"</string>
+    <string name="text_report_screen_034" formatted="false">"报表提醒"</string>
+    <string name="text_report_screen_035" formatted="false">"可选；使用 WorkManager 低频调度，仅发布本地通知，不需要 Key 或网络。"</string>
+    <string name="text_report_screen_036" formatted="false">"每周一 09:00"</string>
+    <string name="text_report_screen_037" formatted="false">"提醒查看上周报告"</string>
+    <string name="text_report_screen_038" formatted="false">"每月 1 日 09:00"</string>
+    <string name="text_report_screen_039" formatted="false">"提醒查看上月报告"</string>
+    <string name="text_settings_hub_001" formatted="false">"管家"</string>
+    <string name="text_settings_pages_001" formatted="false">"提醒的声音、震动和锁屏显示在系统通知设置中调整。"</string>
+    <string name="text_settings_pages_002" formatted="false">"打开系统通知设置"</string>
+    <string name="text_settings_pages_003" formatted="false">"打开精确闹钟权限"</string>
+    <string name="text_settings_pages_004" formatted="false">"打开一条日程或任务，在详情中选择“发送到日历”，再在系统日历中确认保存。"</string>
+    <string name="text_settings_pages_005" formatted="false">"修改后如需更新系统日历，请再次打开对应条目。"</string>
+    <string name="text_settings_pages_006" formatted="false">"时间管理、个人管家与大肥鱼陪伴。原生业务保存在本机；AI 使用你自己填写的 API Key。"</string>
+    <string name="text_settings_pages_007" formatted="false">"Linux（proot）与 DSH 为内置角色提供运行环境。"</string>
+    <string name="text_settings_pages_008" formatted="false">"开源许可"</string>
+    <string name="text_structured_draft_preview_001" formatted="false">"原内容"</string>
+    <string name="text_structured_draft_preview_002" formatted="false">"确认后"</string>
+    <string name="text_suggestion_actions_001" formatted="false">"安排到这个时段"</string>
+    <string name="text_suggestion_actions_002" formatted="false">"调整截止 / 延后"</string>
+    <string name="text_suggestion_actions_003" formatted="false">"开始计时"</string>
+    <string name="text_suggestion_actions_004" formatted="false">"事项"</string>
+    <string name="text_suggestion_actions_005" formatted="false">"暂缓 1 小时"</string>
+    <string name="text_suggestion_actions_006" formatted="false">"不再提示此类"</string>
+    <string name="text_suggestion_actions_007" formatted="false">"选择可安排时段"</string>
+    <string name="text_suggestion_actions_008" formatted="false">"按任务预计时长计算，保存时再次检查冲突。"</string>
+    <string name="text_suggestion_actions_009" formatted="false">"今天未查到足够空档，可返回事项调整预计时长或截止。"</string>
+    <string name="text_suggestion_actions_010" formatted="false">"调整截止时间"</string>
+    <string name="text_suggestion_actions_011" formatted="false">"保存截止"</string>
+    <string name="text_suggestion_actions_012" formatted="false">"执行建议"</string>
+    <string name="text_suggestion_actions_013" formatted="false">"确认执行"</string>
+    <string name="text_task_list_content_001" formatted="false">"快速添加任务"</string>
+    <string name="text_task_list_content_002" formatted="false">"添加"</string>
+    <string name="text_task_list_content_003" formatted="false">"上移"</string>
+    <string name="text_task_list_content_004" formatted="false">"下移"</string>
+    <string name="text_task_list_content_005" formatted="false">"排序："</string>
+    <string name="text_template_editor_001" formatted="false">"说明"</string>
+    <string name="text_template_editor_002" formatted="false">"编辑条目"</string>
+    <string name="text_template_editor_003" formatted="false">"移除此条"</string>
+    <string name="text_template_editor_004" formatted="false">"添加日程或任务"</string>
+    <string name="text_template_editor_005" formatted="false">"模板条目"</string>
+    <string name="text_template_editor_006" formatted="false">"标题"</string>
+    <string name="text_template_editor_007" formatted="false">"第几天（从1起）"</string>
+    <string name="text_template_editor_008" formatted="false">"持续天数"</string>
+    <string name="text_template_editor_009" formatted="false">"项目"</string>
+    <string name="text_template_editor_010" formatted="false">"无项目"</string>
+    <string name="text_template_editor_011" formatted="false">"提前提醒（分钟，逗号分隔）"</string>
+    <string name="text_template_editor_012" formatted="false">"保存条目"</string>
+    <string name="text_time_agent_app_001" formatted="false">"现在可在外观中切换到工具模式"</string>
+    <string name="text_time_agent_app_002" formatted="false">"健康与训练"</string>
+    <string name="text_time_agent_app_003" formatted="false">"历史明细"</string>
+    <string name="text_time_agent_app_004" formatted="false">"习惯"</string>
+    <string name="text_time_agent_app_005" formatted="false">"报表"</string>
+    <string name="text_time_agent_app_006" formatted="false">"AI 与本地输入设置"</string>
+    <string name="text_time_agent_app_007" formatted="false">"返回设置"</string>
+    <string name="text_time_agent_app_008" formatted="false">"配置模型与自带 Key"</string>
+    <string name="text_time_agent_app_009" formatted="false">"分类、标签与记录整理"</string>
+    <string name="text_time_agent_app_010" formatted="false">"支付记账"</string>
+    <string name="text_time_agent_app_011" formatted="false">"返回计划"</string>
+    <string name="text_time_agent_app_012" formatted="false">"留下一段时间"</string>
+    <string name="text_time_agent_app_013" formatted="false">"常用活动"</string>
+    <string name="text_time_agent_app_014" formatted="false">"管理活动模板"</string>
+    <string name="text_time_agent_app_015" formatted="false">"安排计划"</string>
+    <string name="text_time_agent_app_016" formatted="false">"补录时间"</string>
+    <string name="text_time_agent_app_017" formatted="false">"开始自由计时"</string>
+    <string name="text_time_agent_app_018" formatted="false">"开始健身训练"</string>
+    <string name="text_time_agent_app_019" formatted="false">"附件收件箱 · 查看或关联资料"</string>
+    <string name="text_time_agent_app_020" formatted="false">"安排时间"</string>
+    <string name="text_time_agent_app_021" formatted="false">"专注"</string>
+    <string name="text_time_agent_app_022" formatted="false">"编辑任务"</string>
+    <string name="text_time_agent_app_023" formatted="false">"交给系统日历确认添加"</string>
+    <string name="text_time_agent_app_024" formatted="false">"查看完整训练记录"</string>
+    <string name="text_time_agent_app_025" formatted="false">"确认后写入本机。重复实例跳过，保留手工修改。"</string>
+    <string name="text_time_agent_app_026" formatted="false">"确认导入"</string>
+    <string name="text_time_agent_app_027" formatted="false">"结束当前专注并开始计时？"</string>
+    <string name="text_time_agent_app_028" formatted="false">"切换主计时？"</string>
+    <string name="text_time_agent_app_029" formatted="false">"切换计时任务？"</string>
+    <string name="text_time_agent_app_030" formatted="false">"先结束当前计时，再开始新任务。已有记录会保留。"</string>
+    <string name="text_time_agent_app_031" formatted="false">"删除任务"</string>
+    <string name="text_time_agent_app_032" formatted="false">"关联日程如何处理？实际记录始终保留，删除操作可撤销。"</string>
+    <string name="text_time_agent_app_033" formatted="false">"保留为独立日程"</string>
+    <string name="text_time_agent_app_034" formatted="false">"同时删除关联日程"</string>
+    <string name="text_time_agent_app_035" formatted="false">"确认操作"</string>
+    <string name="text_time_agent_app_037" formatted="false">"先决定要做什么，再为它留出时间。"</string>
+    <string name="text_time_agent_app_038" formatted="false">"生活期限 · 续费 / 归还 / 生日"</string>
+    <string name="text_time_agent_app_039" formatted="false">"回复副驾 · 结合空档起草"</string>
+    <string name="text_time_agent_app_040" formatted="false">"附件收件箱 · 文件与文字"</string>
+    <string name="text_time_agent_app_041" formatted="false">"健身训练"</string>
+    <string name="text_time_agent_app_042" formatted="false">"动作库、训练记录与 3D 肌群"</string>
+    <string name="text_time_agent_app_043" formatted="false">"待完成"</string>
+    <string name="text_time_agent_app_044" formatted="false">"已完成"</string>
+    <string name="text_time_agent_app_045" formatted="false">"创建第一个任务"</string>
+    <string name="text_time_agent_app_046" formatted="false">"时间留下的痕迹"</string>
+    <string name="text_time_agent_app_047" formatted="false">"累计投入逐条相加；去重跨度合并重叠区间。两者含义不同，投入差异不代表时间被浪费。"</string>
+    <string name="text_time_agent_app_048" formatted="false">"分类投入"</string>
+    <string name="text_time_agent_app_049" formatted="false">"还没有本周记录，开始一次计时后回来看看。"</string>
+    <string name="text_time_agent_app_050" formatted="false">"近 14 天投入"</string>
+    <string name="text_time_agent_app_051" formatted="false">"最近两周还没有记录。"</string>
+    <string name="text_time_agent_app_052" formatted="false">"说出安排，让时间就位。"</string>
+    <string name="text_time_agent_app_053" formatted="false">"课程管理"</string>
+    <string name="text_time_agent_app_054" formatted="false">"导入 PDF / 官方教务"</string>
+    <string name="text_time_agent_app_055" formatted="false">"导入 JSON 课表"</string>
+    <string name="text_time_agent_app_056" formatted="false">"PDF 先解析预览，可修正学期、节次和课程行后确认。官方教务入口由你自行登录，读取课表后走同一预览流程。"</string>
+    <string name="text_time_agent_app_057" formatted="false">"已取消课程（可编辑或撤销恢复）"</string>
+    <string name="text_time_agent_app_058" formatted="false">"健身训练 · 动作库 / 3D 肌群"</string>
+    <string name="text_time_agent_app_059" formatted="false">"健康数据同步（睡眠 / 健身）"</string>
+    <string name="text_time_agent_app_060" formatted="false">"语音助手与 DeepSeek 设置"</string>
+    <string name="text_time_agent_app_061" formatted="false">"个人记忆与排程约定"</string>
+    <string name="text_time_agent_app_062" formatted="false">"历史问答 · 实际 / 训练 / 笔记"</string>
+    <string name="text_time_agent_app_063" formatted="false">"从聊天文字提取事项"</string>
+    <string name="text_time_agent_app_064" formatted="false">"操作历史"</string>
+    <string name="text_time_agent_app_065" formatted="false">"保存、删除与计时操作会留下记录，可用右上角撤销或重做。"</string>
+    <string name="text_time_agent_app_066" formatted="false">"数据保存在本机。内置离线中文语音识别，音频不保存也不上传；DeepSeek 仅在你选择发送后理解文字。"</string>
+    <string name="text_timeline_001" formatted="false">"存为模板"</string>
+    <string name="text_timeline_appearance_001" formatted="false">"时间冲突"</string>
+    <string name="text_timeline_canvas_001" formatted="false">"全天"</string>
+    <string name="text_timeline_canvas_002" formatted="false">"今天还没有安排"</string>
+    <string name="text_timeline_conflicts_001" formatted="false">"红色描边表示课程或计划重叠；绿色实际记录独立展示。点击项目查看完整内容。"</string>
+    <string name="text_timeline_palette_001" formatted="false">"选择颜色"</string>
+    <string name="text_timeline_palette_002" formatted="false">"同一模块的计划和实际使用相同颜色。"</string>
+    <string name="text_timeline_palette_003" formatted="false">"恢复默认"</string>
+    <string name="text_timeline_point_markers_001" formatted="false">"该时刻提醒"</string>
+    <string name="text_timeline_toolbar_001" formatted="false">"回到今天"</string>
+    <string name="text_timeline_toolbar_002" formatted="false">"多选日程存为模板"</string>
+    <string name="text_timeline_toolbar_003" formatted="false">"打开语音输入"</string>
+    <string name="text_timeline_toolbar_004" formatted="false">"全天概览"</string>
+    <string name="text_timer_notification_settings_001" formatted="false">"自由计时、专注和训练进行时共用一条通知。关闭通知权限不会中断计时。"</string>
+    <string name="text_timer_notification_settings_002" formatted="false">"无计时时显示快捷通知"</string>
+    <string name="text_timer_notification_settings_003" formatted="false">"锁屏隐藏计时名称"</string>
+    <string name="text_timer_notification_settings_004" formatted="false">"划掉通知后计时仍在进行，下次打开应用会恢复显示。"</string>
+    <string name="text_today_quick_actions_001" formatted="false">"补记时间"</string>
+    <string name="text_today_quick_actions_002" formatted="false">"本次习惯"</string>
+    <string name="text_today_quick_actions_003" formatted="false">"处理期限"</string>
+    <string name="text_voice_sheet_001" formatted="false">"语音与文字"</string>
+    <string name="text_voice_sheet_002" formatted="false">"关闭面板"</string>
+    <string name="text_workout_picker_001" formatted="false">"输入动作名字搜索"</string>
+    <string name="text_workout_picker_002" formatted="false">"3D 肌群"</string>
+    <string name="text_workout_picker_003" formatted="false">"清空选择"</string>
+    <string name="text_workout_picker_004" formatted="false">"查看动作要点"</string>
+    <string name="text_workout_picker_005" formatted="false">"在 3D 模型中查看肌群"</string>
+    <string name="text_workout_picker_006" formatted="false">"自定义动作"</string>
+    <string name="text_workout_picker_007" formatted="false">"动作名称"</string>
+    <string name="text_workout_picker_008" formatted="false">"主要肌群"</string>
+    <string name="text_workout_picker_009" formatted="false">"器械"</string>
+    <string name="text_workout_picker_010" formatted="false">"记录类型"</string>
+    <string name="text_workout_picker_011" formatted="false">"动作要点"</string>
+    <string name="text_workout_screens_001" formatted="false">"训练不存在，返回训练中心"</string>
+    <string name="text_workout_screens_002" formatted="false">"模板尚未保存"</string>
+    <string name="text_workout_screens_003" formatted="false">"可以继续编辑，或保存后返回训练中心。"</string>
+    <string name="text_workout_screens_004" formatted="false">"保存并返回"</string>
+    <string name="text_workout_screens_005" formatted="false">"放弃修改"</string>
+    <string name="text_workout_screens_006" formatted="false">"主计时正在使用"</string>
+    <string name="text_workout_screens_007" formatted="false">"结束当前计时并开始训练？当前计时会先结束并保留记录，训练随后占用主计时。"</string>
+    <string name="text_workout_screens_008" formatted="false">"结束当前计时并开始训练"</string>
+    <string name="text_workout_screens_009" formatted="false">"把每一组，练得有迹可循"</string>
+    <string name="text_workout_screens_010" formatted="false">"动作库"</string>
+    <string name="text_workout_screens_011" formatted="false">"新建训练模板"</string>
+    <string name="text_workout_screens_012" formatted="false">"把常练的动作、组数和休息时间保存为模板，下次直接开练。"</string>
+    <string name="text_workout_screens_013" formatted="false">"开练"</string>
+    <string name="text_workout_screens_014" formatted="false">"完成一次训练后，这里会保留每个动作、训练组和心得。"</string>
+    <string name="text_workout_screens_015" formatted="false">"删除模板？"</string>
+    <string name="text_workout_screens_016" formatted="false">"训练设置"</string>
+    <string name="text_workout_screens_017" formatted="false">"使用磅（lb）"</string>
+    <string name="text_workout_screens_018" formatted="false">"休息 / 阶段结束提示"</string>
+    <string name="text_workout_screens_019" formatted="false">"训练页保持亮屏"</string>
+    <string name="text_workout_screens_020" formatted="false">"系统尚未允许准时提醒，锁屏后的计时提示可能延迟。"</string>
+    <string name="text_workout_screens_021" formatted="false">"设置准时提醒权限"</string>
+    <string name="text_workout_screens_022" formatted="false">"重量以 kg 保存，切换单位不会改写历史容量。最小化后可从训练通知继续。"</string>
+    <string name="text_workout_session_screen_001" formatted="false">"已暂停 · 训练计时和休息倒计时已冻结"</string>
+    <string name="text_workout_session_screen_002" formatted="false">"重试回记时间轴"</string>
+    <string name="text_workout_session_screen_003" formatted="false">"再练一次"</string>
+    <string name="text_workout_session_screen_004" formatted="false">"单组秒表"</string>
+    <string name="text_workout_session_screen_005" formatted="false">"记录时长"</string>
+    <string name="text_workout_session_screen_006" formatted="false">"组间休息"</string>
+    <string name="text_workout_session_screen_007" formatted="false">"+15秒"</string>
+    <string name="text_workout_session_screen_008" formatted="false">"记录本次间歇"</string>
+    <string name="text_workout_session_screen_009" formatted="false">"取消阶段计时"</string>
+    <string name="text_workout_session_screen_010" formatted="false">"添加今天要练的动作"</string>
+    <string name="text_workout_session_screen_011" formatted="false">"打开动作库"</string>
+    <string name="text_workout_session_screen_012" formatted="false">"保存为训练模板"</string>
+    <string name="text_workout_session_screen_013" formatted="false">"放弃训练"</string>
+    <string name="text_workout_session_screen_014" formatted="false">"动作笔记"</string>
+    <string name="text_workout_session_screen_015" formatted="false">"使用上次数据"</string>
+    <string name="text_workout_session_screen_016" formatted="false">"替换动作"</string>
+    <string name="text_workout_session_screen_017" formatted="false">"与下个动作组成超级组"</string>
+    <string name="text_workout_session_screen_018" formatted="false">"解除超级组"</string>
+    <string name="text_workout_session_screen_019" formatted="false">"移除动作"</string>
+    <string name="text_workout_session_screen_020" formatted="false">"同一轮全部动作完成后计入容量；热身组不计容量。"</string>
+    <string name="text_workout_session_screen_021" formatted="false">"记录项"</string>
+    <string name="text_workout_session_screen_022" formatted="false">"上次："</string>
+    <string name="text_workout_session_screen_023" formatted="false">"＋ 添加一组"</string>
+    <string name="text_workout_session_screen_024" formatted="false">"＋ 递减段"</string>
+    <string name="text_workout_session_screen_025" formatted="false">"有氧记录项"</string>
+    <string name="text_workout_session_screen_026" formatted="false">"Tabata 阶段设置"</string>
+    <string name="text_workout_template_editor_001" formatted="false">"训练模板"</string>
+    <string name="text_workout_template_editor_002" formatted="false">"训练说明"</string>
+    <string name="text_workout_template_editor_003" formatted="false">"超级组"</string>
+    <string name="text_workout_template_editor_004" formatted="false">"添加动作"</string>
+</resources>

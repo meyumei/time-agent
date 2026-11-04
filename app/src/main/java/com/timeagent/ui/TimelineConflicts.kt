@@ -62,7 +62,7 @@ fun TimelineConflictsSheet(conflicts: List<TimelineConflict>, zone: ZoneId, onSe
     ModalBottomSheet(onDismissRequest = onClose) {
         Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp).padding(bottom = 32.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text("时间冲突 · ${conflicts.size} 组", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-            Text("红色描边表示课程或计划重叠；绿色实际记录独立展示。点击项目查看完整内容。", style = MaterialTheme.typography.bodySmall)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_timeline_conflicts_001), style = MaterialTheme.typography.bodySmall)
             conflicts.forEach { conflict ->
                 OutlinedCard(colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = .35f))) {
                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -75,7 +75,7 @@ fun TimelineConflictsSheet(conflicts: List<TimelineConflict>, zone: ZoneId, onSe
                     }
                 }
             }
-            TextButton(onClick = onClose) { Text("关闭") }
+            TextButton(onClick = onClose) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_close)) }
         }
     }
 }

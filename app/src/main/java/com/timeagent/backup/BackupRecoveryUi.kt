@@ -17,10 +17,10 @@ fun ComponentActivity.recoverPersonalDataBeforeOpen(): Boolean {
         TimeAgentTheme {
             Surface(Modifier.fillMaxSize()) {
                 Column(Modifier.statusBarsPadding().padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Text("数据恢复等待完成回退", style = MaterialTheme.typography.headlineSmall)
-                    Text("操作前的数据回退文件仍保留。完成回退前暂停写入，避免把两份数据库混用。")
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_backup_recovery_ui_001), style = MaterialTheme.typography.headlineSmall)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_backup_recovery_ui_002))
                     Text(failure.message ?: "暂时无法完成本地回退，请稍后重试。", style = MaterialTheme.typography.bodySmall)
-                    Button(onClick = ::recreate) { Text("重试本地回退") }
+                    Button(onClick = ::recreate) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_backup_recovery_ui_003)) }
                 }
             }
         }

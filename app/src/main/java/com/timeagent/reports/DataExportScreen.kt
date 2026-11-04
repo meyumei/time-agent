@@ -311,7 +311,7 @@ fun DataExportScreen(model: ExportModel, onClose: () -> Unit) {
                     "导出在本机流式生成，期间可随时取消。",
             )
 
-            Text("格式", style = MaterialTheme.typography.titleMedium)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_data_export_screen_001), style = MaterialTheme.typography.titleMedium)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 ExportFormat.entries.forEach { format ->
                     FilterChip(
@@ -331,7 +331,7 @@ fun DataExportScreen(model: ExportModel, onClose: () -> Unit) {
                 style = MaterialTheme.typography.bodySmall,
             )
 
-            Text("时间范围", style = MaterialTheme.typography.titleMedium)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_data_export_screen_002), style = MaterialTheme.typography.titleMedium)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 ExportRangePreset.entries.forEach { preset ->
                     FilterChip(
@@ -356,9 +356,9 @@ fun DataExportScreen(model: ExportModel, onClose: () -> Unit) {
                     Text("结束 ${state.end}")
                 }
             }
-            Text("包含首尾两天；实际抓取按设备时区从开始日 00:00 到结束日次日 00:00。", style = MaterialTheme.typography.bodySmall)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_data_export_screen_003), style = MaterialTheme.typography.bodySmall)
 
-            Text("数据类型", style = MaterialTheme.typography.titleMedium)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_data_export_screen_004), style = MaterialTheme.typography.titleMedium)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 ExportDataType.entries.forEach { type ->
                     val disabled = state.format == ExportFormat.ICS && type != ExportDataType.SCHEDULE
@@ -377,7 +377,7 @@ fun DataExportScreen(model: ExportModel, onClose: () -> Unit) {
 
             Card(Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text("将生成", style = MaterialTheme.typography.labelLarge)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_data_export_screen_005), style = MaterialTheme.typography.labelLarge)
                     Text(state.fileName, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
                     Text(
                         "${state.format.label} · ${state.start} 至 ${state.end} · ${state.types.size} 类数据",
@@ -390,14 +390,14 @@ fun DataExportScreen(model: ExportModel, onClose: () -> Unit) {
                             modifier = Modifier.fillMaxWidth(),
                         )
                         Text("${state.progress}% · ${state.stage}", style = MaterialTheme.typography.bodySmall)
-                        TextButton(onClick = model::cancelExport) { Text("取消导出") }
+                        TextButton(onClick = model::cancelExport) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_data_export_screen_006)) }
                     } else {
                         Button(
                             onClick = { launcher.launch(model.suggestedFileName()) },
                             enabled = state.types.isNotEmpty(),
                             modifier = Modifier.fillMaxWidth(),
                         ) {
-                            Text("选择保存位置并开始导出")
+                            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_data_export_screen_007))
                         }
                     }
                 }
@@ -408,15 +408,15 @@ fun DataExportScreen(model: ExportModel, onClose: () -> Unit) {
             cleanupError?.let {
                 StatusBanner(it)
                 TextButton(onClick = { cleanupError = null; exportPrefs.edit().remove("cleanup_error").apply() }) {
-                    Text("已知晓清理提示")
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_data_export_screen_008))
                 }
             }
             if (state.phase == ExportPhase.SUCCEEDED || state.phase == ExportPhase.FAILED || state.phase == ExportPhase.CANCELLED) {
-                TextButton(onClick = model::dismissResult) { Text("知道了") }
+                TextButton(onClick = model::dismissResult) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_acknowledge)) }
             }
             HorizontalDivider()
             Text(
-                "取消时会清理缓存和未完成文件。若文件提供方拒绝清理，会提示你到所选位置手动删除。" +
+                androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_data_export_screen_009) +
                     "大于 2 秒的导出会显示进度通知，可在通知中取消。",
                 style = MaterialTheme.typography.bodySmall,
             )
@@ -431,9 +431,9 @@ fun DataExportScreen(model: ExportModel, onClose: () -> Unit) {
                 TextButton(onClick = {
                     picker.selectedDateMillis?.let { model.setCustomRange(it.toLocalDateUtc(), state.end) }
                     showStartPicker = false
-                }) { Text("确定") }
+                }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_data_export_screen_010)) }
             },
-            dismissButton = { TextButton(onClick = { showStartPicker = false }) { Text("取消") } },
+            dismissButton = { TextButton(onClick = { showStartPicker = false }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
         ) {
             DatePicker(state = picker)
         }
@@ -446,9 +446,9 @@ fun DataExportScreen(model: ExportModel, onClose: () -> Unit) {
                 TextButton(onClick = {
                     picker.selectedDateMillis?.let { model.setCustomRange(state.start, it.toLocalDateUtc()) }
                     showEndPicker = false
-                }) { Text("确定") }
+                }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_data_export_screen_010)) }
             },
-            dismissButton = { TextButton(onClick = { showEndPicker = false }) { Text("取消") } },
+            dismissButton = { TextButton(onClick = { showEndPicker = false }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
         ) {
             DatePicker(state = picker)
         }

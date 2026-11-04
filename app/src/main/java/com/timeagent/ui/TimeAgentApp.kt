@@ -403,8 +403,8 @@ private data class WorkoutTimerSwitch(
         if (extraScreen == null && editor == null) Column(Modifier.statusBarsPadding()) {
             if (LocalAppearance.current.modeHintPending) {
                 Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text("现在可在外观中切换到工具模式", Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
-                    TextButton(onClick = { ThemePreference(context).acknowledgeModeHint() }) { Text("知道了") }
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_001), Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+                    TextButton(onClick = { ThemePreference(context).acknowledgeModeHint() }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_acknowledge)) }
                 }
             }
             if (tab != 0 && tab != 3) Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp, top = 6.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -538,10 +538,10 @@ private data class WorkoutTimerSwitch(
                     scheduleContent = { PlanScheduleOverview(data, model.repository.now(), zone) { selected = it } })
                 2 -> Column {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                        TextButton(onClick = { openScreen("health") }) { Text("健康与训练") }
-                        TextButton(onClick = { openScreen("history") }) { Text("历史明细") }
-                        TextButton(onClick = { openScreen("habits") }) { Text("习惯") }
-                        TextButton(onClick = { openScreen("reports") }) { Text("报表") }
+                        TextButton(onClick = { openScreen("health") }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_002)) }
+                        TextButton(onClick = { openScreen("history") }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_003)) }
+                        TextButton(onClick = { openScreen("habits") }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_004)) }
+                        TextButton(onClick = { openScreen("reports") }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_005)) }
                     }
                     MinuteClockContent(model) { now ->
                         ReviewScreen(data, reviewWeek, now, zone, ::openOriginal, { openScreen("goals") }, reselectRevision)
@@ -555,11 +555,11 @@ private data class WorkoutTimerSwitch(
             onSettings = { assistantSettingsOpen = true }, onCompanion = { openScreen("fish-companion") },
             requestInput = assistantExpanded, onInputFocused = { assistantExpanded = false }, briefing = briefingContent,
             onOpenLocalResult = ::openScreen)
-            else TextButton(onClick = { assistantSettingsOpen = true }) { Text("AI 与本地输入设置") }
+            else TextButton(onClick = { assistantSettingsOpen = true }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_006)) }
         "notification-settings" -> NotificationSettingsScreen(::closeScreen)
         "calendar-settings" -> CalendarSettingsScreen(::closeScreen)
         "about" -> AboutScreen(::closeScreen)
-        "ai-models" -> Column { TextButton(onClick = ::closeScreen) { Text("返回设置") }; TextButton(onClick = { assistantSettingsOpen = true }) { Text("配置模型与自带 Key") } }
+        "ai-models" -> Column { TextButton(onClick = ::closeScreen) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_007)) }; TextButton(onClick = { assistantSettingsOpen = true }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_008)) } }
         "fish-memory" -> fish?.let { com.timeagent.fish.FishMemoryScreen(it,onClose=::closeScreen) }
         "fish-platforms" -> fish?.let { com.timeagent.fish.FishPlatformScreen(it,onClose=::closeScreen) }
         "fish-proactive" -> fish?.let { com.timeagent.fish.FishProactiveScreen(it,onClose=::closeScreen) }
@@ -582,10 +582,10 @@ private data class WorkoutTimerSwitch(
         "appearance" -> AppearanceScreen(onClose = ::closeScreen)
         "settings" -> SettingsHub(::openScreen, ::closeScreen)
         "tools" -> Column(Modifier.fillMaxSize().statusBarsPadding()) {
-            TextButton(onClick = ::closeScreen) { Text("返回管家") }
+            TextButton(onClick = ::closeScreen) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_memory_screen_001)) }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                TextButton(onClick = { context.startActivity(android.content.Intent(context, com.timeagent.organization.OrganizationActivity::class.java)) }) { Text("分类、标签与记录整理") }
-                TextButton(onClick = { openScreen("ledger") }) { Text("支付记账") }
+                TextButton(onClick = { context.startActivity(android.content.Intent(context, com.timeagent.organization.OrganizationActivity::class.java)) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_009)) }
+                TextButton(onClick = { openScreen("ledger") }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_010)) }
             }
             SettingsScreen(data, busy,
                 { filePicker.launch(arrayOf("application/json", "text/*")) }, { editor = EditorRequest(EditorKind.COURSE, it) },
@@ -594,7 +594,7 @@ private data class WorkoutTimerSwitch(
                 onMemory = { openScreen("memory") }, onHistory = { openScreen("history") }, onExtract = { extractionText = ""; openScreen("extract") })
         }
         "tasks" -> Column(Modifier.fillMaxSize().statusBarsPadding()) {
-            TextButton(onClick = ::closeScreen) { Text("返回计划") }
+            TextButton(onClick = ::closeScreen) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_011)) }
             TaskScreen(data, zone, { selected = it }, { editor = EditorRequest(EditorKind.TASK) }, ::startTimer,
                 onInbox = { openScreen("inbox") }, onProjects = { openScreen("projects") }, onRecurring = { openScreen("recurring") },
                 onDeadlines = { openScreen("deadlines") }, onAttachments = { openScreen("attachments") },
@@ -685,25 +685,25 @@ private data class WorkoutTimerSwitch(
         onOpenLocalResult = { voiceControl.cancel(); voiceSheetOpen = false; openScreen(it) })
     if (assistantSettingsOpen) ConversationSettingsDialog(assistantSettings, runtimeMode = fish != null, onSaved = { fish?.settingsSaved() }) { assistantSettingsOpen = false }
 
-    if (addMenu) AlertDialog(onDismissRequest = { addMenu = false }, title = { Text("留下一段时间") }, text = {
+    if (addMenu) AlertDialog(onDismissRequest = { addMenu = false }, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_012)) }, text = {
         Column(Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState())) {
-            Text("常用活动", style = MaterialTheme.typography.labelLarge)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_013), style = MaterialTheme.typography.labelLarge)
             data.activities.filter { it.parentId == null && it.archivedAt == null }.forEach { parent ->
                 TextButton(onClick = { addMenu = false; editor = EditorRequest(EditorKind.TASK, activityId = parent.id) }) { Text(parent.name) }
                 data.activities.filter { it.parentId == parent.id && it.archivedAt == null }.chunked(2).forEach { children ->
                     Row { children.forEach { child -> TextButton(onClick = { addMenu = false; editor = EditorRequest(EditorKind.TASK, activityId = child.id) }) { Text(child.name) } } }
                 }
             }
-            TextButton(onClick = { addMenu = false; openScreen("activities") }) { Text("管理活动模板") }
+            TextButton(onClick = { addMenu = false; openScreen("activities") }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_014)) }
             HorizontalDivider()
-            TextButton(onClick = { addMenu = false; editor = EditorRequest(EditorKind.TASK) }) { Text("新建任务") }
-            TextButton(onClick = { addMenu = false; editor = EditorRequest(EditorKind.PLAN) }) { Text("安排计划") }
-            TextButton(onClick = { addMenu = false; editor = EditorRequest(EditorKind.RECORD) }) { Text("补录时间") }
-            TextButton(onClick = { addMenu = false; startTimer(null) }) { Text("开始自由计时") }
-            TextButton(onClick = { addMenu = false; openScreen("focus") }) { Text("开始专注") }
-            TextButton(onClick = { addMenu = false; openScreen("workout") }, modifier = Modifier.testTag("start-workout-entry")) { Text("开始健身训练") }
+            TextButton(onClick = { addMenu = false; editor = EditorRequest(EditorKind.TASK) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_new_task)) }
+            TextButton(onClick = { addMenu = false; editor = EditorRequest(EditorKind.PLAN) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_015)) }
+            TextButton(onClick = { addMenu = false; editor = EditorRequest(EditorKind.RECORD) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_016)) }
+            TextButton(onClick = { addMenu = false; startTimer(null) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_017)) }
+            TextButton(onClick = { addMenu = false; openScreen("focus") }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_006)) }
+            TextButton(onClick = { addMenu = false; openScreen("workout") }, modifier = Modifier.testTag("start-workout-entry")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_018)) }
         }
-    }, confirmButton = { TextButton(onClick = { addMenu = false }) { Text("关闭") } })
+    }, confirmButton = { TextButton(onClick = { addMenu = false }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_close)) } })
 
     val pendingEditors = editorDrafts.values.filter { it.first == tab }.map { it.second }
     if (editor == null && pendingEditors.isNotEmpty()) androidx.compose.ui.window.Popup(alignment = Alignment.BottomCenter) {
@@ -826,19 +826,19 @@ private data class WorkoutTimerSwitch(
                             TimelineColorChoice(selection.timelineColorSubject(), selection.title)
                             selection.dueAt?.let { Text("截止 ${Instant.ofEpochMilli(it).label(zone)}") }
                             if (selection.description.isNotBlank()) Text(selection.description)
-                            TextButton(onClick = { selected = null; openScreen("attachments") }) { Text("附件收件箱 · 查看或关联资料") }
+                            TextButton(onClick = { selected = null; openScreen("attachments") }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_019)) }
                             Text("${data.plans.count { it.taskId == selection.id }} 个计划块 · ${data.records.count { it.taskId == selection.id }} 条实际记录", style = MaterialTheme.typography.bodySmall)
                             data.plans.filter { it.taskId == selection.id }.forEach { item -> TextButton(onClick = { selected = data.timeline(now).first { it.id == item.id } }) { Text("计划 ${Instant.ofEpochMilli(item.startAt).label(zone)}") } }
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Button(onClick = { startTimer(selection.id); selected = null }, enabled = !busy) { Text("开始计时") }
-                                OutlinedButton(onClick = { editor = EditorRequest(EditorKind.PLAN, taskId = selection.id, scheduleRange = true); selected = null }) { Text("安排时间") }
-                                TextButton(onClick = { selected = null; openScreen("focus-task:${selection.id}") }) { Text("专注") }
+                                Button(onClick = { startTimer(selection.id); selected = null }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_suggestion_actions_003)) }
+                                OutlinedButton(onClick = { editor = EditorRequest(EditorKind.PLAN, taskId = selection.id, scheduleRange = true); selected = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_020)) }
+                                TextButton(onClick = { selected = null; openScreen("focus-task:${selection.id}") }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_021)) }
                             }
                             Row {
-                                TextButton(onClick = { editor = EditorRequest(EditorKind.TASK, selection); selected = null }) { Text("编辑任务") }
-                                TextButton(onClick = { openNote("TASK", selection.id, selection.title) }, modifier = Modifier.testTag("task-note-entry")) { Text("记笔记") }
+                                TextButton(onClick = { editor = EditorRequest(EditorKind.TASK, selection); selected = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_022)) }
+                                TextButton(onClick = { openNote("TASK", selection.id, selection.title) }, modifier = Modifier.testTag("task-note-entry")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_activities_007)) }
                                 TextButton(onClick = { model.perform(onSuccess = { selected = null }) { model.repository.saveTask(selection.copy(status = if (selection.status == "COMPLETED") "TODO" else "COMPLETED"), selection.version) } }, enabled = !busy) { Text(if (selection.status == "COMPLETED") "重新打开" else "标记完成") }
-                                TextButton(onClick = { deletingTask = selection }) { Text("删除") }
+                                TextButton(onClick = { deletingTask = selection }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_delete)) }
                             }
                         }
                         is TimelineItem -> {
@@ -852,9 +852,9 @@ private data class WorkoutTimerSwitch(
                             if (selection.kind == ItemKind.PLAN || selection.kind == ItemKind.COURSE) OutlinedButton(onClick = {
                                 calendarTitle = selection.title; calendarStart = selection.span.start.toEpochMilli(); calendarEnd = selection.span.end.toEpochMilli()
                                 selected = null; openScreen("calendar")
-                            }) { Text("交给系统日历确认添加") }
+                            }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_023)) }
                             (selection.entity as? TimeRecordEntity)?.takeIf { it.source == "WORKOUT" && it.id.startsWith("workout:") }?.let { record ->
-                                Button(onClick = { selected = null; openScreen("workout:${record.id.removePrefix("workout:")}") }) { Text("查看完整训练记录") }
+                                Button(onClick = { selected = null; openScreen("workout:${record.id.removePrefix("workout:")}") }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_024)) }
                             }
                             val overlaps = data.timeline(now).filter { it.id != selection.id && (it.kind == ItemKind.RECORD) == (selection.kind == ItemKind.RECORD) && selection.span.overlaps(it.span) }
                             if (overlaps.isNotEmpty()) Text((if (selection.kind == ItemKind.RECORD) "与实际记录重叠：" else "时间冲突：") + overlaps.joinToString("、") { it.title }, color = MaterialTheme.colorScheme.error)
@@ -868,13 +868,13 @@ private data class WorkoutTimerSwitch(
                                 val editable = selection.readOnlyReason == null &&
                                     ((selection.entity as? TimeRecordEntity)?.endAt != null || selection.kind != ItemKind.RECORD)
                                 val noteType = when (selection.entity) { is ScheduleBlockEntity -> "PLAN"; is TimeRecordEntity -> "RECORD"; is CourseOccurrenceEntity -> "OCCURRENCE"; else -> null }
-                                if (noteType != null) TextButton(onClick = { openNote(noteType, (selection.entity as? TimeRecordEntity)?.id ?: selection.id, selection.title) }) { Text("记笔记") }
+                                if (noteType != null) TextButton(onClick = { openNote(noteType, (selection.entity as? TimeRecordEntity)?.id ?: selection.id, selection.title) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_activities_007)) }
                                 TextButton(onClick = { val record = selection.entity as? TimeRecordEntity
                                     val focus = record?.takeIf { it.source == "FOCUS" }?.let { actual -> data.focusSessions.firstOrNull { "focus:${it.id}" == actual.id } }
                                     editor = EditorRequest(when (selection.kind) { ItemKind.COURSE -> EditorKind.COURSE; ItemKind.PLAN -> EditorKind.PLAN; ItemKind.RECORD -> EditorKind.RECORD }, selection.entity,
                                         initialStartAt = selection.span.start.toEpochMilli(), initialEndAt = selection.span.end.toEpochMilli(),
                                         focusSessionId = focus?.id, focusVersion = focus?.version,
-                                        focusSegmentIndex = selection.id.substringAfter("#segment:", "").toIntOrNull()); selected = null }, enabled = editable) { Text("修改") }
+                                        focusSegmentIndex = selection.id.substringAfter("#segment:", "").toIntOrNull()); selected = null }, enabled = editable) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_chat_extraction_screen_006)) }
                                 TextButton(onClick = { val requestId = UUID.randomUUID().toString(); confirmation = "确认${if (selection.kind == ItemKind.COURSE) "取消这一次课程" else "删除此时间块"}？可以撤销恢复。" to {
                                     model.perform(onSuccess = { selected = null }) { when (val item = selection.entity) { is ScheduleBlockEntity -> model.repository.deletePlan(item.id, item.version, requestId); is TimeRecordEntity -> model.repository.deleteRecord(item.id, item.version, requestId); is CourseOccurrenceEntity -> model.repository.saveOccurrence(item.copy(status = "CANCELLED"), item.version) } }
                                 } }, enabled = editable && !busy) { Text(if (selection.kind == ItemKind.COURSE) "取消本次课程" else "删除") }
@@ -887,17 +887,17 @@ private data class WorkoutTimerSwitch(
     }
     preview?.let { value ->
         val requestId = remember(value) { UUID.randomUUID().toString() }
-        AlertDialog(onDismissRequest = { if (!busy) preview = null }, title = { Text("课表导入预览") }, text = {
+        AlertDialog(onDismissRequest = { if (!busy) preview = null }, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_import_screen_016)) }, text = {
             Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(value.bundle.term.name); Text("${value.bundle.term.firstWeekStart} 起 · ${value.bundle.term.teachingWeeks} 周 · ${value.bundle.term.zone.id}", style = MaterialTheme.typography.bodySmall)
                 Text("新增 ${value.newCount} 次课程 · 已存在 ${value.duplicateCount} 次 · 手工修改保护 ${value.protectedCount} 次", fontWeight = FontWeight.SemiBold)
                 value.bundle.courses.forEach { Text("${it.name} · ${it.location}", style = MaterialTheme.typography.bodySmall) }
-                Text("确认后写入本机。重复实例跳过，保留手工修改。", style = MaterialTheme.typography.bodySmall)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_025), style = MaterialTheme.typography.bodySmall)
             }
-        }, confirmButton = { TextButton(onClick = { model.perform(onSuccess = { preview = null; navigator.resetToToday() }) { model.repository.commitImport(value, requestId) } }, enabled = !busy) { Text("确认导入") } }, dismissButton = { TextButton(onClick = { preview = null }, enabled = !busy) { Text("取消") } })
+        }, confirmButton = { TextButton(onClick = { model.perform(onSuccess = { preview = null; navigator.resetToToday() }) { model.repository.commitImport(value, requestId) } }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_026)) } }, dismissButton = { TextButton(onClick = { preview = null }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } })
     }
     focusSwitch?.let { target ->
-        AlertDialog(onDismissRequest = { focusSwitch = null }, title = { Text("结束当前专注并开始计时？") },
+        AlertDialog(onDismissRequest = { focusSwitch = null }, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_027)) },
             text = { Text("${target.first.label} 已专注的部分会保存为实际记录。") },
             confirmButton = { TextButton(onClick = { model.perform(onSuccess = { focusSwitch = null }) {
                 model.repository.commands.execute(com.timeagent.domain.command.SwitchFocusToTimer(target.third,
@@ -905,13 +905,13 @@ private data class WorkoutTimerSwitch(
                     target.second?.let { id -> data.tasks.firstOrNull { it.id == id }?.version })).also {
                     if (it.status !in setOf(com.timeagent.domain.command.CommandStatus.APPLIED, com.timeagent.domain.command.CommandStatus.DUPLICATE)) error(it.message)
                 }
-            } }, enabled = !busy) { Text("结束并开始") } },
-            dismissButton = { TextButton(onClick = { focusSwitch = null }) { Text("取消") } })
+            } }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_007)) } },
+            dismissButton = { TextButton(onClick = { focusSwitch = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } })
     }
     workoutSwitch?.let { target ->
         val hasSets = WorkoutRules.summary(target.session, model.clock.now().toEpochMilli()).completedSets > 0
         AlertDialog(onDismissRequest = { workoutSwitch = null },
-            title = { Text("切换主计时？") },
+            title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_028)) },
             text = { Text(if (hasSets) "结束当前训练并保存实际记录，再开始计时。" else "当前训练还没有完成的组，放弃本次空训练后再开始计时。") },
             confirmButton = { TextButton(onClick = {
                 model.perform(onSuccess = { workoutSwitch = null }) {
@@ -919,22 +919,29 @@ private data class WorkoutTimerSwitch(
                         target.taskVersion, target.requestId)
                 }
             }, enabled = !busy) { Text(if (hasSets) "结束并开始" else "放弃空训练并开始") } },
-            dismissButton = { TextButton(onClick = { workoutSwitch = null }) { Text("取消") } })
+            dismissButton = { TextButton(onClick = { workoutSwitch = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } })
     }
-    switchTask?.let { target -> AlertDialog(onDismissRequest = { switchTask = null }, title = { Text("切换计时任务？") }, text = { Text("先结束当前计时，再开始新任务。已有记录会保留。") }, confirmButton = { TextButton(onClick = { model.perform(onSuccess = { switchTask = null }) { model.repository.startTimer(target.first, target.second, switchExisting = true) } }, enabled = !busy) { Text("结束并开始") } }, dismissButton = { TextButton(onClick = { switchTask = null }) { Text("取消") } }) }
+    switchTask?.let { target -> AlertDialog(onDismissRequest = { switchTask = null }, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_029)) }, text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_030)) }, confirmButton = { TextButton(onClick = { model.perform(onSuccess = { switchTask = null }) { model.repository.startTimer(target.first, target.second, switchExisting = true) } }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_007)) } }, dismissButton = { TextButton(onClick = { switchTask = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } }) }
     deletingTask?.let { task ->
         fun delete(action: LinkedScheduleAction) {
             model.perform(onSuccess = { deletingTask = null; selected = null }) { model.repository.deleteTask(task.id, action, task.version) }
         }
-        AlertDialog(onDismissRequest = { if (!busy) deletingTask = null }, title = { Text("删除任务") },
-            text = { Text("关联日程如何处理？实际记录始终保留，删除操作可撤销。") },
+        AlertDialog(onDismissRequest = { if (!busy) deletingTask = null }, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_031)) },
+            text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_032)) },
             confirmButton = { Column {
-                TextButton(onClick = { delete(LinkedScheduleAction.KEEP_INDEPENDENT) }, enabled = !busy) { Text("保留为独立日程") }
-                TextButton(onClick = { delete(LinkedScheduleAction.DELETE) }, enabled = !busy) { Text("同时删除关联日程") }
-            } }, dismissButton = { TextButton(onClick = { deletingTask = null }, enabled = !busy) { Text("取消") } })
+                TextButton(onClick = { delete(LinkedScheduleAction.KEEP_INDEPENDENT) }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_033)) }
+                TextButton(onClick = { delete(LinkedScheduleAction.DELETE) }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_034)) }
+            } }, dismissButton = { TextButton(onClick = { deletingTask = null }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } })
     }
-    confirmation?.let { (message, action) -> AlertDialog(onDismissRequest = { confirmation = null }, title = { Text("确认操作") }, text = { Text(message) }, confirmButton = { TextButton(onClick = { confirmation = null; action() }, enabled = !busy) { Text("确认") } }, dismissButton = { TextButton(onClick = { confirmation = null }) { Text("取消") } }) }
-    error?.let { message -> AlertDialog(onDismissRequest = model::dismissError, title = { Text("操作未完成") }, text = { Text(message) }, confirmButton = { TextButton(onClick = model::dismissError) { Text("知道了") } }) }
+    confirmation?.let { (message, action) -> AlertDialog(onDismissRequest = { confirmation = null }, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_035)) }, text = { Text(message) }, confirmButton = { TextButton(onClick = { confirmation = null; action() }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_confirm)) } }, dismissButton = { TextButton(onClick = { confirmation = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } }) }
+    error?.let { message ->
+        androidx.compose.ui.window.Popup(alignment = Alignment.BottomCenter) {
+            com.timeagent.ui.components.StatusBanner(message,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 100.dp),
+                actionLabel = androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_acknowledge),
+                onAction = model::dismissError)
+        }
+    }
 
     val targetType = noteType
     val targetId = noteId
@@ -995,16 +1002,16 @@ private data class WorkoutTimerSwitch(
     var showCompleted by rememberSaveable { mutableStateOf(false) }
     val tasks = data.tasks.filter { it.deletedAt == null && (if (showCompleted) it.status == "COMPLETED" else it.status != "COMPLETED" && it.status != "CANCELLED") }.sortedWith(compareByDescending<TaskEntity> { it.priority }.thenBy { it.dueAt ?: Long.MAX_VALUE })
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text("先决定要做什么，再为它留出时间。", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
-        OutlinedButton(onClick=onDeadlines,modifier=Modifier.fillMaxWidth().testTag("task-deadline-entry")) { Text("生活期限 · 续费 / 归还 / 生日") }
-        OutlinedButton(onClick=onReply,modifier=Modifier.fillMaxWidth().testTag("task-reply-entry")) { Text("回复副驾 · 结合空档起草") }
-        OutlinedButton(onClick=onAttachments,modifier=Modifier.fillMaxWidth().testTag("task-attachments-entry")) { Text("附件收件箱 · 文件与文字") }
-        OutlinedButton(onClick = onRecurring,modifier=Modifier.fillMaxWidth().testTag("task-recurring-entry")) { Text("周期任务与习惯") }
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_037), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
+        OutlinedButton(onClick=onDeadlines,modifier=Modifier.fillMaxWidth().testTag("task-deadline-entry")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_038)) }
+        OutlinedButton(onClick=onReply,modifier=Modifier.fillMaxWidth().testTag("task-reply-entry")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_039)) }
+        OutlinedButton(onClick=onAttachments,modifier=Modifier.fillMaxWidth().testTag("task-attachments-entry")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_040)) }
+        OutlinedButton(onClick = onRecurring,modifier=Modifier.fillMaxWidth().testTag("task-recurring-entry")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_001)) }
         OutlinedButton(onClick = onProjects, modifier = Modifier.fillMaxWidth().testTag("task-projects-entry")) { Text("项目与子任务 · ${data.projects.count { it.deletedAt == null }} 个项目") }
         Surface(onClick = onInbox, color = MaterialTheme.colorScheme.secondaryContainer, shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth().testTag("task-inbox-entry")) {
             Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text("未安排", fontWeight = FontWeight.SemiBold)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_007), fontWeight = FontWeight.SemiBold)
                     Text(
                         "${data.ideas.count { it.deletedAt == null && it.status == "UNSCHEDULED" }} 个想法 · ${data.reminders.count { it.enabled }} 个任务点提醒",
                         style = MaterialTheme.typography.bodySmall,
@@ -1017,14 +1024,14 @@ private data class WorkoutTimerSwitch(
         Surface(onClick = onWorkout, color = MaterialTheme.colorScheme.surfaceContainer, shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth().testTag("task-workout-entry")) {
             Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text("健身训练", fontWeight = FontWeight.SemiBold)
-                    Text("动作库、训练记录与 3D 肌群", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_041), fontWeight = FontWeight.SemiBold)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_042), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Text(">")
             }
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) { FilterChip(!showCompleted, { showCompleted = false }, label = { Text("待完成") }); FilterChip(showCompleted, { showCompleted = true }, label = { Text("已完成") }) }
-        if (tasks.isEmpty()) { EmptyHint(if (showCompleted) "完成的事，会留在这里" else "从一件小事开始", "任务可以关联多个计划块和实际记录。"); OutlinedButton(onClick = onCreate) { Text("创建第一个任务") } }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) { FilterChip(!showCompleted, { showCompleted = false }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_043)) }); FilterChip(showCompleted, { showCompleted = true }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_044)) }) }
+        if (tasks.isEmpty()) { EmptyHint(if (showCompleted) "完成的事，会留在这里" else "从一件小事开始", "任务可以关联多个计划块和实际记录。"); OutlinedButton(onClick = onCreate) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_045)) } }
         tasks.forEach { task -> Surface(onClick = { onSelect(task) }, color = MaterialTheme.colorScheme.surfaceContainer, shape = RoundedCornerShape(18.dp)) {
             Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -1050,20 +1057,20 @@ private data class WorkoutTimerSwitch(
     val stats = TimeStatistics.calculate(records.map { it.span }, window)
     val planned = data.plans.filter { it.deletedAt == null && it.kind != "POINT" }.sumOf { TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(it.endAt)).clip(window)?.seconds ?: 0 } / 60
     Column(Modifier.fillMaxSize().verticalScroll(scroll).padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        Text("时间留下的痕迹", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_046), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
         listOf("计划投入" to planned, "累计记录投入" to stats.recordedMinutes, "去重时间跨度" to stats.elapsedMinutes).forEach { (title, value) ->
             Surface(shape = RoundedCornerShape(18.dp), color = MaterialTheme.colorScheme.surfaceContainer) { Row(Modifier.fillMaxWidth().padding(18.dp), verticalAlignment = Alignment.CenterVertically) { Text(title, Modifier.weight(1f)); Text(value.minutesLabel(), fontWeight = FontWeight.Bold, color = if (title == "计划投入") Indigo else RecordGreen) } }
         }
-        Text("累计投入逐条相加；去重跨度合并重叠区间。两者含义不同，投入差异不代表时间被浪费。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_047), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         ProjectReviewSection(data,week.selectedWeekStart,now,zone,onOpen,onGoals)
-        Text("分类投入", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_048), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
         (data.categories.map { it.id to it.name } + (null to "未分类")).forEach { (id, name) ->
             val spans = records.filter { (it.entity as TimeRecordEntity).categoryId == id }.map { it.span }
             val minutes = TimeStatistics.calculate(spans, window).recordedMinutes
             if (minutes > 0) { Row { Text(name, Modifier.weight(1f)); Text(minutes.minutesLabel()) }; LinearProgressIndicator(progress = { if (stats.recordedMinutes == 0L) 0f else minutes.toFloat() / stats.recordedMinutes }, modifier = Modifier.fillMaxWidth()) }
         }
-        if (stats.recordedMinutes == 0L) Text("还没有本周记录，开始一次计时后回来看看。", style = MaterialTheme.typography.bodySmall)
-        Text("近 14 天投入", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        if (stats.recordedMinutes == 0L) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_049), style = MaterialTheme.typography.bodySmall)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_050), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
         TrendBars(data, now, zone)
         Spacer(Modifier.height(70.dp))
     }
@@ -1079,7 +1086,7 @@ private data class WorkoutTimerSwitch(
     }
     val maxMinutes = minutesPerDay.maxOfOrNull { it.second } ?: 0L
     Column(Modifier.fillMaxWidth().testTag("review-trend")) {
-        if (maxMinutes == 0L) { Text("最近两周还没有记录。", style = MaterialTheme.typography.bodySmall); return }
+        if (maxMinutes == 0L) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_051), style = MaterialTheme.typography.bodySmall); return }
         val average = minutesPerDay.sumOf { it.second } / 14
         Text("日均 ${average.minutesLabel()} · 最高 ${maxMinutes.minutesLabel()}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Row(Modifier.fillMaxWidth().height(96.dp), verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
@@ -1096,28 +1103,28 @@ private data class WorkoutTimerSwitch(
 @Composable private fun SettingsScreen(data: LocalSnapshot, busy: Boolean, onImport: () -> Unit, onCourse: (CourseOccurrenceEntity) -> Unit, onPdfImport: () -> Unit, onActivities: () -> Unit, onAssistant: () -> Unit, onHealthSync: () -> Unit, onWorkout: () -> Unit, onBackup: () -> Unit, onMemory: () -> Unit, onHistory: () -> Unit, onExtract: () -> Unit) {
     val sampleIds = SampleCourseScope.courses(data.courses).map { it.id }.toSet()
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        Surface(shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.primaryContainer) { Column(Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) { Text("时间 Agent", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold); Text("开发测试版 · ${LocalContext.current.packageManager.getPackageInfo(LocalContext.current.packageName, 0).versionName}", style = MaterialTheme.typography.labelMedium); Text("说出安排，让时间就位。", style = MaterialTheme.typography.bodyMedium) } }
-        Text("课程管理", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-        Button(onClick = onPdfImport, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text("导入 PDF / 官方教务") }
-        Button(onClick = onImport, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text("导入 JSON 课表") }
-        Text("PDF 先解析预览，可修正学期、节次和课程行后确认。官方教务入口由你自行登录，读取课表后走同一预览流程。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Surface(shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.primaryContainer) { Column(Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_001), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold); Text("开发测试版 · ${LocalContext.current.packageManager.getPackageInfo(LocalContext.current.packageName, 0).versionName}", style = MaterialTheme.typography.labelMedium); Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_052), style = MaterialTheme.typography.bodyMedium) } }
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_053), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Button(onClick = onPdfImport, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_054)) }
+        Button(onClick = onImport, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_055)) }
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_056), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         data.terms.filterNot { term -> term.id == "example-2026-fall" && data.courses.none { it.termId == term.id && it.id !in sampleIds } }.forEach { Text("${it.name} · ${it.firstWeekStart} 起 · ${it.teachingWeeks} 周", style = MaterialTheme.typography.bodySmall) }
         val cancelled = data.occurrences.filter { it.status == "CANCELLED" && it.courseId !in sampleIds }
-        if (cancelled.isNotEmpty()) { Text("已取消课程（可编辑或撤销恢复）", style = MaterialTheme.typography.labelLarge); cancelled.forEach { item -> TextButton(onClick = { onCourse(item) }) { Text("${data.courses.firstOrNull { it.id == item.courseId }?.name} · ${item.date}") } } }
+        if (cancelled.isNotEmpty()) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_057), style = MaterialTheme.typography.labelLarge); cancelled.forEach { item -> TextButton(onClick = { onCourse(item) }) { Text("${data.courses.firstOrNull { it.id == item.courseId }?.name} · ${item.date}") } } }
         if (data.imports.isNotEmpty()) Text("最近导入：新增 ${data.imports.first().importedCount} 次，跳过重复 ${data.imports.first().skippedCount} 次", style = MaterialTheme.typography.bodySmall)
         HorizontalDivider()
-        OutlinedButton(onClick = onActivities, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text("管理活动模板") }
-        Button(onClick = onWorkout, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("settings-workout")) { Text("健身训练 · 动作库 / 3D 肌群") }
-        OutlinedButton(onClick = onHealthSync, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("settings-health-sync")) { Text("健康数据同步（睡眠 / 健身）") }
-        OutlinedButton(onClick = onAssistant, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text("语音助手与 DeepSeek 设置") }
-        OutlinedButton(onClick = onBackup, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("settings-backup")) { Text("完整本地备份 / 恢复") }
-        OutlinedButton(onClick = onMemory, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("settings-memory")) { Text("个人记忆与排程约定") }
-        OutlinedButton(onClick = onHistory, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("settings-history")) { Text("历史问答 · 实际 / 训练 / 笔记") }
-        OutlinedButton(onClick = onExtract, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("settings-extract")) { Text("从聊天文字提取事项") }
+        OutlinedButton(onClick = onActivities, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_014)) }
+        Button(onClick = onWorkout, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("settings-workout")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_058)) }
+        OutlinedButton(onClick = onHealthSync, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("settings-health-sync")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_059)) }
+        OutlinedButton(onClick = onAssistant, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_060)) }
+        OutlinedButton(onClick = onBackup, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("settings-backup")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_backup_screen_001)) }
+        OutlinedButton(onClick = onMemory, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("settings-memory")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_061)) }
+        OutlinedButton(onClick = onHistory, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("settings-history")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_062)) }
+        OutlinedButton(onClick = onExtract, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("settings-extract")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_063)) }
         HorizontalDivider()
-        Text("操作历史", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-        if (data.history.isEmpty()) Text("保存、删除与计时操作会留下记录，可用右上角撤销或重做。", style = MaterialTheme.typography.bodySmall)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_064), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        if (data.history.isEmpty()) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_065), style = MaterialTheme.typography.bodySmall)
         data.history.take(12).forEach { item -> Row { Text(item.actionType, Modifier.weight(1f), style = MaterialTheme.typography.bodySmall); Text(if (item.undone) "已撤销" else "已完成", style = MaterialTheme.typography.labelSmall) } }
-        HorizontalDivider(); Text("数据保存在本机。内置离线中文语音识别，音频不保存也不上传；DeepSeek 仅在你选择发送后理解文字。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        HorizontalDivider(); Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_066), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

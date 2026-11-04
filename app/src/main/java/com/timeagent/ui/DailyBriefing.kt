@@ -371,7 +371,7 @@ fun DailyBriefingCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                "今日管家简报 · 正在读取本机记录",
+                androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_daily_briefing_001),
                 style = MaterialTheme.typography.bodySmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -397,7 +397,7 @@ fun DailyBriefingCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "简报",
+                    text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_daily_briefing_002),
                     modifier = Modifier.semantics { contentDescription = "今日管家简报" },
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.primary,
@@ -436,7 +436,7 @@ fun DailyBriefingCard(
                         fontWeight = FontWeight.SemiBold,
                     )
                     val dueProjects = facts.projects.filter { it.deletedAt == null && it.status == "ACTIVE" && it.dueAt != null && Instant.ofEpochMilli(it.dueAt).atZone(zone).toLocalDate() <= now.atZone(zone).toLocalDate().plusDays(7) }.sortedBy { it.dueAt }
-                    if (dueProjects.isNotEmpty()) Text("临近截止项目（含逾期）", style=MaterialTheme.typography.labelLarge)
+                    if (dueProjects.isNotEmpty()) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_daily_briefing_003), style=MaterialTheme.typography.labelLarge)
                     dueProjects.forEach { project ->
                         TextButton(onClick={onOpen("PROJECT",project.id)},modifier=Modifier.testTag("briefing-project-${project.id}")) { Text("${project.name} · 截止 ${Instant.ofEpochMilli(project.dueAt!!).atZone(zone).toLocalDate()} · ${facts.tasks.count { t -> t.deletedAt == null && t.status in setOf("TODO","IN_PROGRESS") && facts.placements.any { it.taskId == t.id && it.projectId == project.id } }} 项待办") }
                     }
@@ -475,7 +475,7 @@ private fun ExpandedBriefing(
         style = MaterialTheme.typography.bodySmall,
     )
     if (briefing.dueTasks.isEmpty()) {
-        Text(text = "今天没有到期任务", style = MaterialTheme.typography.bodySmall)
+        Text(text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_daily_briefing_004), style = MaterialTheme.typography.bodySmall)
     } else {
         briefing.dueTasks.forEach { task ->
             TextButton(
@@ -496,13 +496,13 @@ private fun ExpandedBriefing(
     }
 
     SectionTitle("空闲时段")
-    Text("今天 08:00–22:00 内，扣除安排与实际记录，保留至少 15 分钟的空档。", style = MaterialTheme.typography.bodySmall)
+    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_daily_briefing_005), style = MaterialTheme.typography.bodySmall)
     Text(
         text = "共 ${briefing.freeSlots.size} 段，展示前 ${minOf(3, briefing.freeSlots.size)} 段",
         style = MaterialTheme.typography.bodySmall,
     )
     if (briefing.freeSlots.isEmpty()) {
-        Text(text = "暂无可用的空闲时段", style = MaterialTheme.typography.bodySmall)
+        Text(text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_daily_briefing_006), style = MaterialTheme.typography.bodySmall)
     } else {
         for (index in 0 until minOf(3, briefing.freeSlots.size)) {
             TextButton(
@@ -519,10 +519,10 @@ private fun ExpandedBriefing(
     Text(text = briefing.sleep.todayMessage, style = MaterialTheme.typography.bodySmall)
     val todaySleep = briefing.sleep.today
     if (todaySleep != null) {
-        if (todaySleep.alternatives.isNotEmpty()) Text("其他来源（未相加）：" + todaySleep.alternatives.joinToString("；") { "${com.timeagent.data.healthOriginLabel(it.source)} 主睡眠 ${minutesText(it.mainMinutes)}" }, style = MaterialTheme.typography.bodySmall)
+        if (todaySleep.alternatives.isNotEmpty()) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_daily_briefing_007) + todaySleep.alternatives.joinToString("；") { "${com.timeagent.data.healthOriginLabel(it.source)} 主睡眠 ${minutesText(it.mainMinutes)}" }, style = MaterialTheme.typography.bodySmall)
         (todaySleep.mainRecordIds + todaySleep.napRecordIds).distinct().forEach { recordId ->
             TextButton(onClick = { onOpen("RECORD", recordId) }) {
-                Text("打开睡眠记录")
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_daily_briefing_008))
             }
         }
     }
@@ -536,7 +536,7 @@ private fun ExpandedBriefing(
         )
         past?.mainRecordIds?.forEach { recordId ->
             TextButton(onClick = { onOpen("RECORD", recordId) }) {
-                Text("打开这段睡眠记录")
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_daily_briefing_009))
             }
         }
     }
@@ -565,7 +565,7 @@ private fun ExpandedBriefing(
     Text(text = briefing.health.detail, style = MaterialTheme.typography.bodySmall)
     if (briefing.sync.lastSyncAt > 0) Text("上次读取 ${Instant.ofEpochMilli(briefing.sync.lastSyncAt).label(zone)}", style = MaterialTheme.typography.labelSmall)
     TextButton(onClick = onHealth, modifier = Modifier.testTag("briefing-health")) {
-        Text("查看健康同步")
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_daily_briefing_010))
     }
 }
 

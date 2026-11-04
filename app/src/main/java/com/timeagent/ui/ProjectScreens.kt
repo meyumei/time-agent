@@ -89,8 +89,8 @@ fun ProjectScreen(
                 title = { Text(detail?.name ?: "项目") },
                 navigationIcon = { TextButton(onClick = { if (detailId != null) detailId = null else onClose() }) { Text(if (detailId != null) "项目列表" else "返回") } },
                 actions = {
-                    TextButton(onClick = { model.perform { model.repository.undoLastAction() } }, enabled = data.history.any { !it.undone }) { Text("撤销") }
-                    TextButton(onClick = { model.perform { model.repository.redoLastAction() } }, enabled = data.history.any { it.undone && it.redoable }) { Text("重做") }
+                    TextButton(onClick = { model.perform { model.repository.undoLastAction() } }, enabled = data.history.any { !it.undone }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_undo)) }
+                    TextButton(onClick = { model.perform { model.repository.redoLastAction() } }, enabled = data.history.any { it.undone && it.redoable }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_redo)) }
                 }
             )
         }
@@ -107,10 +107,10 @@ fun ProjectScreen(
                 Button(
                     onClick = { showCreate = true },
                     modifier = Modifier.testTag("project-create")
-                ) { Text("新建项目") }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_001)) }
             }
             if (projects.isEmpty()) {
-                item { Text("还没有项目，先新建一个。") }
+                item { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_002)) }
             }
             items(if (detail != null) listOf(detail) else projects, key = { it.id }) { project ->
                 val owned = tasks.filter { placements[it.id]?.projectId == project.id }
@@ -144,7 +144,7 @@ fun ProjectScreen(
                                 OutlinedButton(
                                     onClick = { onSchedule(next) },
                                     modifier = Modifier.fillMaxWidth().testTag("project-schedule-next")
-                                ) { Text("安排下一步") }
+                                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_003)) }
                             }
                         }
                     }
@@ -243,7 +243,7 @@ fun ProjectScreen(
     deleting?.let { project ->
         AlertDialog(
             onDismissRequest = { deleting = null },
-            title = { Text("删除项目") },
+            title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_004)) },
             text = {
                 Text("确定删除「${project.name}」吗？这是软删除：项目记录会保留，可用应用顶部的撤销按钮恢复；项目下的任务与历史归属保留，可在任务列表继续使用。")
             },
@@ -255,10 +255,10 @@ fun ProjectScreen(
                             action = { model.repository.deleteProject(project.id, project.version) }
                         )
                     }
-                ) { Text("确认删除") }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_005)) }
             },
             dismissButton = {
-                TextButton(onClick = { deleting = null }) { Text("取消") }
+                TextButton(onClick = { deleting = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
             }
         )
     }
@@ -409,28 +409,28 @@ private fun ProjectSection(
 
             if (expanded) {
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    TextButton(onClick = onEdit) { Text("修改") }
-                    TextButton(onClick = onDelete) { Text("删除") }
-                    TextButton(onClick = onGoal) { Text("周目标") }
+                    TextButton(onClick = onEdit) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_chat_extraction_screen_006)) }
+                    TextButton(onClick = onDelete) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_delete)) }
+                    TextButton(onClick = onGoal) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_014)) }
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     TextButton(
                         onClick = onAddExisting,
                         modifier = Modifier.testTag("project-add-existing-${project.id}")
-                    ) { Text("加入已有任务") }
+                    ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_006)) }
                     TextButton(
                         onClick = onAddTask,
                         modifier = Modifier.testTag("project-add-task-${project.id}")
-                    ) { Text("新建任务") }
+                    ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_new_task)) }
                 }
                 Text(
-                    text = "缩进的行是一级子任务。点「打开」进入任务详情后可计时、排程或完成；完成子任务不会自动完成父任务。",
+                    text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_007),
                     style = MaterialTheme.typography.bodySmall
                 )
 
                 if (roots.isEmpty()) {
                     Text(
-                        text = "该项目暂无归属任务，可用上方按钮新建或加入已有任务。",
+                        text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_008),
                         style = MaterialTheme.typography.bodySmall
                     )
                 } else {
@@ -481,7 +481,7 @@ private fun TaskRow(
                 text = if (indented) "└ ${task.title}" else task.title,
                 modifier = Modifier.weight(1f).clickable(onClick = onOpen)
             )
-            TextButton(onClick = onOpen) { Text("打开") }
+            TextButton(onClick = onOpen) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_017)) }
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -492,9 +492,9 @@ private fun TaskRow(
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.weight(1f)
             )
-            TextButton(onClick = onUnassign) { Text("解除归属") }
+            TextButton(onClick = onUnassign) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_009)) }
             if (onAddSubtask != null) {
-                TextButton(onClick = onAddSubtask) { Text("新增子任务") }
+                TextButton(onClick = onAddSubtask) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_010)) }
             }
         }
     }
@@ -526,7 +526,7 @@ private fun ProjectEditDialog(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it; error = null },
-                    label = { Text("项目名称") },
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_011)) },
                     singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -536,12 +536,12 @@ private fun ProjectEditDialog(
                 OutlinedTextField(
                     value = dueText,
                     onValueChange = { dueText = it; error = null },
-                    label = { Text("截止日期 yyyy-MM-dd（可留空）") },
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_012)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(Modifier.height(8.dp))
-                Text(text = "状态", style = MaterialTheme.typography.bodySmall)
+                Text(text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_013), style = MaterialTheme.typography.bodySmall)
                 Row {
                     PROJECT_STATUSES.forEach { option ->
                         TextButton(onClick = { status = option; error = null }) {
@@ -584,10 +584,10 @@ private fun ProjectEditDialog(
                     onSave(trimmedName, dueAt, status)
                 },
                 modifier = Modifier.testTag("project-save")
-            ) { Text("保存") }
+            ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
+            TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
         }
     )
 }
@@ -609,16 +609,16 @@ private fun AddExistingTaskDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("加入已有任务") },
+        title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_006)) },
         text = {
             Column(modifier = Modifier.heightIn(max = 400.dp)) {
                 Text(
-                    text = "只列出未归属任何项目的任务；已在其他项目里的任务不会显示，子任务也不能单独移入。",
+                    text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_014),
                     style = MaterialTheme.typography.bodySmall
                 )
                 Spacer(Modifier.height(8.dp))
                 if (candidates.isEmpty()) {
-                    Text(text = "暂无可加入的任务。", style = MaterialTheme.typography.bodySmall)
+                    Text(text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_015), style = MaterialTheme.typography.bodySmall)
                 } else {
                     LazyColumn(
                         modifier = Modifier
@@ -651,10 +651,10 @@ private fun AddExistingTaskDialog(
                     if (target != null) onConfirm(target)
                 },
                 enabled = selectedId != null
-            ) { Text("加入") }
+            ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_016)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
+            TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
         }
     )
 }
@@ -673,7 +673,7 @@ private fun AddTaskDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("新建任务") },
+        title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_new_task)) },
         text = {
             Column(
                 modifier = Modifier
@@ -683,7 +683,7 @@ private fun AddTaskDialog(
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it; error = null },
-                    label = { Text("任务名称") },
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_009)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -691,12 +691,12 @@ private fun AddTaskDialog(
                 OutlinedTextField(
                     value = minutesText,
                     onValueChange = { minutesText = it; error = null },
-                    label = { Text("预计分钟") },
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_017)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(Modifier.height(8.dp))
-                Text(text = "父任务（可选，仅支持一级子任务）", style = MaterialTheme.typography.bodySmall)
+                Text(text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_018), style = MaterialTheme.typography.bodySmall)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -705,7 +705,7 @@ private fun AddTaskDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     RadioButton(selected = parentId == null, onClick = { parentId = null })
-                    Text("作为根任务")
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_019))
                 }
                 roots.forEach { root ->
                     Row(
@@ -743,10 +743,10 @@ private fun AddTaskDialog(
                     }
                     onConfirm(trimmed, minutes, parentId)
                 }
-            ) { Text("保存") }
+            ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
+            TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
         }
     )
 }
@@ -771,14 +771,14 @@ internal fun WeeklyGoalDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("周目标") },
+        title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_014)) },
         text = {
             Column(
                 modifier = Modifier
                     .heightIn(max = 420.dp)
                     .verticalScroll(rememberScrollState())
             ) {
-                Text(text = "目标类型（二选一）", style = MaterialTheme.typography.bodySmall)
+                Text(text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_020), style = MaterialTheme.typography.bodySmall)
                 Row {
                     TextButton(onClick = { useProject = true; error = null }) {
                         Text(if (useProject) "✓ 项目" else "项目")
@@ -805,7 +805,7 @@ internal fun WeeklyGoalDialog(
                     }
                 } else {
                     if (activities.isEmpty()) {
-                        Text(text = "暂无活动模板。", style = MaterialTheme.typography.bodySmall)
+                        Text(text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_021), style = MaterialTheme.typography.bodySmall)
                     }
                     activities.forEach { activity ->
                         Row(
@@ -827,7 +827,7 @@ internal fun WeeklyGoalDialog(
                 OutlinedTextField(
                     value = weekText,
                     onValueChange = { weekText = it; error = null },
-                    label = { Text("周起始（周一）yyyy-MM-dd") },
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_022)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -835,7 +835,7 @@ internal fun WeeklyGoalDialog(
                 OutlinedTextField(
                     value = minutesText,
                     onValueChange = { minutesText = it; error = null },
-                    label = { Text("目标分钟数") },
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_023)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -847,7 +847,7 @@ internal fun WeeklyGoalDialog(
                     )
                 }
                 Text(
-                    text = "同一周、同一对象已有目标时会编辑原目标，可撤销。目标不会生成实际记录。",
+                    text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_024),
                     style = MaterialTheme.typography.bodySmall
                 )
             }
@@ -891,10 +891,10 @@ internal fun WeeklyGoalDialog(
                     )
                     onSave(goal, existing?.version)
                 }
-            ) { Text("保存") }
+            ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
+            TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
         }
     )
 }

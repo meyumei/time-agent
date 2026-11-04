@@ -168,12 +168,12 @@ fun HabitScreen(
     }
 
     error?.let { message ->
-        AlertDialog(
-            onDismissRequest = model::clearError,
-            title = { Text("操作未完成") },
-            text = { Text(message) },
-            confirmButton = { TextButton(onClick = model::clearError) { Text("知道了") } },
-        )
+        androidx.compose.ui.window.Popup(alignment = Alignment.BottomCenter) {
+            com.timeagent.ui.components.StatusBanner(message,
+                modifier = Modifier.fillMaxWidth().padding(16.dp).navigationBarsPadding(),
+                actionLabel = androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_acknowledge),
+                onAction = model::clearError)
+        }
     }
 }
 
@@ -328,7 +328,7 @@ private fun HabitList(
                 ExtendedFloatingActionButton(
                     onClick = onAdd,
                     icon = { Icon(Icons.Rounded.Add, null) },
-                    text = { Text("新建习惯") },
+                    text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_habit_screen_002)) },
                     modifier = Modifier.testTag("habit-add"),
                 )
             }
@@ -343,9 +343,9 @@ private fun HabitList(
                 item {
                     Surface(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(20.dp)) {
                         Column(Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                            Text("把想坚持的事交给已发生过的时间", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_habit_screen_003), fontWeight = FontWeight.Bold, fontSize = 18.sp)
                             Text(
-                                "自动习惯从实际记录、训练、睡眠与专注推导，不重复存储结果；手动习惯只记录打卡。",
+                                androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_habit_screen_004),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                             )
@@ -465,7 +465,7 @@ private fun HabitDetailScreen(
                         IconButton(onClick = onEdit, enabled = !busy) { Icon(Icons.Rounded.Edit, "编辑习惯") }
                         IconButton(onClick = { confirmArchive = true }, enabled = !busy) { Icon(Icons.Rounded.Archive, "归档习惯") }
                     } else {
-                        TextButton(onClick = { onArchive(false) }, enabled = !busy) { Text("恢复") }
+                        TextButton(onClick = { onArchive(false) }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_restore)) }
                     }
                 },
             )
@@ -489,7 +489,7 @@ private fun HabitDetailScreen(
 
             Surface(color = MaterialTheme.colorScheme.surfaceContainerHigh, shape = RoundedCornerShape(18.dp)) {
                 Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("本周", fontWeight = FontWeight.SemiBold)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_habit_screen_006), fontWeight = FontWeight.SemiBold)
                     WeekStrip(evaluation.weekDays)
                     Text(evaluation.weekLabel, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
@@ -509,7 +509,7 @@ private fun HabitDetailScreen(
             SectionTitle("历史与明细")
             val withEvents = evaluation.days.filter { it.events.isNotEmpty() }.sortedByDescending { it.date }
             if (withEvents.isEmpty()) {
-                Text("所选时间范围内没有源数据。没有数据不等于未达成。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_habit_screen_007), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             withEvents.forEach { day ->
                 Text(
@@ -556,10 +556,10 @@ private fun HabitDetailScreen(
     if (confirmArchive) {
         AlertDialog(
             onDismissRequest = { confirmArchive = false },
-            title = { Text("归档习惯") },
-            text = { Text("归档后不再出现在列表，历史与打卡仍可查看，可随时恢复。") },
-            confirmButton = { TextButton(onClick = { confirmArchive = false; onArchive(true) }) { Text("归档") } },
-            dismissButton = { TextButton(onClick = { confirmArchive = false }) { Text("取消") } },
+            title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_habit_screen_008)) },
+            text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_habit_screen_009)) },
+            confirmButton = { TextButton(onClick = { confirmArchive = false; onArchive(true) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_archive)) } },
+            dismissButton = { TextButton(onClick = { confirmArchive = false }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
         )
     }
 }
@@ -601,7 +601,7 @@ private fun ManualCheckin(
         OutlinedTextField(
             value = note,
             onValueChange = { note = it },
-            label = { Text("备注（可选）") },
+            label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_habit_screen_011)) },
             modifier = Modifier.fillMaxWidth(),
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -618,7 +618,7 @@ private fun ManualCheckin(
                 modifier = Modifier.weight(1f).testTag("habit-checkin-save"),
             ) { Text(if (existing == null) "打卡" else "更新打卡") }
             if (existing != null) {
-                OutlinedButton(onClick = onClear, enabled = !busy) { Text("取消打卡") }
+                OutlinedButton(onClick = onClear, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_habit_screen_012)) }
             }
         }
         if (invalid) {
@@ -690,7 +690,7 @@ private fun TrendChart(weeks: List<HabitWeek>, metric: HabitMetric) {
             }
         }
     }
-    Text("横轴为最近 12 周（含本周）。无数据的周显示为浅色短柱。", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_habit_screen_013), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -809,7 +809,7 @@ private fun HabitEditor(
             TopAppBar(
                 title = { Text(if (existing == null) "新建习惯" else "编辑习惯", fontWeight = FontWeight.Bold) },
                 navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "返回") } },
-                actions = { TextButton(onClick = { onSave(draft) }, enabled = !busy) { Text("保存") } },
+                actions = { TextButton(onClick = { onSave(draft) }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) } },
             )
         },
     ) { padding ->
@@ -820,8 +820,8 @@ private fun HabitEditor(
             OutlinedTextField(
                 value = draft.name,
                 onValueChange = { draft = draft.copy(name = it.take(60)) },
-                label = { Text("习惯名称") },
-                placeholder = { Text("例如：每天学习 2 小时") },
+                label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_habit_screen_014)) },
+                placeholder = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_habit_screen_015)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth().testTag("habit-name"),
             )
@@ -907,15 +907,15 @@ private fun HabitEditor(
             OutlinedTextField(
                 value = draft.startDate,
                 onValueChange = { draft = draft.copy(startDate = it.take(10)) },
-                label = { Text("YYYY-MM-DD；此日期之前不计入") },
+                label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_habit_screen_016)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("未达成时 21:00 提醒")
-                    Text("可选。已达成或非统计日不提醒。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_habit_screen_017))
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_habit_screen_018), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Switch(checked = draft.reminderEnabled, onCheckedChange = { draft = draft.copy(reminderEnabled = it) })
             }
@@ -936,7 +936,7 @@ private fun HabitEditor(
 
             if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
             Text(
-                "自动习惯不需要手动打卡，统计始终来自源数据；修改历史记录后数字立即更新。",
+                androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_habit_screen_019),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

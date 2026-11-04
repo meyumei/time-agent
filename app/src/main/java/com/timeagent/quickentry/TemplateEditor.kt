@@ -31,8 +31,8 @@ internal fun TemplateEditor(
     Scaffold(topBar = { AppTopBar("编辑计划模板", onClose) }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            OutlinedTextField(name, { name = it }, label = { Text("模板名称") }, modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(description, { description = it }, label = { Text("说明") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(name, { name = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_capture_template_dialog_002)) }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(description, { description = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_template_editor_001)) }, modifier = Modifier.fillMaxWidth())
             state.error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
             items.forEach { item ->
                 Card(Modifier.fillMaxWidth()) {
@@ -40,16 +40,16 @@ internal fun TemplateEditor(
                         Text("第${item.dayOffset + 1}天 · ${item.title}")
                         Text("${if (item.kind == TEMPLATE_KIND_TASK) "任务" else "日程"} · ${item.startTime ?: "全天或无时间"} · ${templateDurationLabel(item)}")
                         Row {
-                            TextButton(onClick = { editing = item }) { Text("编辑条目") }
-                            TextButton(onClick = { update(items.filterNot { it.id == item.id }) }) { Text("移除此条") }
+                            TextButton(onClick = { editing = item }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_template_editor_002)) }
+                            TextButton(onClick = { update(items.filterNot { it.id == item.id }) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_template_editor_003)) }
                         }
                     }
                 }
             }
-            OutlinedButton(onClick = { editing = PlanTemplateItemEntity(UUID.randomUUID().toString(), template.id, title = "", startTime = "09:00", durationMinutes = 30) }) { Text("添加日程或任务") }
+            OutlinedButton(onClick = { editing = PlanTemplateItemEntity(UUID.randomUUID().toString(), template.id, title = "", startTime = "09:00", durationMinutes = 30) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_template_editor_004)) }
             Button(onClick = {
                 scope.launch { if (model.saveTemplate(template.copy(name = name, description = description), items) != null) onClose() }
-            }, enabled = !state.busy && name.isNotBlank() && items.isNotEmpty()) { Text("保存模板") }
+            }, enabled = !state.busy && name.isNotBlank() && items.isNotEmpty()) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_capture_template_dialog_004)) }
         }
     }
     editing?.let { item ->
@@ -79,14 +79,14 @@ private fun TemplateItemEditor(
     var reminders by rememberSaveable(item.id) { mutableStateOf(item.reminderOffsets) }
     var notes by rememberSaveable(item.id) { mutableStateOf(item.notes) }
     val validReminders = reminders.isBlank() || reminders.split(',').all { it.trim().toIntOrNull()?.let { n -> n >= 0 } == true }
-    AlertDialog(onDismissRequest = onDismiss, title = { Text("模板条目") },
+    AlertDialog(onDismissRequest = onDismiss, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_template_editor_005)) },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                OutlinedTextField(title, { title = it }, label = { Text("标题") })
+                OutlinedTextField(title, { title = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_template_editor_006)) })
                 Row { listOf(TEMPLATE_KIND_SCHEDULE to "日程", TEMPLATE_KIND_TASK to "任务").forEach { (value, label) ->
                     FilterChip(kind == value, { kind = value }, label = { Text(label) })
                 } }
-                OutlinedTextField(day, { day = it }, label = { Text("第几天（从1起）") }, isError = day.toIntOrNull()?.let { it > 0 } != true)
+                OutlinedTextField(day, { day = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_template_editor_007)) }, isError = day.toIntOrNull()?.let { it > 0 } != true)
                 if (kind == TEMPLATE_KIND_SCHEDULE) {
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         listOf("TIMED" to "时段", "POINT" to "提醒点", "ALL_DAY" to "全天").forEach { (value, label) ->
@@ -98,17 +98,17 @@ private fun TemplateItemEditor(
                     TimeField("开始时刻", LocalTime.parse(minute), { minute = it.toString() })
                     DurationField(duration, { duration = it })
                 } else {
-                    OutlinedTextField(allDayDays, { allDayDays = it }, label = { Text("持续天数") },
+                    OutlinedTextField(allDayDays, { allDayDays = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_template_editor_008)) },
                         isError = allDayDays.toIntOrNull()?.let { it in 1..(Int.MAX_VALUE / 1440) } != true)
                 }
-                Text("项目")
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_template_editor_009))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    FilterChip(projectId == null, { projectId = null }, label = { Text("无项目") })
+                    FilterChip(projectId == null, { projectId = null }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_template_editor_010)) })
                     state.projects.filter { it.deletedAt == null }.forEach { project ->
                         FilterChip(projectId == project.id, { projectId = project.id }, label = { Text(project.name) })
                     }
                 }
-                Text("标签")
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_014))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     state.tags.forEach { tag ->
                         val selected = tags.split(',').filter { it.isNotBlank() }.toSet()
@@ -116,8 +116,8 @@ private fun TemplateItemEditor(
                             label = { Text(tag.name) })
                     }
                 }
-                OutlinedTextField(reminders, { reminders = it }, label = { Text("提前提醒（分钟，逗号分隔）") }, isError = !validReminders)
-                OutlinedTextField(notes, { notes = it }, label = { Text("备注") })
+                OutlinedTextField(reminders, { reminders = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_template_editor_011)) }, isError = !validReminders)
+                OutlinedTextField(notes, { notes = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.field_notes)) })
             }
         }, confirmButton = { TextButton(onClick = {
             onSave(item.copy(title = title.trim(), kind = kind, dayOffset = requireNotNull(day.toIntOrNull()) - 1,
@@ -128,8 +128,8 @@ private fun TemplateItemEditor(
                 reminderOffsets = reminders, notes = notes))
         }, enabled = title.isNotBlank() && day.toIntOrNull()?.let { it > 0 } == true && duration > 0 && validReminders &&
             (kind != TEMPLATE_KIND_SCHEDULE || scheduleKind != TEMPLATE_SCHEDULE_ALL_DAY ||
-                allDayDays.toIntOrNull()?.let { it in 1..(Int.MAX_VALUE / 1440) } == true)) { Text("保存条目") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } })
+                allDayDays.toIntOrNull()?.let { it in 1..(Int.MAX_VALUE / 1440) } == true)) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_template_editor_012)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } })
 }
 
 internal fun templateDurationLabel(item: PlanTemplateItemEntity): String =

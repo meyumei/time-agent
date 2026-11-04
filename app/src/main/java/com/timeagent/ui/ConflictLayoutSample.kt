@@ -94,8 +94,8 @@ fun ConflictLayoutSample(onBack: () -> Unit = {}) {
                 }
                 Spacer(Modifier.width(6.dp))
                 Column {
-                    Text("冲突课程排版样例", fontSize = 20.sp, lineHeight = 27.sp, fontWeight = FontWeight.Bold)
-                    Text("合成课程，仅用于排版对比", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_conflict_layout_sample_001), fontSize = 20.sp, lineHeight = 27.sp, fontWeight = FontWeight.Bold)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_conflict_layout_sample_002), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
             Spacer(Modifier.height(12.dp))
@@ -117,14 +117,14 @@ fun ConflictLayoutSample(onBack: () -> Unit = {}) {
             Spacer(Modifier.height(20.dp))
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("10月21日 · 周三", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                    Text("聚焦日预览 · 08:00–10:40", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_conflict_layout_sample_003), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_conflict_layout_sample_004), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Surface(shape = RoundedCornerShape(8.dp), color = MaterialTheme.colorScheme.errorContainer) {
                     Row(Modifier.padding(horizontal = 8.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Rounded.WarningAmber, null, Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onErrorContainer)
                         Spacer(Modifier.width(4.dp))
-                        Text("3 门冲突", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onErrorContainer)
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_conflict_layout_sample_005), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onErrorContainer)
                     }
                 }
             }
@@ -151,8 +151,8 @@ fun ConflictLayoutSample(onBack: () -> Unit = {}) {
             ) {
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
-                        Text("重叠课程 · 3 门", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                        Text("周三 · 三课共同重叠 09:00–09:40", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_conflict_layout_sample_006), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_conflict_layout_sample_007), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     IconButton(onClick = { detailsOpen = false }) {
                         Icon(Icons.Rounded.Close, "关闭课程详情")
@@ -200,10 +200,10 @@ private fun ConflictSummaryPreview(onOpen: () -> Unit) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Rounded.Layers, null, Modifier.size(20.dp), tint = scheme.primary)
                     Spacer(Modifier.width(8.dp))
-                    Text("一个时段，三门课程", fontSize = 16.sp, lineHeight = 22.sp, fontWeight = FontWeight.Bold)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_conflict_layout_sample_008), fontSize = 16.sp, lineHeight = 22.sp, fontWeight = FontWeight.Bold)
                 }
                 Spacer(Modifier.height(6.dp))
-                Text("重叠课程收成一组，轻点看完整信息", fontSize = 11.sp, lineHeight = 16.sp, color = scheme.onSurfaceVariant)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_conflict_layout_sample_009), fontSize = 11.sp, lineHeight = 16.sp, color = scheme.onSurfaceVariant)
                 Spacer(Modifier.height(13.dp))
                 ConflictSampleCourses.forEach { course ->
                     val dark = scheme.surface.luminance() < .5f
@@ -217,7 +217,7 @@ private fun ConflictSummaryPreview(onOpen: () -> Unit) {
                 }
                 Spacer(Modifier.weight(1f))
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Text("展开 3 张完整课程卡", Modifier.weight(1f), fontSize = 12.sp, color = scheme.primary, fontWeight = FontWeight.SemiBold)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_conflict_layout_sample_010), Modifier.weight(1f), fontSize = 12.sp, color = scheme.primary, fontWeight = FontWeight.SemiBold)
                     Icon(Icons.AutoMirrored.Rounded.ArrowForward, null, Modifier.size(17.dp), tint = scheme.primary)
                 }
             }
@@ -232,7 +232,7 @@ private fun ConflictStaggeredPreview(onOpen: () -> Unit) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.width(47.dp), horizontalAlignment = Alignment.Start) {
                     Text(course.start, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text("开始", fontSize = 9.sp, lineHeight = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_proactive_screen_005), fontSize = 9.sp, lineHeight = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 ConflictSampleFullCard(
                     course,
@@ -240,7 +240,7 @@ private fun ConflictStaggeredPreview(onOpen: () -> Unit) {
                 )
             }
         }
-        Text("按开始时间错层排列，时长以卡片文字为准", fontSize = 10.sp, lineHeight = 15.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_conflict_layout_sample_011), fontSize = 10.sp, lineHeight = 15.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -276,7 +276,7 @@ private fun ConflictSampleExplanation(mode: Int) {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Text("三课共同重叠：09:00–09:40", fontSize = 11.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.error)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_conflict_layout_sample_012), fontSize = 11.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.error)
         }
     }
 }

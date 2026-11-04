@@ -110,7 +110,7 @@ fun ReportScreen(
 
             if (state.loading && state.snapshot == null) {
                 LinearProgressIndicator(Modifier.fillMaxWidth())
-                Text("正在本机计算报表…", style = MaterialTheme.typography.bodyMedium)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_001), style = MaterialTheme.typography.bodyMedium)
             }
             state.error?.let { StatusBanner(it) }
 
@@ -138,7 +138,7 @@ fun ReportScreen(
                 if (ReportSection.LEDGER in state.visibleSections) LedgerSection(snapshot.ledger)
 
                 if (snapshot.notes.isNotEmpty()) {
-                    Text("数据说明", style = MaterialTheme.typography.titleMedium)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_002), style = MaterialTheme.typography.titleMedium)
                     snapshot.notes.forEach { note ->
                         Text("· $note", style = MaterialTheme.typography.bodySmall)
                     }
@@ -218,7 +218,7 @@ fun ReportScreen(
                 )
 
                 Text(
-                    "数字均按本机原始记录计算；缺失的数据显示为“无数据”，不按 0 处理。" +
+                    androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_003) +
                         "“大肥鱼点评”是可选的 AI 文本，不参与计算。",
                     style = MaterialTheme.typography.bodySmall,
                 )
@@ -278,7 +278,7 @@ private fun modelWindow(model: ReportModel, state: ReportUiState): ReportWindow 
 @Composable
 private fun OverviewSection(snapshot: ReportSnapshot) {
     val overview = snapshot.overview
-    Text("总览", style = MaterialTheme.typography.titleLarge)
+    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_004), style = MaterialTheme.typography.titleLarge)
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         MetricTile(
             label = "计划",
@@ -322,7 +322,7 @@ private fun OverviewSection(snapshot: ReportSnapshot) {
         )
     }
     Text(
-        "计划、实际和覆盖均按区间裁剪；实际与计划各自先合并重叠区间再比较。",
+        androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_005),
         style = MaterialTheme.typography.bodySmall,
     )
 }
@@ -351,7 +351,7 @@ private fun DistributionSection(title: String, subtitle: String, slices: List<Di
     Text(title, style = MaterialTheme.typography.titleLarge)
     Text(subtitle, style = MaterialTheme.typography.bodySmall)
     if (slices.isEmpty()) {
-        Text("无数据", style = MaterialTheme.typography.bodyMedium)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.state_no_data), style = MaterialTheme.typography.bodyMedium)
         return
     }
     slices.forEach { slice ->
@@ -370,13 +370,13 @@ private fun DistributionSection(title: String, subtitle: String, slices: List<Di
 
 @Composable
 private fun DeviationSection(items: List<DeviationReport>) {
-    Text("计划 vs 实际偏差最大 5 项", style = MaterialTheme.typography.titleLarge)
+    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_007), style = MaterialTheme.typography.titleLarge)
     Text(
-        "按任务或标题匹配；正值为实际超过计划，负值为少于计划。",
+        androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_008),
         style = MaterialTheme.typography.bodySmall,
     )
     if (items.isEmpty()) {
-        Text("无计划数据", style = MaterialTheme.typography.bodyMedium)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_009), style = MaterialTheme.typography.bodyMedium)
         return
     }
     items.forEach { item ->
@@ -399,9 +399,9 @@ private fun DeviationSection(items: List<DeviationReport>) {
 
 @Composable
 private fun DeadlineSection(report: DeadlineReport?) {
-    Text("截止", style = MaterialTheme.typography.titleLarge)
+    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_010), style = MaterialTheme.typography.titleLarge)
     if (report == null) {
-        Text("所选区间没有截止", style = MaterialTheme.typography.bodyMedium)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_011), style = MaterialTheme.typography.bodyMedium)
         return
     }
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -413,9 +413,9 @@ private fun DeadlineSection(report: DeadlineReport?) {
 
 @Composable
 private fun HabitSection(section: HabitReportSection?) {
-    Text("习惯达成", style = MaterialTheme.typography.titleLarge)
+    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_012), style = MaterialTheme.typography.titleLarge)
     if (section == null) {
-        Text("无数据", style = MaterialTheme.typography.bodyMedium)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.state_no_data), style = MaterialTheme.typography.bodyMedium)
         return
     }
     if (section.unavailable) {
@@ -423,7 +423,7 @@ private fun HabitSection(section: HabitReportSection?) {
         return
     }
     if (section.lines.isEmpty()) {
-        Text("未设置习惯", style = MaterialTheme.typography.bodyMedium)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_013), style = MaterialTheme.typography.bodyMedium)
         return
     }
     Text(
@@ -453,9 +453,9 @@ private fun HabitSection(section: HabitReportSection?) {
 
 @Composable
 private fun WeeklyGoalSection(goals: List<WeeklyGoalReportLine>) {
-    Text("周目标", style = MaterialTheme.typography.titleLarge)
+    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_014), style = MaterialTheme.typography.titleLarge)
     if (goals.isEmpty()) {
-        Text("无周目标", style = MaterialTheme.typography.bodyMedium)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_015), style = MaterialTheme.typography.bodyMedium)
         return
     }
     goals.forEach { goal ->
@@ -476,13 +476,13 @@ private fun WeeklyGoalSection(goals: List<WeeklyGoalReportLine>) {
 
 @Composable
 private fun WorkoutSection(report: WorkoutReport?) {
-    Text("训练", style = MaterialTheme.typography.titleLarge)
+    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_016), style = MaterialTheme.typography.titleLarge)
     if (report == null) {
-        Text("无数据（训练数据库不可用）", style = MaterialTheme.typography.bodyMedium)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_017), style = MaterialTheme.typography.bodyMedium)
         return
     }
     if (report.sessions == 0) {
-        Text("无训练记录", style = MaterialTheme.typography.bodyMedium)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_018), style = MaterialTheme.typography.bodyMedium)
         return
     }
     Text("${report.sessions} 次 · ${ReportFormat.minutes(report.minutes)} · ${report.completedSets} 组")
@@ -491,9 +491,9 @@ private fun WorkoutSection(report: WorkoutReport?) {
 
 @Composable
 private fun LedgerSection(report: LedgerReport?) {
-    Text("记账", style = MaterialTheme.typography.titleLarge)
+    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_019), style = MaterialTheme.typography.titleLarge)
     if (report == null) {
-        Text("无记账记录", style = MaterialTheme.typography.bodyMedium)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_020), style = MaterialTheme.typography.bodyMedium)
         return
     }
     Text("${report.count} 笔 · 净支出 ${ReportFormat.money(report.netExpenseMinor)}")
@@ -518,23 +518,23 @@ private fun FishSection(
 ) {
     val snapshot = state.snapshot ?: return
     val scope = rememberCoroutineScope()
-    Text("大肥鱼点评（可选）", style = MaterialTheme.typography.titleLarge)
+    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_021), style = MaterialTheme.typography.titleLarge)
     Text(
-        "点评由大肥鱼根据上方本地统计生成，与数字分开展示；数字始终以本地计算为准。",
+        androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_022),
         style = MaterialTheme.typography.bodySmall,
     )
     when {
         state.fishLoading -> {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 CircularProgressIndicator(Modifier.size(24.dp))
-                Text("正在请大肥鱼写点评…")
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_023))
             }
         }
         state.fishCommentary != null -> {
             Surface(color = MaterialTheme.colorScheme.secondaryContainer, shape = MaterialTheme.shapes.medium) {
                 Text(state.fishCommentary, Modifier.padding(12.dp), style = MaterialTheme.typography.bodyLarge)
             }
-            Text("AI 点评，仅供参考；不改变上方数字。", style = MaterialTheme.typography.bodySmall)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_024), style = MaterialTheme.typography.bodySmall)
             if (onAskFish != null) TextButton(onClick = {
                 scope.launch {
                     model.beginFishCommentary()
@@ -542,10 +542,10 @@ private fun FishSection(
                     catch (e: kotlinx.coroutines.CancellationException) { model.failFishCommentary("点评已取消"); throw e }
                     catch (e: Exception) { model.failFishCommentary(e.message ?: "点评未完成，请重试") }
                 }
-            }) { Text("重新生成") }
+            }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_025)) }
         }
         onAskFish == null -> {
-            Text("未连接大肥鱼；本次只显示本地统计，不生成点评。", style = MaterialTheme.typography.bodyMedium)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_026), style = MaterialTheme.typography.bodyMedium)
         }
         else -> {
             Button(onClick = {
@@ -560,7 +560,7 @@ private fun FishSection(
                             )
                         }
                 }
-            }) { Text("让大肥鱼写一段点评") }
+            }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_027)) }
         }
     }
     state.fishError?.let { StatusBanner(it) }
@@ -572,22 +572,22 @@ private fun ShareSection(
     onShareImage: () -> Unit,
     onSharePdf: () -> Unit,
 ) {
-    Text("分享", style = MaterialTheme.typography.titleLarge)
+    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_028), style = MaterialTheme.typography.titleLarge)
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         OutlinedButton(onClick = onShareImage, enabled = !sharing) {
             Icon(Icons.Filled.Image, contentDescription = null)
             Spacer(Modifier.size(8.dp))
-            Text("分享长图")
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_029))
         }
         OutlinedButton(onClick = onSharePdf, enabled = !sharing) {
             Icon(Icons.Filled.PictureAsPdf, contentDescription = null)
             Spacer(Modifier.size(8.dp))
-            Text("分享 PDF")
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_030))
         }
     }
-    if (sharing) Text("正在生成分享文件…", style = MaterialTheme.typography.bodySmall)
+    if (sharing) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_031), style = MaterialTheme.typography.bodySmall)
     Text(
-        "长图与 PDF 使用当前可见板块和真实内容绘制；内容过长时会分成多张长图或 PDF 多页，不截断。",
+        androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_032),
         style = MaterialTheme.typography.bodySmall,
     )
 }
@@ -603,7 +603,7 @@ private fun SectionFilter(
         OutlinedButton(onClick = { onExpandedChange(true) }) {
             Icon(Icons.Filled.Tune, contentDescription = null)
             Spacer(Modifier.size(8.dp))
-            Text("板块显示")
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_033))
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { onExpandedChange(false) }) {
             ReportSection.entries.forEach { section ->
@@ -631,23 +631,23 @@ private fun ReminderSection(
 ) {
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("报表提醒", style = MaterialTheme.typography.titleMedium)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_034), style = MaterialTheme.typography.titleMedium)
             Text(
-                "可选；使用 WorkManager 低频调度，仅发布本地通知，不需要 Key 或网络。",
+                androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_035),
                 style = MaterialTheme.typography.bodySmall,
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("每周一 09:00")
-                    Text("提醒查看上周报告", style = MaterialTheme.typography.bodySmall)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_036))
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_037), style = MaterialTheme.typography.bodySmall)
                 }
                 Switch(checked = weekly, onCheckedChange = onWeekly)
             }
             HorizontalDivider()
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("每月 1 日 09:00")
-                    Text("提醒查看上月报告", style = MaterialTheme.typography.bodySmall)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_038))
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_039), style = MaterialTheme.typography.bodySmall)
                 }
                 Switch(checked = monthly, onCheckedChange = onMonthly)
             }

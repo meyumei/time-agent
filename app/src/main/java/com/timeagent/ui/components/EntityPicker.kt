@@ -60,7 +60,7 @@ fun EntityPicker(
         Column(Modifier.fillMaxWidth().padding(horizontal = DesignTokens.spacing16)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text("选择$label", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                if (selectedId != null) TextButton({ onSelect(null); open = false }, Modifier.heightIn(min = DesignTokens.touchTarget)) { Text("清除选择") }
+                if (selectedId != null) TextButton({ onSelect(null); open = false }, Modifier.heightIn(min = DesignTokens.touchTarget)) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_entity_picker_001)) }
             }
             OutlinedTextField(
                 value = query,
@@ -103,7 +103,7 @@ private fun OptionRow(option: EntityOption, selected: Boolean, onClick: () -> Un
     ListItem(
         headlineContent = { Text(option.label, maxLines = 2, overflow = TextOverflow.Ellipsis) },
         supportingContent = if (subtitle == null) null else { { Text(subtitle, maxLines = 1, overflow = TextOverflow.Ellipsis) } },
-        trailingContent = if (selected) { { Text("已选", color = MaterialTheme.colorScheme.primary) } } else null,
+        trailingContent = if (selected) { { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_entity_picker_002), color = MaterialTheme.colorScheme.primary) } } else null,
         modifier = Modifier.fillMaxWidth().heightIn(min = DesignTokens.touchTarget).clickable(onClick = onClick),
     )
 }

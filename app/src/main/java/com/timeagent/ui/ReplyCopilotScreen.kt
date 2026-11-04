@@ -71,62 +71,62 @@ fun ReplyCopilotScreen(model: TimeViewModel, initialText: String, onClose: () ->
             .onFailure { notice = it.message }
     }
     BackHandler(enabled = !busy, onBack = onClose)
-    Scaffold(topBar = { TopAppBar(title = { Text("回复副驾") }, navigationIcon = { TextButton(onClick = onClose, enabled = !busy) { Text("返回") } }) }) { padding ->
+    Scaffold(topBar = { TopAppBar(title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reply_copilot_screen_001)) }, navigationIcon = { TextButton(onClick = onClose, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_back)) } }) }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text("文字在本机处理。空档仅依据本应用的计划、课程、实际记录和个人约定；外部日历未同步。")
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reply_copilot_screen_002))
             AiAvailabilityBanner(
                 availability = aiAvailability,
                 onOpenSettings = onOpenSettings,
                 detail = "空档核对与回复模板仍可本地使用；需要鱼参与生成时请先配置模型。入口不会被隐藏。",
             )
-            OutlinedTextField(source, { source = it; preview = null; selected = null; invalidate() }, label = { Text("粘贴或分享的原文") }, minLines = 3,
+            OutlinedTextField(source, { source = it; preview = null; selected = null; invalidate() }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reply_copilot_screen_003)) }, minLines = 3,
                 modifier = Modifier.fillMaxWidth().testTag("reply-source"), enabled = !busy)
             Button(onClick = {
                 runCatching { ChatTextExtractor.extract(source, model.repository.now(), model.zone) }.onSuccess {
                     preview = it; selected = it.items.firstOrNull()?.id; invalidate(); notice = if (it.items.isEmpty()) "没有明确候选，可先确认具体时间" else null
                     it.items.firstOrNull()?.startAt?.let { start -> day = Instant.ofEpochMilli(start).atZone(model.zone).toLocalDate().toString() }
                 }.onFailure { notice = it.message }
-            }, enabled = !busy && source.isNotBlank() && source.length <= 20000, modifier = Modifier.testTag("reply-extract")) { Text("提取候选") }
+            }, enabled = !busy && source.isNotBlank() && source.length <= 20000, modifier = Modifier.testTag("reply-extract")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reply_copilot_screen_004)) }
             preview?.let { extracted ->
                 extracted.items.forEach { item ->
                     Row { RadioButton(selected == item.id, onClick = { selected = item.id; invalidate() }); TextButton(onClick = { selected = item.id; invalidate() }) { Text(item.title) } }
                 }
                 if (selected != null) Text(extracted.items.firstOrNull { it.id == selected }?.original.orEmpty(), style = MaterialTheme.typography.bodySmall)
-                OutlinedTextField(day, { day = it; invalidate() }, label = { Text("查询日期 yyyy-MM-dd") }, modifier = Modifier.fillMaxWidth().testTag("reply-day"))
+                OutlinedTextField(day, { day = it; invalidate() }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reply_copilot_screen_005)) }, modifier = Modifier.fillMaxWidth().testTag("reply-day"))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(from, { from = it; invalidate() }, label = { Text("从 HH:mm") }, modifier = Modifier.weight(1f))
-                    OutlinedTextField(until, { until = it; invalidate() }, label = { Text("至 HH:mm") }, modifier = Modifier.weight(1f))
+                    OutlinedTextField(from, { from = it; invalidate() }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reply_copilot_screen_006)) }, modifier = Modifier.weight(1f))
+                    OutlinedTextField(until, { until = it; invalidate() }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reply_copilot_screen_007)) }, modifier = Modifier.weight(1f))
                 }
-                OutlinedTextField(minutes, { minutes = it; invalidate() }, label = { Text("另约时长（分钟，请核对）") }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(minutes, { minutes = it; invalidate() }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reply_copilot_screen_008)) }, modifier = Modifier.fillMaxWidth())
                 Button(onClick = { model.perform {
                     check = ReplyCopilot.check(source, selected, LocalDate.parse(day.trim()), minutes.toInt(), LocalTime.parse(from.trim()), LocalTime.parse(until.trim()),
                         model.repository.snapshot(), model.repository.now(), model.zone)
                     draft = null; mine = false; saved = false; notice = "已核对；生成草稿不会写入日程"
-                } }, enabled = !busy, modifier = Modifier.testTag("reply-check")) { Text("核对空档") }
+                } }, enabled = !busy, modifier = Modifier.testTag("reply-check")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reply_copilot_screen_009)) }
             }
             check?.let { checked ->
-                if (checked.runningTimer) Text("存在尚未结束的计时，其后的查询时段暂按占用；结束计时后可重新核对。")
+                if (checked.runningTimer) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reply_copilot_screen_010))
                 checked.accepted?.let { slot -> Button(onClick = { generate(ReplyKind.ACCEPT) }, enabled = !busy, modifier = Modifier.testTag("reply-accept")) { Text("接受原时段 ${period(slot)}") } }
-                    ?: Text("原文无明确起止时间，或原时段不空闲，不能直接接受。")
+                    ?: Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reply_copilot_screen_011))
                 checked.alternatives.forEachIndexed { index, slot ->
                     OutlinedButton(onClick = { generate(ReplyKind.ALTERNATE, index) }, enabled = !busy, modifier = Modifier.testTag("reply-alternate-$index")) { Text("另约 ${period(slot)}") }
                 }
-                if (checked.alternatives.isEmpty()) Text("当前查询范围没有可推荐空档，可换日期或先确认。")
-                OutlinedButton(onClick = { generate(ReplyKind.CLARIFY) }, enabled = !busy, modifier = Modifier.testTag("reply-clarify")) { Text("先确认具体时间") }
+                if (checked.alternatives.isEmpty()) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reply_copilot_screen_012))
+                OutlinedButton(onClick = { generate(ReplyKind.CLARIFY) }, enabled = !busy, modifier = Modifier.testTag("reply-clarify")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reply_copilot_screen_013)) }
             }
             if (reply.isNotBlank()) {
-                OutlinedTextField(reply, { reply = it }, label = { Text("可编辑回复草稿") }, minLines = 4, modifier = Modifier.fillMaxWidth().testTag("reply-draft"))
-                Text("编辑回复不会改变下方安排；复制后请在聊天应用自行核对并发送。")
-                Button(onClick = { clipboard.setText(AnnotatedString(reply)); notice = "已复制；实际发送未确认" }, modifier = Modifier.testTag("reply-copy")) { Text("复制回复") }
+                OutlinedTextField(reply, { reply = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reply_copilot_screen_014)) }, minLines = 4, modifier = Modifier.fillMaxWidth().testTag("reply-draft"))
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reply_copilot_screen_015))
+                Button(onClick = { clipboard.setText(AnnotatedString(reply)); notice = "已复制；实际发送未确认" }, modifier = Modifier.testTag("reply-copy")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reply_copilot_screen_016)) }
             }
             draft?.takeIf { it.slot != null }?.let { current ->
                 Text("待保存安排：${current.title} · ${period(current.slot!!)}")
-                Row { Checkbox(mine, { mine = it }, enabled = !busy && !saved, modifier = Modifier.testTag("reply-mine")); Text("这是我的安排") }
+                Row { Checkbox(mine, { mine = it }, enabled = !busy && !saved, modifier = Modifier.testTag("reply-mine")); Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reply_copilot_screen_017)) }
                 Button(onClick = { model.perform {
                     saved = ReplyCopilot.save(model.repository, current, mine)
                     notice = if (saved) "安排已保存；回复未发送" else "此安排已处理，不会重复创建；回复未发送"
-                } }, enabled = !busy && mine && !saved, modifier = Modifier.testTag("reply-save")) { Text("单独保存这个安排") }
-                if (saved) TextButton(onClick = { model.perform { model.repository.undoLastAction(current.requestId); saved = false; mine = false; notice = "已撤销安排；复制过的文字不会撤回" } }, enabled = !busy) { Text("撤销此次安排") }
+                } }, enabled = !busy && mine && !saved, modifier = Modifier.testTag("reply-save")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reply_copilot_screen_018)) }
+                if (saved) TextButton(onClick = { model.perform { model.repository.undoLastAction(current.requestId); saved = false; mine = false; notice = "已撤销安排；复制过的文字不会撤回" } }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reply_copilot_screen_019)) }
             }
             notice?.let { Text(it) }
             error?.let { Text(it, color = MaterialTheme.colorScheme.error) }

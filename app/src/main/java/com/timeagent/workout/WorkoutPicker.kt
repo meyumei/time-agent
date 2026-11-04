@@ -81,18 +81,18 @@ internal fun anatomyMuscle(exercise: ExerciseDefinition): String = exercise.prim
         Column(Modifier.statusBarsPadding().padding(horizontal = 12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "返回训练") }
-                OutlinedTextField(query, { query = it.take(200) }, modifier = Modifier.weight(1f).testTag("workout-exercise-search"), placeholder = { Text("输入动作名字搜索") }, singleLine = true, shape = RoundedCornerShape(30.dp), leadingIcon = { Icon(Icons.Rounded.Search, null) })
+                OutlinedTextField(query, { query = it.take(200) }, modifier = Modifier.weight(1f).testTag("workout-exercise-search"), placeholder = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_picker_001)) }, singleLine = true, shape = RoundedCornerShape(30.dp), leadingIcon = { Icon(Icons.Rounded.Search, null) })
                 IconButton(onClick = { custom = true }) { Icon(Icons.Rounded.Add, "自定义动作", tint = WorkoutBlue) }
             }
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text("${filtered.size} 个动作", style = MaterialTheme.typography.labelMedium, modifier = Modifier.weight(1f))
-                TextButton(onClick = { onAnatomy(muscle.takeUnless { it == "全部" || it == "置顶" } ?: "") }) { Text("3D 肌群", color = WorkoutBlue) }
+                TextButton(onClick = { onAnatomy(muscle.takeUnless { it == "全部" || it == "置顶" } ?: "") }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_picker_002), color = WorkoutBlue) }
             }
         }
     }, bottomBar = {
         if (selecting) Surface(shadowElevation = 8.dp) {
             Row(Modifier.navigationBarsPadding().fillMaxWidth().padding(12.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedButton(onClick = { chosen = emptyList() }, modifier = Modifier.weight(1f)) { Text("清空选择") }
+                OutlinedButton(onClick = { chosen = emptyList() }, modifier = Modifier.weight(1f)) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_picker_003)) }
                 Button(onClick = { onPicked(chosen.mapNotNull { id -> exercises.firstOrNull { it.id == id } }) }, enabled = chosen.isNotEmpty(), modifier = Modifier.weight(1f).testTag("workout-picker-done")) { Text("完成（${chosen.size}）") }
             }
         }
@@ -125,7 +125,7 @@ internal fun anatomyMuscle(exercise: ExerciseDefinition): String = exercise.prim
                                 }
                                 Text(exercise.name, maxLines = 2, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Medium, modifier = Modifier.heightIn(min = 40.dp))
                                 Text(exercise.equipment, style = MaterialTheme.typography.labelSmall, color = if (exercise.id in chosen) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant)
-                                TextButton(onClick = { detail = exercise }, contentPadding = PaddingValues(0.dp)) { Text("查看动作要点", style = MaterialTheme.typography.labelMedium) }
+                                TextButton(onClick = { detail = exercise }, contentPadding = PaddingValues(0.dp)) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_picker_004), style = MaterialTheme.typography.labelMedium) }
                             }
                         }
                     }
@@ -141,7 +141,7 @@ internal fun anatomyMuscle(exercise: ExerciseDefinition): String = exercise.prim
                 if (exercise.secondaryMuscles.isNotEmpty()) Text("辅助肌群：${exercise.secondaryMuscles.joinToString("、")}")
                 Text("${exercise.equipment} · ${metricLabel(exercise.metric)}", style = MaterialTheme.typography.labelLarge)
                 Text(exercise.instructions.ifBlank { "此动作的本地数据没有文字要点，可查看动图或补充自定义笔记。" })
-                TextButton(onClick = { detail = null; onAnatomy(anatomyMuscle(exercise)) }) { Text("在 3D 模型中查看肌群") }
+                TextButton(onClick = { detail = null; onAnatomy(anatomyMuscle(exercise)) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_picker_005)) }
             }
         }, confirmButton = { TextButton(onClick = {
             if (selecting) { chosen = (chosen + exercise.id).distinct(); detail = null } else { detail = null; onPicked(listOf(exercise)) }
@@ -172,16 +172,16 @@ internal fun anatomyMuscle(exercise: ExerciseDefinition): String = exercise.prim
 
 @Composable private fun CustomExerciseDialog(onDismiss: () -> Unit, onSave: (ExerciseDefinition) -> Unit) {
     var name by remember { mutableStateOf("") }; var muscle by remember { mutableStateOf("胸") }; var equipment by remember { mutableStateOf("") }; var metric by remember { mutableStateOf(WorkoutMetric.WEIGHT_REPS) }; var instructions by remember { mutableStateOf("") }
-    AlertDialog(onDismissRequest = onDismiss, title = { Text("自定义动作") }, text = {
+    AlertDialog(onDismissRequest = onDismiss, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_picker_006)) }, text = {
         Column(Modifier.heightIn(max = 540.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedTextField(name, { name = it.take(200) }, label = { Text("动作名称") })
-            OutlinedTextField(muscle, { muscle = it }, label = { Text("主要肌群") })
-            OutlinedTextField(equipment, { equipment = it }, label = { Text("器械") })
-            Text("记录类型")
+            OutlinedTextField(name, { name = it.take(200) }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_picker_007)) })
+            OutlinedTextField(muscle, { muscle = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_picker_008)) })
+            OutlinedTextField(equipment, { equipment = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_picker_009)) })
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_picker_010))
             WorkoutMetric.entries.forEach { type -> Row(Modifier.fillMaxWidth().clickable { metric = type }, verticalAlignment = Alignment.CenterVertically) { RadioButton(metric == type, { metric = type }); Text(metricLabel(type)) } }
-            OutlinedTextField(instructions, { instructions = it }, label = { Text("动作要点") })
+            OutlinedTextField(instructions, { instructions = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_picker_011)) })
         }
-    }, confirmButton = { TextButton(onClick = { onSave(ExerciseDefinition("custom:${UUID.randomUUID()}", name.trim(), listOf(muscle.trim()), equipment = equipment.trim(), metric = metric, instructions = instructions)) }, enabled = name.isNotBlank() && muscle.isNotBlank()) { Text("保存") } }, dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } })
+    }, confirmButton = { TextButton(onClick = { onSave(ExerciseDefinition("custom:${UUID.randomUUID()}", name.trim(), listOf(muscle.trim()), equipment = equipment.trim(), metric = metric, instructions = instructions)) }, enabled = name.isNotBlank() && muscle.isNotBlank()) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) } }, dismissButton = { TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } })
 }
 
 internal fun metricLabel(metric: WorkoutMetric): String = when (metric.name) {

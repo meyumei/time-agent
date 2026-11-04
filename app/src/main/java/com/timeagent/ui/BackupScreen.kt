@@ -63,22 +63,22 @@ fun BackupScreen(model: TimeViewModel, onClose: () -> Unit) {
             restoreBytes = bytes; preview = checked; approved = false; result = null
         }
     }
-    Scaffold(topBar = { TopAppBar(title = { Text("完整本地备份 / 恢复") }, navigationIcon = { IconButton(onClick = ::close, enabled = !busy) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "返回") } }) }) { padding ->
+    Scaffold(topBar = { TopAppBar(title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_backup_screen_001)) }, navigationIcon = { IconButton(onClick = ::close, enabled = !busy) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "返回") } }) }) { padding ->
         Column(Modifier.padding(padding).fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text("任务、项目、周目标、周期实例、实际、课程、想法、笔记、提醒、附件与操作历史，连同训练记录、自定义动作和个人设置一起保存。")
-            Text("动作媒体和 3D 模型随安装包提供。密钥、云端授权和手机权限不写进个人备份；恢复后需重选 GB 文件，并核对健康、通知和闹钟授权。", style = MaterialTheme.typography.bodySmall)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_backup_screen_002))
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_backup_screen_003), style = MaterialTheme.typography.bodySmall)
             Button(onClick = { model.perform {
                 val bytes = service.create()
                 val checked = withContext(Dispatchers.IO) { service.preview(bytes) }
                 exportSummary = "包含附件原件 ${checked.attachmentFileCount} 份；缺失 ${checked.missingAttachmentNames.size} 份。" + if (checked.missingAttachmentNames.isEmpty()) "" else "缺失项只保存条目与文字：${checked.missingAttachmentNames.joinToString("、")}。"
                 exportBytes = bytes
                 export.launch("time-agent-personal-${model.repository.now().atZone(model.zone).toLocalDate()}.json")
-            } }, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("backup-export")) { Text("导出本地备份") }
-            OutlinedButton(onClick = { choose.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) }, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("backup-select")) { Text("选择备份，先校验和预览") }
+            } }, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("backup-export")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_backup_screen_004)) }
+            OutlinedButton(onClick = { choose.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) }, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("backup-select")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_backup_screen_005)) }
             if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
             preview?.let { item ->
                 HorizontalDivider()
-                Text("文件完整性、版本、字段及数据关联校验通过", style = MaterialTheme.typography.titleMedium)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_backup_screen_006), style = MaterialTheme.typography.titleMedium)
                 Text("备份日期 ${Instant.ofEpochMilli(item.createdAt).label(model.zone)} · 应用 ${item.appVersion}\n主库 v${item.mainVersion} · 训练库 v${item.workoutVersion}", style = MaterialTheme.typography.bodySmall)
                 val labels = mapOf("personal_memories" to "个人记忆", "tasks" to "任务（含历史状态）", "schedule_blocks" to "计划（含取消项）", "time_records" to "实际记录", "course_occurrences" to "课程实例", "notes" to "笔记", "ideas" to "想法", "reminders" to "提醒", "operation_history" to "操作历史", "health_sync_items" to "同步与保护标记", "workout_sessions" to "训练记录", "workout_templates" to "训练模板")
                 (item.mainCounts + item.workoutCounts).forEach { (table, count) -> labels[table]?.let { Text("$it：$count", style = MaterialTheme.typography.bodySmall) } }
@@ -86,8 +86,8 @@ fun BackupScreen(model: TimeViewModel, onClose: () -> Unit) {
                 Text("附件原件：${item.attachmentFileCount} 份；缺失：${item.missingAttachmentNames.size} 份", style = MaterialTheme.typography.bodySmall)
                 if (item.missingAttachmentNames.isNotEmpty()) Text("仅恢复条目与文字，原件缺失：${item.missingAttachmentNames.joinToString("、")}", color = MaterialTheme.colorScheme.error)
                 if (item.unlinkedNoteCount > 0) Text("暂未关联笔记：${item.unlinkedNoteCount} 条，将完整保留；撤销恢复原事项后会重新关联。", style = MaterialTheme.typography.bodySmall)
-                Text("恢复会把本机两套数据库、附件原件和个人设置替换为这份备份的内容。建议先导出当前副本；恢复不会合并记录。", color = MaterialTheme.colorScheme.error)
-                Row { Checkbox(approved, { approved = it }, enabled = !busy, modifier = Modifier.testTag("backup-approve")); Text("我已核对内容，确认替换本机数据", Modifier.padding(top = 12.dp)) }
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_backup_screen_007), color = MaterialTheme.colorScheme.error)
+                Row { Checkbox(approved, { approved = it }, enabled = !busy, modifier = Modifier.testTag("backup-approve")); Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_backup_screen_008), Modifier.padding(top = 12.dp)) }
                 Button(onClick = {
                     val bytes = restoreBytes ?: return@Button
                     model.perform {
@@ -103,10 +103,10 @@ fun BackupScreen(model: TimeViewModel, onClose: () -> Unit) {
                             result = outcome.message + "\n数据已恢复，提醒重新登记未完成：${failure.message}。返回应用后会再次登记。"
                         }
                     }
-                }, enabled = approved && !busy, modifier = Modifier.fillMaxWidth().testTag("backup-restore")) { Text("确认恢复") }
+                }, enabled = approved && !busy, modifier = Modifier.fillMaxWidth().testTag("backup-restore")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_backup_screen_009)) }
             }
             result?.let { Text(it, Modifier.testTag("backup-result"), color = MaterialTheme.colorScheme.primary) }
-            if (restored) Button(onClick = ::close) { Text("完成并返回") }
+            if (restored) Button(onClick = ::close) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_backup_screen_010)) }
         }
     }
 }

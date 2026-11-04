@@ -14,13 +14,13 @@ internal fun ReminderRepeatDialog(model: TimeViewModel, reminder: ReminderEntity
     var count by rememberSaveable(reminder.id) { mutableStateOf((reminder.repeatMaxCount ?: 3).toString()) }
     val minutes = interval.toIntOrNull()
     val repeats = count.toIntOrNull()
-    AlertDialog(onDismissRequest = onClose, title = { Text("未处理时重复提醒") },
+    AlertDialog(onDismissRequest = onClose, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_repeat_dialog_001)) },
         text = { Column {
-            Text("打开详情或完成后停止重复；稍后提醒不会移动日程。")
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_repeat_dialog_002))
             Switch(checked = enabled, onCheckedChange = { enabled = it })
             if (enabled) {
-                OutlinedTextField(interval, { interval = it }, label = { Text("每隔多少分钟") })
-                OutlinedTextField(count, { count = it }, label = { Text("最多重复次数") })
+                OutlinedTextField(interval, { interval = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_repeat_dialog_003)) })
+                OutlinedTextField(count, { count = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_repeat_dialog_004)) })
             }
         } },
         confirmButton = { TextButton(
@@ -31,6 +31,6 @@ internal fun ReminderRepeatDialog(model: TimeViewModel, reminder: ReminderEntity
                     repeatMaxCount = repeats.takeIf { enabled },
                 ), reminder.version)
             } },
-        ) { Text("保存") } },
-        dismissButton = { TextButton(onClick = onClose, enabled = !busy) { Text("取消") } })
+        ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) } },
+        dismissButton = { TextButton(onClick = onClose, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } })
 }

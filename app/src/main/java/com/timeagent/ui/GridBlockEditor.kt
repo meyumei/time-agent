@@ -93,8 +93,8 @@ fun GridBlockEditorScreen(
         category, startDate, startTime, endDate, endTime, futureConfirmed), saving, onDismiss, onKeepDraft)
     BackHandler(onBack = dismiss)
     Scaffold(modifier = Modifier.fillMaxSize().testTag("grid-block-editor"), topBar = {
-        TopAppBar(title = { Text("添加日程", fontWeight = FontWeight.Bold) },
-            navigationIcon = { TextButton(onClick = dismiss, enabled = !saving) { Text("取消") } },
+        TopAppBar(title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_grid_block_editor_001), fontWeight = FontWeight.Bold) },
+            navigationIcon = { TextButton(onClick = dismiss, enabled = !saving) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
             actions = {
                 TextButton(onClick = save, enabled = !saving && (!future || futureConfirmed), modifier = Modifier.testTag("grid-save")) {
                     Text(if (saving) "保存中…" else if (kind == EditorKind.PLAN && overlaps.isNotEmpty()) "仍然保存" else "保存")
@@ -104,18 +104,18 @@ fun GridBlockEditorScreen(
         Column(Modifier.padding(padding).fillMaxSize().imePadding().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FilterChip(kind == EditorKind.PLAN, { kindName = EditorKind.PLAN.name; validation = null }, enabled = !saving,
-                    label = { Text("计划") }, modifier = Modifier.testTag("grid-kind-plan"))
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_grid_block_editor_002)) }, modifier = Modifier.testTag("grid-kind-plan"))
                 FilterChip(kind == EditorKind.RECORD, { kindName = EditorKind.RECORD.name; validation = null }, enabled = !saving,
-                    label = { Text("实际记录") }, modifier = Modifier.testTag("grid-kind-record"))
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_037)) }, modifier = Modifier.testTag("grid-kind-record"))
             }
             if (kind == EditorKind.PLAN) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     FilterChip(newTask, { newTask = true; independent = false; validation = null }, enabled = !saving,
-                        label = { Text("新建任务") }, modifier = Modifier.testTag("grid-new-task"))
+                        label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_new_task)) }, modifier = Modifier.testTag("grid-new-task"))
                     FilterChip(!newTask && !independent, { newTask = false; independent = false; validation = null }, enabled = !saving,
-                        label = { Text("关联已有任务") }, modifier = Modifier.testTag("grid-existing-task"))
+                        label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_grid_block_editor_003)) }, modifier = Modifier.testTag("grid-existing-task"))
                     FilterChip(independent, { newTask = false; independent = true; validation = null }, enabled = !saving,
-                        label = { Text("独立日程") }, modifier = Modifier.testTag("grid-independent-plan"))
+                        label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_grid_block_editor_004)) }, modifier = Modifier.testTag("grid-independent-plan"))
                 }
             }
             if (kind == EditorKind.RECORD || newTask || independent) {
@@ -123,35 +123,35 @@ fun GridBlockEditorScreen(
                     singleLine = true, modifier = Modifier.fillMaxWidth().testTag("grid-title"))
             }
             Text("时间以 ${zone.id} 显示", style = MaterialTheme.typography.bodySmall)
-            OutlinedTextField(startDate, { startDate = it; futureConfirmed = false }, enabled = !saving, label = { Text("开始日期 YYYY-MM-DD") },
+            OutlinedTextField(startDate, { startDate = it; futureConfirmed = false }, enabled = !saving, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_013)) },
                 singleLine = true, modifier = Modifier.fillMaxWidth().testTag("grid-start-date"))
-            OutlinedTextField(startTime, { startTime = it; futureConfirmed = false }, enabled = !saving, label = { Text("开始时间 HH:mm") },
+            OutlinedTextField(startTime, { startTime = it; futureConfirmed = false }, enabled = !saving, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_014)) },
                 singleLine = true, modifier = Modifier.fillMaxWidth().testTag("grid-start-time"))
-            OutlinedTextField(endDate, { endDate = it; futureConfirmed = false }, enabled = !saving, label = { Text("结束日期 YYYY-MM-DD") },
+            OutlinedTextField(endDate, { endDate = it; futureConfirmed = false }, enabled = !saving, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_015)) },
                 singleLine = true, modifier = Modifier.fillMaxWidth().testTag("grid-end-date"))
-            OutlinedTextField(endTime, { endTime = it; futureConfirmed = false }, enabled = !saving, label = { Text("结束时间 HH:mm") },
+            OutlinedTextField(endTime, { endTime = it; futureConfirmed = false }, enabled = !saving, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_016)) },
                 singleLine = true, modifier = Modifier.fillMaxWidth().testTag("grid-end-time"))
             if (kind == EditorKind.RECORD || !newTask && !independent) {
                 Text(if (kind == EditorKind.PLAN) "关联任务（必选）" else "关联任务（可选）", style = MaterialTheme.typography.labelLarge)
                 if (kind == EditorKind.RECORD) {
                     FilterChip(selectedTask == null, { selectedTask = null }, enabled = !saving,
-                        label = { Text("不关联任务") }, modifier = Modifier.testTag("grid-no-task"))
+                        label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_014)) }, modifier = Modifier.testTag("grid-no-task"))
                 }
                 tasks.forEach { task ->
                     FilterChip(selectedTask == task.id, { selectedTask = task.id }, enabled = !saving,
                         label = { Text(task.title) }, modifier = Modifier.testTag("grid-task-${task.id}"))
                 }
-                if (kind == EditorKind.PLAN && tasks.isEmpty()) Text("还没有可关联的任务，可以切换为新建任务。", style = MaterialTheme.typography.bodySmall)
+                if (kind == EditorKind.PLAN && tasks.isEmpty()) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_grid_block_editor_005), style = MaterialTheme.typography.bodySmall)
             }
             if (kind == EditorKind.RECORD || newTask || independent) {
-                Text("分类", style = MaterialTheme.typography.labelLarge)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_reshape_dialogs_003), style = MaterialTheme.typography.labelLarge)
                 Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    FilterChip(category == null, { category = null }, enabled = !saving, label = { Text("未分类") })
+                    FilterChip(category == null, { category = null }, enabled = !saving, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_023)) })
                     data.categories.forEach { item ->
                         FilterChip(category == item.id, { category = item.id }, enabled = !saving, label = { Text(item.name) })
                     }
                 }
-                OutlinedTextField(notes, { notes = it }, enabled = !saving, label = { Text("备注") }, minLines = 2,
+                OutlinedTextField(notes, { notes = it }, enabled = !saving, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.field_notes)) }, minLines = 2,
                     modifier = Modifier.fillMaxWidth().testTag("grid-notes"))
             }
             if (overlaps.isNotEmpty()) Surface(color = MaterialTheme.colorScheme.errorContainer, shape = MaterialTheme.shapes.medium) {
@@ -159,10 +159,10 @@ fun GridBlockEditorScreen(
                     Modifier.padding(12.dp), style = MaterialTheme.typography.bodySmall)
             }
             if (future) {
-                Text("这条记录包含未来时间；如尚未发生，建议改建计划。", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_021), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(futureConfirmed, { futureConfirmed = it }, enabled = !saving, modifier = Modifier.testTag("grid-future-confirm"))
-                    Text("我确认仍作为实际记录保存", style = MaterialTheme.typography.bodySmall)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_022), style = MaterialTheme.typography.bodySmall)
                 }
             }
             validation?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }

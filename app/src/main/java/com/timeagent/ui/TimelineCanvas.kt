@@ -284,7 +284,7 @@ import kotlin.math.roundToInt
                 TimelineHourLabels(gutter, bodyHeight, labelInset, minuteHeight, viewport.firstMinute)
             }
             if (allDayHeight > 0.dp) {
-                Text("全天", Modifier.offset(y = header).width(gutter).padding(top = 12.dp), style = MaterialTheme.typography.labelSmall)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_timeline_canvas_001), Modifier.offset(y = header).width(gutter).padding(top = 12.dp), style = MaterialTheme.typography.labelSmall)
             }
             // A single scroller keeps dates, all-day chips and timed cards aligned; the hour ruler stays fixed.
             Box(Modifier.offset(x = gutter).width(availableWidth).fillMaxHeight().clipToBounds()) {
@@ -354,12 +354,12 @@ import kotlin.math.roundToInt
                 Modifier.align(Alignment.Center).background(MaterialTheme.colorScheme.surface.copy(alpha = .95f), RoundedCornerShape(12.dp)).padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text("今天还没有安排", style = MaterialTheme.typography.titleSmall)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_timeline_canvas_002), style = MaterialTheme.typography.titleSmall)
                 TextButton(onClick = {
                     val date = if (today in rendered.dates) today else rendered.dates[rendered.dates.size / 2]
                     val minute = (now.atZone(zone).hour * 60 / 15 * 15).coerceAtMost(1380)
                     latestCreate?.invoke(TimelineSelection(date, minute, minute + 60))
-                }, enabled = latestCreate != null) { Text("添加日程") }
+                }, enabled = latestCreate != null) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_grid_block_editor_001)) }
             }
         }
     }

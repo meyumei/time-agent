@@ -56,11 +56,11 @@ fun AiAvailabilityBanner(
             modifier = modifier.fillMaxWidth().testTag("ai-unavailable"),
         ) {
             Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("AI 暂不可用", fontWeight = FontWeight.SemiBold)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ai_availability_banner_001), fontWeight = FontWeight.SemiBold)
                 Text(availability.reason, style = MaterialTheme.typography.bodySmall)
                 detail?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
                 if (onOpenSettings != null) {
-                    TextButton(onClick = onOpenSettings, modifier = Modifier.testTag("ai-open-settings")) { Text("去设置") }
+                    TextButton(onClick = onOpenSettings, modifier = Modifier.testTag("ai-open-settings")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ai_availability_banner_002)) }
                 }
             }
         }

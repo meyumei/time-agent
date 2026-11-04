@@ -45,28 +45,28 @@ fun FishProactiveScreen(session: FishSession, onClose: () -> Unit) {
     }
     Column(Modifier.fillMaxSize().statusBarsPadding().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        TextButton(onClick = onClose) { Text("返回管家") }
-        Text("主动话题", style = MaterialTheme.typography.headlineSmall)
-        Text("沿用共同记忆和当前会话。运行环境开启时，它可以在允许的时间里主动聊聊；关闭后不再自动唤醒或探索 B站。",
+        TextButton(onClick = onClose) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_memory_screen_001)) }
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_proactive_screen_001), style = MaterialTheme.typography.headlineSmall)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_proactive_screen_002),
             style = MaterialTheme.typography.bodyMedium)
         if (loading) LinearProgressIndicator(Modifier.fillMaxWidth())
         Row {
-            Text("允许主动活动", Modifier.weight(1f))
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_proactive_screen_003), Modifier.weight(1f))
             Switch(enabled = loaded && !loading, checked = enabled, onCheckedChange = { enabled = it })
         }
         Row {
-            Text("允许主动找我聊天", Modifier.weight(1f))
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_proactive_screen_004), Modifier.weight(1f))
             Switch(enabled = loaded && !loading, checked = talk, onCheckedChange = { talk = it })
         }
         Text("允许活动的时间（${session.zone.id}，0–23时）", style = MaterialTheme.typography.titleSmall)
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            OutlinedTextField(start, { start = it.take(2) }, label = { Text("开始") }, modifier = Modifier.weight(1f), singleLine = true)
-            OutlinedTextField(end, { end = it.take(2) }, label = { Text("结束") }, modifier = Modifier.weight(1f), singleLine = true)
+            OutlinedTextField(start, { start = it.take(2) }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_proactive_screen_005)) }, modifier = Modifier.weight(1f), singleLine = true)
+            OutlinedTextField(end, { end = it.take(2) }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_proactive_screen_006)) }, modifier = Modifier.weight(1f), singleLine = true)
         }
-        Text("可跨午夜；开始与结束相同表示全天。时间窗外保持安静。", style = MaterialTheme.typography.bodySmall)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_proactive_screen_007), style = MaterialTheme.typography.bodySmall)
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            OutlinedTextField(minimum, { minimum = it.take(4) }, label = { Text("最短间隔（分）") }, modifier = Modifier.weight(1f), singleLine = true)
-            OutlinedTextField(maximum, { maximum = it.take(4) }, label = { Text("最长间隔（分）") }, modifier = Modifier.weight(1f), singleLine = true)
+            OutlinedTextField(minimum, { minimum = it.take(4) }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_proactive_screen_008)) }, modifier = Modifier.weight(1f), singleLine = true)
+            OutlinedTextField(maximum, { maximum = it.take(4) }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_proactive_screen_009)) }, modifier = Modifier.weight(1f), singleLine = true)
         }
         feedback?.let { Text(it) }
         message?.let { Text(it, color = MaterialTheme.colorScheme.error) }
@@ -82,12 +82,12 @@ fun FishProactiveScreen(session: FishSession, onClose: () -> Unit) {
                 session.proactiveAction("save", JSONObject().put("enabled", enabled).put("talkEnabled", talk)
                     .put("startHour", from).put("endHour", until).put("minGapMinutes", min).put("maxGapMinutes", max))
             }
-        }) { Text("保存主动设置") }
+        }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_proactive_screen_010)) }
         Row {
-            TextButton(enabled = !loading, onClick = { session.proactiveAction() }) { Text("重新读取") }
-            TextButton(enabled = !loading, onClick = { session.proactiveAction("nudge") }) { Text("让它先聊一句") }
+            TextButton(enabled = !loading, onClick = { session.proactiveAction() }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_proactive_screen_011)) }
+            TextButton(enabled = !loading, onClick = { session.proactiveAction("nudge") }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_proactive_screen_012)) }
         }
-        Text("B站的浏览开关在平台连接中；公开发布与评论没有随此开关启用。持续后台的实际时长以本机运行情况为准。",
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_proactive_screen_013),
             style = MaterialTheme.typography.bodySmall)
     }
 }

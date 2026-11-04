@@ -15,8 +15,8 @@ import java.time.*
 @Composable
 fun ProjectReviewSection(data: LocalSnapshot, weekStart: LocalDate, now: Instant, zone: ZoneId, onOpen: (String,String)->Unit, onGoals: ()->Unit) {
     var sources by remember { mutableStateOf<Pair<String,List<Triple<String,String,String>>>?>(null) }
-    Text("项目与周目标", style=MaterialTheme.typography.titleMedium)
-    TextButton(onClick=onGoals, modifier=Modifier.testTag("review-goals")) { Text("设置 / 编辑每周投入目标") }
+    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_review_001), style=MaterialTheme.typography.titleMedium)
+    TextButton(onClick=onGoals, modifier=Modifier.testTag("review-goals")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_review_002)) }
     data.projects.forEach { project ->
         val p = projectProgress(data,project.id,weekStart,now,zone)
         if (project.deletedAt == null || p.records.isNotEmpty() || p.completedTasks.isNotEmpty()) {
@@ -40,13 +40,13 @@ fun ProjectReviewSection(data: LocalSnapshot, weekStart: LocalDate, now: Instant
         TextButton(onClick={ sources="周目标实际来源" to p.records.map{Triple("RECORD",it.id,it.title.ifBlank{data.tasks.find{t->t.id==it.taskId}?.title ?: "实际记录"})} }) { Text("$title · 目标 ${goal.targetMinutes} 分钟 / 累计 ${p.recordedMinutes} / 去重 ${p.elapsedMinutes}") }
         LinearProgressIndicator(progress={ (p.recordedMinutes.toFloat()/goal.targetMinutes).coerceIn(0f,1f) },modifier=Modifier.fillMaxWidth())
     }
-    Text("周从周一开始；计划与实际分开。实际裁剪至当前时刻，含进行中计时；重叠记录累计相加，去重时间取并集。完成子任务不会自动完成父任务或项目。点击数值查看来源。",style=MaterialTheme.typography.bodySmall)
+    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_review_003),style=MaterialTheme.typography.bodySmall)
     sources?.let { (title,rows) -> AlertDialog(onDismissRequest={sources=null},title={Text(title)},text={
         Column(Modifier.heightIn(max=420.dp).verticalScroll(rememberScrollState())) {
-            if(rows.isEmpty()) Text("本周未查到相应事项")
+            if(rows.isEmpty()) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_review_004))
             rows.forEach { (type,id,label) -> TextButton(onClick={sources=null;onOpen(type,id)},modifier=Modifier.testTag("project-source-$id")) {Text(label)} }
         }
-    },confirmButton={TextButton(onClick={sources=null}){Text("关闭")}}) }
+    },confirmButton={TextButton(onClick={sources=null}){Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_close))}}) }
 }
 
 @Composable fun WeeklyGoalsScreen(data:LocalSnapshot,model:TimeViewModel,now:Instant,zone:ZoneId,onClose:()->Unit) {

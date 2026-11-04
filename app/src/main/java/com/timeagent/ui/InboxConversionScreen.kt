@@ -79,13 +79,13 @@ internal fun InboxConversionScreen(
                 current.categories.none { it.archivedAt == null }) {
                 AlertDialog(
                     onDismissRequest = onClose,
-                    title = { Text("转为记账") },
+                    title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_conversion_screen_001)) },
                     text = { Column {
                         Text(loadError ?: if (current == null) "正在读取账户与分类…" else "请先在记账中添加账户和分类；这条想法仍保留在收件箱。")
                         error?.let { Text(it) }
                     } },
-                    confirmButton = { TextButton(onClick = onManageLedger) { Text("管理账户与分类") } },
-                    dismissButton = { TextButton(onClick = onClose) { Text("返回") } },
+                    confirmButton = { TextButton(onClick = onManageLedger) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_conversion_screen_002)) } },
+                    dismissButton = { TextButton(onClick = onClose) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_back)) } },
                 )
             } else {
                 TransactionDialog(

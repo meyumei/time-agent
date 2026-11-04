@@ -29,7 +29,7 @@ fun FishStickerPicker(session: FishSession) {
     val runtime by session.runtime.state.collectAsStateWithLifecycle()
     val chat by session.chat.collectAsStateWithLifecycle()
     Box {
-        TextButton(onClick = { open = !open }, modifier = Modifier.testTag("fish-sticker-toggle")) { Text("表情") }
+        TextButton(onClick = { open = !open }, modifier = Modifier.testTag("fish-sticker-toggle")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_stickers_001)) }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             frames.forEach { (kind, index) ->
                 DropdownMenuItem(text = { Text(labels.getValue(kind)) },

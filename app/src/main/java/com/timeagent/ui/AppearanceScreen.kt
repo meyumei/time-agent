@@ -26,15 +26,15 @@ fun AppearanceScreen(onClose: () -> Unit) {
     }) { padding ->
         Column(Modifier.padding(padding).fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text("呈现模式", style = MaterialTheme.typography.titleMedium)
-            Text("切换外观会保留草稿、计时和聊天。", style = MaterialTheme.typography.bodyMedium)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_appearance_screen_001), style = MaterialTheme.typography.titleMedium)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_appearance_screen_002), style = MaterialTheme.typography.bodyMedium)
             PresentationMode.entries.forEach { mode ->
                 AppearanceOption(mode.label, appearance.presentation == mode,
                     if (mode == PresentationMode.TOOL) "蓝灰主题，角色静态呈现" else "暖色主题，角色动画与陪伴",
                     "appearance-${mode.name}") { preference.savePresentation(mode) }
             }
             HorizontalDivider()
-            Text("深浅色", style = MaterialTheme.typography.titleMedium)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_appearance_screen_003), style = MaterialTheme.typography.titleMedium)
             ThemeMode.entries.forEach { mode ->
                 AppearanceOption(mode.label, appearance.theme == mode, tag = "theme-${mode.name}") {
                     preference.save(mode)
@@ -43,14 +43,14 @@ fun AppearanceScreen(onClose: () -> Unit) {
             HorizontalDivider()
             Row(Modifier.fillMaxWidth().heightIn(min = 56.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("动态取色")
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_appearance_screen_004))
                     Text(if (Build.VERSION.SDK_INT >= 31) "采用系统壁纸配色，状态语义色保持稳定" else "需要 Android 12 或更新版本",
                         style = MaterialTheme.typography.bodyMedium)
                 }
                 Switch(appearance.dynamicColor, preference::saveDynamicColor,
                     enabled = Build.VERSION.SDK_INT >= 31, modifier = Modifier.testTag("appearance-dynamic"))
             }
-            Text("字体大小跟随系统；角色形象、朗读和悬浮窗在“AI 与鱼”中分别设置。",
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_appearance_screen_005),
                 style = MaterialTheme.typography.bodyMedium)
         }
     }

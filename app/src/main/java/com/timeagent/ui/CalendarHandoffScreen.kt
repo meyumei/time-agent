@@ -23,13 +23,13 @@ fun CalendarHandoffScreen(title: String, startAt: Long, endAt: Long, onClose: ()
     var message by remember { mutableStateOf<String?>(null) }
     val format = remember { DateTimeFormatter.ofPattern("M月d日 HH:mm").withZone(ZoneId.systemDefault()) }
     BackHandler { onClose() }
-    Scaffold(topBar = { TopAppBar(title = { Text("交给系统日历") }, navigationIcon = { TextButton(onClick = onClose) { Text("返回") } }) }) { padding ->
+    Scaffold(topBar = { TopAppBar(title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_handoff_screen_001)) }, navigationIcon = { TextButton(onClick = onClose) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_back)) } }) }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text(title, style = MaterialTheme.typography.titleLarge)
             Text("${format.format(Instant.ofEpochMilli(startAt))} — ${format.format(Instant.ofEpochMilli(endAt))}")
-            Text("打开后请在系统日历中确认并保存。此处无法核实是否保存。")
-            OutlinedTextField(description, { description = it }, label = { Text("日历说明（选填）") }, modifier = Modifier.fillMaxWidth().testTag("calendar-description"), minLines = 3)
-            Button(onClick = { message = CalendarHandoff.open(context, title, startAt, endAt, description) }, modifier = Modifier.testTag("calendar-open")) { Text("打开系统日历确认") }
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_handoff_screen_002))
+            OutlinedTextField(description, { description = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_handoff_screen_003)) }, modifier = Modifier.fillMaxWidth().testTag("calendar-description"), minLines = 3)
+            Button(onClick = { message = CalendarHandoff.open(context, title, startAt, endAt, description) }, modifier = Modifier.testTag("calendar-open")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_handoff_screen_004)) }
             message?.let { Text(it, modifier = Modifier.testTag("calendar-handoff-result")) }
         }
     }

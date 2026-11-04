@@ -70,7 +70,7 @@ fun ConfirmSheet(title: String, impact: String, confirmLabel: String, onConfirm:
             Text(title, Modifier.semantics { heading() }, style = MaterialTheme.typography.titleLarge)
             Text(impact, style = MaterialTheme.typography.bodyLarge)
             Button(onClick = onConfirm, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text(confirmLabel) }
-            TextButton(onClick = onDismiss, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text("取消") }
+            TextButton(onClick = onDismiss, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
         }
     }
 }
@@ -103,7 +103,7 @@ fun DetailSheet(title: String, onDismiss: () -> Unit, actions: List<DetailAction
             Row(Modifier.fillMaxWidth()) {
                 Text(title, Modifier.weight(1f).semantics { heading() }, style = MaterialTheme.typography.titleLarge)
                 if (actions.size > 2) Box {
-                    TextButton(onClick = { overflow = true }) { Text("更多") }
+                    TextButton(onClick = { overflow = true }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_feedback_components_001)) }
                     DropdownMenu(expanded = overflow, onDismissRequest = { overflow = false }) {
                         actions.drop(2).forEach { action ->
                             DropdownMenuItem(text = { Text(action.label) }, onClick = { overflow = false; action.onClick() })

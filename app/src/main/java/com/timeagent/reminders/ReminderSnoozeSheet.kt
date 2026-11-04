@@ -121,10 +121,10 @@ fun ReminderSnoozeSheet(
                 .padding(bottom = 28.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text("稍后提醒", style = MaterialTheme.typography.titleLarge)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_snooze_sheet_001), style = MaterialTheme.typography.titleLarge)
             Text(reminderTitle, style = MaterialTheme.typography.bodyLarge)
             Text(
-                "只推迟提醒，不会修改原日程或原提醒时间。",
+                androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_snooze_sheet_002),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -140,7 +140,7 @@ fun ReminderSnoozeSheet(
                     }
                 }
             }
-            TextButton(onClick = { editing = true }) { Text("设置自定义两项") }
+            TextButton(onClick = { editing = true }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_snooze_sheet_003)) }
         }
     }
 
@@ -168,21 +168,21 @@ private fun ReminderSnoozeCustomDialog(
     var error by remember { mutableStateOf<String?>(null) }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("自定义稍后时长") },
+        title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_snooze_sheet_004)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text("填写分钟数（1–10080），两项会出现在稍后提醒列表中。", style = MaterialTheme.typography.bodySmall)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_snooze_sheet_005), style = MaterialTheme.typography.bodySmall)
                 OutlinedTextField(
                     value = first,
                     onValueChange = { first = it.filter(Char::isDigit).take(5); error = null },
-                    label = { Text("自定义 1（分钟）") },
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_snooze_sheet_006)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 )
                 OutlinedTextField(
                     value = second,
                     onValueChange = { second = it.filter(Char::isDigit).take(5); error = null },
-                    label = { Text("自定义 2（分钟）") },
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_snooze_sheet_007)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 )
@@ -198,9 +198,9 @@ private fun ReminderSnoozeCustomDialog(
                 } else {
                     onSave(ReminderSnoozePreferences(a, b))
                 }
-            }) { Text("保存") }
+            }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }
 

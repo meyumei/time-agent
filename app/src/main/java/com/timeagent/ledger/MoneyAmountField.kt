@@ -52,7 +52,7 @@ fun MoneyAmountField(
                     onClick = {
                         onValueChange(if (value.startsWith("-")) value.removePrefix("-") else "-$value")
                     },
-                ) { Text("正/负") }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_money_amount_field_001)) }
             }
         } else null,
     )

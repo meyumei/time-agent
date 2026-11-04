@@ -322,11 +322,11 @@ fun RecurringScreen(
             Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextButton(onClick = onClose) { Text("返回", fontSize = 13.sp) }
+            TextButton(onClick = onClose) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_back), fontSize = 13.sp) }
             Column(Modifier.weight(1f)) {
-                Text("周期任务与习惯", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_001), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
                 Text(
-                    "本次与以后规则分开处理",
+                    androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_002),
                     fontSize = 11.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1
@@ -335,11 +335,11 @@ fun RecurringScreen(
             TextButton(
                 enabled = data.history.any { !it.undone },
                 onClick = { model.perform(action = { model.repository.undoLastAction() }) }
-            ) { Text("撤销", fontSize = 13.sp) }
+            ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_undo), fontSize = 13.sp) }
             TextButton(
                 enabled = data.history.any { it.undone && it.redoable },
                 onClick = { model.perform(action = { model.repository.redoLastAction() }) }
-            ) { Text("重做", fontSize = 13.sp) }
+            ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_redo), fontSize = 13.sp) }
         }
         Row(
             Modifier.fillMaxWidth().padding(horizontal = 12.dp),
@@ -348,15 +348,15 @@ fun RecurringScreen(
             Button(
                 onClick = { form = newForm(today, zone.id) },
                 modifier = Modifier.weight(1f).testTag("recurring-create")
-            ) { Text("新建规则", fontSize = 13.sp) }
+            ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_003), fontSize = 13.sp) }
             OutlinedButton(
                 onClick = { model.perform(action = { service.refresh() }) },
                 modifier = Modifier.weight(1f)
-            ) { Text("刷新", fontSize = 13.sp) }
+            ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_004), fontSize = 13.sp) }
         }
         if (rules.isEmpty() && focus.isEmpty()) {
             Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
-                Text("暂无周期规则", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_005), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         } else {
             LazyColumn(
@@ -428,14 +428,14 @@ fun RecurringScreen(
                                 TextButton(
                                     onClick = { form = formOf(rule, p, today.toString(), today, zone.id) },
                                     modifier = Modifier.testTag("recurring-rule-${rule.id}")
-                                ) { Text("改规则", fontSize = 12.sp) }
+                                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_012), fontSize = 12.sp) }
                                 TextButton(onClick = { togglePause(rule, p) }) {
                                     Text(if (p?.paused == true) "恢复" else "暂停", fontSize = 12.sp)
                                 }
                             }
                             if (open) {
                                 Text(
-                                    "只改这一次：在上方本次事项点“仅本次改期”。“改规则”从生效日期起影响以后；已处理或手改的本次保持原样。完成只改状态，时长请计时或补录。",
+                                    androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_006),
                                     fontSize = 11.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -458,7 +458,7 @@ fun RecurringScreen(
                                     }
                                 }
                                 if (shown.isEmpty()) {
-                                    Text("暂无记录", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_007), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                                 shown.take(50).forEach { inst ->
                                     InstanceRow(
@@ -477,7 +477,7 @@ fun RecurringScreen(
                                 }
                                 if (shown.size > 50) {
                                     Text(
-                                        "仅显示前 50 条，其余请在任务页或复盘查看",
+                                        androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_008),
                                         fontSize = 11.sp,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -507,9 +507,9 @@ fun RecurringScreen(
             title = { Text("从 ${pending.from} 起修改规则？", fontSize = 15.sp) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text("规则将按新设置保存，并影响以后生成的本次事项。", fontSize = 13.sp)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_009), fontSize = 13.sp)
                     if (counts == null) {
-                        Text("正在统计受影响的本次事项…", fontSize = 13.sp)
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_010), fontSize = 13.sp)
                     } else {
                         Text("仅以后：从 ${counts.firstUnmaterializedDate} 起生成，已生成条目保持原样。", fontSize = 13.sp)
                         Text(
@@ -525,7 +525,7 @@ fun RecurringScreen(
                         )
                     }
                     Text(
-                        "受保护的本次（已处理、已跳过或已手改）不能随规则修改，将保持原样。",
+                        androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_011),
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -536,7 +536,7 @@ fun RecurringScreen(
                     onClick = { commitPending(RuleChangeScope.INCLUDING_PENDING) },
                     enabled = counts != null,
                     modifier = Modifier.testTag("recurring-save-including-pending")
-                ) { Text("包括已生成但未完成的实例", fontSize = 13.sp) }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_012), fontSize = 13.sp) }
             },
             dismissButton = {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -544,11 +544,11 @@ fun RecurringScreen(
                         onClick = { commitPending(RuleChangeScope.FUTURE_ONLY) },
                         enabled = counts != null,
                         modifier = Modifier.testTag("recurring-save-future-only")
-                    ) { Text("仅以后的实例", fontSize = 13.sp) }
+                    ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_013), fontSize = 13.sp) }
                     TextButton(onClick = {
                         pendingRule = null
                         pendingPreview = null
-                    }) { Text("取消", fontSize = 13.sp) }
+                    }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel), fontSize = 13.sp) }
                 }
             }
         )
@@ -558,19 +558,19 @@ fun RecurringScreen(
         val rule = rules.firstOrNull { it.id == inst.ruleId }
         AlertDialog(
             onDismissRequest = { choice = null },
-            title = { Text("修改安排", fontSize = 15.sp) },
-            text = { Text("仅修改本次，或从本次日期起修改整个规则。", fontSize = 13.sp) },
+            title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_014), fontSize = 15.sp) },
+            text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_015), fontSize = 13.sp) },
             confirmButton = {
                 TextButton(onClick = {
                     choice = null
                     openMove(inst, rule?.let { patternOrNull(gson, it) })
-                }) { Text("仅本次改期") }
+                }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_016)) }
             },
             dismissButton = {
                 TextButton(onClick = {
                     choice = null
                     if (rule != null) form = formOf(rule, patternOrNull(gson, rule), inst.originalDate, today, zone.id)
-                }) { Text("本次及以后") }
+                }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_017)) }
             }
         )
     }
@@ -600,7 +600,7 @@ fun RecurringScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Switch(checked = moveWithPlan, onCheckedChange = { moveWithPlan = it })
                             Spacer(Modifier.width(8.dp))
-                            Text("同时安排时段", fontSize = 13.sp)
+                            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_017), fontSize = 13.sp)
                         }
                         Text(
                             if (moveWithPlan) "将按新时间占用计划时段" else "仅改待办日期，并移出原计划",
@@ -611,7 +611,7 @@ fun RecurringScreen(
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             TextButton(onClick = {
                                 moving = null; pendingTarget = null; pendingConflicts = null
-                            }) { Text("取消") }
+                            }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
                             Button(onClick = {
                                 val at = parseAt(moveInput, zone)
                                 if (at == null) {
@@ -623,26 +623,26 @@ fun RecurringScreen(
                                         pendingTarget = at
                                     })
                                 }
-                            }, modifier = Modifier.testTag("recurring-move-check")) { Text("检查改期") }
+                            }, modifier = Modifier.testTag("recurring-move-check")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_018)) }
                         }
                     } else {
                         val conflictsFound = pendingConflicts.orEmpty()
                         Text("新时间：${fmt(target, zone)}", fontSize = 13.sp)
                         if (conflictsFound.isEmpty()) {
-                            Text("未发现冲突。", fontSize = 12.sp)
+                            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_019), fontSize = 12.sp)
                         } else {
                             Text("发现 ${conflictsFound.size} 个冲突：", fontSize = 12.sp, color = MaterialTheme.colorScheme.error)
                             conflictsFound.take(5).forEach { c -> Text("· ${c.title}", fontSize = 12.sp) }
                         }
                         Text(
-                            "确认后提交改期，不会自动保存。",
+                            androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_020),
                             fontSize = 11.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             TextButton(onClick = {
                                 pendingTarget = null; pendingConflicts = null
-                            }) { Text("重新填写") }
+                            }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_021)) }
                             Button(onClick = {
                                 model.perform(
                                     onSuccess = { moving = null; pendingTarget = null; pendingConflicts = null },
@@ -710,23 +710,23 @@ private fun FocusRow(
             )
             Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                 if (task != null && task.deletedAt == null) {
-                    TextButton(onClick = onOpen) { Text("打开任务", fontSize = 12.sp) }
+                    TextButton(onClick = onOpen) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_018), fontSize = 12.sp) }
                 }
-                TextButton(onClick = onRule) { Text("查看规则", fontSize = 12.sp) }
+                TextButton(onClick = onRule) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_022), fontSize = 12.sp) }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                 TextButton(
                     onClick = { onAct("COMPLETE") },
                     modifier = Modifier.testTag("recurring-focus-complete-${inst.id}")
-                ) { Text("本次完成", fontSize = 12.sp) }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_023), fontSize = 12.sp) }
                 TextButton(
                     onClick = { onAct("SKIP") },
                     modifier = Modifier.testTag("recurring-focus-skip-${inst.id}")
-                ) { Text("跳过", fontSize = 12.sp) }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_002), fontSize = 12.sp) }
                 TextButton(
                     onClick = onMove,
                     modifier = Modifier.testTag("recurring-focus-move-${inst.id}")
-                ) { Text("仅本次改期", fontSize = 12.sp) }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_016), fontSize = 12.sp) }
             }
         }
     }
@@ -782,21 +782,21 @@ private fun InstanceRow(
         }
         Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
             if (task != null && task.deletedAt == null) {
-                TextButton(onClick = onOpen) { Text("打开任务", fontSize = 12.sp) }
+                TextButton(onClick = onOpen) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_018), fontSize = 12.sp) }
             }
             if (state == InstState.PENDING) {
                 TextButton(
                     onClick = { onAct("COMPLETE") },
                     modifier = Modifier.testTag("recurring-complete-${inst.id}")
-                ) { Text("本次完成", fontSize = 12.sp) }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_023), fontSize = 12.sp) }
                 TextButton(
                     onClick = { onAct("SKIP") },
                     modifier = Modifier.testTag("recurring-skip-${inst.id}")
-                ) { Text("跳过", fontSize = 12.sp) }
-                TextButton(onClick = onMove) { Text("仅本次改期", fontSize = 12.sp) }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_002), fontSize = 12.sp) }
+                TextButton(onClick = onMove) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_016), fontSize = 12.sp) }
             } else if (state in setOf(InstState.DONE,InstState.SKIPPED,InstState.CANCELLED,InstState.SUSPENDED,InstState.SUPERSEDED)) {
-                TextButton(onClick = { onAct("REOPEN") }) { Text("重新打开", fontSize = 12.sp) }
-                TextButton(onClick = onMove) { Text("仅本次改期", fontSize = 12.sp) }
+                TextButton(onClick = { onAct("REOPEN") }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_020), fontSize = 12.sp) }
+                TextButton(onClick = onMove) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_016), fontSize = 12.sp) }
             }
         }
     }
@@ -821,7 +821,7 @@ private fun RuleEditor(
                 OutlinedTextField(
                     value = f.title,
                     onValueChange = { f = f.copy(title = it) },
-                    label = { Text("标题") },
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_template_editor_006)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth().testTag("recurring-title")
                 )
@@ -841,7 +841,7 @@ private fun RuleEditor(
                     allowNone = false,
                     onValidityChange = { recurrenceValid = it }
                 )
-                Text("关联项目", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_024), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Row(
                     Modifier.horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -849,7 +849,7 @@ private fun RuleEditor(
                     FilterChip(
                         selected = f.projectId == null,
                         onClick = { f = f.copy(projectId = null) },
-                        label = { Text("不关联", fontSize = 12.sp) }
+                        label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_032), fontSize = 12.sp) }
                     )
                     projects.forEach { project ->
                         FilterChip(
@@ -860,9 +860,9 @@ private fun RuleEditor(
                     }
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    TextButton(onClick = onDismiss) { Text("取消", fontSize = 13.sp) }
+                    TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel), fontSize = 13.sp) }
                     Button(onClick = { onSave(f) }, enabled = recurrenceValid, modifier = Modifier.testTag("recurring-save")) {
-                        Text("保存", fontSize = 13.sp)
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save), fontSize = 13.sp)
                     }
                 }
             }

@@ -24,11 +24,11 @@ fun StructuredDraftPreview(
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(title, style = MaterialTheme.typography.titleMedium)
             if (before.isNotBlank()) {
-                Text("原内容", style = MaterialTheme.typography.labelLarge)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_structured_draft_preview_001), style = MaterialTheme.typography.labelLarge)
                 SelectionContainer { Text(before) }
                 HorizontalDivider()
             }
-            Text("确认后", style = MaterialTheme.typography.labelLarge)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_structured_draft_preview_002), style = MaterialTheme.typography.labelLarge)
             SelectionContainer { Text(after) }
             warnings.forEach { Text(it, color = MaterialTheme.colorScheme.error) }
             actions()

@@ -76,7 +76,7 @@ internal fun TaskListContent(
     }
     Column(Modifier.fillMaxSize().testTag("task-list")) {
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-            FilterChip(selected = project == null, onClick = { project = null }, label = { Text("全部") })
+            FilterChip(selected = project == null, onClick = { project = null }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.filter_all)) })
             shownProjects.forEach { p ->
                 Spacer(Modifier.width(4.dp))
                 FilterChip(selected = project == p.id, onClick = { project = if (project == p.id) null else p.id }, label = { Row(verticalAlignment = Alignment.CenterVertically) { Box(Modifier.size(8.dp).background(colorFor(p.name), CircleShape)); Spacer(Modifier.width(4.dp)); Text(p.name) } })
@@ -99,9 +99,9 @@ internal fun TaskListContent(
             if (showDone) items(done, key = { it.id }) { t -> TaskRow(t, zone, kids(t), false, onSelect, onToggle, onStart, onSchedule, onDelete, {}, {}) }
         }
         Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            OutlinedTextField(value = text, onValueChange = { text = it; onQuickPreview(it) }, modifier = Modifier.weight(1f), placeholder = { Text("快速添加任务") }, singleLine = true)
+            OutlinedTextField(value = text, onValueChange = { text = it; onQuickPreview(it) }, modifier = Modifier.weight(1f), placeholder = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_task_list_content_001)) }, singleLine = true)
             Spacer(Modifier.width(8.dp))
-            Button(onClick = onCreate, enabled = text.isNotBlank()) { Text("添加") }
+            Button(onClick = onCreate, enabled = text.isNotBlank()) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_task_list_content_002)) }
         }
     }
 }
@@ -123,11 +123,11 @@ private fun TaskRow(task: TaskEntity, zone: ZoneId, progress: Pair<Int, Int>, ma
         Box {
             IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, contentDescription = "更多操作") }
             DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-                DropdownMenuItem(text = { Text("计划") }, onClick = { open = false; onSchedule(task) })
-                DropdownMenuItem(text = { Text("编辑") }, onClick = { open = false; onSelect(task) })
+                DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_grid_block_editor_002)) }, onClick = { open = false; onSchedule(task) })
+                DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_edit)) }, onClick = { open = false; onSelect(task) })
                 DropdownMenuItem(text = { Text(if (done) "标记未完成" else "完成") }, onClick = { open = false; onToggle(task) })
-                if (manual) { DropdownMenuItem(text = { Text("上移") }, onClick = { open = false; onUp() }); DropdownMenuItem(text = { Text("下移") }, onClick = { open = false; onDown() }) }
-                DropdownMenuItem(text = { Text("删除") }, onClick = { open = false; onDelete(task) })
+                if (manual) { DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_task_list_content_003)) }, onClick = { open = false; onUp() }); DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_task_list_content_004)) }, onClick = { open = false; onDown() }) }
+                DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_delete)) }, onClick = { open = false; onDelete(task) })
             }
         }
     }
@@ -147,7 +147,7 @@ private fun DoneHeader(count: Int, open: Boolean, toggle: () -> Unit) {
 private fun SortMenu(sort: String, onSort: (String) -> Unit) {
     var open by remember { mutableStateOf(false) }
     Box {
-        TextButton(onClick = { open = true }) { Text("排序：" + when (sort) { "PRIORITY" -> "优先级"; "MANUAL" -> "手动"; else -> "截止时间" }) }
+        TextButton(onClick = { open = true }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_task_list_content_005) + when (sort) { "PRIORITY" -> "优先级"; "MANUAL" -> "手动"; else -> "截止时间" }) }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             listOf("DUE" to "截止时间", "PRIORITY" to "优先级", "MANUAL" to "手动").forEach { (k, v) -> DropdownMenuItem(text = { Text(v) }, onClick = { onSort(k); open = false }) }
         }

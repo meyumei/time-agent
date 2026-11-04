@@ -46,7 +46,7 @@ fun SettingsHub(
             TopAppBar(
                 title = {
                     Text(
-                        text = "设置",
+                        text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_butler_home_screens_010),
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.testTag("settings-title"),
                     )
@@ -59,7 +59,7 @@ fun SettingsHub(
                             .testTag("settings-back"),
                     ) {
                         Text(
-                            text = "返回管家",
+                            text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_memory_screen_001),
                             style = MaterialTheme.typography.labelLarge,
                         )
                     }
@@ -241,7 +241,7 @@ fun ButlerHub(
             TopAppBar(
                 title = {
                     Text(
-                        text = "管家",
+                        text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_settings_hub_001),
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.testTag("butler-title"),
                     )
@@ -254,7 +254,7 @@ fun ButlerHub(
                             .testTag("butler-settings"),
                     ) {
                         Text(
-                            text = "设置",
+                            text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_butler_home_screens_010),
                             style = MaterialTheme.typography.labelLarge,
                         )
                     }

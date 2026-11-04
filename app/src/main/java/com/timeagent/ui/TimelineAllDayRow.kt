@@ -88,7 +88,7 @@ internal fun TimelineAllDayRow(
                         }
                 }
             },
-            confirmButton = { TextButton(onClick = { expandedDate = null }) { Text("关闭") } },
+            confirmButton = { TextButton(onClick = { expandedDate = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_close)) } },
         )
     }
 }

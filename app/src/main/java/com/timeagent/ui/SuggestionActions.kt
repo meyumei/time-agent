@@ -34,47 +34,47 @@ fun SuggestionActions(model: TimeViewModel, card: AgentSuggestionEntity, busy: B
             if (card.proposedStartAt != null && card.proposedEndAt != null) TextButton(
                 onClick = { execute(SuggestionAction.Schedule(card.proposedStartAt, card.proposedEndAt)) },
                 enabled = !busy, modifier = Modifier.testTag("suggestion-schedule"),
-            ) { Text("安排到这个时段") }
+            ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_suggestion_actions_001)) }
             TextButton(onClick = { model.perform { slots = model.repository.suggestionSlots(card.id, card.version) } }, enabled = !busy, modifier = Modifier.testTag("suggestion-other-slot")) { Text(if (card.proposedStartAt != null) "换一个时段" else "选择空档") }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            TextButton(onClick = { editingDue = true }, enabled = !busy, modifier = Modifier.testTag("suggestion-due")) { Text("调整截止 / 延后") }
-            TextButton(onClick = { execute(SuggestionAction.StartTimer) }, enabled = !busy, modifier = Modifier.testTag("suggestion-start-timer")) { Text("开始计时") }
-            TextButton(onClick = { onOpenTask(card.taskId!!) }, enabled = !busy) { Text("事项") }
+            TextButton(onClick = { editingDue = true }, enabled = !busy, modifier = Modifier.testTag("suggestion-due")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_suggestion_actions_002)) }
+            TextButton(onClick = { execute(SuggestionAction.StartTimer) }, enabled = !busy, modifier = Modifier.testTag("suggestion-start-timer")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_suggestion_actions_003)) }
+            TextButton(onClick = { onOpenTask(card.taskId!!) }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_suggestion_actions_004)) }
         }
     }
     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         val until = model.repository.now().plusSeconds(3600).toEpochMilli()
-        TextButton(onClick = { execute(SuggestionAction.Snooze(until)) }, enabled = !busy && until < (card.expiresAt ?: Long.MAX_VALUE), modifier = Modifier.testTag("suggestion-snooze")) { Text("暂缓 1 小时") }
-        TextButton(onClick = { model.perform { model.repository.dismissSuggestion(card.id) } }, enabled = !busy, modifier = Modifier.testTag("suggestion-dismiss")) { Text("忽略") }
+        TextButton(onClick = { execute(SuggestionAction.Snooze(until)) }, enabled = !busy && until < (card.expiresAt ?: Long.MAX_VALUE), modifier = Modifier.testTag("suggestion-snooze")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_suggestion_actions_005)) }
+        TextButton(onClick = { model.perform { model.repository.dismissSuggestion(card.id) } }, enabled = !busy, modifier = Modifier.testTag("suggestion-dismiss")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_007)) }
         TextButton(onClick = { model.perform {
             model.repository.commands.execute(SetSuggestionPolicy(
                 "suggestion-policy:${card.id}:${card.version}", card.type, true,
             )).throwIfRejected()
-        } }, enabled = !busy) { Text("不再提示此类") }
+        } }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_suggestion_actions_006)) }
     }
     slots?.let { choices ->
-        AlertDialog(onDismissRequest = { if (!busy) slots = null }, title = { Text("选择可安排时段") }, text = {
+        AlertDialog(onDismissRequest = { if (!busy) slots = null }, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_suggestion_actions_007)) }, text = {
             Column(Modifier.heightIn(max = 320.dp).verticalScroll(rememberScrollState())) {
-                Text("按任务预计时长计算，保存时再次检查冲突。", style = MaterialTheme.typography.bodySmall)
-                if (choices.isEmpty()) Text("今天未查到足够空档，可返回事项调整预计时长或截止。")
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_suggestion_actions_008), style = MaterialTheme.typography.bodySmall)
+                if (choices.isEmpty()) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_suggestion_actions_009))
                 choices.forEach { span -> TextButton(enabled = !busy, onClick = { execute(SuggestionAction.Schedule(span.start.toEpochMilli(), span.end.toEpochMilli())) }) {
                     Text("${span.start.label(model.zone)}–${span.end.atZone(model.zone).format(DateTimeFormatter.ofPattern("HH:mm"))}")
                 } }
             }
-        }, confirmButton = { TextButton(onClick = { slots = null }, enabled = !busy) { Text("返回") } })
+        }, confirmButton = { TextButton(onClick = { slots = null }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_back)) } })
     }
-    if (editingDue) AlertDialog(onDismissRequest = { if (!busy) editingDue = false }, title = { Text("调整截止时间") }, text = {
+    if (editingDue) AlertDialog(onDismissRequest = { if (!busy) editingDue = false }, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_suggestion_actions_010)) }, text = {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedTextField(dueDate, { dueDate = it }, label = { Text("日期 yyyy-MM-dd") }, singleLine = true, modifier = Modifier.testTag("suggestion-due-date"))
-            OutlinedTextField(dueTime, { dueTime = it }, label = { Text("时间 HH:mm") }, singleLine = true, modifier = Modifier.testTag("suggestion-due-time"))
+            OutlinedTextField(dueDate, { dueDate = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_028)) }, singleLine = true, modifier = Modifier.testTag("suggestion-due-date"))
+            OutlinedTextField(dueTime, { dueTime = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_029)) }, singleLine = true, modifier = Modifier.testTag("suggestion-due-time"))
             validation?.let { Text(it, color = MaterialTheme.colorScheme.error) }
         }
     }, confirmButton = { TextButton(enabled = !busy, onClick = {
         val instant = runCatching { LocalDate.parse(dueDate).atTime(LocalTime.parse(dueTime)).atZone(model.zone).toInstant() }.getOrNull()
         if (instant == null || instant <= model.repository.now()) validation = "请填写有效的未来日期和时间"
         else execute(SuggestionAction.Postpone(instant.toEpochMilli()))
-    }, modifier = Modifier.testTag("suggestion-due-save")) { Text("保存截止") } }, dismissButton = { TextButton(onClick = { editingDue = false }, enabled = !busy) { Text("取消") } })
+    }, modifier = Modifier.testTag("suggestion-due-save")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_suggestion_actions_011)) } }, dismissButton = { TextButton(onClick = { editingDue = false }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } })
     draft?.let { action ->
         val after = when (action) {
             is SuggestionAction.Schedule -> "创建关联日程：${Instant.ofEpochMilli(action.startAt).label(model.zone)}–${Instant.ofEpochMilli(action.endAt).label(model.zone)}"
@@ -84,14 +84,14 @@ fun SuggestionActions(model: TimeViewModel, card: AgentSuggestionEntity, busy: B
         }
         AlertDialog(
             onDismissRequest = { if (!busy) draft = null },
-            title = { Text("执行建议") },
+            title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_suggestion_actions_012)) },
             text = { StructuredDraftPreview(card.title, card.detail, after) },
             confirmButton = { TextButton(enabled = !busy, onClick = {
                 model.perform(onSuccess = { draft = null; slots = null; editingDue = false }) {
                     model.repository.executeSuggestion(card.id, card.version, action)
                 }
-            }) { Text("确认执行") } },
-            dismissButton = { TextButton(enabled = !busy, onClick = { draft = null }) { Text("取消") } },
+            }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_suggestion_actions_013)) } },
+            dismissButton = { TextButton(enabled = !busy, onClick = { draft = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
         )
     }
 }

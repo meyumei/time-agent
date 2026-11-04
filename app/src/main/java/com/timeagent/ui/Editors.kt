@@ -148,7 +148,7 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
         else -> (if (request.entity == null) "新建" else "编辑") + request.kind.title + if (request.scheduleNewTask) "并安排" else ""
     }
     Scaffold(topBar = {
-        TopAppBar(title = { Text(titleText, fontWeight = FontWeight.Bold) }, navigationIcon = { TextButton(onClick = dismiss, enabled = !busy) { Text("取消") } }, actions = {
+        TopAppBar(title = { Text(titleText, fontWeight = FontWeight.Bold) }, navigationIcon = { TextButton(onClick = dismiss, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } }, actions = {
             TextButton(
                 onClick = if (pointScreen) savePoint else save,
                 enabled = !busy && (pointScreen || !future || futureConfirmed),
@@ -159,8 +159,8 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
         Column(Modifier.padding(padding).fillMaxSize().imePadding().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             if (showModeSwitch) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(pointMode, { pointMode = true }, label = { Text("单时点") }, modifier = Modifier.testTag("plan-mode-reminder"))
-                    FilterChip(!pointMode, { pointMode = false }, label = { Text("时段") }, modifier = Modifier.testTag("plan-mode-range"))
+                    FilterChip(pointMode, { pointMode = true }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_001)) }, modifier = Modifier.testTag("plan-mode-reminder"))
+                    FilterChip(!pointMode, { pointMode = false }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_002)) }, modifier = Modifier.testTag("plan-mode-range"))
                 }
                 Text(
                     if (pointMode) "到点发一次提醒，不占用日历时间。" else "占用日历时间，可关联任务。",
@@ -169,28 +169,28 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
                 )
             }
             if (pointMode) {
-                OutlinedTextField(title, { title = it }, label = { Text("提醒内容") }, singleLine = true, modifier = Modifier.fillMaxWidth().testTag("reminder-title"))
+                OutlinedTextField(title, { title = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_003)) }, singleLine = true, modifier = Modifier.fillMaxWidth().testTag("reminder-title"))
                 Text("时间以 ${zone.id} 显示", style = MaterialTheme.typography.bodySmall)
-                OutlinedTextField(date, { date = it }, label = { Text("提醒日期 YYYY-MM-DD") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(startTime, { startTime = it }, label = { Text("提醒时间") }, placeholder = { Text("HH:mm") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                Text("只发送一次系统通知；声音、锁屏显示和省电策略由系统设置决定。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                if (reminder?.deliveredAt != null) Text("这条提醒已经向系统提交过通知。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                OutlinedTextField(date, { date = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_004)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(startTime, { startTime = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_field_001)) }, placeholder = { Text("HH:mm") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_005), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                if (reminder?.deliveredAt != null) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_006), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
             }
             if (!pointMode) {
                 if (request.kind == EditorKind.PLAN) {
-                    OutlinedTextField(title, { title = it }, label = { Text("日程名称") }, singleLine = true, modifier = Modifier.fillMaxWidth().testTag("plan-title"))
-                    OutlinedTextField(notes, { notes = it }, label = { Text("备注") }, modifier = Modifier.fillMaxWidth())
+                    OutlinedTextField(title, { title = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_007)) }, singleLine = true, modifier = Modifier.fillMaxWidth().testTag("plan-title"))
+                    OutlinedTextField(notes, { notes = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.field_notes)) }, modifier = Modifier.fillMaxWidth())
                 }
                 if (request.kind == EditorKind.TASK) {
                     if (activityId != null) {
                         Text("活动：${data.activities.firstOrNull { it.id == activityId }?.fullName(data.activities).orEmpty()}", style = MaterialTheme.typography.labelLarge)
-                        TextButton(onClick = { activityId = null }) { Text("取消活动关联") }
+                        TextButton(onClick = { activityId = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_008)) }
                     }
-                    OutlinedTextField(title, { title = it }, label = { Text("任务名称") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                    OutlinedTextField(estimated, { estimated = it }, label = { Text("预计耗时（分钟）") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                    OutlinedTextField(title, { title = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_009)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                    OutlinedTextField(estimated, { estimated = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_010)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) { listOf("低", "中", "高").forEachIndexed { i, name -> FilterChip(selected = priority == i, onClick = { priority = i }, label = { Text("${name}优先级") }) } }
-                    OutlinedTextField(dueDate, { dueDate = it }, label = { Text("截止日期（可选）") }, placeholder = { Text("YYYY-MM-DD") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                    if (dueDate.isNotBlank()) OutlinedTextField(dueTime, { dueTime = it }, label = { Text("截止时间 HH:mm") }, singleLine = true)
+                    OutlinedTextField(dueDate, { dueDate = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_011)) }, placeholder = { Text("YYYY-MM-DD") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                    if (dueDate.isNotBlank()) OutlinedTextField(dueTime, { dueTime = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_012)) }, singleLine = true)
                 }
                 if (hasTime) {
                     Text("时间以 ${zone.id} 显示", style = MaterialTheme.typography.bodySmall)
@@ -206,15 +206,15 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
                             },
                         )
                     } else {
-                        OutlinedTextField(date, { date = it }, label = { Text("开始日期 YYYY-MM-DD") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                        if (!scheduleAllDay) OutlinedTextField(startTime, { startTime = it }, label = { Text("开始时间 HH:mm") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                        if (!schedulePoint) OutlinedTextField(endDate, { endDate = it }, label = { Text("结束日期 YYYY-MM-DD") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                        if (!schedulePoint && !scheduleAllDay) OutlinedTextField(endTime, { endTime = it }, label = { Text("结束时间 HH:mm") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                        OutlinedTextField(date, { date = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_013)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                        if (!scheduleAllDay) OutlinedTextField(startTime, { startTime = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_014)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                        if (!schedulePoint) OutlinedTextField(endDate, { endDate = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_015)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                        if (!schedulePoint && !scheduleAllDay) OutlinedTextField(endTime, { endTime = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_016)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
                     }
                     if (request.kind == EditorKind.PLAN || request.kind == EditorKind.RECORD) {
-                        Text("关联任务（可选）", style = MaterialTheme.typography.labelLarge)
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_017), style = MaterialTheme.typography.labelLarge)
                         Column {
-                            FilterChip(selected = selectedTask == null, onClick = { selectedTask = null }, label = { Text("不关联任务") })
+                            FilterChip(selected = selectedTask == null, onClick = { selectedTask = null }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_014)) })
                             if (request.kind == EditorKind.RECORD) data.tasks.firstOrNull { it.id == record?.taskId && (it.deletedAt != null || it.status == "CANCELLED") }?.let { historical ->
                                 FilterChip(selected = selectedTask == historical.id, onClick = { selectedTask = historical.id }, label = { Text("${historical.title}（历史任务）") })
                             }
@@ -222,26 +222,26 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
                         }
                     }
                     if (request.kind == EditorKind.COURSE) {
-                        OutlinedTextField(location, { location = it }, label = { Text("教室") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                        OutlinedTextField(teacher, { teacher = it }, label = { Text("教师") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                        Text("只修改这一次课程，重新导入会保留本次修改。", style = MaterialTheme.typography.bodySmall)
+                        OutlinedTextField(location, { location = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_018)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                        OutlinedTextField(teacher, { teacher = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_019)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_020), style = MaterialTheme.typography.bodySmall)
                     }
                     if (overlaps.isNotEmpty()) Surface(color = MaterialTheme.colorScheme.errorContainer, shape = MaterialTheme.shapes.medium) {
                         Text((if (request.kind == EditorKind.RECORD) "与已有实际记录重叠，仍可保存：" else "时间冲突，仍可保存：") + overlaps.take(4).joinToString("、") { it.title }, Modifier.padding(12.dp), style = MaterialTheme.typography.bodySmall)
                     }
                     if (future) {
-                        Text("这条记录包含未来时间；如尚未发生，建议改建计划。", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
-                        Row { Checkbox(futureConfirmed, { futureConfirmed = it }); Text("我确认仍作为实际记录保存", Modifier.padding(top = 12.dp), style = MaterialTheme.typography.bodySmall) }
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_021), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                        Row { Checkbox(futureConfirmed, { futureConfirmed = it }); Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_022), Modifier.padding(top = 12.dp), style = MaterialTheme.typography.bodySmall) }
                     }
                 }
                 if (request.kind == EditorKind.TASK || request.kind == EditorKind.RECORD) {
-                    if (request.kind == EditorKind.RECORD) OutlinedTextField(title, { title = it }, label = { Text("活动名称") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                    Text("分类", style = MaterialTheme.typography.labelLarge)
+                    if (request.kind == EditorKind.RECORD) OutlinedTextField(title, { title = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_activities_001)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_reshape_dialogs_003), style = MaterialTheme.typography.labelLarge)
                     Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        FilterChip(selected = category == null, onClick = { category = null }, label = { Text("未分类") })
+                        FilterChip(selected = category == null, onClick = { category = null }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_023)) })
                         data.categories.forEach { item -> FilterChip(selected = category == item.id, onClick = { category = item.id }, label = { Text(item.name) }) }
                     }
-                    OutlinedTextField(notes, { notes = it }, label = { Text("备注") }, modifier = Modifier.fillMaxWidth(), minLines = 2)
+                    OutlinedTextField(notes, { notes = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.field_notes)) }, modifier = Modifier.fillMaxWidth(), minLines = 2)
                 }
             }
             validation?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }

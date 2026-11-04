@@ -48,11 +48,11 @@ fun ChatExtractionScreen(model: TimeViewModel, initialText: String = "", onClose
     var lastSaved by state.lastSaved
     val aiAvailability = rememberAiAvailability(model)
     BackHandler(enabled = !busy) { onClose() }
-    Scaffold(topBar = { TopAppBar(title = { Text("聊天文字提取") }, navigationIcon = {
-        TextButton(onClick = onClose, enabled = !busy) { Text("返回") }
+    Scaffold(topBar = { TopAppBar(title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_chat_extraction_screen_001)) }, navigationIcon = {
+        TextButton(onClick = onClose, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_back)) }
     }) }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text("粘贴或分享聊天文字后，逐条检查并确认属于你的事项。文字仅在本机处理。", style = MaterialTheme.typography.bodyMedium)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_chat_extraction_screen_002), style = MaterialTheme.typography.bodyMedium)
             AiAvailabilityBanner(
                 availability = aiAvailability,
                 onOpenSettings = onOpenSettings,
@@ -61,13 +61,13 @@ fun ChatExtractionScreen(model: TimeViewModel, initialText: String = "", onClose
             OutlinedTextField(text, { value ->
                 text = value; preview = null; edits = emptyMap(); checked = emptySet(); lastSaved = null
                 localError = if (value.length > 20_000) "聊天文字最多20000字，请删减后提取" else null
-            }, label = { Text("聊天文字（最多20000字）") }, minLines = 6, modifier = Modifier.fillMaxWidth(), enabled = !busy)
+            }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_chat_extraction_screen_003)) }, minLines = 6, modifier = Modifier.fillMaxWidth(), enabled = !busy)
             Button(onClick = {
                 runCatching { ChatTextExtractor.extract(text, model.repository.now(), model.zone) }
                     .onSuccess { preview = it; edits = it.items.associateBy { candidate -> candidate.id }; checked = emptySet(); localError = null; lastSaved = null }
                     .onFailure { localError = it.message }
-            }, enabled = !busy && text.isNotBlank() && text.length <= 20_000) { Text("提取候选事项") }
-            if (onReply != null) OutlinedButton(onClick = { onReply(text) }, enabled = !busy && text.isNotBlank() && text.length <= 20000) { Text("结合空档起草回复") }
+            }, enabled = !busy && text.isNotBlank() && text.length <= 20_000) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_012)) }
+            if (onReply != null) OutlinedButton(onClick = { onReply(text) }, enabled = !busy && text.isNotBlank() && text.length <= 20000) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_chat_extraction_screen_004)) }
             if (localError != null) Text(localError!!, color = MaterialTheme.colorScheme.error)
             if (modelError != null) Text(modelError!!, color = MaterialTheme.colorScheme.error)
             preview?.let { current ->
@@ -84,14 +84,14 @@ fun ChatExtractionScreen(model: TimeViewModel, initialText: String = "", onClose
                                 Checkbox(checked = base.id in checked, onCheckedChange = { value ->
                                     checked = if (value) checked + base.id else checked - base.id
                                 }, enabled = !busy)
-                                TextButton(onClick = { checked = if (base.id in checked) checked - base.id else checked + base.id }, enabled = !busy) { Text("确认为我的事项") }
+                                TextButton(onClick = { checked = if (base.id in checked) checked - base.id else checked + base.id }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_chat_extraction_screen_005)) }
                                 Spacer(Modifier.weight(1f))
-                                TextButton(onClick = { editing = base.id }, enabled = !busy) { Text("修改") }
+                                TextButton(onClick = { editing = base.id }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_chat_extraction_screen_006)) }
                             }
                     }
                 }
                 current.ignored.forEach { Text("未提取：$it", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-                Text("仅有日期的事项会作为任务，截止时间取该日期的23:59:59；可在保存前修改。", style = MaterialTheme.typography.bodySmall)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_chat_extraction_screen_007), style = MaterialTheme.typography.bodySmall)
                 Button(onClick = {
                     if (current.sourceText != text) { localError = "原文已变化，请重新提取"; return@Button }
                     val chosen = current.items.filter { it.id in checked }.map { edits.getValue(it.id).copy(acceptedAsMine = true) }
@@ -105,7 +105,7 @@ fun ChatExtractionScreen(model: TimeViewModel, initialText: String = "", onClose
                         model.perform(onSuccess = { lastSaved = null; localError = "已撤销；原事项不会重复导入" }) {
                             model.repository.undoLastAction(saved.requestId)
                         }
-                    }, enabled = !busy) { Text("撤销本批保存") }
+                    }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_chat_extraction_screen_008)) }
                 }
             }
         }
@@ -142,16 +142,16 @@ private fun ExtractionEditDialog(item: ExtractionCandidate, zone: java.time.Zone
     var start by rememberSaveable(item.id) { mutableStateOf(item.startAt?.let { dateTimeFormat.format(Instant.ofEpochMilli(it).atZone(zone)) }.orEmpty()) }
     var end by rememberSaveable(item.id) { mutableStateOf(item.endAt?.let { dateTimeFormat.format(Instant.ofEpochMilli(it).atZone(zone)) }.orEmpty()) }
     var error by rememberSaveable(item.id) { mutableStateOf<String?>(null) }
-    AlertDialog(onDismissRequest = onDismiss, title = { Text("修改候选事项") }, text = {
+    AlertDialog(onDismissRequest = onDismiss, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_chat_extraction_screen_009)) }, text = {
         Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text("原文：${item.original}", style = MaterialTheme.typography.bodySmall)
-            OutlinedTextField(title, { title = it.take(200) }, label = { Text("标题") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(title, { title = it.take(200) }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_template_editor_006)) }, modifier = Modifier.fillMaxWidth())
             ExtractionKind.entries.forEach { option ->
                 Row { RadioButton(selected = kind == option, onClick = { kind = option }); TextButton(onClick = { kind = option }) { Text(kindName(option)) } }
             }
-            if (kind == ExtractionKind.TASK) OutlinedTextField(date, { date = it }, label = { Text("截止日期 yyyy-MM-dd（必填）") }, modifier = Modifier.fillMaxWidth())
+            if (kind == ExtractionKind.TASK) OutlinedTextField(date, { date = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_chat_extraction_screen_010)) }, modifier = Modifier.fillMaxWidth())
             if (kind == ExtractionKind.REMINDER || kind == ExtractionKind.PLAN) OutlinedTextField(start, { start = it }, label = { Text("${if (kind == ExtractionKind.REMINDER) "提醒" else "开始"} yyyy-MM-dd HH:mm") }, modifier = Modifier.fillMaxWidth())
-            if (kind == ExtractionKind.PLAN) OutlinedTextField(end, { end = it }, label = { Text("结束 yyyy-MM-dd HH:mm") }, modifier = Modifier.fillMaxWidth())
+            if (kind == ExtractionKind.PLAN) OutlinedTextField(end, { end = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_chat_extraction_screen_011)) }, modifier = Modifier.fillMaxWidth())
             if (error != null) Text(error!!, color = MaterialTheme.colorScheme.error)
         }
     }, confirmButton = { TextButton(onClick = {
@@ -164,5 +164,5 @@ private fun ExtractionEditDialog(item: ExtractionCandidate, zone: java.time.Zone
                 endAt = if (kind == ExtractionKind.PLAN) last else null,
                 dueAt = if (kind == ExtractionKind.TASK) due else null))
         } catch (_: Exception) { error = "日期或时间格式无效" }
-    }) { Text("应用") } }, dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } })
+    }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_chat_extraction_screen_012)) } }, dismissButton = { TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } })
 }

@@ -86,11 +86,11 @@ fun NoteEditorScreen(model: TimeViewModel, data: LocalSnapshot, target: NoteTarg
             Modifier.padding(padding).fillMaxSize().imePadding().verticalScroll(rememberScrollState()).padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Text("只关联到这一条内容，可随时回来继续编辑。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            OutlinedTextField(title, { title = it }, label = { Text("笔记标题（可选）") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_001), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            OutlinedTextField(title, { title = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_002)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
             OutlinedTextField(
                 body, { body = it },
-                label = { Text("笔记内容") },
+                label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_003)) },
                 modifier = Modifier.fillMaxWidth().heightIn(min = 220.dp).testTag("note-body"),
                 minLines = 8,
             )
@@ -127,7 +127,7 @@ fun InboxScreen(
 
     Scaffold(topBar = {
         TopAppBar(
-            title = { Text("任务点 / 未安排") },
+            title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_004)) },
             navigationIcon = { IconButton(onClick = onClose, enabled = !busy, modifier = Modifier.testTag("inbox-back")) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "返回") } },
             actions = {
                 IconButton(onClick = { model.perform { model.repository.undoLastAction() } }, enabled = !busy && data.history.any { !it.undone }) { Icon(Icons.AutoMirrored.Rounded.Undo, "撤销最近操作") }
@@ -144,8 +144,8 @@ fun InboxScreen(
             if (pendingSuggestions.isNotEmpty()) {
                 Surface(shape = RoundedCornerShape(18.dp), color = MaterialTheme.colorScheme.tertiaryContainer, modifier = Modifier.testTag("inbox-suggestions")) {
                     Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("助手建议", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-                        Text("根据你的任务、日程和睡眠自动生成；忽略后同类建议不会再出现。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_005), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_006), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         pendingSuggestions.forEach { suggestion ->
                             Surface(shape = RoundedCornerShape(14.dp), color = MaterialTheme.colorScheme.surfaceContainerLow) {
                                 Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -161,25 +161,25 @@ fun InboxScreen(
             Surface(shape = RoundedCornerShape(18.dp), color = MaterialTheme.colorScheme.surfaceContainer) {
                 Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("未安排", Modifier.weight(1f), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-                        OutlinedButton(onClick = { creatingIdea = true }, enabled = !busy, modifier = Modifier.testTag("idea-create")) { Icon(Icons.Rounded.Add, null); Text("想法") }
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_007), Modifier.weight(1f), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                        OutlinedButton(onClick = { creatingIdea = true }, enabled = !busy, modifier = Modifier.testTag("idea-create")) { Icon(Icons.Rounded.Add, null); Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_008)) }
                     }
-                    Text("先收下灵感，不占日历时间；需要时再安排为任务点提醒。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    if (unscheduled.isEmpty()) Text("还没有未安排的想法。", style = MaterialTheme.typography.bodySmall)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_009), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    if (unscheduled.isEmpty()) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_010), style = MaterialTheme.typography.bodySmall)
                     unscheduled.forEach { idea ->
                         Surface(shape = RoundedCornerShape(14.dp), color = MaterialTheme.colorScheme.surfaceContainerLow) {
                             Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                 Text(idea.title, fontWeight = FontWeight.SemiBold)
                                 if (idea.content.isNotBlank()) Text(idea.content, style = MaterialTheme.typography.bodySmall)
                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
-                                    TextButton(onClick = { editingIdea = idea }, enabled = !busy) { Text("编辑") }
-                                    TextButton(onClick = { onScheduleIdea(idea) }, enabled = !busy, modifier = Modifier.testTag("idea-schedule-reminder")) { Text("安排为提醒") }
+                                    TextButton(onClick = { editingIdea = idea }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_edit)) }
+                                    TextButton(onClick = { onScheduleIdea(idea) }, enabled = !busy, modifier = Modifier.testTag("idea-schedule-reminder")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_011)) }
                                     Box {
                                         TextButton(
                                             onClick = { convertMenuIdea = idea.id },
                                             enabled = !busy,
                                             modifier = Modifier.testTag("idea-convert"),
-                                        ) { Text("转为") }
+                                        ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_012)) }
                                         DropdownMenu(
                                             expanded = convertMenuIdea == idea.id,
                                             onDismissRequest = { convertMenuIdea = null },
@@ -197,13 +197,13 @@ fun InboxScreen(
                                             }
                                             HorizontalDivider()
                                             DropdownMenuItem(
-                                                text = { Text("删除", color = MaterialTheme.colorScheme.error) },
+                                                text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_delete), color = MaterialTheme.colorScheme.error) },
                                                 onClick = { convertMenuIdea = null; deleteIdea = idea },
                                                 modifier = Modifier.testTag("idea-convert-delete"),
                                             )
                                         }
                                     }
-                                    TextButton(onClick = { model.perform { model.repository.saveIdea(idea.copy(status = "ARCHIVED"), idea.version) } }, enabled = !busy) { Text("归档") }
+                                    TextButton(onClick = { model.perform { model.repository.saveIdea(idea.copy(status = "ARCHIVED"), idea.version) } }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_archive)) }
                                 }
                             }
                         }
@@ -213,20 +213,20 @@ fun InboxScreen(
             Surface(shape = RoundedCornerShape(18.dp), color = MaterialTheme.colorScheme.surfaceContainer) {
                 Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("任务点提醒", Modifier.weight(1f), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-                        OutlinedButton(onClick = onNewReminder, enabled = !busy, modifier = Modifier.testTag("reminder-create")) { Icon(Icons.Rounded.Add, null); Text("提醒") }
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_013), Modifier.weight(1f), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                        OutlinedButton(onClick = onNewReminder, enabled = !busy, modifier = Modifier.testTag("reminder-create")) { Icon(Icons.Rounded.Add, null); Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_014)) }
                     }
-                    Text("到点只发一次系统通知，不占用日历时段，也不会自动补出一小时。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    if (reminders.isEmpty()) Text("还没有任务点提醒。", style = MaterialTheme.typography.bodySmall)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_015), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    if (reminders.isEmpty()) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_016), style = MaterialTheme.typography.bodySmall)
                     reminders.forEach { reminder ->
                         Surface(shape = RoundedCornerShape(14.dp), color = MaterialTheme.colorScheme.surfaceContainerLow) {
                             Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                 Text(reminder.title, fontWeight = FontWeight.SemiBold, color = if (reminder.enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant)
                                 Text("${Instant.ofEpochMilli(reminder.remindAt).label(zone)} · ${if (reminder.deliveredAt != null) "已提醒" else if (reminder.enabled) "待提醒" else "已关闭"}", style = MaterialTheme.typography.bodySmall)
                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    TextButton(onClick = { onEditReminder(reminder) }, enabled = !busy) { Text("编辑") }
+                                    TextButton(onClick = { onEditReminder(reminder) }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_edit)) }
                                     TextButton(onClick = { model.perform { model.repository.saveReminder(reminder.copy(enabled = !reminder.enabled), reminder.version) } }, enabled = !busy) { Text(if (reminder.enabled) "关闭" else "开启") }
-                                    TextButton(onClick = { deleteReminder = reminder }, enabled = !busy) { Text("删除") }
+                                    TextButton(onClick = { deleteReminder = reminder }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_delete)) }
                                 }
                             }
                         }
@@ -246,22 +246,22 @@ fun InboxScreen(
     deleteReminder?.let { reminder ->
         AlertDialog(
             onDismissRequest = { deleteReminder = null },
-            title = { Text("删除这条提醒？") },
-            text = { Text("删除后可以撤销恢复。") },
+            title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_017)) },
+            text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_018)) },
             confirmButton = {
                 TextButton(onClick = {
                     deleteReminder = null
                     model.perform { model.repository.deleteReminder(reminder.id, reminder.version) }
-                }) { Text("删除") }
+                }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_delete)) }
             },
-            dismissButton = { TextButton(onClick = { deleteReminder = null }) { Text("取消") } },
+            dismissButton = { TextButton(onClick = { deleteReminder = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
         )
     }
     deleteIdea?.let { idea ->
         AlertDialog(
             onDismissRequest = { if (!busy) deleteIdea = null },
-            title = { Text("删除这条想法？") },
-            text = { Text("想法会移出收件箱，不生成任务、日程或记账；删除后可撤销恢复。") },
+            title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_019)) },
+            text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_020)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -279,9 +279,9 @@ fun InboxScreen(
                     },
                     enabled = !busy,
                     modifier = Modifier.testTag("idea-delete-confirm"),
-                ) { Text("删除") }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_delete)) }
             },
-            dismissButton = { TextButton(onClick = { deleteIdea = null }) { Text("取消") } },
+            dismissButton = { TextButton(onClick = { deleteIdea = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
         )
     }
 }
@@ -296,8 +296,8 @@ private fun IdeaEditorDialog(model: TimeViewModel, idea: IdeaEntity?, busy: Bool
         title = { Text(if (idea == null) "记下想法" else "编辑想法") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(title, { title = it }, label = { Text("想法") }, singleLine = true, modifier = Modifier.fillMaxWidth().testTag("idea-title"))
-                OutlinedTextField(content, { content = it }, label = { Text("补充（可选）") }, minLines = 3, modifier = Modifier.fillMaxWidth().testTag("idea-content"))
+                OutlinedTextField(title, { title = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_008)) }, singleLine = true, modifier = Modifier.fillMaxWidth().testTag("idea-title"))
+                OutlinedTextField(content, { content = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_021)) }, minLines = 3, modifier = Modifier.fillMaxWidth().testTag("idea-content"))
                 validation?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
             }
         },
@@ -316,9 +316,9 @@ private fun IdeaEditorDialog(model: TimeViewModel, idea: IdeaEntity?, busy: Bool
                         }
                     }
                 },
-            ) { Text("保存") }
+            ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) }
         },
-        dismissButton = { TextButton(onClick = onClose, enabled = !busy) { Text("取消") } },
+        dismissButton = { TextButton(onClick = onClose, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }
 
@@ -336,7 +336,7 @@ fun ReminderDetailSheet(
 ) {
     ModalBottomSheet(onDismissRequest = onClose) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp).padding(bottom = 32.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text("任务点提醒", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_013), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
             Text(reminder.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
             Text(Instant.ofEpochMilli(reminder.remindAt).label(zone))
             Text(
@@ -349,13 +349,13 @@ fun ReminderDetailSheet(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                TextButton(onClick = onEdit) { Text("编辑") }
+                TextButton(onClick = onEdit) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_edit)) }
                 TextButton(onClick = onToggle) { Text(if (reminder.enabled) "关闭提醒" else "重新开启") }
-                TextButton(onClick = onDelete) { Text("删除") }
+                TextButton(onClick = onDelete) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_delete)) }
             }
             Row {
-                TextButton(onClick = onSnooze) { Text("稍后提醒") }
-                TextButton(onClick = onRepeat) { Text("重复提醒设置") }
+                TextButton(onClick = onSnooze) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_snooze_sheet_001)) }
+                TextButton(onClick = onRepeat) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_022)) }
             }
         }
     }

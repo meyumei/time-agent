@@ -82,8 +82,8 @@ fun FishChatScreen(
             color=if(runtime.error!=null || message!=null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant) }
         runtime.progress?.let { LinearProgressIndicator(progress={it.coerceIn(0f,1f)},modifier=Modifier.fillMaxWidth()) }
         if (!runtime.ready) Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(onClick={session.start()},enabled=!chat.busy) { Text("准备并启动") }
-            TextButton(onClick=onSettings) { Text("模型设置") }
+            OutlinedButton(onClick={session.start()},enabled=!chat.busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_chat_screen_001)) }
+            TextButton(onClick=onSettings) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_character_screens_040)) }
         }
         LazyColumn(Modifier.weight(1f).fillMaxWidth().testTag("fish-chat-messages"),state=list,verticalArrangement=Arrangement.spacedBy(10.dp),
             contentPadding=PaddingValues(bottom=8.dp)) {
@@ -105,7 +105,7 @@ fun FishChatScreen(
                     Column(Modifier.padding(12.dp)) {
                         Text(linked,style=MaterialTheme.typography.bodyMedium)
                         FishMessageSticker(turn.text, companionConfig.appearance)
-                        if (turn.role != "user") TextButton(onClick={session.voice.speak(turn.text)}) { Text("朗读") }
+                        if (turn.role != "user") TextButton(onClick={session.voice.speak(turn.text)}) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_chat_screen_002)) }
                     }
                 }
             }
@@ -113,22 +113,22 @@ fun FishChatScreen(
         chat.pending?.let { preview ->
             com.timeagent.ui.StructuredDraftPreview(preview.title, preview.before, preview.after, preview.warnings) {
                 Row {
-                    TextButton(onClick = { session.send("确认保存") }, enabled = !chat.busy) { Text("确认保存") }
-                    TextButton(onClick = { session.send("取消") }, enabled = !chat.busy) { Text("取消") }
+                    TextButton(onClick = { session.send("确认保存") }, enabled = !chat.busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_018)) }
+                    TextButton(onClick = { session.send("取消") }, enabled = !chat.busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
                 }
             }
         }
-        chat.undoId?.let { TextButton(onClick = { session.send("撤销") }, enabled = !chat.busy) { Text("撤销本地操作") } }
-        chat.localDestination?.let { destination -> TextButton(onClick = { onOpenLocalResult(destination) }) { Text("打开本地操作结果") } }
-        if(chat.busy) Row { CircularProgressIndicator(Modifier.size(20.dp),strokeWidth=2.dp);TextButton(onClick={session.cancel()}) { Text("停止本轮回复") } }
+        chat.undoId?.let { TextButton(onClick = { session.send("撤销") }, enabled = !chat.busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_chat_screen_003)) } }
+        chat.localDestination?.let { destination -> TextButton(onClick = { onOpenLocalResult(destination) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_chat_screen_004)) } }
+        if(chat.busy) Row { CircularProgressIndicator(Modifier.size(20.dp),strokeWidth=2.dp);TextButton(onClick={session.cancel()}) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_chat_screen_005)) } }
         if (voice.message.isNotBlank()) Row(verticalAlignment=Alignment.CenterVertically) {
             Text(voice.message, Modifier.weight(1f), style=MaterialTheme.typography.labelSmall)
             TextButton(onClick={session.voice.stop()}) { Text(if (voice.preparing || voice.speaking) "停止播放" else "关闭") }
         }
         Row(Modifier.fillMaxWidth().padding(bottom=8.dp),horizontalArrangement=Arrangement.spacedBy(6.dp),verticalAlignment=Alignment.CenterVertically) {
             FishStickerPicker(session)
-            OutlinedTextField(draft,session::editDraft,modifier=Modifier.weight(1f).focusRequester(input).testTag("fish-chat-input"),placeholder={Text("说说你正在想的事…")},maxLines=3)
-            Button(onClick={session.send(draft)},enabled=draft.isNotBlank() && !chat.busy) { Text("发送") }
+            OutlinedTextField(draft,session::editDraft,modifier=Modifier.weight(1f).focusRequester(input).testTag("fish-chat-input"),placeholder={Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_chat_screen_006))},maxLines=3)
+            Button(onClick={session.send(draft)},enabled=draft.isNotBlank() && !chat.busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_chat_screen_007)) }
         }
     }
 }

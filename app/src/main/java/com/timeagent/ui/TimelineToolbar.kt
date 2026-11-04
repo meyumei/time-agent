@@ -53,23 +53,23 @@ internal fun TimelineToolbar(
                 Icon(Icons.Rounded.MoreVert, "更多时间轴操作")
             }
             DropdownMenu(more, { more = false }) {
-                DropdownMenuItem(text = { Text("回到今天") }, onClick = { more = false; onCurrent() })
+                DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_timeline_toolbar_001)) }, onClick = { more = false; onCurrent() })
                 DropdownMenuItem(text = { Text(if (listMode) "显示时间轴" else "按日期显示列表") },
                     onClick = { more = false; onToggleList() })
-                DropdownMenuItem(text = { Text("撤销") }, enabled = canUndo && !busy, onClick = { more = false; onUndo() })
-                DropdownMenuItem(text = { Text("重做") }, enabled = canRedo && !busy, onClick = { more = false; onRedo() })
+                DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_undo)) }, enabled = canUndo && !busy, onClick = { more = false; onUndo() })
+                DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_redo)) }, enabled = canRedo && !busy, onClick = { more = false; onRedo() })
                 DropdownMenuItem(text = { Text("查看冲突（$conflicts）") }, onClick = { more = false; onConflicts() })
-                DropdownMenuItem(text = { Text("添加日程") }, enabled = !busy, onClick = { more = false; onCreate() })
+                DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_grid_block_editor_001)) }, enabled = !busy, onClick = { more = false; onCreate() })
                 onSelectTemplate?.let { action ->
-                    DropdownMenuItem(text = { Text("多选日程存为模板") }, enabled = !busy, onClick = { more = false; action() })
+                    DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_timeline_toolbar_002)) }, enabled = !busy, onClick = { more = false; action() })
                 }
-                DropdownMenuItem(text = { Text("打开语音输入") }, onClick = { more = false; onAssistant() })
+                DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_timeline_toolbar_003)) }, onClick = { more = false; onAssistant() })
                 HorizontalDivider()
                 DropdownMenuItem(text = { Text("放大 · 每小时 ${(64 * zoom * 1.25).coerceAtMost(160.0).toInt()}dp") },
                     onClick = { more = false; onDensity(1.25) }, enabled = zoom < 2.5)
                 DropdownMenuItem(text = { Text("缩小 · 每小时 ${(64 * zoom / 1.25).coerceAtLeast(32.0).toInt()}dp") },
                     onClick = { more = false; onDensity(.8) }, enabled = zoom > .5)
-                DropdownMenuItem(text = { Text("全天概览") }, onClick = { more = false; onFit() })
+                DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_timeline_toolbar_004)) }, onClick = { more = false; onFit() })
                 ThemeSwitch(themeMode, onThemeMode)
             }
         }

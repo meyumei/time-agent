@@ -29,7 +29,7 @@ fun PendingPaymentCard(count: Int, onOpen: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text("$count 笔支付待确认", modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
-            TextButton(onClick = onOpen) { Text("去确认") }
+            TextButton(onClick = onOpen) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_pending_payment_card_001)) }
         }
     }
 }

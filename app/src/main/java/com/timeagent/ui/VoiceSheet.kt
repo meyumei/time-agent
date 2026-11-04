@@ -27,8 +27,8 @@ fun VoiceSheet(
         Column(Modifier.fillMaxWidth().imePadding().padding(bottom = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text("语音与文字", Modifier.weight(1f), style = MaterialTheme.typography.titleLarge)
-                TextButton(onClick = onClose) { Text("关闭面板") }
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_voice_sheet_001), Modifier.weight(1f), style = MaterialTheme.typography.titleLarge)
+                TextButton(onClick = onClose) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_voice_sheet_002)) }
             }
             if (LocalPresentation.current.companion && fish != null) {
                 com.timeagent.fish.CharacterSprite(fish, Modifier.size(64.dp))
@@ -42,7 +42,7 @@ fun VoiceSheet(
             }
             VoiceInputBanner(voice.status, liveText)
             chat.localDestination?.let { destination ->
-                TextButton(onClick = { onOpenLocalResult(destination) }) { Text("打开本地操作结果") }
+                TextButton(onClick = { onOpenLocalResult(destination) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_chat_screen_004)) }
             }
             AssistantConversationPanel(chat, draft, onDraft, true, { if (!it) onClose() }, onSend, onSettings,
                 suggestion, onSuggestion, inputAccessory = { fish?.let { com.timeagent.fish.FishStickerPicker(it) } })
