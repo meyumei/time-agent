@@ -176,15 +176,9 @@ fun AssistantScreen(model: TimeViewModel, onClose: () -> Unit, initialInput: Str
                 is AssistantReply.Clarification -> ElevatedCard(Modifier.fillMaxWidth()) { Text(result.text, Modifier.padding(16.dp)) }
                 is AssistantReply.Preview -> {
                     val preview = result.value
-                    ElevatedCard(Modifier.fillMaxWidth()) {
-                        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Text(preview.title, style = MaterialTheme.typography.titleMedium)
-                            Text("修改前", style = MaterialTheme.typography.labelLarge)
-                            SelectionContainer { Text(preview.before) }
-                            HorizontalDivider()
-                            Text("确认后", style = MaterialTheme.typography.labelLarge)
-                            SelectionContainer { Text(preview.after) }
-                            preview.warnings.forEach { Text(it, color = MaterialTheme.colorScheme.error) }
+                    com.timeagent.ui.StructuredDraftPreview(
+                        preview.title, preview.before, preview.after, preview.warnings,
+                    ) {
                             if (preview.needsFutureApproval) Row {
                                 Checkbox(checked = futureApproved, enabled = !busy, onCheckedChange = { futureApproved = it })
                                 Text("我确认将未来时间保存为实际记录", Modifier.padding(top = 12.dp))
@@ -205,7 +199,6 @@ fun AssistantScreen(model: TimeViewModel, onClose: () -> Unit, initialInput: Str
                                 TextButton(enabled = !busy, onClick = { gate.cancel(); reply = null; futureApproved = false; message = "预览已取消，没有修改数据。" }) { Text("取消预览") }
                                 TextButton(enabled = !busy, onClick = { gate.cancel(); reply = null; futureApproved = false; message = "请修改上方文字，再重新解析。" }) { Text("修改输入") }
                             }
-                        }
                     }
                 }
                 null -> Unit

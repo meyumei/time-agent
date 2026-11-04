@@ -11,6 +11,8 @@ import androidx.compose.ui.unit.dp
 import com.timeagent.core.TimeSpan
 import com.timeagent.data.AgentSuggestionEntity
 import com.timeagent.suggestions.SuggestionAction
+import com.timeagent.domain.command.SetSuggestionPolicy
+import com.timeagent.domain.command.throwIfRejected
 import java.time.*
 import java.time.format.DateTimeFormatter
 
@@ -21,7 +23,8 @@ fun SuggestionActions(model: TimeViewModel, card: AgentSuggestionEntity, busy: B
     var dueDate by remember(card.id) { mutableStateOf(model.repository.now().atZone(model.zone).toLocalDate().plusDays(1).toString()) }
     var dueTime by remember(card.id) { mutableStateOf("18:00") }
     var validation by remember(card.id) { mutableStateOf<String?>(null) }
-    fun execute(action: SuggestionAction) { model.perform(onSuccess = { slots = null; editingDue = false }) { model.repository.executeSuggestion(card.id, card.version, action) } }
+    var draft by remember(card.id, card.version) { mutableStateOf<SuggestionAction?>(null) }
+    fun execute(action: SuggestionAction) { draft = action }
     val bound = card.taskId != null && card.taskVersion != null
     if (bound) {
         if (card.proposedStartAt != null && card.proposedEndAt != null) {
@@ -44,6 +47,11 @@ fun SuggestionActions(model: TimeViewModel, card: AgentSuggestionEntity, busy: B
         val until = model.repository.now().plusSeconds(3600).toEpochMilli()
         TextButton(onClick = { execute(SuggestionAction.Snooze(until)) }, enabled = !busy && until < (card.expiresAt ?: Long.MAX_VALUE), modifier = Modifier.testTag("suggestion-snooze")) { Text("暂缓 1 小时") }
         TextButton(onClick = { model.perform { model.repository.dismissSuggestion(card.id) } }, enabled = !busy, modifier = Modifier.testTag("suggestion-dismiss")) { Text("忽略") }
+        TextButton(onClick = { model.perform {
+            model.repository.commands.execute(SetSuggestionPolicy(
+                "suggestion-policy:${card.id}:${card.version}", card.type, true,
+            )).throwIfRejected()
+        } }, enabled = !busy) { Text("不再提示此类") }
     }
     slots?.let { choices ->
         AlertDialog(onDismissRequest = { if (!busy) slots = null }, title = { Text("选择可安排时段") }, text = {
@@ -67,4 +75,23 @@ fun SuggestionActions(model: TimeViewModel, card: AgentSuggestionEntity, busy: B
         if (instant == null || instant <= model.repository.now()) validation = "请填写有效的未来日期和时间"
         else execute(SuggestionAction.Postpone(instant.toEpochMilli()))
     }, modifier = Modifier.testTag("suggestion-due-save")) { Text("保存截止") } }, dismissButton = { TextButton(onClick = { editingDue = false }, enabled = !busy) { Text("取消") } })
+    draft?.let { action ->
+        val after = when (action) {
+            is SuggestionAction.Schedule -> "创建关联日程：${Instant.ofEpochMilli(action.startAt).label(model.zone)}–${Instant.ofEpochMilli(action.endAt).label(model.zone)}"
+            is SuggestionAction.Postpone -> "截止改为：${Instant.ofEpochMilli(action.dueAt).label(model.zone)}"
+            is SuggestionAction.Snooze -> "暂缓此建议至：${Instant.ofEpochMilli(action.until).label(model.zone)}"
+            SuggestionAction.StartTimer -> "开始这项任务的计时"
+        }
+        AlertDialog(
+            onDismissRequest = { if (!busy) draft = null },
+            title = { Text("执行建议") },
+            text = { StructuredDraftPreview(card.title, card.detail, after) },
+            confirmButton = { TextButton(enabled = !busy, onClick = {
+                model.perform(onSuccess = { draft = null; slots = null; editingDue = false }) {
+                    model.repository.executeSuggestion(card.id, card.version, action)
+                }
+            }) { Text("确认执行") } },
+            dismissButton = { TextButton(enabled = !busy, onClick = { draft = null }) { Text("取消") } },
+        )
+    }
 }

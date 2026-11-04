@@ -27,6 +27,21 @@ import java.util.UUID
 /** The module a note belongs to; persisted as the existing NoteEntity target pair. */
 data class NoteTarget(val type: String, val id: String, val title: String)
 
+/** Stable conversion markers shared with the host shell. Additions must not write business data here. */
+object IdeaConversionTarget {
+    const val TASK = "TASK"
+    const val SCHEDULE = "SCHEDULE"
+    const val LEDGER = "LEDGER"
+    const val MEMORY = "MEMORY"
+}
+
+private val ideaConversions = listOf(
+    IdeaConversionTarget.TASK to "任务",
+    IdeaConversionTarget.SCHEDULE to "日程",
+    IdeaConversionTarget.LEDGER to "记账",
+    IdeaConversionTarget.MEMORY to "记忆规则",
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteEditorScreen(model: TimeViewModel, data: LocalSnapshot, target: NoteTarget, onClose: () -> Unit, onKeepDraft: (() -> Unit)? = null) {
@@ -98,6 +113,7 @@ fun InboxScreen(
     onNewReminder: () -> Unit,
     onClose: () -> Unit,
     onOpenTask: (String) -> Unit = {},
+    onConvertIdea: (IdeaEntity, String) -> Unit = { _, _ -> },
 ) {
     val ideas = data.ideas.filter { it.deletedAt == null && it.status != "ARCHIVED" }.sortedByDescending { it.updatedAt }
     val unscheduled = ideas.filter { it.status == "UNSCHEDULED" }
@@ -105,6 +121,8 @@ fun InboxScreen(
     var editingIdea by remember { mutableStateOf<IdeaEntity?>(null) }
     var creatingIdea by remember { mutableStateOf(false) }
     var deleteReminder by remember { mutableStateOf<ReminderEntity?>(null) }
+    var convertMenuIdea by remember { mutableStateOf<String?>(null) }
+    var deleteIdea by remember { mutableStateOf<IdeaEntity?>(null) }
     BackHandler { if (!busy) onClose() }
 
     Scaffold(topBar = {
@@ -153,9 +171,38 @@ fun InboxScreen(
                             Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                 Text(idea.title, fontWeight = FontWeight.SemiBold)
                                 if (idea.content.isNotBlank()) Text(idea.content, style = MaterialTheme.typography.bodySmall)
-                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
                                     TextButton(onClick = { editingIdea = idea }, enabled = !busy) { Text("编辑") }
                                     TextButton(onClick = { onScheduleIdea(idea) }, enabled = !busy, modifier = Modifier.testTag("idea-schedule-reminder")) { Text("安排为提醒") }
+                                    Box {
+                                        TextButton(
+                                            onClick = { convertMenuIdea = idea.id },
+                                            enabled = !busy,
+                                            modifier = Modifier.testTag("idea-convert"),
+                                        ) { Text("转为") }
+                                        DropdownMenu(
+                                            expanded = convertMenuIdea == idea.id,
+                                            onDismissRequest = { convertMenuIdea = null },
+                                        ) {
+                                            ideaConversions.forEach { (target, label) ->
+                                                DropdownMenuItem(
+                                                    text = { Text(label) },
+                                                    onClick = {
+                                                        convertMenuIdea = null
+                                                        // Only opens the matching editor with prefilled values; no business row is written here.
+                                                        onConvertIdea(idea, target)
+                                                    },
+                                                    modifier = Modifier.testTag("idea-convert-${target.lowercase()}"),
+                                                )
+                                            }
+                                            HorizontalDivider()
+                                            DropdownMenuItem(
+                                                text = { Text("删除", color = MaterialTheme.colorScheme.error) },
+                                                onClick = { convertMenuIdea = null; deleteIdea = idea },
+                                                modifier = Modifier.testTag("idea-convert-delete"),
+                                            )
+                                        }
+                                    }
                                     TextButton(onClick = { model.perform { model.repository.saveIdea(idea.copy(status = "ARCHIVED"), idea.version) } }, enabled = !busy) { Text("归档") }
                                 }
                             }
@@ -208,6 +255,33 @@ fun InboxScreen(
                 }) { Text("删除") }
             },
             dismissButton = { TextButton(onClick = { deleteReminder = null }) { Text("取消") } },
+        )
+    }
+    deleteIdea?.let { idea ->
+        AlertDialog(
+            onDismissRequest = { if (!busy) deleteIdea = null },
+            title = { Text("删除这条想法？") },
+            text = { Text("想法会移出收件箱，不生成任务、日程或记账；删除后可撤销恢复。") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        deleteIdea = null
+                        // No dedicated deleteIdea API exists yet: write the tombstone through saveIdea so the
+                        // seen version is checked, the batch is idempotent, and delete stays one undo action.
+                        model.perform {
+                            model.repository.assistantTransaction("delete-idea:${idea.id}:${idea.version}", "删除想法") {
+                                model.repository.saveIdea(
+                                    idea.copy(status = "ARCHIVED", deletedAt = model.repository.now().toEpochMilli()),
+                                    idea.version,
+                                )
+                            }
+                        }
+                    },
+                    enabled = !busy,
+                    modifier = Modifier.testTag("idea-delete-confirm"),
+                ) { Text("删除") }
+            },
+            dismissButton = { TextButton(onClick = { deleteIdea = null }) { Text("取消") } },
         )
     }
 }

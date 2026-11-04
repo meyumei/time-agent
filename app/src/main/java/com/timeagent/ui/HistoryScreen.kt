@@ -19,7 +19,7 @@ import com.timeagent.core.WeekState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HistoryScreen(model: TimeViewModel, onClose: () -> Unit, onOpen: (String, String) -> Unit) {
+fun HistoryScreen(model: TimeViewModel, onClose: () -> Unit, onOpen: (String, String) -> Unit, onAskFish: ((String) -> Unit)? = null) {
     val data by model.data.collectAsState()
     val busy by model.busy.collectAsState()
     val answer by model.historyAnswer.collectAsState()
@@ -36,7 +36,7 @@ fun HistoryScreen(model: TimeViewModel, onClose: () -> Unit, onOpen: (String, St
     BackHandler { if (!busy) onClose() }
     Scaffold(topBar = { TopAppBar(title = { Text("历史问答 · 本地查询") }, navigationIcon = { IconButton(onClick = onClose, enabled = !busy) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "返回") } }) }) { padding ->
         Column(Modifier.padding(padding).fillMaxSize().imePadding().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text("只查询本机的实际记录、已完成训练和笔记；结果与记忆不会作为后续云端对话的上下文。", style = MaterialTheme.typography.bodySmall)
+            Text("统计直接查询本机记录；只有点“让大肥鱼解读”时，才把当前问题与结果交给鱼。", style = MaterialTheme.typography.bodySmall)
             OutlinedTextField(question, { question = it }, label = { Text("直接问历史，或用下方筛选") }, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("history-question"))
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 TextButton(onClick = { from = ""; through = ""; question = "" }, enabled = !busy) { Text("全部历史") }
@@ -60,6 +60,9 @@ fun HistoryScreen(model: TimeViewModel, onClose: () -> Unit, onOpen: (String, St
                 HorizontalDivider()
                 Text("查询结果", style = MaterialTheme.typography.titleLarge)
                 Text(result.text, Modifier.testTag("history-answer"))
+                if (onAskFish != null) TextButton(onClick = {
+                    onAskFish("请根据以下本地查询结果回答我的问题，不要改写统计数字。\n问题：$question\n本地查询结果：${result.text}")
+                }) { Text("让大肥鱼解读") }
                 result.lastAt?.let { Text("最近匹配记录：${Instant.ofEpochMilli(it).label(model.zone)}", style = MaterialTheme.typography.bodySmall) }
                 Text("实际 ${result.records.size} 条 · 已完成训练 ${result.workouts.size} 次 · 笔记 ${result.notes.size} 条；每类展示前 50 条，统计覆盖全部匹配项。", style = MaterialTheme.typography.bodySmall)
                 result.records.sortedByDescending { it.startAt }.take(50).forEach { item -> TextButton(onClick = { onOpen("RECORD", item.id) }, modifier = Modifier.testTag("history-record-${item.id}")) { Text("${Instant.ofEpochMilli(item.startAt).label(model.zone)} · ${item.title.ifBlank { data.tasks.find { task -> task.id == item.taskId }?.title ?: "实际记录" }}") } }

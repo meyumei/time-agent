@@ -35,7 +35,7 @@ private class ChatExtractionViewModelFactory(private val initialText: String) : 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatExtractionScreen(model: TimeViewModel, initialText: String = "", onClose: () -> Unit, onReply: ((String) -> Unit)? = null) {
+fun ChatExtractionScreen(model: TimeViewModel, initialText: String = "", onClose: () -> Unit, onReply: ((String) -> Unit)? = null, onOpenSettings: (() -> Unit)? = null) {
     val state: ChatExtractionViewModel = viewModel(factory = ChatExtractionViewModelFactory(initialText))
     val busy by model.busy.collectAsState()
     val modelError by model.error.collectAsState()
@@ -46,12 +46,18 @@ fun ChatExtractionScreen(model: TimeViewModel, initialText: String = "", onClose
     var editing by state.editing
     var localError by state.localError
     var lastSaved by state.lastSaved
+    val aiAvailability = rememberAiAvailability(model)
     BackHandler(enabled = !busy) { onClose() }
     Scaffold(topBar = { TopAppBar(title = { Text("聊天文字提取") }, navigationIcon = {
         TextButton(onClick = onClose, enabled = !busy) { Text("返回") }
     }) }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text("粘贴或分享聊天文字后，逐条检查并确认属于你的事项。文字仅在本机处理。", style = MaterialTheme.typography.bodyMedium)
+            AiAvailabilityBanner(
+                availability = aiAvailability,
+                onOpenSettings = onOpenSettings,
+                detail = "提取候选与保存仍完全在本机完成，不需要模型；需要鱼协助时再去设置。",
+            )
             OutlinedTextField(text, { value ->
                 text = value; preview = null; edits = emptyMap(); checked = emptySet(); lastSaved = null
                 localError = if (value.length > 20_000) "聊天文字最多20000字，请删减后提取" else null
@@ -68,12 +74,12 @@ fun ChatExtractionScreen(model: TimeViewModel, initialText: String = "", onClose
                 Text("候选 ${current.items.size} 条；默认全部未选中。日期以提取当天为准。", style = MaterialTheme.typography.bodySmall)
                 current.items.forEach { base ->
                     val item = edits[base.id] ?: base
-                    Card(Modifier.fillMaxWidth()) {
-                        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                            Text("原文：${base.original}", style = MaterialTheme.typography.bodySmall)
-                            Text("${kindName(item.kind)} · ${item.title}")
-                            Text(timeSummary(item, model.zone), style = MaterialTheme.typography.bodySmall)
-                            if (base.needsCommitment) Text("这可能是他人的话或邀请，需明确确认属于你。", style = MaterialTheme.typography.bodySmall)
+                    StructuredDraftPreview(
+                        title = "${kindName(item.kind)} · ${item.title}",
+                        before = base.original,
+                        after = timeSummary(item, model.zone),
+                        warnings = if (base.needsCommitment) listOf("这可能是他人的话或邀请，需明确确认属于你。") else emptyList(),
+                    ) {
                             Row {
                                 Checkbox(checked = base.id in checked, onCheckedChange = { value ->
                                     checked = if (value) checked + base.id else checked - base.id
@@ -82,7 +88,6 @@ fun ChatExtractionScreen(model: TimeViewModel, initialText: String = "", onClose
                                 Spacer(Modifier.weight(1f))
                                 TextButton(onClick = { editing = base.id }, enabled = !busy) { Text("修改") }
                             }
-                        }
                     }
                 }
                 current.ignored.forEach { Text("未提取：$it", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }

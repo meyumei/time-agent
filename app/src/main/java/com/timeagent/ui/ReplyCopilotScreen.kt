@@ -42,7 +42,7 @@ private class ReplyCopilotViewModelFactory(private val initialText: String, priv
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReplyCopilotScreen(model: TimeViewModel, initialText: String, onClose: () -> Unit) {
+fun ReplyCopilotScreen(model: TimeViewModel, initialText: String, onClose: () -> Unit, onOpenSettings: (() -> Unit)? = null) {
     val initialDay = remember { model.repository.now().atZone(model.zone).toLocalDate().toString() }
     val state: ReplyCopilotViewModel = viewModel(factory = ReplyCopilotViewModelFactory(initialText, initialDay))
     val busy by model.busy.collectAsState()
@@ -61,6 +61,7 @@ fun ReplyCopilotScreen(model: TimeViewModel, initialText: String, onClose: () ->
     var mine by state.mine
     var notice by state.notice
     var saved by state.saved
+    val aiAvailability = rememberAiAvailability(model)
     val formatter = remember { DateTimeFormatter.ofPattern("M月d日 HH:mm") }
     fun period(slot: com.timeagent.core.TimeSpan) = "${formatter.format(slot.start.atZone(model.zone))}–${slot.end.atZone(model.zone).toLocalTime()}"
     fun invalidate() { check = null; draft = null; mine = false; saved = false }
@@ -73,6 +74,11 @@ fun ReplyCopilotScreen(model: TimeViewModel, initialText: String, onClose: () ->
     Scaffold(topBar = { TopAppBar(title = { Text("回复副驾") }, navigationIcon = { TextButton(onClick = onClose, enabled = !busy) { Text("返回") } }) }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text("文字在本机处理。空档仅依据本应用的计划、课程、实际记录和个人约定；外部日历未同步。")
+            AiAvailabilityBanner(
+                availability = aiAvailability,
+                onOpenSettings = onOpenSettings,
+                detail = "空档核对与回复模板仍可本地使用；需要鱼参与生成时请先配置模型。入口不会被隐藏。",
+            )
             OutlinedTextField(source, { source = it; preview = null; selected = null; invalidate() }, label = { Text("粘贴或分享的原文") }, minLines = 3,
                 modifier = Modifier.fillMaxWidth().testTag("reply-source"), enabled = !busy)
             Button(onClick = {

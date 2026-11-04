@@ -5,14 +5,20 @@ import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -22,7 +28,9 @@ import com.timeagent.attachments.AttachmentService
 import com.timeagent.data.AttachmentEntity
 import com.timeagent.data.LocalSnapshot
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,6 +103,7 @@ private fun AttachmentDetails(item: AttachmentEntity, data: LocalSnapshot, servi
     var fileAvailable by remember(item.id, item.version) { mutableStateOf<Boolean?>(null) }
     val scope = rememberCoroutineScope()
     var ocrBusy by remember(item.id) { mutableStateOf(false) }
+    var ocrFailure by remember(item.id, item.version) { mutableStateOf<String?>(null) }
     var linking by remember { mutableStateOf(false) }
     var purge by remember { mutableStateOf(false) }
     var notice by remember { mutableStateOf<String?>(null) }
@@ -106,6 +115,7 @@ private fun AttachmentDetails(item: AttachmentEntity, data: LocalSnapshot, servi
         Text(item.originalName, style = MaterialTheme.typography.titleLarge)
         Text(attachmentLinkLabel(item, data))
         if (fileAvailable == false) Text(if (item.purgedAt != null) "原件已清除；文字草稿和条目信息仍保留。" else "原件缺失或损坏；仍可查看已保存的文字草稿。", color = MaterialTheme.colorScheme.error, modifier = Modifier.testTag("attachment-missing"))
+        if (item.mimeType.startsWith("image/")) AttachmentThumbnail(item, service, fileAvailable)
         if (error != null) Text(error, color = MaterialTheme.colorScheme.error)
         if (notice != null) Text(notice!!)
         if (item.deletedAt == null) {
@@ -121,6 +131,8 @@ private fun AttachmentDetails(item: AttachmentEntity, data: LocalSnapshot, servi
             if (AttachmentOcr.supports(item.mimeType)) {
                 Button(onClick = {
                     ocrBusy = true
+                    ocrFailure = null
+                    notice = null
                     scope.launch {
                         try {
                             val file = service.readableFile(item) ?: kotlin.error("原件缺失或损坏，无法识别")
@@ -128,10 +140,18 @@ private fun AttachmentDetails(item: AttachmentEntity, data: LocalSnapshot, servi
                             notice = if (draft.isBlank()) "图片中未识别到文字，可手动填写。" else "已生成草稿，请核对修正后保存。"
                         } catch (failure: Exception) {
                             if (failure is CancellationException) throw failure
-                            model.report(failure.message ?: "图片文字识别失败，请重试")
+                            val message = failure.message?.takeIf { it.isNotBlank() } ?: "图片文字识别失败，请重试"
+                            ocrFailure = message
+                            model.report(message)
                         } finally { ocrBusy = false }
                     }
-                }, enabled = !busy && !ocrBusy && fileAvailable == true, modifier = Modifier.testTag("attachment-ocr")) { Text(if (ocrBusy) "识别中…" else "识别图片文字") }
+                }, enabled = !busy && !ocrBusy && fileAvailable == true, modifier = Modifier.testTag("attachment-ocr")) {
+                    Text(when { ocrBusy -> "识别中…"; ocrFailure != null -> "重试识别图片文字"; else -> "识别图片文字" })
+                }
+                ocrFailure?.let {
+                    Text("识别失败：$it。可重试，已有文字草稿不会被清空。", color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall, modifier = Modifier.testTag("attachment-ocr-error"))
+                }
             } else Text("此类型可保存附件；文字识别仅支持图片。", style = MaterialTheme.typography.bodySmall)
             OutlinedTextField(draft, { draft = it }, label = { Text("文字草稿（可修正）") }, minLines = 5, modifier = Modifier.fillMaxWidth().testTag("attachment-draft"), enabled = !busy && !ocrBusy)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -151,6 +171,36 @@ private fun AttachmentDetails(item: AttachmentEntity, data: LocalSnapshot, servi
     }
     if (purge) AlertDialog(onDismissRequest = { purge = false }, title = { Text("彻底清除附件原件？") }, text = { Text("应用内的原文件将永久删除，无法撤销。文字草稿和条目信息仍保留。重新导入或恢复含此原件的备份才能找回原文件；原选取位置的文件不受影响。") }, confirmButton = { TextButton(onClick = { model.perform(onSuccess = { purge = false; onRemoved() }) { service.purge(item.id, item.version) } }, enabled = !busy) { Text("永久清除") } }, dismissButton = { TextButton(onClick = { purge = false }) { Text("取消") } })
     if (discard) AlertDialog(onDismissRequest = { discard = false }, title = { Text("放弃未保存的草稿？") }, text = { Text("识别或修正的文字尚未保存。") }, confirmButton = { TextButton(onClick = { discard = false; onRemoved() }) { Text("放弃并返回") } }, dismissButton = { TextButton(onClick = { discard = false }) { Text("继续编辑") } })
+}
+
+@Composable
+private fun AttachmentThumbnail(item: AttachmentEntity, service: AttachmentService, fileAvailable: Boolean?) {
+    val bitmap by produceState<ImageBitmap?>(null, item.id, item.version, fileAvailable) {
+        value = if (fileAvailable != true) null else withContext(Dispatchers.IO) {
+            service.readableFile(item)?.let { file -> decodeThumbnail(file)?.asImageBitmap() }
+        }
+    }
+    bitmap?.let { image ->
+        Image(
+            bitmap = image,
+            contentDescription = "附件图片预览",
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.fillMaxWidth().heightIn(max = 240.dp).clip(RoundedCornerShape(12.dp)).testTag("attachment-thumbnail"),
+        )
+    }
+}
+
+/** Decodes a downsampled preview; the original file and its size limit are untouched. */
+private fun decodeThumbnail(file: java.io.File, maxPixels: Int = 1600): android.graphics.Bitmap? {
+    val bounds = android.graphics.BitmapFactory.Options().apply { inJustDecodeBounds = true }
+    android.graphics.BitmapFactory.decodeFile(file.absolutePath, bounds)
+    if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
+    var sample = 1
+    while (bounds.outWidth / sample > maxPixels || bounds.outHeight / sample > maxPixels) sample *= 2
+    return android.graphics.BitmapFactory.decodeFile(
+        file.absolutePath,
+        android.graphics.BitmapFactory.Options().apply { inSampleSize = sample },
+    )
 }
 
 private fun attachmentLinkLabel(item: AttachmentEntity, data: LocalSnapshot): String = when {

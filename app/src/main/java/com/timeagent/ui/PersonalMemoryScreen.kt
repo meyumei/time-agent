@@ -30,9 +30,17 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.util.UUID
 
+data class PersonalMemoryDraft(val text: String, val sourceText: String = "")
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PersonalMemoryScreen(model: TimeViewModel, onClose: () -> Unit, onOpenRecord: (String) -> Unit = {}) {
+fun PersonalMemoryScreen(
+    model: TimeViewModel,
+    onClose: () -> Unit,
+    onOpenRecord: (String) -> Unit = {},
+    initialDraft: PersonalMemoryDraft? = null,
+    onInitialDraftConsumed: () -> Unit = {},
+) {
     val context = LocalContext.current
     val data by model.data.collectAsState()
     val busy by model.busy.collectAsState()
@@ -40,9 +48,17 @@ fun PersonalMemoryScreen(model: TimeViewModel, onClose: () -> Unit, onOpenRecord
     val memories = data.memories.filter { it.deletedAt == null }.sortedByDescending { it.updatedAt }
     var editing by remember { mutableStateOf<PersonalMemoryEntity?>(null) }
     var creating by remember { mutableStateOf(false) }
+    var prefill by remember { mutableStateOf<PersonalMemoryDraft?>(null) }
     var deleting by remember { mutableStateOf<PersonalMemoryEntity?>(null) }
     var exportBytes by remember { mutableStateOf<ByteArray?>(null) }
     var message by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(initialDraft) {
+        if (initialDraft != null) {
+            prefill = initialDraft
+            creating = true
+            onInitialDraftConsumed()
+        }
+    }
     BackHandler { if (!busy) onClose() }
     val export = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
         val bytes = exportBytes; exportBytes = null
@@ -105,16 +121,24 @@ fun PersonalMemoryScreen(model: TimeViewModel, onClose: () -> Unit, onOpenRecord
             Spacer(Modifier.height(32.dp))
         }
     }
-    if (creating) MemoryEditorDialog(model, null, busy, onClose = { creating = false })
+    if (creating) MemoryEditorDialog(model, null, busy, initialText = prefill?.text.orEmpty(), initialSource = prefill?.sourceText.orEmpty(), onClose = { creating = false; prefill = null })
     editing?.let { item -> MemoryEditorDialog(model, item, busy, onClose = { editing = null }) }
     deleting?.let { item -> AlertDialog(onDismissRequest = { deleting = null }, title = { Text("删除这条记忆？") }, text = { Text("删除后可以撤销恢复。") }, confirmButton = { TextButton(onClick = { deleting = null; model.perform { model.repository.deleteMemory(item.id, item.version) } }) { Text("删除") } }, dismissButton = { TextButton(onClick = { deleting = null }) { Text("取消") } }) }
 }
 
 @Composable
-private fun MemoryEditorDialog(model: TimeViewModel, existing: PersonalMemoryEntity?, busy: Boolean, onClose: () -> Unit) {
+internal fun MemoryEditorDialog(
+    model: TimeViewModel,
+    existing: PersonalMemoryEntity?,
+    busy: Boolean,
+    initialText: String = "",
+    initialSource: String = "",
+    onSaveDraft: ((PersonalMemoryEntity) -> Unit)? = null,
+    onClose: () -> Unit,
+) {
     var kind by remember(existing?.id) { mutableStateOf(existing?.kind ?: "PREFERENCE") }
-    var text by remember(existing?.id) { mutableStateOf(existing?.text.orEmpty()) }
-    var source by remember(existing?.id) { mutableStateOf(existing?.sourceText.orEmpty()) }
+    var text by remember(existing?.id, initialText) { mutableStateOf(existing?.text ?: initialText) }
+    var source by remember(existing?.id, initialSource) { mutableStateOf(existing?.sourceText ?: initialSource) }
     var from by remember(existing?.id) { mutableStateOf(existing?.validFrom?.dateLabel(model.zone).orEmpty()) }
     var until by remember(existing?.id) { mutableStateOf(existing?.validUntil?.let { Instant.ofEpochMilli(it - 1).atZone(model.zone).toLocalDate().toString() }.orEmpty()) }
     var rule by remember(existing?.id) { mutableStateOf(existing?.ruleType ?: "NONE") }
@@ -150,7 +174,8 @@ private fun MemoryEditorDialog(model: TimeViewModel, existing: PersonalMemoryEnt
             val validUntil = until.trim().takeIf(String::isNotEmpty)?.let { LocalDate.parse(it).plusDays(1).atStartOfDay(model.zone).toInstant().toEpochMilli() }
             val item = base.copy(kind = kind, text = text.trim(), sourceText = source.trim(), validFrom = date(from), validUntil = validUntil, ruleType = rule, keyword = keyword.trim(), weekday = if (rule == "AVOID_WEEKDAY") weekday.toIntOrNull() else null, startMinute = if (rule == "TIME_WINDOW") minute(start) else null, endMinute = if (rule == "TIME_WINDOW") minute(end) else null, updatedAt = now)
             PersonalMemoryRules.validate(item)
-            model.perform(onSuccess = onClose) { model.repository.saveMemory(item, existing?.version) }
+            if (onSaveDraft != null) onSaveDraft(item)
+            else model.perform(onSuccess = onClose) { model.repository.saveMemory(item, existing?.version) }
         } catch (error: Exception) { validation = error.message ?: "请检查填写内容" }
     }) { Text("保存") } }, dismissButton = { TextButton(onClick = onClose, enabled = !busy) { Text("取消") } })
 }

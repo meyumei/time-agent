@@ -84,6 +84,18 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
                                 })
                                 emptyList()
                             }
+                            is ConvertInbox -> {
+                                repository.convertInboxRaw(command)
+                                emptyList()
+                            }
+                            is ApplySuggestion -> {
+                                repository.executeSuggestionRaw(command.id, command.expectedVersion, command.action)
+                                emptyList()
+                            }
+                            is SetSuggestionPolicy -> {
+                                repository.setSuggestionPolicyRaw(command.type, command.suppressed)
+                                emptyList()
+                            }
                             is CompleteRecurring -> {
                                 version("TASK", dao.recurringInstance(command.instanceId)?.taskId ?: "", command.expectedTaskVersion)
                                 RecurringService(repository).actRaw(command.instanceId, command.expectedVersion, "COMPLETE")
@@ -320,6 +332,9 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
         is RedoCommand -> "重做"
         is CommitAssistant -> command.preview.title
         is RememberRule -> "保存个人规则"
+        is ConvertInbox -> "分拣收件箱"
+        is ApplySuggestion -> "执行建议"
+        is SetSuggestionPolicy -> "修改建议偏好"
         is CompleteRecurring -> "完成周期事项"
         is SaveRecurringRule -> "保存周期规则"
         is ActRecurringInstance -> "处理周期实例"
