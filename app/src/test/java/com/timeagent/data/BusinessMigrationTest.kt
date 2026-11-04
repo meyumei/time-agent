@@ -36,13 +36,13 @@ class BusinessMigrationTest {
         val db = TimeAgentDatabase.open(context)
         try {
             val sql = db.openHelper.readableDatabase
-            assertEquals(14, sql.version)
+            assertEquals(15, sql.version)
             val record = db.dao().record("synthetic-record")!!
             assertEquals("Keep notes", record.notes)
             assertEquals(7L, record.version)
             assertEquals("synthetic-category", record.categoryId)
             sql.query("SELECT count(*) FROM record_tags").use { it.moveToFirst(); assertEquals(1, it.getInt(0)) }
-            for (table in listOf("ledger_accounts", "ledger_categories", "payment_captures", "ledger_transactions")) {
+            for (table in listOf("ledger_accounts", "ledger_categories", "payment_captures", "ledger_transactions", "ledger_transaction_sources")) {
                 sql.query("SELECT count(*) FROM $table").use { it.moveToFirst(); assertEquals(0, it.getInt(0)) }
             }
         } finally {

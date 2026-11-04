@@ -216,6 +216,8 @@ fun SettingsHub(
 fun ButlerHub(
     onOpen: (String) -> Unit,
     reselectRevision: Int = 0,
+    pendingLedgerCount: Int = 0,
+    ledgerReadError: String? = null,
 ) {
     val scroll = rememberScrollState()
     var consumedReselect by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableIntStateOf(reselectRevision) }
@@ -371,7 +373,7 @@ fun ButlerHub(
             ) {
                 SettingsLink(
                     title = "支付记账",
-                    subtitle = "记录并查看支付账目。",
+                    subtitle = ledgerReadError ?: if (pendingLedgerCount > 0) "$pendingLedgerCount 笔支付待确认" else "记录并查看支付账目。",
                     route = "ledger",
                     onOpen = onOpen,
                     tagPrefix = "butler-link",

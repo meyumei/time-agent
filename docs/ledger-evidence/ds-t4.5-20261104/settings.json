@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "deny": [
+      "Agent",
+      "Bash",
+      "Edit(F:/261019_时间agent/app/src/main/java/com/timeagent/ui/TimeAgentApp.kt)",
+      "Edit(F:/261019_时间agent/app/src/main/java/com/timeagent/ledger/LedgerRepository.kt)",
+      "Edit(F:/261019_时间agent/app/src/main/java/com/timeagent/ledger/LedgerEntities.kt)",
+      "Edit(F:/261019_时间agent/app/src/main/java/com/timeagent/ledger/LedgerDao.kt"
+    ],
+    "allow": [
+      "Read(F:/261019_时间agent/app/src/main/java/com/timeagent/ledger/LedgerActivity.kt)",
+      "Read(F:/261019_时间agent/app/src/main/java/com/timeagent/ledger/LedgerRepository.kt)",
+      "Read(F:/261019_时间agent/app/src/main/java/com/timeagent/ledger/LedgerEntities.kt)",
+      "Read(F:/261019_时间agent/app/src/main/java/com/timeagent/ledger/LedgerDao.kt)",
+      "Edit(F:/261019_时间agent/app/src/main/java/com/timeagent/ledger/LedgerActivity.kt)",
+      "Write(F:/261019_时间agent/app/src/main/java/com/timeagent/ledger/LedgerScreen.kt)"
+    ]
+  }
+}

@@ -883,7 +883,7 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
             com.timeagent.organization.OrganizationRepository(db, clock).applyHistory(action, forward)
             return
         }
-        if (action.entityType in setOf("LEDGER_ACCOUNT", "LEDGER_CATEGORY", "PAYMENT_CAPTURE", "LEDGER_TRANSACTION")) {
+        if (action.entityType in setOf("LEDGER_ACCOUNT", "LEDGER_CATEGORY", "PAYMENT_CAPTURE", "LEDGER_TRANSACTION", "LEDGER_SOURCE")) {
             com.timeagent.ledger.LedgerRepository(db, clock).applyHistory(action, forward)
             return
         }

@@ -6,6 +6,9 @@ import androidx.room.Upsert
 
 @Dao
 interface LedgerDao {
+    @Query("SELECT COUNT(*) FROM payment_captures WHERE status = 'PENDING'")
+    fun observePendingCount(): kotlinx.coroutines.flow.Flow<Int>
+
     @Query("SELECT * FROM ledger_accounts ORDER BY sortOrder, name")
     suspend fun accounts(): List<LedgerAccountEntity>
 
@@ -54,6 +57,9 @@ interface LedgerDao {
     @Query("SELECT COUNT(*) FROM ledger_transactions WHERE accountId=:id")
     suspend fun transactionCountForAccount(id: String): Int
 
+    @Query("SELECT DISTINCT accountId FROM ledger_transactions")
+    suspend fun usedAccountIds(): List<String>
+
     @Query("SELECT COUNT(*) FROM ledger_transactions WHERE categoryId=:id")
     suspend fun transactionCountForCategory(id: String): Int
 
@@ -62,6 +68,21 @@ interface LedgerDao {
 
     @Query("DELETE FROM ledger_transactions WHERE id=:id")
     suspend fun removeTransaction(id: String)
+
+    @Query("SELECT * FROM ledger_transaction_sources ORDER BY transactionId, captureId")
+    suspend fun sources(): List<LedgerTransactionSourceEntity>
+
+    @Query("SELECT * FROM ledger_transaction_sources WHERE transactionId=:transactionId")
+    suspend fun sourcesFor(transactionId: String): List<LedgerTransactionSourceEntity>
+
+    @Query("SELECT * FROM ledger_transaction_sources WHERE id=:id")
+    suspend fun source(id: String): LedgerTransactionSourceEntity?
+
+    @Upsert
+    suspend fun putSource(item: LedgerTransactionSourceEntity)
+
+    @Query("DELETE FROM ledger_transaction_sources WHERE id=:id")
+    suspend fun removeSource(id: String)
 
     /** Shared monotonic revisions table; same keys the core repository uses. */
     @Query("SELECT revision FROM entity_revisions WHERE `key`=:key")

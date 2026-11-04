@@ -1,0 +1,3 @@
+./scripts/build.ps1 -Tasks @(':app:assembleDebug', ':app:assembleDebugAndroidTest', ':app:lintDebug')
+BUILD SUCCESSFUL in 4m 34s
+122 actionable tasks: 19 executed, 103 up-to-date
