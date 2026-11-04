@@ -169,6 +169,8 @@ private data class WorkoutTimerSwitch(
         }
     }
     var extractionText by rememberSaveable { mutableStateOf("") }
+    var inboxConversionJson by rememberSaveable { mutableStateOf<String?>(null) }
+    var inboxConversionTarget by rememberSaveable { mutableStateOf("") }
     var calendarTitle by rememberSaveable { mutableStateOf("") }
     var calendarStart by rememberSaveable { mutableLongStateOf(0L) }
     var calendarEnd by rememberSaveable { mutableLongStateOf(0L) }
@@ -529,6 +531,10 @@ private data class WorkoutTimerSwitch(
             onNewReminder = { editor = EditorRequest(EditorKind.REMINDER) },
             onClose = ::closeScreen,
             onOpenTask = { id -> selected = data.tasks.firstOrNull { it.id == id } },
+            onConvertIdea = { idea, target ->
+                inboxConversionJson = com.google.gson.Gson().toJson(idea)
+                inboxConversionTarget = target
+            },
         )
         "health" -> HealthSyncScreen(model, healthReader, healthSettings, zone, onClose = ::closeScreen)
         "workout" -> WorkoutNavScreen(workoutsRepository, onClose = ::closeScreen)
@@ -540,9 +546,10 @@ private data class WorkoutTimerSwitch(
         )
         "backup" -> BackupScreen(model, onClose = ::closeScreen)
         "memory" -> PersonalMemoryScreen(model, onClose = ::closeScreen, onOpenRecord = { openOriginal("RECORD", it) })
-        "history" -> HistoryScreen(model, onClose = ::closeScreen, onOpen = ::openOriginal)
-        "extract" -> ChatExtractionScreen(model, extractionText, onReply = { extractionText = it; openScreen("reply") }, onClose = ::closeScreen)
-        "reply" -> ReplyCopilotScreen(model, extractionText, onClose = ::closeScreen)
+        "history" -> HistoryScreen(model, onClose = ::closeScreen, onOpen = ::openOriginal,
+            onAskFish = { text -> openScreen("fish-chat"); editAssistantDraft(text) })
+        "extract" -> ChatExtractionScreen(model, extractionText, onReply = { extractionText = it; openScreen("reply") }, onClose = ::closeScreen, onOpenSettings = { assistantSettingsOpen = true })
+        "reply" -> ReplyCopilotScreen(model, extractionText, onClose = ::closeScreen, onOpenSettings = { assistantSettingsOpen = true })
         else -> if (destination.startsWith("workout:")) WorkoutNavScreen(workoutsRepository,
             initialSessionId = destination.removePrefix("workout:"), onClose = ::closeScreen)
         else if (destination.startsWith("project:")) MinuteClockContent(model) { now -> ProjectScreen(data, model, now, zone,
@@ -593,6 +600,14 @@ private data class WorkoutTimerSwitch(
                 }
             } }
         }
+    }
+    inboxConversionJson?.let { raw ->
+        InboxConversionScreen(
+            model, com.google.gson.Gson().fromJson(raw, IdeaEntity::class.java),
+            inboxConversionTarget, ledgerRepository,
+            onClose = { inboxConversionJson = null },
+            onManageLedger = { inboxConversionJson = null; openScreen("ledger") },
+        )
     }
     editor?.let { request ->
         editorState.SaveableStateProvider(request.id) {

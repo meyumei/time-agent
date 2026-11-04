@@ -692,11 +692,13 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
             val task = item.taskId?.let { dao.task(it) }
             val staleTask = item.taskId != null && (task == null || task.deletedAt != null || task.status != "TODO" || task.version != item.taskVersion)
             val staleRule = task != null && item.proposedStartAt != null && item.proposedEndAt != null && !PersonalMemoryRules.allows(memories, task, Instant.ofEpochMilli(item.proposedStartAt), Instant.ofEpochMilli(item.proposedEndAt), zone)
-            if (item.createdAt < stamp - 7L * 86400_000 || item.expiresAt?.let { it <= stamp } == true || staleTask) dao.putSuggestion(item.copy(status = "EXPIRED", decidedAt = stamp, version = nextVersion("SUGGESTION", item.id, item.version)))
+            if (dao.revision("SUGGESTION_SUPPRESS:${item.type}")?.revision == 1L) dao.putSuggestion(item.copy(status = "DISMISSED", decidedAt = stamp, version = nextVersion("SUGGESTION", item.id, item.version)))
+            else if (item.createdAt < stamp - 7L * 86400_000 || item.expiresAt?.let { it <= stamp } == true || staleTask) dao.putSuggestion(item.copy(status = "EXPIRED", decidedAt = stamp, version = nextVersion("SUGGESTION", item.id, item.version)))
             else if (staleRule) dao.putSuggestion(item.copy(status = "INVALIDATED", decidedAt = stamp, version = nextVersion("SUGGESTION", item.id, item.version)))
             else if (item.status == "SNOOZED" && item.snoozedUntil?.let { it <= stamp } == true) dao.putSuggestion(item.copy(status = "PENDING", snoozedUntil = null, version = nextVersion("SUGGESTION", item.id, item.version)))
         }
         candidates.forEach { candidate ->
+            if (dao.revision("SUGGESTION_SUPPRESS:${candidate.type}")?.revision == 1L) return@forEach
             require(candidate.id.isNotBlank() && candidate.type.isNotBlank() && candidate.dedupKey.isNotBlank()) { "建议数据无效" }
             val task = candidate.taskId?.let { dao.task(it) }
             if (candidate.taskId != null && task?.let { it.deletedAt == null && it.status == "TODO" && it.version == candidate.taskVersion } != true) return@forEach
@@ -741,7 +743,27 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
     }
 
     /** Object binding is stored data; prose never participates in a write. */
-    suspend fun executeSuggestion(id: String, expectedVersion: Long, action: SuggestionAction): Boolean = transaction {
+    suspend fun executeSuggestion(id: String, expectedVersion: Long, action: SuggestionAction): Boolean {
+        val result = commands.executeForRepository(ApplySuggestion("suggestion:$id:$expectedVersion", id, expectedVersion, action))
+        result.throwIfRejected()
+        return result.status == CommandStatus.APPLIED
+    }
+
+    internal suspend fun setSuggestionPolicyRaw(type: String, suppressed: Boolean) {
+        require(type.isNotBlank()) { "建议类型不能为空" }
+        val key = "SUGGESTION_SUPPRESS:$type"
+        val before = dao.revision(key) ?: EntityRevision(key, 0)
+        val after = EntityRevision(key, if (suppressed) 1 else 0)
+        dao.putRevision(after)
+        journal("SUGGESTION_POLICY", key, before, after, "不再提示此类建议")
+        if (suppressed) dao.allSuggestions().filter { it.type == type && it.status in setOf("PENDING", "SNOOZED") }.forEach {
+            val changed = it.copy(status = "DISMISSED", decidedAt = now().toEpochMilli(), version = nextVersion("SUGGESTION", it.id, it.version))
+            dao.putSuggestion(changed)
+            journal("SUGGESTION", it.id, it, changed, "隐藏此类建议")
+        }
+    }
+
+    internal suspend fun executeSuggestionRaw(id: String, expectedVersion: Long, action: SuggestionAction): Boolean = transaction {
         val requestId = "suggestion:$id:$expectedVersion"
         if (dao.actionFor("ASSISTANT_BATCH", requestId) != null) {
             val current = dao.suggestion(id)
@@ -751,7 +773,7 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         val card = checkedSuggestion(id, expectedVersion)
         val stamp = now().toEpochMilli()
         val task = if (action is SuggestionAction.Snooze) null else suggestionTask(card)
-        assistantTransaction(requestId) {
+        run {
             val after = card.copy(status = if (action is SuggestionAction.Snooze) "SNOOZED" else "APPLIED", decidedAt = stamp,
                 snoozedUntil = (action as? SuggestionAction.Snooze)?.until, version = nextVersion("SUGGESTION", id, card.version))
             dao.putSuggestion(after)
@@ -774,6 +796,7 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
                 SuggestionAction.StartTimer -> startTimer(requireNotNull(task).id, "suggestion-timer:$id:$expectedVersion", expectedTaskVersion = task.version)
                 is SuggestionAction.Snooze -> require(action.until > stamp && action.until < (card.expiresAt ?: card.createdAt + 7L * 86400_000)) { "暂缓时间须在建议有效期内" }
             }
+            true
         }
     }
 
@@ -958,6 +981,11 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
             if (payload(current?.let { gson.toJson(it) }) != payload(against)) throw StaleChange()
         }
         when (action.entityType) {
+            "SUGGESTION_POLICY" -> {
+                val current = dao.revision(action.entityId) ?: EntityRevision(action.entityId, 0)
+                if (current != gson.fromJson(expected, EntityRevision::class.java)) throw StaleChange()
+                dao.putRevision(gson.fromJson(target, EntityRevision::class.java))
+            }
             "ATTACHMENT" -> {
                 val current=dao.attachment(action.entityId);matches(current)
                 val restored=gson.fromJson(target,AttachmentEntity::class.java)

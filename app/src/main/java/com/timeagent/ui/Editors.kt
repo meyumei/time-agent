@@ -35,6 +35,7 @@ data class EditorRequest(
     val ideaId: String? = null,
     val ideaVersion: Long? = null,
     val title: String? = null,
+    val notes: String = "",
 )
 data class EditValues(val title: String, val notes: String, val estimatedMinutes: Int, val priority: Int, val dueAt: Long?, val taskId: String?, val categoryId: String?, val start: Long, val end: Long, val allowFuture: Boolean, val location: String, val teacher: String, val activityId: String? = null, val kind: EditorKind? = null, val scheduleNewTask: Boolean = false, val allDayStartDate: String? = null, val allDayEndDate: String? = null)
 
@@ -78,7 +79,7 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
     val initialTitle = plan?.displayTitle(data.tasks.firstOrNull { it.id == plan.taskId }) ?: record?.title?.takeIf(String::isNotBlank) ?: task?.title ?: activity?.fullName(data.activities).orEmpty().takeIf { it.isNotBlank() }
         ?: reminder?.title ?: request.title.orEmpty()
     var title by rememberSaveable(request.id) { mutableStateOf(initialTitle) }
-    var notes by rememberSaveable(request.id) { mutableStateOf(plan?.notes ?: task?.description ?: record?.notes.orEmpty()) }
+    var notes by rememberSaveable(request.id) { mutableStateOf(plan?.notes ?: task?.description ?: record?.notes ?: request.notes) }
     var estimated by rememberSaveable(request.id) { mutableStateOf((task?.estimatedMinutes ?: activity?.defaultMinutes ?: if (request.scheduleNewTask) ((initialEnd - initialStart) / 60000).toInt() else 30).toString()) }
     var priority by rememberSaveable(request.id) { mutableIntStateOf(task?.priority ?: 1) }
     var dueDate by rememberSaveable(request.id) { mutableStateOf(task?.dueAt?.let { Instant.ofEpochMilli(it).atZone(zone).toLocalDate().toString() }.orEmpty()) }

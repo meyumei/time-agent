@@ -1077,7 +1077,7 @@ private fun CaptureDialog(
 }
 
 @Composable
-private fun TransactionDialog(
+internal fun TransactionDialog(
     existing: LedgerTransactionEntity?,
     accounts: List<LedgerAccountEntity>,
     categories: List<LedgerCategoryEntity>,
@@ -1089,6 +1089,8 @@ private fun TransactionDialog(
     externalError: String?,
     onDismiss: () -> Unit,
     onSave: (LedgerTransactionEntity, Long?, String) -> Unit,
+    initialMerchant: String = "",
+    initialNote: String = "",
 ) {
     val key = existing?.id ?: "new"
     val newId = rememberSaveable(key) { UUID.randomUUID().toString() }
@@ -1096,8 +1098,8 @@ private fun TransactionDialog(
     val categoryOptions = categories.filter { it.archivedAt == null || it.id == existing?.categoryId }
     var amount by rememberSaveable(key) { mutableStateOf(existing?.let { Money.plain(it.amountMinor) }.orEmpty()) }
     var direction by rememberSaveable(key) { mutableStateOf(existing?.direction ?: LedgerDirection.EXPENSE) }
-    var merchant by rememberSaveable(key) { mutableStateOf(existing?.merchant.orEmpty()) }
-    var note by rememberSaveable(key) { mutableStateOf(existing?.note.orEmpty()) }
+    var merchant by rememberSaveable(key) { mutableStateOf(existing?.merchant ?: initialMerchant) }
+    var note by rememberSaveable(key) { mutableStateOf(existing?.note ?: initialNote) }
     var occurredText by rememberSaveable(key) { mutableStateOf(formatEditorTime(existing?.occurredAt ?: nowMillis, zone)) }
     var accountId by rememberSaveable(key) { mutableStateOf(existing?.accountId) }
     var categoryId by rememberSaveable(key) { mutableStateOf(existing?.categoryId) }
