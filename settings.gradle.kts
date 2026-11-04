@@ -13,4 +13,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "TimeAgent"
-include(":core", ":app", ":agent-runtime", ":benchmark")
+include(":core", ":app", ":agent-runtime", ":benchmark", ":lint-rules")

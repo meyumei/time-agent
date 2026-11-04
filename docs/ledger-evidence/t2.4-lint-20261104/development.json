@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-04",
+  "commands": [
+    ":lint-rules:captureLegacyChinese :lint-rules:jar :app:compileDebugKotlin",
+    ":lint-rules:jar :app:compileDebugKotlin :core:compileKotlin"
+  ],
+  "inventoryGeneration": {
+    "log": ".tmp/remaining-development-20261104/compile-chinese-rule-1.log",
+    "exitCode": 0,
+    "duration": "41s",
+    "unique": 4278,
+    "occurrences": 4696
+  },
+  "finalBuild": {
+    "log": ".tmp/remaining-development-20261104/compile-chinese-rule-final-2.log",
+    "duration": "3s",
+    "endedAt": "2026-11-04T20:30:51.7213864+08:00",
+    "exitCode": 0
+  },
+  "jarContentsInspected": true,
+  "testsRun": false,
+  "lintAnalysisRun": false,
+  "deviceActions": false,
+  "sourceSha256": {
+    "lint-rules/src/main/resources/legacy-chinese-literals.tsv": "b0f77f788d5ce0aadb5dcbbb18b0e6e5e1910f35ec9741d828838ce0829f1c79",
+    "lint-rules/src/main/kotlin/com/timeagent/lint/LegacyChineseBaseline.kt": "5101771170c287f07a476eaccac9bb0473c9f6999d39fbc1fb637486a395bad6",
+    "lint-rules/src/main/kotlin/com/timeagent/lint/NewHardcodedChineseDetector.kt": "f844e5e531308707d7e4da0ab2435264c803bc17ddb1512d1837dc8b1a7f9626",
+    "lint-rules/build.gradle.kts": "df4256d317d5f3b95de00aa085debafb25fe409fd880fadbb9d205f4894e7fb2",
+    "build.gradle.kts": "987aa2a3252dd024b49965de0b02aafd6f106370ea4bd5e58d8104030f950dd7",
+    "settings.gradle.kts": "1f3350c78b3f0c832169c058e1abbc66bb7aa4853b2c91816d9510698eb7b507",
+    "app/build.gradle.kts": "e9253a997066a952c9763ec051feac306b8c84bdf526f32f2a5653d8d4e905e1",
+    "core/build.gradle.kts": "a492ea9ec646e3ac281f885082c3908f188ca514cbd47ed26e08e84768937907",
+    "agent-runtime/build.gradle.kts": "1235a0cdaf604f4139eda319dc2876d3f47c13da4ed9b0c7074e1c786b470b88"
+  },
+  "limitations": [
+    "Rule compiled and packaged; no lint analysis or rule acceptance executed",
+    "Legacy dynamic/semantic/domain text and remaining feedback migration not complete"
+  ]
+}
