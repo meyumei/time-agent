@@ -134,6 +134,7 @@ private data class WorkoutTimerSwitch(
     val workouts by remember(workoutsRepository) { workoutsRepository.observeSessions().catch { workoutReadError = "训练读取失败：${it.message}"; emit(emptyList()) } }.collectAsStateWithLifecycle(emptyList())
     val activeWorkout = workouts.firstOrNull { it.status == WorkoutSessionStatus.ACTIVE || it.status == WorkoutSessionStatus.PAUSED }
     LaunchedEffect(activeWorkout) { com.timeagent.workout.WorkoutNotifications.sync(context, activeWorkout) }
+    var focusSwitch by remember { mutableStateOf<Triple<com.timeagent.focus.FocusSessionEntity, String?, String>?>(null) }
     var workoutSwitch by remember { mutableStateOf<WorkoutTimerSwitch?>(null) }
     val healthScope = rememberCoroutineScope()
     androidx.lifecycle.compose.LifecycleEventEffect(androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
@@ -161,12 +162,62 @@ private data class WorkoutTimerSwitch(
         }
     }
     fun closeScreen() { navigator.close() }
+    val quickModel = remember(model, context) { com.timeagent.quickentry.QuickEntryModel(model.repository, context.applicationContext) }
+    var captureTemplateJson by rememberSaveable { mutableStateOf<String?>(null) }
+    fun openQuickDraft(draft: com.timeagent.quickentry.QuickEntryDraft) {
+        editor = EditorRequest(
+            if (draft.action == com.timeagent.quickentry.QuickEntryAction.CREATE_SCHEDULE) EditorKind.PLAN else EditorKind.RECORD,
+            taskId = draft.taskId, activityId = draft.activityId, title = draft.title, notes = draft.notes,
+            scheduleRange = true, initialStartAt = draft.startAt, initialEndAt = draft.endAt,
+            quickEntryId = draft.entryId, quickEntryVersion = draft.entryVersion,
+        )
+    }
+    val onboardingPreference = remember(context) { com.timeagent.onboarding.OnboardingPreference(context) }
+    val installedAsUpgrade = remember(context) {
+        val info = context.packageManager.getPackageInfo(context.packageName, 0)
+        info.lastUpdateTime > info.firstInstallTime + 1000L
+    }
+    val existingUser = installedAsUpgrade || data.tasks.isNotEmpty() || data.records.isNotEmpty() || data.projects.isNotEmpty()
+    LaunchedEffect(data.loading) {
+        if (!data.loading && onboardingPreference.shouldShow(existingUser)) {
+            navigator.awaitReady(); navigator.openDeepLink("onboarding")
+        }
+    }
+
+    var voiceSheetOpen by rememberSaveable { mutableStateOf(false) }
     var snoozeReminderId by rememberSaveable { mutableStateOf<String?>(null) }
     var repeatReminderId by rememberSaveable { mutableStateOf<String?>(null) }
     LaunchedEffect(appDestination) {
         if (appDestination != null) {
             navigator.awaitReady()
-            if (appDestination.startsWith("reminder-snooze:")) {
+            if (appDestination == "voice") {
+                voiceSheetOpen = true
+            } else if (appDestination == "new-task") {
+                editor = EditorRequest(EditorKind.TASK)
+            } else if (appDestination == "new-schedule") {
+                editor = EditorRequest(EditorKind.PLAN)
+            } else if (appDestination.startsWith("quick-entry:")) {
+                when (val result = com.timeagent.quickentry.QuickEntryRepository(model.repository, context).activate(appDestination.removePrefix("quick-entry:"))) {
+                    is com.timeagent.quickentry.QuickEntryLaunch.OpenEditor -> openQuickDraft(result.draft)
+                    is com.timeagent.quickentry.QuickEntryLaunch.StartedFocus -> navigator.open("focus")
+                    is com.timeagent.quickentry.QuickEntryLaunch.NeedsConfirmation -> navigator.open("quick-entry-confirm:${result.entry.id}")
+                    is com.timeagent.quickentry.QuickEntryLaunch.Failed -> model.report(result.message)
+                    else -> navigator.resetToToday()
+                }
+            } else if (appDestination == "widget-action") {
+                model.report(context.getSharedPreferences("widget_status", 0).getString("error", null) ?: "请确认当前计时状态")
+                val entryId = context.getSharedPreferences("widget_status", 0).getString("entryId", null)
+                navigator.open(if (entryId != null) "quick-entry-confirm:$entryId" else "quick-entries")
+            } else if (appDestination == "timer") {
+                navigator.resetToToday()
+            } else if (appDestination.startsWith("item:")) {
+                val parts = appDestination.split(':', limit = 3)
+                if (parts.size == 3) selected = when (parts[1]) {
+                    "TASK" -> data.tasks.firstOrNull { it.id == parts[2] }
+                    "PLAN" -> data.timeline(model.clock.now()).firstOrNull { (it.entity as? ScheduleBlockEntity)?.id == parts[2] }
+                    else -> null
+                }
+            } else if (appDestination.startsWith("reminder-snooze:")) {
                 snoozeReminderId = appDestination.removePrefix("reminder-snooze:")
             } else if (appDestination == "butler") navigator.returnToRoot(3) else navigator.openDeepLink(appDestination)
             onAppDestinationConsumed()
@@ -193,6 +244,8 @@ private data class WorkoutTimerSwitch(
     var voiceSuggestion by remember { mutableStateOf<String?>(null) }
     val fish = model.fish
     androidx.lifecycle.compose.LifecycleEventEffect(androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+        healthScope.launch { com.timeagent.timer.TimerNotifications.restoreOnForeground(context)?.let { model.report(it) } }
+        (context.applicationContext as com.timeagent.TimeAgentApplication).refreshCalendarPermission()
         model.refreshClock()
         fish?.appForeground = true
         fish?.let {
@@ -252,6 +305,14 @@ private data class WorkoutTimerSwitch(
     var preview by remember { mutableStateOf<ImportPreview?>(null) }
     var switchTask by remember { mutableStateOf<Pair<String?, String>?>(null) }
     var reminderDetail by remember { mutableStateOf<ReminderEntity?>(null) }
+    LaunchedEffect(reminderDetail?.id, reminderDetail?.version) {
+        val reminder = reminderDetail ?: return@LaunchedEffect
+        try {
+            com.timeagent.reminders.ReminderInstanceRepository(model.repository).act(reminder.id, reminder.version,
+                requestId = "reminder-open:${reminder.id}:${reminder.version}")
+        } catch (error: kotlinx.coroutines.CancellationException) { throw error }
+        catch (error: Exception) { model.report(error.message ?: "提醒处理状态未保存，请重新打开提醒") }
+    }
     var noteType by rememberSaveable { mutableStateOf<String?>(null) }
     var noteId by rememberSaveable { mutableStateOf<String?>(null) }
     var noteTitle by rememberSaveable { mutableStateOf("") }
@@ -308,7 +369,9 @@ private data class WorkoutTimerSwitch(
     val running = data.records.firstOrNull { it.endAt == null }
     fun startTimer(taskId: String?) {
         val requestId = UUID.randomUUID().toString()
-        if (activeWorkout != null) workoutSwitch = WorkoutTimerSwitch(activeWorkout, taskId,
+        val activeFocus = data.focusSessions.firstOrNull { it.isActive }
+        if (activeFocus != null) focusSwitch = Triple(activeFocus, taskId, requestId)
+        else if (activeWorkout != null) workoutSwitch = WorkoutTimerSwitch(activeWorkout, taskId,
             taskId?.let { id -> data.tasks.firstOrNull { it.id == id }?.version }, requestId)
         else if (running != null) switchTask = taskId to requestId
         else model.perform { model.repository.startTimer(taskId, requestId) }
@@ -334,7 +397,6 @@ private data class WorkoutTimerSwitch(
                 onHealth = { openScreen("health") })
         }
     }
-    var voiceSheetOpen by rememberSaveable { mutableStateOf(false) }
     val voiceControl = rememberHomeVoiceState(!busy && !data.loading && !chat.busy, ::sendAssistant, { voiceMessage = it },
         { state, text -> voiceStatus = state; liveVoiceText = text }, { voiceSuggestion = it }, speechFactory)
     Scaffold(modifier = Modifier.imePadding(), topBar = {
@@ -356,11 +418,14 @@ private data class WorkoutTimerSwitch(
             notice?.let { Text(it, Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error) }
             if (tab != 3) fishMessage?.let { Text(it, Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp), style = MaterialTheme.typography.labelSmall, maxLines = 3, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, color = MaterialTheme.colorScheme.error) }
             if (!voiceSheetOpen) VoiceInputBanner(voiceStatus, liveVoiceText)
-            chat.localDestination?.let { destination -> TextButton(onClick = { openScreen(destination) }, modifier = Modifier.testTag("assistant-local-result")) { Text(if (destination == "history") "查看历史结果与原记录" else "查看个人记忆") } }
+            chat.localDestination?.let { destination -> TextButton(onClick = { openScreen(destination) }, modifier = Modifier.testTag("assistant-local-result")) {
+                Text(when { destination == "history" -> "查看历史结果与原记录"; destination.startsWith("quick-entry") -> "打开快捷记录"; destination == "focus" -> "查看专注"; else -> "查看结果" })
+            } }
             if (tab == 2) WeekHeader(reviewWeek, data, { model.changeReviewWeek(-1) }, { model.changeReviewWeek(1) }, model::currentWeek)
             activeWorkout?.let { session ->
                 RunningWorkoutBar(session, model.clock, busy, onOpen = { openScreen("workout:${session.id}") })
             }
+            com.timeagent.focus.RunningFocusBar(model, onOpen = { openScreen("focus") })
             running?.let { item ->
                 RunningTimerBar(item, data.tasks.firstOrNull { it.id == item.taskId }?.title ?: "自由计时",
                     model.clock, busy, onStop = { model.perform { model.repository.stopTimer(item.id, item.version, requestId = "timer-stop:${item.id}:${item.version}") } })
@@ -397,6 +462,7 @@ private data class WorkoutTimerSwitch(
                                 onRedo = { model.perform { model.repository.redoLastAction() } },
                                 canRedo = data.history.any { it.undone && it.redoable },
                                 onReminder = { reminderDetail = it },
+                                onSaveTemplate = { captureTemplateJson = com.google.gson.Gson().toJson(it) },
                                 onDragCommit = { item, result ->
                                     model.perform {
                                         when (val entity = item.entity) {
@@ -405,11 +471,20 @@ private data class WorkoutTimerSwitch(
                                                 expectedVersion = entity.version,
                                                 requestId = "timeline-drag:${entity.id}:${entity.version}:${result.startAt}:${result.endAt}",
                                             )
-                                            is TimeRecordEntity -> model.repository.saveRecord(
-                                                entity.copy(startAt = result.startAt, endAt = result.endAt),
-                                                expectedVersion = entity.version,
-                                                requestId = "timeline-drag:${entity.id}:${entity.version}:${result.startAt}:${result.endAt}",
-                                            )
+                                            is TimeRecordEntity -> {
+                                                if (entity.source == "FOCUS") {
+                                                    val focus = requireNotNull(data.focusSessions.firstOrNull { "focus:${it.id}" == entity.id })
+                                                    val index = requireNotNull(item.id.substringAfter("#segment:", "").toIntOrNull())
+                                                    model.repository.commands.execute(com.timeagent.domain.command.WriteFocus(
+                                                        "focus-drag:${focus.id}:${focus.version}:$index:${result.startAt}:${result.endAt}",
+                                                        com.timeagent.domain.command.FocusMutation.AdjustSegment(focus.id, focus.version, index, result.startAt, result.endAt),
+                                                    )).also { if (it.status !in setOf(com.timeagent.domain.command.CommandStatus.APPLIED, com.timeagent.domain.command.CommandStatus.DUPLICATE)) error(it.message) }
+                                                } else model.repository.saveRecord(
+                                                    entity.copy(startAt = result.startAt, endAt = result.endAt),
+                                                    expectedVersion = entity.version,
+                                                    requestId = "timeline-drag:${entity.id}:${entity.version}:${result.startAt}:${result.endAt}",
+                                                )
+                                            }
                                         }
                                     }
                                 },
@@ -429,6 +504,11 @@ private data class WorkoutTimerSwitch(
                                             onDeadline = { openScreen("deadlines") },
                                             onWorkout = { openScreen("workout") },
                                         )
+                                    }
+                                    if (data.loading.not()) {
+                                        val entries by remember(model) { model.repository.database.quickEntryDao().observeEntries() }.collectAsStateWithLifecycle(emptyList())
+                                        if (entries.isNotEmpty()) com.timeagent.quickentry.QuickEntryChips(quickModel,
+                                            onOpenManager = { openScreen("quick-entries") }, onOpenFocus = { openScreen("focus") }, onOpenDraft = ::openQuickDraft)
                                     }
                                     PendingPaymentCard(pendingLedgerCount, onOpen = { openScreen("ledger") })
                                     ledgerReadError?.let {
@@ -460,6 +540,8 @@ private data class WorkoutTimerSwitch(
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                         TextButton(onClick = { openScreen("health") }) { Text("健康与训练") }
                         TextButton(onClick = { openScreen("history") }) { Text("历史明细") }
+                        TextButton(onClick = { openScreen("habits") }) { Text("习惯") }
+                        TextButton(onClick = { openScreen("reports") }) { Text("报表") }
                     }
                     MinuteClockContent(model) { now ->
                         ReviewScreen(data, reviewWeek, now, zone, ::openOriginal, { openScreen("goals") }, reselectRevision)
@@ -471,7 +553,8 @@ private data class WorkoutTimerSwitch(
             when (destination) {
         "fish-chat" -> if (fish != null) com.timeagent.fish.FishChatScreen(fish,
             onSettings = { assistantSettingsOpen = true }, onCompanion = { openScreen("fish-companion") },
-            requestInput = assistantExpanded, onInputFocused = { assistantExpanded = false }, briefing = briefingContent)
+            requestInput = assistantExpanded, onInputFocused = { assistantExpanded = false }, briefing = briefingContent,
+            onOpenLocalResult = ::openScreen)
             else TextButton(onClick = { assistantSettingsOpen = true }) { Text("AI 与本地输入设置") }
         "notification-settings" -> NotificationSettingsScreen(::closeScreen)
         "calendar-settings" -> CalendarSettingsScreen(::closeScreen)
@@ -487,6 +570,15 @@ private data class WorkoutTimerSwitch(
         "fish-voice" -> fish?.let { com.timeagent.fish.FishVoiceScreen(it,onClose=::closeScreen) }
         "fish-appearance" -> fish?.let { com.timeagent.fish.FishCompanionSettingsScreen(it,onClose=::closeScreen) }
         "fish-runtime" -> fish?.let { com.timeagent.fish.FishRuntimeSettingsScreen(it,onModel={assistantSettingsOpen=true},onClose=::closeScreen) }
+        "quick-entries", "quick-recent" -> com.timeagent.quickentry.QuickEntryScreen(quickModel, ::closeScreen, ::openQuickDraft)
+        "plan-templates" -> com.timeagent.quickentry.PlanTemplateScreen(quickModel, ::closeScreen)
+        "habits" -> HabitPage(model, ::closeScreen, ::openOriginal)
+        "reports" -> ReportPage(model, ::closeScreen) { text -> fish?.editDraft(text); openScreen("fish-chat") }
+        "export" -> ExportPage(::closeScreen)
+        "timer-settings" -> com.timeagent.timer.TimerNotificationSettings(::closeScreen)
+        "calendar-sync" -> com.timeagent.calendar.CalendarSyncScreen(model, ::closeScreen)
+        "sample-data" -> SamplePage(model, ::closeScreen) { openScreen("onboarding") }
+        "onboarding" -> OnboardingPage(model, existingUser, ::closeScreen) { assistantSettingsOpen = true }
         "appearance" -> AppearanceScreen(onClose = ::closeScreen)
         "settings" -> SettingsHub(::openScreen, ::closeScreen)
         "tools" -> Column(Modifier.fillMaxSize().statusBarsPadding()) {
@@ -549,6 +641,7 @@ private data class WorkoutTimerSwitch(
         )
         "health" -> HealthSyncScreen(model, healthReader, healthSettings, zone, onClose = ::closeScreen)
         "workout" -> WorkoutNavScreen(workoutsRepository, onClose = ::closeScreen)
+        "focus" -> com.timeagent.focus.FocusScreen(model, onClose = ::closeScreen)
         "ledger" -> LedgerScreen(
             repository = ledgerRepository,
             initialCaptureId = null,
@@ -561,8 +654,16 @@ private data class WorkoutTimerSwitch(
             onAskFish = { text -> openScreen("fish-chat"); editAssistantDraft(text) })
         "extract" -> ChatExtractionScreen(model, extractionText, onReply = { extractionText = it; openScreen("reply") }, onClose = ::closeScreen, onOpenSettings = { assistantSettingsOpen = true })
         "reply" -> ReplyCopilotScreen(model, extractionText, onClose = ::closeScreen, onOpenSettings = { assistantSettingsOpen = true })
-        else -> if (destination.startsWith("workout:")) WorkoutNavScreen(workoutsRepository,
+        else -> if (destination.startsWith("report-period:")) ReportPage(model, ::closeScreen,
+            destination.removePrefix("report-period:")) { text -> fish?.editDraft(text); openScreen("fish-chat") }
+        else if (destination.startsWith("quick-entry-confirm:")) com.timeagent.quickentry.QuickEntryScreen(
+            quickModel, ::closeScreen, ::openQuickDraft, initialEntryId = destination.removePrefix("quick-entry-confirm:"))
+        else if (destination.startsWith("workout:")) WorkoutNavScreen(workoutsRepository,
             initialSessionId = destination.removePrefix("workout:"), onClose = ::closeScreen)
+        else if (destination.startsWith("focus-task:")) com.timeagent.focus.FocusScreen(model, onClose = ::closeScreen,
+            initialTaskId = destination.removePrefix("focus-task:"))
+        else if (destination.startsWith("focus-plan:")) com.timeagent.focus.FocusScreen(model, onClose = ::closeScreen,
+            initialScheduleId = destination.removePrefix("focus-plan:"))
         else if (destination.startsWith("project:")) MinuteClockContent(model) { now -> ProjectScreen(data, model, now, zone,
             onTask = { selected = it }, onClose = ::closeScreen, initialProjectId = destination.removePrefix("project:"),
             onSchedule = { editor = EditorRequest(EditorKind.PLAN, taskId = it.id, scheduleRange = true) }) }
@@ -580,7 +681,8 @@ private data class WorkoutTimerSwitch(
     }
     if (voiceSheetOpen) VoiceSheet(chat, voiceText, ::editAssistantDraft, ::sendAssistant, voiceControl,
         liveVoiceText, voiceSuggestion, { voiceSuggestion?.let(::sendAssistant); voiceSuggestion = null },
-        onClose = { voiceControl.cancel(); voiceSheetOpen = false }, onSettings = { assistantSettingsOpen = true }, fish = fish)
+        onClose = { voiceControl.cancel(); voiceSheetOpen = false }, onSettings = { assistantSettingsOpen = true }, fish = fish,
+        onOpenLocalResult = { voiceControl.cancel(); voiceSheetOpen = false; openScreen(it) })
     if (assistantSettingsOpen) ConversationSettingsDialog(assistantSettings, runtimeMode = fish != null, onSaved = { fish?.settingsSaved() }) { assistantSettingsOpen = false }
 
     if (addMenu) AlertDialog(onDismissRequest = { addMenu = false }, title = { Text("留下一段时间") }, text = {
@@ -598,6 +700,7 @@ private data class WorkoutTimerSwitch(
             TextButton(onClick = { addMenu = false; editor = EditorRequest(EditorKind.PLAN) }) { Text("安排计划") }
             TextButton(onClick = { addMenu = false; editor = EditorRequest(EditorKind.RECORD) }) { Text("补录时间") }
             TextButton(onClick = { addMenu = false; startTimer(null) }) { Text("开始自由计时") }
+            TextButton(onClick = { addMenu = false; openScreen("focus") }) { Text("开始专注") }
             TextButton(onClick = { addMenu = false; openScreen("workout") }, modifier = Modifier.testTag("start-workout-entry")) { Text("开始健身训练") }
         }
     }, confirmButton = { TextButton(onClick = { addMenu = false }) { Text("关闭") } })
@@ -620,11 +723,28 @@ private data class WorkoutTimerSwitch(
             onManageLedger = { inboxConversionJson = null; openScreen("ledger") },
         )
     }
+    captureTemplateJson?.let { raw ->
+        val plans = com.google.gson.Gson().fromJson(raw, Array<ScheduleBlockEntity>::class.java).toList()
+        com.timeagent.quickentry.CaptureTemplateDialog(model.repository, plans) { captureTemplateJson = null }
+    }
     editor?.let { request ->
         editorState.SaveableStateProvider(request.id) {
         MinuteClockContent(model) { now ->
             EditorScreen(request, data, now, zone, busy, { editorDrafts.remove(request.id); editorState.removeState(request.id); editor = null }, onSave = { values ->
                 model.perform(onSuccess = { editorDrafts.remove(request.id); editorState.removeState(request.id); editor = null; selected = null }) {
+                    if (request.quickEntryId != null) {
+                        val plan = if (request.kind == EditorKind.PLAN) ScheduleBlockEntity(request.id,
+                            values.taskId, values.start, values.end, title = values.title, notes = values.notes,
+                            timezoneId = zone.id) else null
+                        val record = if (request.kind == EditorKind.RECORD) TimeRecordEntity(request.id,
+                            values.taskId, values.start, values.end, categoryId = values.categoryId,
+                            title = values.title, notes = values.notes) else null
+                        val result = model.repository.commands.execute(com.timeagent.domain.command.WriteQuickEntry(
+                            "editor:${request.id}", com.timeagent.domain.command.QuickEntryMutation.CommitDraft(
+                                request.quickEntryId, requireNotNull(request.quickEntryVersion), plan, record, values.allowFuture)))
+                        check(result.status in setOf(com.timeagent.domain.command.CommandStatus.APPLIED,
+                            com.timeagent.domain.command.CommandStatus.DUPLICATE)) { result.message }
+                    } else {
                     when (values.kind ?: request.kind) {
                         EditorKind.TASK -> {
                             val before = request.entity as? TaskEntity
@@ -648,7 +768,12 @@ private data class WorkoutTimerSwitch(
                             val before = request.entity as? TimeRecordEntity
                             val notes = if (request.selection != null && values.title.isNotBlank() && values.notes.lineSequence().firstOrNull()?.trim() != values.title)
                                 listOf(values.title, values.notes.trim()).filter { it.isNotBlank() }.joinToString("\n") else values.notes
-                            model.repository.saveRecord((before ?: TimeRecordEntity(request.id, values.taskId, values.start, values.end)).copy(taskId = values.taskId, startAt = values.start, endAt = values.end, title = values.title, notes = if (request.selection == null) values.notes else notes, categoryId = values.categoryId), values.allowFuture, before?.version, requestId = "editor:${request.id}")
+                            if (request.focusSessionId != null) {
+                                model.repository.commands.execute(com.timeagent.domain.command.WriteFocus("editor:${request.id}",
+                                    com.timeagent.domain.command.FocusMutation.AdjustSegment(request.focusSessionId,
+                                        requireNotNull(request.focusVersion), requireNotNull(request.focusSegmentIndex), values.start, values.end, values.title, values.notes)
+                                )).also { if (it.status !in setOf(com.timeagent.domain.command.CommandStatus.APPLIED, com.timeagent.domain.command.CommandStatus.DUPLICATE)) error(it.message) }
+                            } else model.repository.saveRecord((before ?: TimeRecordEntity(request.id, values.taskId, values.start, values.end)).copy(taskId = values.taskId, startAt = values.start, endAt = values.end, title = values.title, notes = if (request.selection == null) values.notes else notes, categoryId = values.categoryId), values.allowFuture, before?.version, requestId = "editor:${request.id}")
                         }
                         EditorKind.COURSE -> {
                             val before = request.entity as CourseOccurrenceEntity
@@ -658,6 +783,7 @@ private data class WorkoutTimerSwitch(
                             val before = request.entity as? ReminderEntity
                             model.repository.saveReminder((before ?: ReminderEntity(request.id, values.title, values.start)).copy(title = values.title, remindAt = values.start), before?.version)
                         }
+                    }
                     }
                 }
             }, onSaveReminder = { before, title, at ->
@@ -706,6 +832,7 @@ private data class WorkoutTimerSwitch(
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Button(onClick = { startTimer(selection.id); selected = null }, enabled = !busy) { Text("开始计时") }
                                 OutlinedButton(onClick = { editor = EditorRequest(EditorKind.PLAN, taskId = selection.id, scheduleRange = true); selected = null }) { Text("安排时间") }
+                                TextButton(onClick = { selected = null; openScreen("focus-task:${selection.id}") }) { Text("专注") }
                             }
                             Row {
                                 TextButton(onClick = { editor = EditorRequest(EditorKind.TASK, selection); selected = null }) { Text("编辑任务") }
@@ -721,6 +848,7 @@ private data class WorkoutTimerSwitch(
                             TimelineColorChoice(selection.colorSubject, selection.title)
                             Text("时长 ${java.time.Duration.between(selection.span.start, selection.span.end).toMinutes().minutesLabel()}")
                             if (selection.subtitle.isNotBlank()) Text(selection.subtitle)
+                            selection.dragReadOnlyReason?.let { Text("已锁定拖动 · $it", style = MaterialTheme.typography.bodySmall) }
                             if (selection.kind == ItemKind.PLAN || selection.kind == ItemKind.COURSE) OutlinedButton(onClick = {
                                 calendarTitle = selection.title; calendarStart = selection.span.start.toEpochMilli(); calendarEnd = selection.span.end.toEpochMilli()
                                 selected = null; openScreen("calendar")
@@ -737,10 +865,16 @@ private data class WorkoutTimerSwitch(
                                 Text("来源：${definition?.sourceId.orEmpty()}${if (item.isManuallyModified) " · 已手工修改" else ""}", style = MaterialTheme.typography.bodySmall)
                             }
                             Row {
-                                val editable = (selection.entity as? TimeRecordEntity)?.endAt != null || selection.kind != ItemKind.RECORD
+                                val editable = selection.readOnlyReason == null &&
+                                    ((selection.entity as? TimeRecordEntity)?.endAt != null || selection.kind != ItemKind.RECORD)
                                 val noteType = when (selection.entity) { is ScheduleBlockEntity -> "PLAN"; is TimeRecordEntity -> "RECORD"; is CourseOccurrenceEntity -> "OCCURRENCE"; else -> null }
-                                if (noteType != null) TextButton(onClick = { openNote(noteType, selection.id, selection.title) }) { Text("记笔记") }
-                                TextButton(onClick = { editor = EditorRequest(when (selection.kind) { ItemKind.COURSE -> EditorKind.COURSE; ItemKind.PLAN -> EditorKind.PLAN; ItemKind.RECORD -> EditorKind.RECORD }, selection.entity); selected = null }, enabled = editable) { Text("修改") }
+                                if (noteType != null) TextButton(onClick = { openNote(noteType, (selection.entity as? TimeRecordEntity)?.id ?: selection.id, selection.title) }) { Text("记笔记") }
+                                TextButton(onClick = { val record = selection.entity as? TimeRecordEntity
+                                    val focus = record?.takeIf { it.source == "FOCUS" }?.let { actual -> data.focusSessions.firstOrNull { "focus:${it.id}" == actual.id } }
+                                    editor = EditorRequest(when (selection.kind) { ItemKind.COURSE -> EditorKind.COURSE; ItemKind.PLAN -> EditorKind.PLAN; ItemKind.RECORD -> EditorKind.RECORD }, selection.entity,
+                                        initialStartAt = selection.span.start.toEpochMilli(), initialEndAt = selection.span.end.toEpochMilli(),
+                                        focusSessionId = focus?.id, focusVersion = focus?.version,
+                                        focusSegmentIndex = selection.id.substringAfter("#segment:", "").toIntOrNull()); selected = null }, enabled = editable) { Text("修改") }
                                 TextButton(onClick = { val requestId = UUID.randomUUID().toString(); confirmation = "确认${if (selection.kind == ItemKind.COURSE) "取消这一次课程" else "删除此时间块"}？可以撤销恢复。" to {
                                     model.perform(onSuccess = { selected = null }) { when (val item = selection.entity) { is ScheduleBlockEntity -> model.repository.deletePlan(item.id, item.version, requestId); is TimeRecordEntity -> model.repository.deleteRecord(item.id, item.version, requestId); is CourseOccurrenceEntity -> model.repository.saveOccurrence(item.copy(status = "CANCELLED"), item.version) } }
                                 } }, enabled = editable && !busy) { Text(if (selection.kind == ItemKind.COURSE) "取消本次课程" else "删除") }
@@ -761,6 +895,18 @@ private data class WorkoutTimerSwitch(
                 Text("确认后写入本机。重复实例跳过，保留手工修改。", style = MaterialTheme.typography.bodySmall)
             }
         }, confirmButton = { TextButton(onClick = { model.perform(onSuccess = { preview = null; navigator.resetToToday() }) { model.repository.commitImport(value, requestId) } }, enabled = !busy) { Text("确认导入") } }, dismissButton = { TextButton(onClick = { preview = null }, enabled = !busy) { Text("取消") } })
+    }
+    focusSwitch?.let { target ->
+        AlertDialog(onDismissRequest = { focusSwitch = null }, title = { Text("结束当前专注并开始计时？") },
+            text = { Text("${target.first.label} 已专注的部分会保存为实际记录。") },
+            confirmButton = { TextButton(onClick = { model.perform(onSuccess = { focusSwitch = null }) {
+                model.repository.commands.execute(com.timeagent.domain.command.SwitchFocusToTimer(target.third,
+                    target.first.id, target.first.version, target.second,
+                    target.second?.let { id -> data.tasks.firstOrNull { it.id == id }?.version })).also {
+                    if (it.status !in setOf(com.timeagent.domain.command.CommandStatus.APPLIED, com.timeagent.domain.command.CommandStatus.DUPLICATE)) error(it.message)
+                }
+            } }, enabled = !busy) { Text("结束并开始") } },
+            dismissButton = { TextButton(onClick = { focusSwitch = null }) { Text("取消") } })
     }
     workoutSwitch?.let { target ->
         val hasSets = WorkoutRules.summary(target.session, model.clock.now().toEpochMilli()).completedSets > 0

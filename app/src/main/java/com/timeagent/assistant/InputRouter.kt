@@ -32,6 +32,7 @@ class InputRouter(private val local: AssistantConversation) {
         requestId: String? = null,
         cloud: ConversationCloud? = null
     ): InputRouteResult {
+        if (local.matchingQuickEntries(input).isNotEmpty()) return submitLocal(input, context, origin, requestId)
         val interpretation = parser.parse(input, context)
         return when (interpretation) {
             is Interpretation.Parsed -> submitLocal(input, context, origin, requestId)

@@ -67,7 +67,7 @@ class RecurringService(private val repository: TimeRepository) {
             LocalDate.parse(it.originalDate).plusDays(if (it.id.contains(":w:")) 7 else 1)
         } ?: from)
     suspend fun refresh()=withContext(Dispatchers.IO) { PersonalDataGate.access {
-        val rules=dao().recurringRules().filter{it.deletedAt==null}
+        val rules=dao().recurringRules().filter{it.deletedAt==null && !it.reference.startsWith("CALENDAR_SYNC|")}
         if(rules.isEmpty())return@access
         val signature=gson.toJson(rules.sortedBy{it.id}.map { rule ->
             val pattern=RecurringValidation.pattern(rule)

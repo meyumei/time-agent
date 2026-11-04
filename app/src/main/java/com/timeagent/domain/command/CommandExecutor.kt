@@ -137,6 +137,38 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
                                 payload = gson.toJson(com.timeagent.reminders.ReminderInstanceRepository(repository).applyMutation(command.mutation))
                                 emptyList()
                             }
+                            is WriteQuickEntry -> {
+                                payload = gson.toJson(com.timeagent.quickentry.QuickEntryRepository(repository,
+                                    requireNotNull(repository.applicationContext)).applyMutation(command.mutation, command.requestId))
+                                emptyList()
+                            }
+                            is WriteHabit -> {
+                                payload = gson.toJson(com.timeagent.habits.HabitRepository(repository,
+                                    repository.applicationContext).applyMutation(command.mutation))
+                                emptyList()
+                            }
+                            is WriteCalendarSync -> {
+                                payload = gson.toJson(com.timeagent.calendar.CalendarSyncRepository(repository,
+                                    requireNotNull(repository.applicationContext)).applyMutation(command.mutation))
+                                emptyList()
+                            }
+                            is WriteSampleData -> {
+                                payload = gson.toJson(com.timeagent.onboarding.SampleDataRepository(repository,
+                                    requireNotNull(repository.applicationContext)).applyMutation(command.mutation))
+                                emptyList()
+                            }
+                            is SwitchFocusToTimer -> {
+                                val focus = com.timeagent.focus.FocusRepository(repository, repository.applicationContext)
+                                focus.applyMutation(FocusMutation.Finish(command.focusId, command.expectedVersion))
+                                repository.startTimerRaw(command.taskId, command.requestId, expectedTaskVersion = command.expectedTaskVersion)
+                                emptyList()
+                            }
+                            is WriteFocus -> {
+                                payload = gson.toJson(com.timeagent.focus.FocusRepository(
+                                    repository, repository.applicationContext,
+                                ).applyMutation(command.mutation, command.requestId))
+                                emptyList()
+                            }
                             else -> error("不支持的命令")
                         }
                     }
@@ -366,6 +398,20 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
             is WorkoutMutation.SwitchToTimer -> "结束训练并开始计时"
         }
         is DeliverReminder -> "投递提醒"
+        is WriteQuickEntry -> "模板与快捷记录"
+        is WriteHabit -> "修改习惯"
+        is WriteCalendarSync -> "同步系统日历"
+        is WriteSampleData -> "管理示例数据"
+        is SwitchFocusToTimer -> "结束专注并开始计时"
+        is WriteFocus -> when (command.mutation) {
+            is FocusMutation.Start -> "开始专注"
+            is FocusMutation.Pause -> "暂停专注"
+            is FocusMutation.Resume -> "继续专注"
+            is FocusMutation.Finish -> "结束专注"
+            is FocusMutation.SkipBreak -> "跳过休息"
+            is FocusMutation.Tick -> "切换专注阶段"
+            is FocusMutation.AdjustSegment -> "调整专注实际片段"
+        }
         is WriteReminder -> when (command.mutation) {
             is ReminderMutation.Save -> "保存提醒"
             is ReminderMutation.Delete -> "删除提醒"

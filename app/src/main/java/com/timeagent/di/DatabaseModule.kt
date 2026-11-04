@@ -28,8 +28,11 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun timeRepository(database: TimeAgentDatabase, workouts: WorkoutDatabase): TimeRepository =
-        TimeRepository(database).apply { bindWorkoutDatabase(workouts) }
+    fun timeRepository(database: TimeAgentDatabase, workouts: WorkoutDatabase, @ApplicationContext context: Context): TimeRepository =
+        TimeRepository(database).apply {
+            bindWorkoutDatabase(workouts)
+            applicationContext = context.applicationContext
+        }
 
     @Provides
     @Singleton

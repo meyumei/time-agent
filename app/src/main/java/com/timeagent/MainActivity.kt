@@ -37,6 +37,7 @@ class MainActivity : ComponentActivity() {
         openReminderId = intent?.getStringExtra(ReminderIntents.EXTRA_REMINDER_ID)
         sharedText = shared(intent)
         appDestination = intent?.getStringExtra("appDestination")
+        intent?.getStringExtra(com.timeagent.focus.FocusIntents.EXTRA_SESSION_ID)?.let { appDestination = "focus" }
         if (intent?.getBooleanExtra(ReminderIntents.EXTRA_SNOOZE_REQUEST, false) == true) {
             appDestination = "reminder-snooze:$openReminderId"
             intent.removeExtra(ReminderIntents.EXTRA_SNOOZE_REQUEST)
@@ -71,6 +72,7 @@ class MainActivity : ComponentActivity() {
         openReminderId = intent.getStringExtra(ReminderIntents.EXTRA_REMINDER_ID)
         sharedText = shared(intent)
         appDestination = intent?.getStringExtra("appDestination")
+        intent.getStringExtra(com.timeagent.focus.FocusIntents.EXTRA_SESSION_ID)?.let { appDestination = "focus" }
         if (intent.getBooleanExtra(ReminderIntents.EXTRA_SNOOZE_REQUEST, false)) {
             appDestination = "reminder-snooze:$openReminderId"
             intent.removeExtra(ReminderIntents.EXTRA_SNOOZE_REQUEST)

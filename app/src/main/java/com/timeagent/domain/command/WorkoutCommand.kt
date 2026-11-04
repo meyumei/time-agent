@@ -12,6 +12,9 @@ import com.timeagent.data.TimeRecordEntity
 class WorkoutTimerConflict(val timer: TimeRecordEntity) :
     IllegalStateException("已有自由计时正在进行，请确认结束当前计时后再开始训练")
 
+class WorkoutFocusConflict(val focus: com.timeagent.focus.FocusSessionEntity) :
+    IllegalStateException("已有专注正在进行，请确认结束当前专注后再开始训练")
+
 /**
  * Training mutations are applied by [com.timeagent.workout.data.WorkoutRepository.applyMutation].
  * Sessions and templates carry their own payloads so commands only ever persist what the user saw.
@@ -22,18 +25,21 @@ sealed interface WorkoutMutation {
         val title: String,
         val exercises: List<ExerciseDefinition> = emptyList(),
         val switchTimer: TimeRecordEntity? = null,
+        val switchFocus: com.timeagent.focus.FocusSessionEntity? = null,
     ) : WorkoutMutation
 
     data class StartFromTemplate(
         val sessionId: String,
         val templateId: String,
         val switchTimer: TimeRecordEntity? = null,
+        val switchFocus: com.timeagent.focus.FocusSessionEntity? = null,
     ) : WorkoutMutation
 
     data class RepeatSession(
         val sessionId: String,
         val previousSessionId: String,
         val switchTimer: TimeRecordEntity? = null,
+        val switchFocus: com.timeagent.focus.FocusSessionEntity? = null,
     ) : WorkoutMutation
 
     data class SaveSession(

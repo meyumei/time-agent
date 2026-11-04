@@ -278,3 +278,11 @@ CREATE TABLE IF NOT EXISTS profiles (
     first_seen  REAL,
     updated_at  REAL
 );
+CREATE TABLE IF NOT EXISTS memory_changes (
+    request_id TEXT PRIMARY KEY,
+    mem_id INTEGER NOT NULL,
+    before_json TEXT NOT NULL,
+    after_json TEXT,
+    undone INTEGER NOT NULL DEFAULT 0,
+    created_at REAL NOT NULL
+);

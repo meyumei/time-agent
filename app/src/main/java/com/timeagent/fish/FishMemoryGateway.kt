@@ -7,17 +7,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.util.UUID
 
 data class FishMemory(val id: Long, val tier: String, val text: String)
 data class FishDiscovery(val title: String, val url: String)
+data class FishMemoryChange(val token: String, val text: String, val deleted: Boolean, val undone: Boolean)
 
 /**
  * Read access to dsh-remembers, the only authoritative common memory. Nothing is
  * duplicated into a second native store; the in-memory list is a display cache.
  *
- * The pinned stdio protocol exposes `memories` (list/search) but no edit/delete action.
- * Editing therefore remains unsupported until the plugin protocol adds it; this class
- * reports that gap instead of pretending to write.
+ * Edits and their before/after snapshots stay in the authoritative DSH database.
  */
 class FishMemoryGateway(
     private val scope: CoroutineScope,
@@ -37,6 +37,10 @@ class FishMemoryGateway(
 
     private val _readOnly = MutableStateFlow(false)
     val readOnly: StateFlow<Boolean> = _readOnly.asStateFlow()
+    private val _history = MutableStateFlow<List<FishMemoryChange>>(emptyList())
+    val history = _history.asStateFlow()
+    private val _lastChange = MutableStateFlow<Pair<String, Boolean>?>(null)
+    val lastChange = _lastChange.asStateFlow()
 
     val editingSupported: Boolean = true
     val editingUnavailableReason: String =
@@ -51,9 +55,35 @@ class FishMemoryGateway(
         scope.launch {
             try {
                 rpc.send(JSONObject().put("action", if (text == null) "memory_delete" else "memory_edit")
-                    .put("id", item.id).put("expectedText", item.text).put("text", text))
+                    .put("id", item.id).put("expectedText", item.text).put("text", text)
+                    .put("requestId", UUID.randomUUID().toString()))
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (error: Exception) { _loading.value = false; onNotice(error.message ?: "共同记忆未保存，请刷新后重试") }
+        }
+    }
+
+    fun restore(token: String, undo: Boolean) {
+        if (!isReady()) { onNotice(editingUnavailableReason); return }
+        _loading.value = true
+        scope.launch {
+            try {
+                rpc.send(JSONObject().put("action", "memory_restore").put("undoToken", token).put("undo", undo))
+            } catch (cancelled: CancellationException) { throw cancelled }
+            catch (error: Exception) { _loading.value = false; onNotice(error.message ?: "共同记忆未恢复，请刷新后重试") }
+        }
+    }
+
+    fun handleChanged(event: JSONObject) {
+        _lastChange.value = event.getString("undoToken") to event.optBoolean("undone")
+        onNotice(null)
+    }
+
+    fun handleHistory(event: JSONObject) {
+        val changes = event.optJSONArray("changes") ?: return
+        _history.value = (0 until changes.length()).map { index ->
+            val item = changes.getJSONObject(index)
+            FishMemoryChange(item.getString("undoToken"), item.getString("text"),
+                item.optBoolean("deleted"), item.optBoolean("undone"))
         }
     }
 
@@ -70,6 +100,7 @@ class FishMemoryGateway(
         scope.launch {
             try {
                 rpc.loadMemories(query)
+                rpc.send(JSONObject().put("action", "memory_history"))
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (error: Exception) {

@@ -155,7 +155,8 @@ try {
       if(notification.params.sessionId!==sessionId)continue;
       if(notification.method==='session.event')emit({type:'session_event',event:notification.params.event});
       if(notification.method==='session.status'){
-        const busy=notification.params.status==='running';emit({type:'busy',busy});
+        const busy=notification.params.status==='running';
+        if(busy || !running)emit({type:'busy',busy});
         if(!busy) {
           try { await history(); }
           catch(error) { if(!closed)emit({type:'turn_error',message:safeError(error)}); }
@@ -166,7 +167,7 @@ try {
   await history();
   emit({type:'ready',runtime:'deepseek-harness-sdk-runtime',dshVersion:'0.2.1-rc.2',memory:'dsh-remembers',sessionId});
   const lines=createInterface({input:process.stdin});
-  const localContext=[];
+  const localContext=new Map();
   lines.on('line',line=>{
     let message;
     try{message=JSON.parse(line);}catch{emit({type:'error',message:'输入格式无效'});return;}
@@ -176,7 +177,9 @@ try {
     }
     void (async()=>{
       if(message.action==='local_context'){
-        localContext.push(validateInput(message.text));
+        for(const event of message.events ?? []){
+          localContext.set(String(event.id),validateInput(event.text));
+        }
         return;
       }
       if(message.action==='stop'){lines.close();await stop();return;}
@@ -222,15 +225,20 @@ try {
         const discoveries=await memoryCall('/browse');
         emit({type:'memories',...result,discoveries});return;
       }
-      if(message.action==='memory_edit'||message.action==='memory_delete'){
-        const operation=message.action==='memory_edit'?'edit':'delete';
+      if(message.action==='memory_edit'||message.action==='memory_delete'||message.action==='memory_restore'){
+        const operation=message.action==='memory_restore'?'restore':message.action==='memory_edit'?'edit':'delete';
         const result=await memoryCall(`/memories/${operation}`,'POST',{
-          id:message.id,expectedText:message.expectedText,text:message.text,
+          id:message.id,expectedText:message.expectedText,text:message.text,requestId:message.requestId,
+          undoToken:message.undoToken,undo:message.undo,
         });
         emit({type:'memory_changed',...result});
+        emit({type:'memory_history',...await memoryCall('/memories/history','POST',{})});
         const memories=await memoryCall('/memories?limit=100&q=');
         const discoveries=await memoryCall('/browse');
         emit({type:'memories',...memories,discoveries});return;
+      }
+      if(message.action==='memory_history'){
+        emit({type:'memory_history',...await memoryCall('/memories/history','POST',{})});return;
       }
       if(message.action==='proactive'){
         const op=message.operation ?? 'get';
@@ -262,13 +270,14 @@ try {
       if(message.action!=='send')throw new Error('未知会话操作');
       if(running)throw new Error('上一轮还在回复');
       const text=validateInput(message.text);
-      const context=localContext.splice(0);
-      const prompt=context.length ? `以下是用户在本机已确认的操作结果，仅作为上下文，不要再次执行：\n${context.join('\n')}\n\n用户消息：${text}` : text;
+      const context=[...localContext.entries()];
+      const prompt=context.length ? `<!--time-agent-local-context:v1-->\n${JSON.stringify({userMessage:text,confirmedLocalResults:context.map(([,value])=>value)})}\n以上 confirmedLocalResults 是用户已在本机确认执行的结果，仅供理解上下文，不要再次执行；请回复 userMessage。` : text;
       running=true;emit({type:'busy',busy:true});
       try {
         const result=await session.run(prompt);
         await history();
         throwIfTurnFailed(result.events);
+        for(const [id,value] of context){if(localContext.get(id)===value)localContext.delete(id);}
         emit({type:'done',sessionId});
       }finally{running=false;emit({type:'busy',busy:false});}
     })().catch(error=>emit({type:'turn_error',message:safeError(error)}));

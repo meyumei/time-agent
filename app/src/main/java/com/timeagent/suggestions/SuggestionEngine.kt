@@ -9,6 +9,7 @@ import com.timeagent.memory.PersonalMemoryRules
 import com.timeagent.data.AgentSuggestionEntity
 import com.timeagent.data.HealthSampleKind
 import com.timeagent.data.LocalSnapshot
+import com.timeagent.data.actualSpans
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -44,9 +45,9 @@ fun suggestionFreeSlots(data: LocalSnapshot, zone: ZoneId, now: Instant, require
     if (start >= end) return emptyList()
     val busy = data.plans.filter { it.status == "SCHEDULED" && it.deletedAt == null && it.kind != "POINT" }.map { TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(it.endAt)) } +
         data.occurrences.filter { it.status != "CANCELLED" }.map { TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(it.endAt)) } +
-        data.records.mapNotNull { record ->
-            val recordEnd = record.endAt?.let(Instant::ofEpochMilli) ?: end
-            if (recordEnd > Instant.ofEpochMilli(record.startAt)) TimeSpan(Instant.ofEpochMilli(record.startAt), recordEnd) else null
+        data.records.flatMap { record ->
+            if (record.endAt == null) listOf(TimeSpan(Instant.ofEpochMilli(record.startAt), end))
+            else data.actualSpans(record, now)
         }
     return Scheduling.findFreeSlots(TimeSpan(start, end), busy, requiredMinutes)
 }

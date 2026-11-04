@@ -55,7 +55,13 @@ import java.time.temporal.ChronoUnit
 import kotlin.math.roundToInt
 
 enum class ItemKind(val label: String) { COURSE("课程"), PLAN("计划"), RECORD("实际") }
-data class TimelineItem(val id: String, val kind: ItemKind, val title: String, val span: TimeSpan, val subtitle: String = "", val entity: Any, val colorKey: String = "")
+data class TimelineItem(val id: String, val kind: ItemKind, val title: String, val span: TimeSpan, val subtitle: String = "", val entity: Any, val colorKey: String = "", val readOnlyReason: String? = null)
+val TimelineItem.dragReadOnlyReason: String? get() = readOnlyReason ?: when {
+    kind == ItemKind.COURSE -> "课表来源不能拖动，请在课程详情中修改"
+    (entity as? TimeRecordEntity)?.source == "HEALTH_SYNC" -> "健康同步记录不能拖动，请查看原始健康来源"
+    (entity as? ScheduleBlockEntity)?.isLocked == true -> "此日程已锁定"
+    else -> null
+}
 val TimelineItem.isPoint: Boolean get() = (entity as? ScheduleBlockEntity)?.kind == "POINT"
 internal data class ActiveTimelineDrag(
     val item: TimelineItem,
@@ -67,8 +73,15 @@ fun LocalSnapshot.timeline(now: Instant, filters: TimelineFilterState = Timeline
     val taskNames = tasks.associateBy { it.id }
     val courseNames = courses.associateBy { it.id }
     // TimeSpan requires positive duration; POINT uses a display anchor and never enters duration/conflict calculations.
-    return plans.filter { filters.plan && it.deletedAt == null }.map { TimelineItem(it.id, ItemKind.PLAN, it.displayTitle(taskNames[it.taskId]), TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(if (it.kind == "POINT") it.startAt + 1 else it.endAt)), subtitle = it.notes, entity = it, colorKey = taskNames[it.taskId]?.timelineColorSubject() ?: "schedule:${it.id}") } +
-        records.filter { (it.source == "HEALTH_SYNC" && filters.health) || (it.source != "HEALTH_SYNC" && filters.record) }.map { TimelineItem(it.id, ItemKind.RECORD, it.title.takeIf(String::isNotBlank) ?: taskNames[it.taskId]?.title ?: it.notes.takeIf(String::isNotBlank)?.lineSequence()?.firstOrNull() ?: "自由记录", TimeSpan(Instant.ofEpochMilli(it.startAt), maxOf(Instant.ofEpochMilli(it.startAt).plusMillis(1), it.endAt?.let(Instant::ofEpochMilli) ?: now)), if (it.endAt == null) "计时中" else it.notes, it, colorKey = taskNames[it.taskId]?.timelineColorSubject().orEmpty()) } +
+    return plans.filter { filters.plan && it.deletedAt == null }.map { TimelineItem(it.id, ItemKind.PLAN, it.displayTitle(taskNames[it.taskId]), TimeSpan(Instant.ofEpochMilli(it.startAt), Instant.ofEpochMilli(if (it.kind == "POINT") it.startAt + 1 else it.endAt)), subtitle = it.notes, entity = it, colorKey = taskNames[it.taskId]?.timelineColorSubject() ?: "schedule:${it.id}", readOnlyReason = calendarReadOnlyReasons[it.id]) } +
+        records.filter { (it.source == "HEALTH_SYNC" && filters.health) || (it.source != "HEALTH_SYNC" && filters.record) }.flatMap { record ->
+            actualSpans(record, now).mapIndexed { index, span ->
+                TimelineItem(if (record.source == "FOCUS") "${record.id}#segment:$index" else record.id,
+                    ItemKind.RECORD, record.title.takeIf(String::isNotBlank) ?: taskNames[record.taskId]?.title ?: "自由记录",
+                    span, if (record.endAt == null) "计时中" else record.notes, record,
+                    colorKey = taskNames[record.taskId]?.timelineColorSubject().orEmpty())
+            }
+        } +
         occurrences.filter { filters.course && it.status != "CANCELLED" }.map {
             val definition = courseNames[it.courseId]
             val location = it.locationOverride ?: definition?.location.orEmpty()
@@ -140,6 +153,7 @@ internal val DayNames = listOf("周一", "周二", "周三", "周四", "周五",
     onVisibleRange: (LocalDate, LocalDate) -> Unit = { _, _ -> },
     defaultDayCount: Int = 3,
     onDragCommit: (TimelineItem, TimelineDragResult) -> Unit = { _, _ -> },
+    onSaveTemplate: ((List<ScheduleBlockEntity>) -> Unit)? = null,
     preferenceKey: String = "today",
 ) {
     val context = LocalContext.current
@@ -150,6 +164,21 @@ internal val DayNames = listOf("周一", "周二", "周三", "周四", "周五",
         firstMinute = if (selectedDate() == week.today) (now.atZone(zone).hour * 60 + now.atZone(zone).minute - 60).coerceAtLeast(0).toDouble() else 480.0,
     )
     var showConflicts by remember { mutableStateOf(false) }
+    var selectingTemplate by rememberSaveable { mutableStateOf(false) }
+    var selectedPlansJson by rememberSaveable { mutableStateOf("[]") }
+    val selectedPlans = remember(selectedPlansJson) {
+        com.google.gson.Gson().fromJson(selectedPlansJson, Array<ScheduleBlockEntity>::class.java).toList()
+    }
+    fun updateSelectedPlans(plans: List<ScheduleBlockEntity>) {
+        selectedPlansJson = com.google.gson.Gson().toJson(plans)
+    }
+    val selectItem: (TimelineItem) -> Unit = { item ->
+        if (selectingTemplate) {
+            if (item.entity is ScheduleBlockEntity) updateSelectedPlans(
+                if (selectedPlans.any { it.id == item.entity.id }) selectedPlans.filterNot { it.id == item.entity.id }
+                else selectedPlans + item.entity)
+        } else onSelect(item)
+    }
     var conflictGroup by remember { mutableStateOf<List<TimelineItem>?>(null) }
     var listMode by rememberSaveable { mutableStateOf(preference.listMode()) }
     var viewport by rememberSaveable(stateSaver = ViewportSaver) { mutableStateOf(initialViewport()) }
@@ -232,20 +261,38 @@ internal val DayNames = listOf("周一", "周二", "周三", "周四", "周五",
             onToggleList = { listMode = !listMode },
             themeMode = themeMode, onThemeMode = onThemeMode,
             conflicts = conflicts.size, onConflicts = { showConflicts = true },
+            onSelectTemplate = onSaveTemplate?.let { { selectingTemplate = true; updateSelectedPlans(emptyList()) } },
         )
+        if (selectingTemplate) Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically) {
+            Text("点选日程 · 已选 ${selectedPlans.size}", Modifier.weight(1f), style = MaterialTheme.typography.labelMedium)
+            TextButton(onClick = { selectingTemplate = false; updateSelectedPlans(emptyList()) }) { Text("取消") }
+            TextButton(enabled = selectedPlans.isNotEmpty(), onClick = {
+                onSaveTemplate?.invoke(selectedPlans)
+                selectingTemplate = false
+            }) { Text("存为模板") }
+        }
+        if (selectingTemplate && selectedPlans.isNotEmpty()) Row(
+            Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 8.dp)) {
+            selectedPlans.forEach { plan ->
+                TextButton(onClick = { updateSelectedPlans(selectedPlans.filterNot { it.id == plan.id }) }) {
+                    Text("已选 ${plan.displayTitle(data.tasks.firstOrNull { it.id == plan.taskId })} ×", maxLines = 1)
+                }
+            }
+        }
         if (listMode) {
             Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (items.isEmpty()) EmptyHint("这几天，还留着很多可能", "创建一个任务，为它安排时间，或开始记录此刻。")
                 items.groupBy { it.span.start.atZone(zone).toLocalDate() }.forEach { (date, entries) ->
                     Text(date.toString(), style = MaterialTheme.typography.titleSmall)
                     entries.forEach { item -> key(item.kind, item.id) {
-                        TimelineAgendaCard(item, zone, item.layoutKey in rendered.conflictingKeys, onClick = { onSelect(item) })
+                        TimelineAgendaCard(item, zone, item.layoutKey in rendered.conflictingKeys, onClick = { selectItem(item) })
                     } }
                 }
             }
         } else {
             TimelineCanvas(
-                rendered, viewport, week.today, now, zone, onSelect, { transform -> viewport = transform(viewport) },
+                rendered, viewport, week.today, now, zone, selectItem, { transform -> viewport = transform(viewport) },
                 Modifier.weight(1f), if (busy) null else onCreateAt,
                 resolve = rendered::currentItem, remindersByDate = remindersByDate, onReminder = onReminder,
                 onConflictGroup = { conflictGroup = it }, allDayItems = items.filter(TimelineItem::isAllDay),
@@ -253,9 +300,9 @@ internal val DayNames = listOf("周一", "周二", "周三", "周四", "周五",
             )
         }
     }
-    if (showConflicts) TimelineConflictsSheet(conflicts, zone, onSelect, onClose = { showConflicts = false })
+    if (showConflicts) TimelineConflictsSheet(conflicts, zone, selectItem, onClose = { showConflicts = false })
     conflictGroup?.let { group ->
-        TimelineConflictGroupSheet(group, zone, onSelect = onSelect, onClose = { conflictGroup = null })
+        TimelineConflictGroupSheet(group, zone, onSelect = selectItem, onClose = { conflictGroup = null })
     }
 }
 

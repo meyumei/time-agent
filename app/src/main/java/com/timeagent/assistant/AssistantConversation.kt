@@ -8,7 +8,7 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-data class ConversationTurn(val role: String, val text: String, val localOnly: Boolean = false)
+data class ConversationTurn(val role: String, val text: String, val localOnly: Boolean = false, val at: Long = System.currentTimeMillis())
 data class AssistantChatState(
     val turns: List<ConversationTurn> = emptyList(), val busy: Boolean = false,
     val pending: AssistantPreview? = null, val undoId: String? = null,
@@ -31,6 +31,17 @@ class AssistantConversation(private val repository: TimeRepository) {
     private var awaitingCommand: AssistantCommand? = null
     private var activeRequestId: String? = null
     private var activeOrigin: Origin = Origin.VOICE
+
+    suspend fun matchingQuickEntries(input: String): List<com.timeagent.quickentry.QuickEntryEntity> {
+        val name = Regex("^开始(?:计时)?\\s*(.+)$").matchEntire(input.trim())?.groupValues?.get(1)?.trim()
+            ?.takeIf { it.isNotBlank() } ?: return emptyList()
+        return repository.transaction {
+            val activities = repository.database.dao().activities().associateBy { it.id }
+            repository.database.quickEntryDao().entries().filter { entry ->
+                name == entry.label?.takeIf { it.isNotBlank() } || name == activities[entry.activityId]?.name
+            }
+        }
+    }
 
     internal fun stagedCopy(): AssistantConversation = AssistantConversation(repository).also {
         it._state.value = _state.value
@@ -81,6 +92,44 @@ class AssistantConversation(private val repository: TimeRepository) {
             if (text in UNDO_COMMANDS) { undo(thisActionOnly = text !in WHOLE_HISTORY_UNDO); return }
             if (text in REDO_COMMANDS) { redo(); return }
             if (text in setOf("取消", "算了", "不用了", "取消操作")) { cancelPending(); answer("已取消待处理的操作。", completed = true); return }
+            val quickEntries = matchingQuickEntries(text)
+            if (quickEntries.isNotEmpty()) {
+                cancelPending()
+                if (quickEntries.size > 1) {
+                    _state.value = _state.value.copy(localDestination = "quick-entries")
+                    answer("找到多个同名快捷记录，请打开快捷记录选择，尚未开始。", completed = true)
+                    return
+                }
+                val entry = quickEntries.single()
+                val id = activeRequestId ?: java.util.UUID.randomUUID().toString()
+                val result = com.timeagent.quickentry.QuickEntryRepository(repository, repository.applicationContext)
+                    .activate(entry.id, id, origin)
+                val destination: String?
+                val reply: String
+                when (result) {
+                    is com.timeagent.quickentry.QuickEntryLaunch.StartedTimer -> {
+                        destination = null; reply = "已开始${entry.label ?: "计时"}"
+                    }
+                    is com.timeagent.quickentry.QuickEntryLaunch.StartedFocus -> {
+                        destination = "focus"; reply = "已开始专注"
+                    }
+                    is com.timeagent.quickentry.QuickEntryLaunch.NeedsConfirmation -> {
+                        destination = "quick-entry-confirm:${entry.id}"
+                        reply = "当前已有${result.slots.joinToString("、") { it.label }}。请打开快捷记录确认是否结束当前计时并开始。"
+                    }
+                    is com.timeagent.quickentry.QuickEntryLaunch.OpenEditor -> {
+                        destination = "quick-entry-confirm:${entry.id}"; reply = "已找到快捷预设，请打开预览后保存。"
+                    }
+                    is com.timeagent.quickentry.QuickEntryLaunch.Failed -> {
+                        destination = "quick-entries"; reply = result.message
+                    }
+                }
+                val commandResult = repository.commands.replay(id)
+                _state.value = _state.value.copy(localDestination = destination, commandResult = commandResult,
+                    undoId = commandResult?.undoToken)
+                answer(reply, completed = true)
+                return
+            }
             if (text in setOf("确认", "确认执行", "就这样", "确认保存", "继续执行")) {
                 val pending = _state.value.pending
                 if (pending != null) execute(pending, confirmed = true) else answer("当前没有等待确认的操作。", completed = true)

@@ -1,0 +1,106 @@
+{
+  "date": "2026-11-04",
+  "testsRun": false,
+  "deviceOperated": false,
+  "verification": "compilation-and-syntax-only",
+  "builds": [
+    {
+      "command": "./scripts/build.ps1 -Tasks @(':app:compileDebugKotlin')",
+      "log": ".tmp/remaining-development-20261104/compile-integrated-19.log",
+      "exitCode": 0,
+      "result": "BUILD SUCCESSFUL in 15s",
+      "upToDateOnly": false,
+      "sha256": "eeb6ca25ddc38ed5ee56f470f1bf20a2ca4444d4917ebc394de018951eb9b17f"
+    },
+    {
+      "command": "./scripts/build.ps1 -Tasks @(':app:compileDebugKotlin')",
+      "log": ".tmp/remaining-development-20261104/compile-integrated-20.log",
+      "exitCode": 0,
+      "result": "BUILD SUCCESSFUL in 16s",
+      "upToDateOnly": false,
+      "sha256": "ccc9a4bdae322f8cf4b03ac0001907267e7a21a839267411d22396b347cd53c7"
+    },
+    {
+      "command": "./scripts/build.ps1 -Tasks @(':app:compileDebugKotlin')",
+      "log": ".tmp/remaining-development-20261104/compile-integrated-21.log",
+      "exitCode": 0,
+      "result": "BUILD SUCCESSFUL in 1s",
+      "upToDateOnly": true,
+      "sha256": "c03d66955b51762bd553c452d5d417e046a9181d4c775e33f94435f9ba0262b8"
+    },
+    {
+      "command": "./scripts/build.ps1 -Tasks @(':app:compileDebugKotlin')",
+      "log": ".tmp/remaining-development-20261104/compile-integrated-22.log",
+      "exitCode": 0,
+      "result": "BUILD SUCCESSFUL in 6s",
+      "upToDateOnly": false,
+      "sha256": "40940bc95f2b1c24181ef8b8540e9f67810d9a3f21a8a228a46c62b334a4f7e9"
+    }
+  ],
+  "syntax": [
+    {
+      "command": "node --check agent-plugins/time-agent/host.mjs",
+      "exitCode": 0
+    },
+    {
+      "command": "node --check agent-plugins/time-agent/protocol.mjs",
+      "exitCode": 0
+    },
+    {
+      "command": "python -m py_compile agent-plugins/dsh-remembers/service/memory_core.py agent-plugins/dsh-remembers/service/server.py",
+      "exitCode": 0
+    }
+  ],
+  "schemas": [
+    {
+      "version": 17,
+      "identityHash": "3f99aa8f41431a502d36b40413af903f",
+      "tableCount": 34,
+      "file": "app/schemas/com.timeagent.data.TimeAgentDatabase/17.json",
+      "sha256": "e825a84500505b4e91fa75ac2966976ec674e3e79db94dee1a4212750dd59187"
+    },
+    {
+      "version": 18,
+      "identityHash": "f6e7d77db09625ba196cf79f3089ab34",
+      "tableCount": 37,
+      "file": "app/schemas/com.timeagent.data.TimeAgentDatabase/18.json",
+      "sha256": "3482fba66cbc947ab41c6cecb75253df768608c0779937168d839745df81e67b"
+    },
+    {
+      "version": 19,
+      "identityHash": "610ba5916eb7b9934311b27e69e37941",
+      "tableCount": 39,
+      "file": "app/schemas/com.timeagent.data.TimeAgentDatabase/19.json",
+      "sha256": "47abd9fea6c890a50e2a7a1408c148095e49b422c1d59a71b9ad78a29d200e40"
+    },
+    {
+      "version": 20,
+      "identityHash": "4075ce23e2b511a15af9e781fbde424b",
+      "tableCount": 41,
+      "file": "app/schemas/com.timeagent.data.TimeAgentDatabase/20.json",
+      "sha256": "c160a662bc064d9afdbef9ef4b217ef72f8d99d98fbb077f0ce624e2e85465c9"
+    },
+    {
+      "version": 21,
+      "identityHash": "c3d99a67206ba3fd08dff1b3c565cea3",
+      "tableCount": 42,
+      "file": "app/schemas/com.timeagent.data.TimeAgentDatabase/21.json",
+      "sha256": "04f41dc577271321b57ed3e62d5289f6ca20c3a304edc446df842090873cb31a"
+    },
+    {
+      "version": 22,
+      "identityHash": "ae9fb37d2b81ee76d0bbe8f1f92fe5fe",
+      "tableCount": 43,
+      "file": "app/schemas/com.timeagent.data.TimeAgentDatabase/22.json",
+      "sha256": "4aaf7e7da6df95571f14961dea4c1ca2e65514f81fa3ffabeac894cc10012adf"
+    }
+  ],
+  "compiledSourceManifest": "source-sha256.json",
+  "sourceFileCount": 113,
+  "limitations": [
+    "No migration or device acceptance",
+    "Module commits depend on the shared integration commit",
+    "New preferences full backup coverage deferred to T6.2",
+    "T2.4 and T4.7 attachment capacity remain incomplete"
+  ]
+}

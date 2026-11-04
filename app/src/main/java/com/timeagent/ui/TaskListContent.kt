@@ -30,11 +30,10 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-private val dotColors = listOf(Color(0xFF5B8DEF), Color(0xFFE57373), Color(0xFF4DB6AC), Color(0xFF9575CD), Color(0xFFFFB74D), Color(0xFF4FC3F7), Color(0xFF81C784), Color(0xFFF06292))
 private val orderSaver = listSaver<List<String>, String>(save = { it }, restore = { it })
 
 private fun isDone(t: TaskEntity) = t.status.equals("DONE", true) || t.status.equals("COMPLETED", true)
-private fun colorFor(name: String) = dotColors[(name.hashCode() and 0x7fffffff) % dotColors.size]
+private fun colorFor(name: String) = Color(com.timeagent.projects.ProjectColor.argb(name))
 private fun sortTasks(list: List<TaskEntity>, mode: String, order: List<String>) = when (mode) {
     "PRIORITY" -> list.sortedWith(compareByDescending<TaskEntity> { it.priority }.thenBy { it.dueAt ?: Long.MAX_VALUE }.thenBy { it.id })
     "MANUAL" -> list.sortedWith(compareBy<TaskEntity> { order.indexOf(it.id).let { i -> if (i < 0) Int.MAX_VALUE else i } }.thenBy { it.dueAt ?: Long.MAX_VALUE }.thenBy { it.id })

@@ -2,6 +2,7 @@ package com.timeagent.suggestions
 
 import android.content.Context
 import com.timeagent.data.TimeRepository
+import com.timeagent.onboarding.withoutSampleStatistics
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -43,7 +44,7 @@ class SuggestionCoordinator(
     }
 
     suspend fun refresh() = refreshMutex.withLock {
-        val snapshot = repository.snapshot()
+        val snapshot = repository.snapshot().withoutSampleStatistics()
         if (snapshot.loading) return@withLock
         val candidates = SuggestionEngine.generate(snapshot, repository.zone, repository.now())
         val stamp = repository.now().toEpochMilli()

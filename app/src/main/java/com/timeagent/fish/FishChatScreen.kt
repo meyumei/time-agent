@@ -31,6 +31,7 @@ fun FishChatScreen(
     session: FishSession, onSettings: () -> Unit, onCompanion: () -> Unit,
     requestInput: Boolean = false, onInputFocused: () -> Unit = {},
     briefing: @Composable () -> Unit = {},
+    onOpenLocalResult: (String) -> Unit = {},
 ) {
     val chat by session.chat.collectAsStateWithLifecycle()
     val runtime by session.runtime.state.collectAsStateWithLifecycle()
@@ -118,6 +119,7 @@ fun FishChatScreen(
             }
         }
         chat.undoId?.let { TextButton(onClick = { session.send("撤销") }, enabled = !chat.busy) { Text("撤销本地操作") } }
+        chat.localDestination?.let { destination -> TextButton(onClick = { onOpenLocalResult(destination) }) { Text("打开本地操作结果") } }
         if(chat.busy) Row { CircularProgressIndicator(Modifier.size(20.dp),strokeWidth=2.dp);TextButton(onClick={session.cancel()}) { Text("停止本轮回复") } }
         if (voice.message.isNotBlank()) Row(verticalAlignment=Alignment.CenterVertically) {
             Text(voice.message, Modifier.weight(1f), style=MaterialTheme.typography.labelSmall)

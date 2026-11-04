@@ -72,19 +72,22 @@ class WorkoutRepository internal constructor(
         exercises: List<ExerciseDefinition> = emptyList(),
         switchTimer: TimeRecordEntity? = null,
         requestId: String = UUID.randomUUID().toString(),
-    ): WorkoutSession = sessionResult(requestId, WorkoutMutation.Start(requestId, title.trim(), exercises, switchTimer))
+        switchFocus: com.timeagent.focus.FocusSessionEntity? = null,
+    ): WorkoutSession = sessionResult(requestId, WorkoutMutation.Start(requestId, title.trim(), exercises, switchTimer, switchFocus))
 
     suspend fun startFromTemplate(
         templateId: String,
         switchTimer: TimeRecordEntity? = null,
         requestId: String = UUID.randomUUID().toString(),
-    ): WorkoutSession = sessionResult(requestId, WorkoutMutation.StartFromTemplate(requestId, templateId, switchTimer))
+        switchFocus: com.timeagent.focus.FocusSessionEntity? = null,
+    ): WorkoutSession = sessionResult(requestId, WorkoutMutation.StartFromTemplate(requestId, templateId, switchTimer, switchFocus))
 
     suspend fun repeatSession(
         sessionId: String,
         switchTimer: TimeRecordEntity? = null,
         requestId: String = UUID.randomUUID().toString(),
-    ): WorkoutSession = sessionResult(requestId, WorkoutMutation.RepeatSession(requestId, sessionId, switchTimer))
+        switchFocus: com.timeagent.focus.FocusSessionEntity? = null,
+    ): WorkoutSession = sessionResult(requestId, WorkoutMutation.RepeatSession(requestId, sessionId, switchTimer, switchFocus))
 
     suspend fun mutate(
         id: String,
@@ -235,9 +238,9 @@ class WorkoutRepository internal constructor(
                 expectedTaskVersion = mutation.expectedTaskVersion)
         }
         // The free timer is checked before anything is written, even on a retry after a partial start.
-        if (mutation is WorkoutMutation.Start) switchTimerIfNeeded(mutation.switchTimer)
-        if (mutation is WorkoutMutation.StartFromTemplate) switchTimerIfNeeded(mutation.switchTimer)
-        if (mutation is WorkoutMutation.RepeatSession) switchTimerIfNeeded(mutation.switchTimer)
+        if (mutation is WorkoutMutation.Start) switchTimerIfNeeded(mutation.switchTimer, mutation.switchFocus)
+        if (mutation is WorkoutMutation.StartFromTemplate) switchTimerIfNeeded(mutation.switchTimer, mutation.switchFocus)
+        if (mutation is WorkoutMutation.RepeatSession) switchTimerIfNeeded(mutation.switchTimer, mutation.switchFocus)
         // Only the workout database is written here. Main-database journal rows are written after
         // this transaction commits, while CommandExecutor's main transaction is still open; nesting
         // a main-database write inside a workout-database transaction would deadlock on the main lock.
@@ -453,7 +456,15 @@ class WorkoutRepository internal constructor(
         if (normalized(current?.let { gson.toJson(it) }) != normalized(expected)) throw StaleChange()
     }
 
-    private suspend fun switchTimerIfNeeded(confirmed: TimeRecordEntity?) {
+    private suspend fun switchTimerIfNeeded(confirmed: TimeRecordEntity?, confirmedFocus: com.timeagent.focus.FocusSessionEntity?) {
+        val focus = timeRepository.database.focusDao().active()
+        if (focus == null && confirmedFocus != null) throw StaleChange()
+        if (focus != null) {
+            if (confirmedFocus == null) throw com.timeagent.domain.command.WorkoutFocusConflict(focus)
+            if (focus.id != confirmedFocus.id || focus.version != confirmedFocus.version) throw StaleChange()
+            com.timeagent.focus.FocusRepository(timeRepository, timeRepository.applicationContext).applyMutation(
+                com.timeagent.domain.command.FocusMutation.Finish(focus.id, focus.version))
+        }
         val timer = timeRepository.runningTimer()
         if (timer == null) {
             if (confirmed != null) throw StaleChange()

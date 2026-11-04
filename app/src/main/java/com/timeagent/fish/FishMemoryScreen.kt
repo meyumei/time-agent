@@ -22,14 +22,28 @@ fun FishMemoryScreen(session: FishSession, onClose: () -> Unit) {
     val message by session.message.collectAsStateWithLifecycle()
     val runtime by session.runtime.state.collectAsStateWithLifecycle()
     val readOnly by session.memoryReadOnly.collectAsStateWithLifecycle()
+    val history by session.memoryHistory.collectAsStateWithLifecycle()
+    val lastChange by session.memoryLastChange.collectAsStateWithLifecycle()
+    val snackbar = remember { SnackbarHostState() }
+    var showHistory by remember { mutableStateOf(false) }
     var query by remember { mutableStateOf("") }
     var editing by remember { mutableStateOf<FishMemory?>(null) }
     var deleting by remember { mutableStateOf<FishMemory?>(null) }
     var editedText by remember { mutableStateOf("") }
     LaunchedEffect(session) { session.loadMemories() }
+    LaunchedEffect(lastChange) {
+        val change = lastChange ?: return@LaunchedEffect
+        val result = kotlinx.coroutines.withTimeoutOrNull(8_000) {
+            snackbar.showSnackbar(if (change.second) "共同记忆已恢复" else "共同记忆已更新",
+                if (change.second) "重做" else "撤销", duration = SnackbarDuration.Indefinite)
+        }
+        if (result == SnackbarResult.ActionPerformed) session.restoreMemory(change.first, !change.second)
+    }
+    Box(Modifier.fillMaxSize()) {
     Column(Modifier.fillMaxSize().statusBarsPadding().padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
         TextButton(onClick=onClose) { Text("返回管家") }
         Text("共同记忆",style=MaterialTheme.typography.headlineSmall)
+        TextButton(onClick = { showHistory = true }) { Text("编辑与删除历史 · 可恢复") }
         Text("这里是同一个角色保存的交流与经历。日程事实仍以今天、计划中的原记录为准。",style=MaterialTheme.typography.bodySmall)
         if (readOnly && !runtime.ready) Text("缓存，可能不是最新。启动内置角色后可刷新和编辑。",style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.secondary)
         Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
@@ -57,6 +71,23 @@ fun FishMemoryScreen(session: FishSession, onClose: () -> Unit) {
             }
         }
     }
+    SnackbarHost(snackbar, Modifier.align(androidx.compose.ui.Alignment.BottomCenter).navigationBarsPadding())
+    }
+    if (showHistory) AlertDialog(onDismissRequest = { showHistory = false },
+        title = { Text("共同记忆历史") },
+        text = { LazyColumn(Modifier.heightIn(max = 420.dp)) {
+            if (history.isEmpty()) item { Text("还没有编辑或删除记录") }
+            items(history, key = { it.token }) { change ->
+                Column(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+                    Text(change.text)
+                    Text(if (change.undone) "已撤销" else if (change.deleted) "已删除" else "已编辑",
+                        style = MaterialTheme.typography.labelSmall)
+                    TextButton(enabled = runtime.ready && !loading, onClick = {
+                        session.restoreMemory(change.token, !change.undone)
+                    }) { Text(if (change.undone) "重做" else "恢复原记忆") }
+                }
+            }
+        } }, confirmButton = { TextButton(onClick = { showHistory = false }) { Text("关闭") } })
     editing?.let { memory ->
         AlertDialog(onDismissRequest = { editing = null }, title = { Text("编辑共同记忆") },
             text = { OutlinedTextField(editedText, { editedText = it }, label = { Text("内容") }) },

@@ -68,20 +68,20 @@ class WorkoutViewModel(val repository: WorkoutRepository, val catalog: WorkoutCa
         }
     }
 
-    fun start(onStarted: (String) -> Unit) = startWorkout(onStarted) { timer, requestId ->
-        repository.start(switchTimer = timer, requestId = requestId)
+    fun start(onStarted: (String) -> Unit) = startWorkout(onStarted) { timer, focus, requestId ->
+        repository.start(switchTimer = timer, requestId = requestId, switchFocus = focus)
     }
 
-    fun startWithExercises(exercises: List<ExerciseDefinition>, onStarted: (String) -> Unit) = startWorkout(onStarted) { timer, requestId ->
-        repository.start(exercises = exercises, switchTimer = timer, requestId = requestId)
+    fun startWithExercises(exercises: List<ExerciseDefinition>, onStarted: (String) -> Unit) = startWorkout(onStarted) { timer, focus, requestId ->
+        repository.start(exercises = exercises, switchTimer = timer, requestId = requestId, switchFocus = focus)
     }
 
-    fun fromTemplate(id: String, onStarted: (String) -> Unit) = startWorkout(onStarted) { timer, requestId ->
-        repository.startFromTemplate(id, switchTimer = timer, requestId = requestId)
+    fun fromTemplate(id: String, onStarted: (String) -> Unit) = startWorkout(onStarted) { timer, focus, requestId ->
+        repository.startFromTemplate(id, switchTimer = timer, requestId = requestId, switchFocus = focus)
     }
 
-    fun repeat(id: String, onStarted: (String) -> Unit) = startWorkout(onStarted) { timer, requestId ->
-        repository.repeatSession(id, switchTimer = timer, requestId = requestId)
+    fun repeat(id: String, onStarted: (String) -> Unit) = startWorkout(onStarted) { timer, focus, requestId ->
+        repository.repeatSession(id, switchTimer = timer, requestId = requestId, switchFocus = focus)
     }
 
     fun confirmStartSwitch() {
@@ -95,7 +95,7 @@ class WorkoutViewModel(val repository: WorkoutRepository, val catalog: WorkoutCa
         pendingStart = null
     }
 
-    private fun startWorkout(onStarted: (String) -> Unit, call: suspend (TimeRecordEntity?, String) -> WorkoutSession) {
+    private fun startWorkout(onStarted: (String) -> Unit, call: suspend (TimeRecordEntity?, com.timeagent.focus.FocusSessionEntity?, String) -> WorkoutSession) {
         if (pendingStart != null) return
         val pending = PendingStart(UUID.randomUUID().toString(), null, call, onStarted)
         pendingStart = pending
@@ -107,13 +107,16 @@ class WorkoutViewModel(val repository: WorkoutRepository, val catalog: WorkoutCa
             serial.withLock {
                 _busy.value = true
                 try {
-                    val id = pending.call(pending.timer, pending.requestId).id
+                    val id = pending.call(pending.timer, pending.focus, pending.requestId).id
                     pendingStart = null
                     timerConflict = false
                     pending.onStarted(id)
                 } catch (error: Exception) {
                     if (error is CancellationException) throw error
-                    if (error is WorkoutTimerConflict) {
+                    if (error is com.timeagent.domain.command.WorkoutFocusConflict) {
+                        if (pending.focus == null) { pendingStart = pending.copy(focus = error.focus); timerConflict = true }
+                        else { pendingStart = null; timerConflict = false; _error.value = "专注状态已变化，请重新开始训练" }
+                    } else if (error is WorkoutTimerConflict) {
                         if (pending.timer == null) {
                             pendingStart = pending.copy(timer = error.timer)
                             timerConflict = true
@@ -209,6 +212,7 @@ class WorkoutViewModel(val repository: WorkoutRepository, val catalog: WorkoutCa
 private data class PendingStart(
     val requestId: String,
     val timer: TimeRecordEntity?,
-    val call: suspend (TimeRecordEntity?, String) -> WorkoutSession,
+    val call: suspend (TimeRecordEntity?, com.timeagent.focus.FocusSessionEntity?, String) -> WorkoutSession,
     val onStarted: (String) -> Unit,
+    val focus: com.timeagent.focus.FocusSessionEntity? = null,
 )

@@ -54,7 +54,7 @@ internal object WorkoutNotifications {
             .setContentTitle(session.title).setContentText(detail).setContentIntent(open(context, session.id)).setOngoing(true)
             .setOnlyAlertOnce(true).setVisibility(Notification.VISIBILITY_PRIVATE)
             .setWhen(now - WorkoutRules.elapsedMillis(session, now)).setUsesChronometer(session.status == WorkoutSessionStatus.ACTIVE).build()
-        if (allowed(context)) runCatching { manager.notify(ONGOING, notification) }
+        manager.cancel(ONGOING)
     }
 
     internal fun cue(context: Context, session: WorkoutSession, message: String) {
