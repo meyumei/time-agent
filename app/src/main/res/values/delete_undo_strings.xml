@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="task_delete_action">删除任务</string>
+    <string name="task_deleted_undo">任务已删除</string>
+    <string name="project_deleted_undo">项目已删除，任务和历史归属已保留</string>
+    <string name="task_delete_focus_active">请先结束此任务的专注，再删除任务；本次尚未保存。</string>
+    <string name="task_delete_preview_loading">正在核对关联日程与提醒…</string>
+    <string name="task_delete_preview_failed">无法核对关联日程与提醒，尚未删除；请重新打开后重试。</string>
+    <string name="task_delete_preview_counts">关联日程 %1$d 项，提醒 %2$d 项。删除任务后提醒会停止。</string>
+    <string name="project_delete_confirmation">确定删除「%1$s」吗？项目可在操作历史中恢复。项目下的任务与历史归属会保留，可在任务列表继续使用。</string>
+</resources>
