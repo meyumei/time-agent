@@ -171,8 +171,10 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
             if (pointMode) {
                 OutlinedTextField(title, { title = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_003)) }, singleLine = true, modifier = Modifier.fillMaxWidth().testTag("reminder-title"))
                 Text("时间以 ${zone.id} 显示", style = MaterialTheme.typography.bodySmall)
-                OutlinedTextField(date, { date = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_004)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(startTime, { startTime = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_field_001)) }, placeholder = { Text("HH:mm") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                EditorDatePicker(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_004), date,
+                    Instant.ofEpochMilli(initialStart).atZone(zone).toLocalDate()) { date = it }
+                EditorTimePicker(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_field_001), startTime,
+                    Instant.ofEpochMilli(initialStart).atZone(zone).toLocalTime()) { startTime = it }
                 Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_005), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 if (reminder?.deliveredAt != null) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_006), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
             }
@@ -187,10 +189,22 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
                         TextButton(onClick = { activityId = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_008)) }
                     }
                     OutlinedTextField(title, { title = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_009)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                    OutlinedTextField(estimated, { estimated = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_010)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                    com.timeagent.ui.components.DurationField(estimated.toIntOrNull() ?: 0,
+                        { estimated = it.toString() }, textValue = estimated, onTextChange = { estimated = it })
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) { listOf("低", "中", "高").forEachIndexed { i, name -> FilterChip(selected = priority == i, onClick = { priority = i }, label = { Text("${name}优先级") }) } }
-                    OutlinedTextField(dueDate, { dueDate = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_011)) }, placeholder = { Text("YYYY-MM-DD") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                    if (dueDate.isNotBlank()) OutlinedTextField(dueTime, { dueTime = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_012)) }, singleLine = true)
+                    if (dueDate.isBlank()) {
+                        OutlinedButton(onClick = { dueDate = now.atZone(zone).toLocalDate().toString() }) {
+                            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_add_deadline))
+                        }
+                    } else {
+                        EditorDatePicker(androidx.compose.ui.res.stringResource(com.timeagent.R.string.field_deadline_date),
+                            dueDate, now.atZone(zone).toLocalDate()) { dueDate = it }
+                        EditorTimePicker(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_012),
+                            dueTime, LocalTime.of(23, 59)) { dueTime = it }
+                        TextButton(onClick = { dueDate = "" }) {
+                            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_remove_deadline))
+                        }
+                    }
                 }
                 if (hasTime) {
                     Text("时间以 ${zone.id} 显示", style = MaterialTheme.typography.bodySmall)
@@ -206,10 +220,14 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
                             },
                         )
                     } else {
-                        OutlinedTextField(date, { date = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_013)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                        if (!scheduleAllDay) OutlinedTextField(startTime, { startTime = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_014)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                        if (!schedulePoint) OutlinedTextField(endDate, { endDate = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_015)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                        if (!schedulePoint && !scheduleAllDay) OutlinedTextField(endTime, { endTime = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_016)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                        EditorDatePicker(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_013), date,
+                            Instant.ofEpochMilli(initialStart).atZone(zone).toLocalDate()) { date = it }
+                        if (!scheduleAllDay) EditorTimePicker(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_014),
+                            startTime, Instant.ofEpochMilli(initialStart).atZone(zone).toLocalTime()) { startTime = it }
+                        if (!schedulePoint) EditorDatePicker(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_015), endDate,
+                            Instant.ofEpochMilli(initialEnd).atZone(zone).toLocalDate()) { endDate = it }
+                        if (!schedulePoint && !scheduleAllDay) EditorTimePicker(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_016),
+                            endTime, Instant.ofEpochMilli(initialEnd).atZone(zone).toLocalTime()) { endTime = it }
                     }
                     if (request.kind == EditorKind.PLAN || request.kind == EditorKind.RECORD) {
                         Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_017), style = MaterialTheme.typography.labelLarge)
@@ -244,7 +262,22 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
                     OutlinedTextField(notes, { notes = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.field_notes)) }, modifier = Modifier.fillMaxWidth(), minLines = 2)
                 }
             }
-            validation?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
+            com.timeagent.ui.components.InlineError(validation)
         }
     }
+}
+
+// Old saved drafts may contain invalid keyboard text; keep it until the user picks a replacement.
+@Composable
+private fun EditorDatePicker(label: String, text: String, initial: LocalDate, onChange: (String) -> Unit) {
+    val parsed = remember(text) { runCatching { LocalDate.parse(text) }.getOrNull() }
+    com.timeagent.ui.components.DateField(label, parsed ?: initial, { onChange(it.toString()) },
+        error = if (parsed == null) androidx.compose.ui.res.stringResource(com.timeagent.R.string.error_draft_date) else null)
+}
+
+@Composable
+private fun EditorTimePicker(label: String, text: String, initial: LocalTime, onChange: (String) -> Unit) {
+    val parsed = remember(text) { runCatching { LocalTime.parse(text) }.getOrNull() }
+    com.timeagent.ui.components.TimeField(label, parsed ?: initial, { onChange(it.toString()) },
+        error = if (parsed == null) androidx.compose.ui.res.stringResource(com.timeagent.R.string.error_draft_time) else null)
 }
