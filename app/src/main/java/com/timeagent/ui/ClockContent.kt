@@ -53,3 +53,33 @@ internal fun RunningTimerBar(
         }
     }
 }
+
+@Composable
+internal fun RunningWorkoutBar(
+    session: com.timeagent.core.workout.WorkoutSession,
+    clock: ClockSource,
+    busy: Boolean,
+    onOpen: () -> Unit,
+) {
+    val now by clock.secondTicks.collectAsStateWithLifecycle(initialValue = clock.now())
+    val seconds = com.timeagent.core.workout.WorkoutRules.elapsedMillis(session, now.toEpochMilli()) / 1000
+    val semantic = com.timeagent.ui.design.LocalSemanticColors.current
+    Surface(
+        onClick = onOpen, enabled = !busy,
+        color = semantic.running, contentColor = semantic.onRunning,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+        shape = RoundedCornerShape(14.dp),
+    ) {
+        Row(Modifier.padding(horizontal = 14.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text(session.title, style = MaterialTheme.typography.labelLarge)
+                Text(
+                    (if (session.status == com.timeagent.core.workout.WorkoutSessionStatus.PAUSED) "训练已暂停" else "训练中") +
+                        " · ${"%02d:%02d:%02d".format(seconds / 3600, seconds / 60 % 60, seconds % 60)}",
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+            Text("继续训练", style = MaterialTheme.typography.labelLarge)
+        }
+    }
+}

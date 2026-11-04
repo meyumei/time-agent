@@ -89,7 +89,7 @@ class NavigationDeviceTest {
     @Test fun eachTabRestoresItsChildAndRootBackReturnsToToday() {
         show()
         tab("计划")
-        compose.onNodeWithContentDescription("打开项目页面").performScrollTo().performClick()
+        compose.onNodeWithTag("plan-tab-3").performClick()
         compose.onNodeWithText("返回").assertExists()
         tab("管家")
         compose.onNodeWithTag("butler-settings").performClick()
@@ -97,7 +97,7 @@ class NavigationDeviceTest {
         tab("计划")
         compose.onNodeWithText("返回").assertExists()
         back()
-        compose.onNodeWithTag("plan-hub").assertExists()
+        compose.onNodeWithTag("task-list").assertExists()
         back()
         compose.onNodeWithTag("timeline-viewport").assertExists()
         tab("管家")
@@ -111,18 +111,19 @@ class NavigationDeviceTest {
         tab("计划")
         val engines = speechCreated
         compose.onNodeWithContentDescription("按住说话").performClick()
-        compose.waitUntil(5_000) { compose.onAllNodesWithTag("voice-sheet").fetchSemanticsNodes().isNotEmpty() }
+        waitUntilDisplayed("voice-sheet")
         compose.onNodeWithTag("voice-sheet").assertIsDisplayed()
         compose.onNodeWithText("关闭面板").performClick()
         compose.waitUntil(5_000) { compose.onAllNodesWithTag("voice-sheet").fetchSemanticsNodes().isEmpty() }
-        compose.onNodeWithTag("plan-hub").assertIsDisplayed()
+        compose.onNodeWithTag("task-list").assertIsDisplayed()
         assertEquals(engines, speechCreated)
         compose.onNodeWithContentDescription("按住说话").performClick()
+        waitUntilDisplayed("voice-sheet")
         compose.onNodeWithTag("voice-sheet").assertIsDisplayed()
         back()
         compose.waitUntil(5_000) { compose.onAllNodesWithTag("voice-sheet").fetchSemanticsNodes().isEmpty() }
         compose.onNodeWithTag("voice-sheet").assertDoesNotExist()
-        compose.onNodeWithTag("plan-hub").assertExists()
+        compose.onNodeWithTag("task-list").assertExists()
     }
 
     @Test fun editorDraftSurvivesTabAndAppearanceChangesWhileRealTimerKeepsItsIdentity() {
@@ -130,7 +131,7 @@ class NavigationDeviceTest {
         val activity = compose.activity
         val record = runBlocking { model.repository.snapshot().records.single { it.endAt == null } }
         tab("计划")
-        compose.onNodeWithTag("plan-create").performClick()
+        compose.onNodeWithContentDescription("新建任务").performClick()
         compose.onNodeWithText("任务名称").performTextInput("DEVICE_DRAFT_ONLY")
         back() // keyboard, if it is visible
         if (compose.onAllNodesWithText("保留草稿").fetchSemanticsNodes().isEmpty()) back()
@@ -139,7 +140,7 @@ class NavigationDeviceTest {
         compose.onNodeWithText("取消").performClick()
         compose.onNodeWithText("保留草稿").performClick()
         // A pristine second editor must not erase the retained first editor.
-        compose.onNodeWithTag("plan-create").performClick()
+        compose.onNodeWithContentDescription("新建任务").performClick()
         compose.onNodeWithText("取消").performClick()
         compose.onNodeWithText("继续编辑草稿").assertExists()
         tab("管家")
@@ -157,7 +158,7 @@ class NavigationDeviceTest {
         assertFalse(after.tasks.any { it.title == "DEVICE_DRAFT_ONLY" })
         compose.onNodeWithText("取消").performClick()
         compose.onNodeWithText("丢弃修改").performClick()
-        compose.onNodeWithTag("plan-hub").assertExists()
+        compose.onNodeWithTag("task-list").assertExists()
         compose.onNodeWithText("继续编辑草稿").assertDoesNotExist()
     }
 
@@ -230,6 +231,12 @@ class NavigationDeviceTest {
         assertTrue(runBlocking { model.repository.snapshot().notes.isEmpty() })
         compose.onNodeWithTag("note-back").performClick()
         compose.onNodeWithText("丢弃修改").performClick()
+    }
+
+    private fun waitUntilDisplayed(tag: String) {
+        compose.waitUntil(5_000) {
+            runCatching { compose.onNodeWithTag(tag).assertIsDisplayed() }.isSuccess
+        }
     }
 
     private fun hideKeyboard() {

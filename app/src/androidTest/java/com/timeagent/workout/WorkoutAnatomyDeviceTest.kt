@@ -15,12 +15,12 @@ import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.timeagent.MainActivity
 import com.timeagent.ui.TimeAgentTheme
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
-import java.io.FileInputStream
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -28,40 +28,30 @@ import java.util.concurrent.TimeUnit
 class WorkoutAnatomyDeviceTest {
     @Test fun packagedModelLoadsInPhoneWebView() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
-        instrumentation.uiAutomation.executeShellCommand("am start -n ${instrumentation.targetContext.packageName}/com.timeagent.MainActivity").use { descriptor ->
-            FileInputStream(descriptor.fileDescriptor).bufferedReader().use { it.readText() }
-        }
-        val foregroundDeadline = System.currentTimeMillis() + 10_000
-        var foreground = false
-        while (!foreground && System.currentTimeMillis() < foregroundDeadline) {
-            instrumentation.runOnMainSync { foreground = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED).isNotEmpty() }
-            if (!foreground) Thread.sleep(100)
-        }
-        assertTrue("MainActivity did not resume", foreground)
         instrumentation.runOnMainSync {
             instrumentation.targetContext.startActivity(WorkoutActivity.intent(instrumentation.targetContext).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
         }
-        var resumed: WorkoutActivity? = null
-        val launchDeadline = System.currentTimeMillis() + 15_000
+        var resumed: MainActivity? = null
+        val launchDeadline = System.currentTimeMillis() + 20_000
         while (resumed == null && System.currentTimeMillis() < launchDeadline) {
             instrumentation.runOnMainSync {
-                resumed = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED).filterIsInstance<WorkoutActivity>().firstOrNull()
+                resumed = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED).filterIsInstance<MainActivity>().firstOrNull()
             }
             if (resumed == null) Thread.sleep(100)
         }
-        var activity = requireNotNull(resumed) { "WorkoutActivity did not resume" }
+        var activity = requireNotNull(resumed) { "MainActivity did not resume after workout trampoline" }
         if (InstrumentationRegistry.getArguments().getString("orientation") == "landscape") {
             instrumentation.runOnMainSync { activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }
             val rotationDeadline = System.currentTimeMillis() + 10_000
-            var rotated: WorkoutActivity? = null
+            var rotated: MainActivity? = null
             while (rotated == null && System.currentTimeMillis() < rotationDeadline) {
                 instrumentation.runOnMainSync {
-                    rotated = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED).filterIsInstance<WorkoutActivity>()
+                    rotated = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED).filterIsInstance<MainActivity>()
                         .firstOrNull { it.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE }
                 }
                 if (rotated == null) Thread.sleep(100)
             }
-            activity = requireNotNull(rotated) { "WorkoutActivity did not rotate" }
+            activity = requireNotNull(rotated) { "MainActivity did not rotate" }
         }
         try {
             instrumentation.runOnMainSync {

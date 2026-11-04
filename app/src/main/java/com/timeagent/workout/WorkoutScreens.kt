@@ -97,7 +97,7 @@ import java.util.UUID
                 } else if (pickerReturn == "session" && sessionId != null) {
                     model.addExercises(sessionId!!, exercises, replaceId); screen = "session"
                 } else if (active != null) { model.addExercises(active.id, exercises); openSession(active.id) }
-                else model.perform { openSession(model.repository.start(exercises = exercises).id) }
+                else model.startWithExercises(exercises, ::openSession)
             }, onAnatomy = { muscle = it; anatomyReturn = "picker"; screen = "anatomy" })
         "template" -> draftJson?.let { json ->
             WorkoutTemplateEditor(gson.fromJson(json, WorkoutTemplate::class.java), busy, pounds,
@@ -121,6 +121,10 @@ import java.util.UUID
         dismissButton = { Row { TextButton(onClick = { leaveTemplate = false }) { Text("继续编辑") }; TextButton(onClick = { model.templateDraftJson = null; leaveTemplate = false; screen = "home" }) { Text("放弃修改") } } })
     LaunchedEffect(screen, draftJson) { if (screen == "template" && draftJson == null) screen = "home" }
     error?.let { message -> AlertDialog(onDismissRequest = model::clearError, title = { Text("操作未完成") }, text = { Text(message) }, confirmButton = { TextButton(onClick = model::clearError) { Text("知道了") } }) }
+    if (model.timerConflict) AlertDialog(onDismissRequest = model::cancelStartSwitch, title = { Text("主计时正在使用") },
+        text = { Text("结束当前计时并开始训练？当前计时会先结束并保留记录，训练随后占用主计时。") },
+        confirmButton = { TextButton(onClick = model::confirmStartSwitch, enabled = !busy) { Text("结束当前计时并开始训练") } },
+        dismissButton = { TextButton(onClick = model::cancelStartSwitch) { Text("取消") } })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

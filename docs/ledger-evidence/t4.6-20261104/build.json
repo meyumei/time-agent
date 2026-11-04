@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-04",
+  "productionBuild": {
+    "command": "./scripts/build.ps1 -Tasks @(':app:assembleDebug', ':app:lintDebug')",
+    "exitCode": 0,
+    "elapsed": "6m 4s",
+    "tasks": 94
+  },
+  "isolatedBuild": {
+    "command": "./scripts/build.ps1 -Tasks @(':app:assembleDebug', ':app:assembleDebugAndroidTest', '-PisolatedDeviceTests')",
+    "exitCode": 0,
+    "elapsed": "34s",
+    "tasks": 92
+  },
+  "lint": {
+    "Warning": 84,
+    "Information": 2
+  },
+  "artifacts": [
+    {
+      "file": "latest.apk",
+      "bytes": 891517140,
+      "sha256": "321cc48214f6478ebe794f4c141344bdd0ab9e24cd8b7fc090fa17a5671c2d28"
+    },
+    {
+      "file": "acceptance.apk",
+      "bytes": 891142461,
+      "sha256": "14a4e385a0d50c809a329ef360c902045baa9d43dc3c64c86b2a0fb0a71da759"
+    },
+    {
+      "file": "acceptance-tests.apk",
+      "bytes": 2576404,
+      "sha256": "a85be9be4de8fe143710c79152f5f165421c774e42791ea2497cf1a3e56f3cb4"
+    }
+  ],
+  "hostUnitAndNodeTestsRun": false,
+  "deviceStatus": "pending final acceptance"
+}
