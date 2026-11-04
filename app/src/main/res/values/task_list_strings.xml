@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="task_list_filter_all">全部</string>
+    <string name="task_list_filter_tags">标签</string>
+    <string name="task_list_filter_all_tags">全部标签</string>
+    <string name="task_list_add_task">新建任务</string>
+    <string name="task_list_sort_label">排序：%1$s</string>
+    <string name="task_list_sort_due">截止时间</string>
+    <string name="task_list_sort_priority">优先级</string>
+    <string name="task_list_sort_manual">手动</string>
+    <string name="task_list_today">今天</string>
+    <string name="task_list_upcoming">即将到来</string>
+    <string name="task_list_undated">无日期</string>
+    <string name="task_list_group_title">%1$s · %2$d</string>
+    <string name="task_list_empty_title">暂无任务</string>
+    <string name="task_list_empty_hint">在下方输入任务开始记录</string>
+    <string name="task_list_done_header">已完成 · %1$d</string>
+    <string name="task_list_expand">展开</string>
+    <string name="task_list_collapse">收起</string>
+    <string name="task_list_start_timer">开始计时</string>
+    <string name="task_list_more">更多操作</string>
+    <string name="task_list_schedule">安排到时间轴</string>
+    <string name="task_list_edit">编辑</string>
+    <string name="task_list_complete">完成</string>
+    <string name="task_list_restore">标记未完成</string>
+    <string name="task_list_move_up">上移</string>
+    <string name="task_list_move_down">下移</string>
+    <string name="task_list_delete">删除</string>
+    <string name="task_list_quick_placeholder">输入任务，例如：明天交报告 #课程</string>
+    <string name="task_list_quick_add">添加</string>
+    <string name="task_list_draft_due_chip">截止 %1$s</string>
+    <string name="task_list_draft_project_chip">项目：%1$s</string>
+    <string name="task_list_draft_tag_chip">#%1$s</string>
+    <string name="task_list_draft_hint">仅预览，确认后才保存</string>
+    <string name="task_list_draft_ambiguous">“%1$s”匹配到多个项目或标签，请改用唯一名称；尚未自动选择。</string>
+    <string name="task_list_draft_multiple_dates">检测到 %1$d 个日期，未自动采用；整句会作为标题。</string>
+    <string name="task_list_draft_unreadable_date">日期无法识别，未自动采用；整句会作为标题。</string>
+    <string name="task_list_draft_unreadable_time">无法确认具体时间，未自动采用；整句会作为标题。</string>
+    <string name="task_list_draft_unknown_names">未找到 %1$s，相关内容会保留在标题中。</string>
+    <string name="task_list_name_separator">、</string>
+    <string name="task_list_swipe_schedule">安排</string>
+    <string name="task_list_swipe_complete">完成</string>
+</resources>

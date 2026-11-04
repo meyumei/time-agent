@@ -43,8 +43,13 @@ data class EditorRequest(
     val focusSessionId: String? = null,
     val focusVersion: Long? = null,
     val focusSegmentIndex: Int? = null,
+    val initialDueAt: Long? = null,
+    val initialProjectId: String? = null,
+    val initialTagIds: List<String>? = null,
 )
-data class EditValues(val title: String, val notes: String, val estimatedMinutes: Int, val priority: Int, val dueAt: Long?, val taskId: String?, val categoryId: String?, val start: Long, val end: Long, val allowFuture: Boolean, val location: String, val teacher: String, val activityId: String? = null, val kind: EditorKind? = null, val scheduleNewTask: Boolean = false, val allDayStartDate: String? = null, val allDayEndDate: String? = null)
+data class EditValues(val title: String, val notes: String, val estimatedMinutes: Int, val priority: Int, val dueAt: Long?, val taskId: String?, val categoryId: String?, val start: Long, val end: Long, val allowFuture: Boolean, val location: String, val teacher: String, val activityId: String? = null, val kind: EditorKind? = null, val scheduleNewTask: Boolean = false, val allDayStartDate: String? = null, val allDayEndDate: String? = null,
+    val projectId: String? = null, val tagIds: List<String> = emptyList(),
+    val expectedPlacementVersion: Long? = null, val expectedTagIds: List<String> = emptyList())
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun EditorScreen(
@@ -58,7 +63,16 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
     onSaveReminder: (ReminderEntity?, String, Long) -> Unit = { _, _, _ -> },
     saveError: String? = null,
     onKeepDraft: (() -> Unit)? = null,
+    classification: TaskClassification = TaskClassification(loading = false),
 ) {
+    if (request.kind == EditorKind.TASK && (classification.loading || data.loading)) {
+        BackHandler(onBack = onDismiss)
+        Column(Modifier.fillMaxSize().padding(24.dp)) {
+            CircularProgressIndicator()
+            TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
+        }
+        return
+    }
     if (request.selection != null && request.entity == null) {
         GridBlockEditorScreen(request, data, now, zone, busy, saveError, onDismiss, onSave, onKeepDraft)
         return
@@ -88,9 +102,14 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
     var title by rememberSaveable(request.id) { mutableStateOf(initialTitle) }
     var notes by rememberSaveable(request.id) { mutableStateOf(plan?.notes ?: task?.description ?: record?.notes ?: request.notes) }
     var estimated by rememberSaveable(request.id) { mutableStateOf((task?.estimatedMinutes ?: activity?.defaultMinutes ?: if (request.scheduleNewTask) ((initialEnd - initialStart) / 60000).toInt() else 30).toString()) }
-    var priority by rememberSaveable(request.id) { mutableIntStateOf(task?.priority ?: 1) }
-    var dueDate by rememberSaveable(request.id) { mutableStateOf(task?.dueAt?.let { Instant.ofEpochMilli(it).atZone(zone).toLocalDate().toString() }.orEmpty()) }
-    var dueTime by rememberSaveable(request.id) { mutableStateOf(task?.dueAt?.let { Instant.ofEpochMilli(it).atZone(zone).format(timeFormat) } ?: "23:59") }
+    var priority by rememberSaveable(request.id) { mutableIntStateOf(task?.priority ?: -1) }
+    var dueDate by rememberSaveable(request.id) { mutableStateOf((task?.dueAt ?: request.initialDueAt)?.let { Instant.ofEpochMilli(it).atZone(zone).toLocalDate().toString() }.orEmpty()) }
+    var dueTime by rememberSaveable(request.id) { mutableStateOf((task?.dueAt ?: request.initialDueAt)?.let { Instant.ofEpochMilli(it).atZone(zone).format(timeFormat) } ?: "23:59") }
+    val placement = data.placements.firstOrNull { it.taskId == task?.id }
+    val expectedPlacementVersion by rememberSaveable(request.id) { mutableStateOf(placement?.version) }
+    val expectedTagIds = rememberSaveable(request.id) { classification.taskTagIds[task?.id].orEmpty().sorted().toCollection(ArrayList()) }
+    var projectId by rememberSaveable(request.id) { mutableStateOf(placement?.projectId ?: request.initialProjectId) }
+    var tagIds by rememberSaveable(request.id) { mutableStateOf((if (task == null) request.initialTagIds.orEmpty() else expectedTagIds).toCollection(ArrayList())) }
     var date by rememberSaveable(request.id) { mutableStateOf(plan?.allDayStartDate ?: Instant.ofEpochMilli(initialStart).atZone(zone).toLocalDate().toString()) }
     var endDate by rememberSaveable(request.id) { mutableStateOf(plan?.allDayEndDate ?: Instant.ofEpochMilli(initialEnd).atZone(zone).toLocalDate().toString()) }
     var startTime by rememberSaveable(request.id) { mutableStateOf(Instant.ofEpochMilli(initialStart).atZone(zone).format(timeFormat)) }
@@ -124,7 +143,8 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
             if (request.kind == EditorKind.PLAN) require(title.isNotBlank() || selectedTask != null) { "日程名称不能为空" }
             if (request.kind == EditorKind.TASK) require(title.isNotBlank()) { "任务名称不能为空" }
             onSave(EditValues(title.trim(), notes, if (request.kind == EditorKind.TASK) estimated.toIntOrNull() ?: error("预计耗时须为整数") else 30, priority, if (dueDate.isBlank()) null else point(dueDate, dueTime, task?.dueAt), selectedTask, category, start, end, futureConfirmed, location, teacher, activityId,
-                allDayStartDate = if (scheduleAllDay) date else null, allDayEndDate = if (scheduleAllDay) endDate else null))
+                allDayStartDate = if (scheduleAllDay) date else null, allDayEndDate = if (scheduleAllDay) endDate else null,
+                projectId = projectId, tagIds = tagIds, expectedPlacementVersion = expectedPlacementVersion, expectedTagIds = expectedTagIds))
         } catch (e: Exception) { validation = e.message?.takeIf { it.contains("必须") || it.contains("请选择") || it.contains("名称") || it.contains("整数") } ?: "请检查日期、时间和时长格式" }
     }
     val savePoint: () -> Unit = {
@@ -138,7 +158,7 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
         }
     }
     val dismiss = rememberDraftExit(request.id, listOf(title, notes, estimated, priority, dueDate, dueTime,
-        date, endDate, startTime, endTime, selectedTask, category, activityId, location, teacher, pointMode, futureConfirmed),
+        date, endDate, startTime, endTime, selectedTask, category, activityId, location, teacher, pointMode, futureConfirmed, projectId, tagIds),
         busy, onDismiss, onKeepDraft)
     BackHandler(onBack = dismiss)
     val pointScreen = pointMode
@@ -189,9 +209,38 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
                         TextButton(onClick = { activityId = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_008)) }
                     }
                     OutlinedTextField(title, { title = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_009)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                    com.timeagent.ui.components.EntityPicker(
+                        label = androidx.compose.ui.res.stringResource(com.timeagent.R.string.task_project_field),
+                        selectedId = projectId,
+                        options = data.projects.filter { it.deletedAt == null }.map { com.timeagent.ui.components.EntityOption(it.id, it.name) },
+                        onSelect = { projectId = it },
+                    )
+                    if (projectId != null && data.projects.none { it.id == projectId && it.deletedAt == null }) {
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.task_project_missing), color = MaterialTheme.colorScheme.error)
+                    }
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.task_tags_field), style = MaterialTheme.typography.labelLarge)
+                    Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        classification.tags.forEach { tag ->
+                            FilterChip(tag.id in tagIds, {
+                                tagIds = (if (tag.id in tagIds) tagIds - tag.id else tagIds + tag.id).toCollection(ArrayList())
+                            }, label = { Text(tag.name) })
+                        }
+                    }
+                    if (tagIds.any { id -> classification.tags.none { it.id == id } }) {
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.task_tag_missing), color = MaterialTheme.colorScheme.error)
+                        TextButton(onClick = { tagIds = tagIds.filter { id -> classification.tags.any { it.id == id } }.toCollection(ArrayList()) }) {
+                            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.task_remove_missing_tags))
+                        }
+                    }
                     com.timeagent.ui.components.DurationField(estimated.toIntOrNull() ?: 0,
                         { estimated = it.toString() }, textValue = estimated, onTextChange = { estimated = it })
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) { listOf("低", "中", "高").forEachIndexed { i, name -> FilterChip(selected = priority == i, onClick = { priority = i }, label = { Text("${name}优先级") }) } }
+                    Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        (-1..2).forEach { value ->
+                            FilterChip(priority == value, { priority = value }, label = {
+                                Text(androidx.compose.ui.res.stringResource(taskPriorityLabelResource(value)))
+                            })
+                        }
+                    }
                     if (dueDate.isBlank()) {
                         OutlinedButton(onClick = { dueDate = now.atZone(zone).toLocalDate().toString() }) {
                             Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_add_deadline))

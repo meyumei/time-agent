@@ -145,7 +145,7 @@ internal object BackupTables {
 
     private fun validateMain(db: SQLiteDatabase) {
         fun rejectIf(sql: String, message: String) = db.rawQuery(sql, null).use { require(!it.moveToFirst()) { message } }
-        rejectIf("SELECT 1 FROM tasks WHERE trim(title)='' OR estimatedMinutes NOT BETWEEN 1 AND 10080 OR priority NOT BETWEEN 0 AND 2 OR status NOT IN ('TODO','IN_PROGRESS','COMPLETED','CANCELLED') LIMIT 1", "备份含无效任务内容")
+        rejectIf("SELECT 1 FROM tasks WHERE trim(title)='' OR estimatedMinutes NOT BETWEEN 1 AND 10080 OR priority NOT BETWEEN -1 AND 2 OR status NOT IN ('TODO','IN_PROGRESS','COMPLETED','CANCELLED') LIMIT 1", "备份含无效任务内容")
         if (db.version >= 13) {
             rejectIf("SELECT 1 FROM schedule_blocks WHERE kind NOT IN ('TIMED','POINT','ALL_DAY') OR (kind='POINT' AND endAt!=startAt) OR (kind!='POINT' AND endAt<=startAt) OR isLocked NOT IN (0,1) OR (taskId IS NULL AND trim(title)='') LIMIT 1", "备份日程时段或标题无效")
         } else {

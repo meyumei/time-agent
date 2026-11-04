@@ -108,6 +108,7 @@ private data class WorkoutTimerSwitch(
     onThemeMode: (ThemeMode) -> Unit,
 ) {
     val data by model.data.collectAsStateWithLifecycle()
+    val taskClassification by model.taskClassification.collectAsStateWithLifecycle()
     val week by model.week.collectAsStateWithLifecycle()
     val visibleWeekStart by model.visibleWeekStart.collectAsStateWithLifecycle()
     val timelineNavigationRevision by model.timelineNavigationRevision.collectAsStateWithLifecycle()
@@ -304,6 +305,21 @@ private data class WorkoutTimerSwitch(
     var timelineDrag by remember { mutableStateOf<TimelineDragRequest?>(null) }
     val timelineSnackbar = remember { SnackbarHostState() }
     var timelineUndo by remember { mutableStateOf<com.timeagent.ui.components.UndoMessage?>(null) }
+    fun toggleTask(task: TaskEntity, onSaved: () -> Unit = {}) {
+        val completed = task.status == "COMPLETED" || task.status == "DONE"
+        val requestId = UUID.randomUUID().toString()
+        model.perform(onSuccess = onSaved) {
+            val result = model.repository.commands.execute(com.timeagent.domain.command.WriteTaskDetails(
+                requestId, task.copy(status = if (completed) "TODO" else "COMPLETED"), task.version))
+            check(result.status in setOf(com.timeagent.domain.command.CommandStatus.APPLIED,
+                com.timeagent.domain.command.CommandStatus.DUPLICATE)) { result.message }
+            result.undoToken?.let { token ->
+                timelineUndo = com.timeagent.ui.components.UndoMessage(result.requestId,
+                    context.getString(if (completed) com.timeagent.R.string.task_reopened_undo
+                        else com.timeagent.R.string.task_completed_undo), token)
+            }
+        }
+    }
     com.timeagent.ui.components.UndoSnackbar(timelineSnackbar, timelineUndo,
         onUndo = { token -> model.perform {
             model.repository.commands.execute(com.timeagent.domain.command.UndoCommand(UUID.randomUUID().toString(), token))
@@ -506,21 +522,18 @@ private data class WorkoutTimerSwitch(
                         }
                     }
                 }
-                1 -> PlanHubScreen(data, zone, { selected = it }, {
+                1 -> MinuteClockContent(model) { taskNow -> PlanHubScreen(data, zone, { selected = it }, {
                     editor = EditorRequest(EditorKind.TASK, title = quickTaskTitle.trim().takeIf(String::isNotBlank))
                     quickTaskTitle = ""
                 }, ::startTimer,
-                    onToggle = { task ->
-                        model.perform {
-                            model.repository.saveTask(
-                                task.copy(status = if (task.status == "COMPLETED") "TODO" else "COMPLETED"),
-                                task.version,
-                            )
-                        }
-                    },
+                    onToggle = { task -> toggleTask(task) },
                     onSchedule = { task -> editor = EditorRequest(EditorKind.PLAN, taskId = task.id, scheduleRange = true) },
                     onDelete = { task -> deletingTask = task },
                     onQuickPreview = { text -> quickTaskTitle = text },
+                    tags = taskClassification.tags, taskTagIds = taskClassification.taskTagIds, now = taskNow,
+                    onQuickDraft = { draft -> editor = EditorRequest(EditorKind.TASK,
+                        title = draft.title, initialDueAt = draft.dueAt, initialProjectId = draft.projectId,
+                        initialTagIds = draft.tagIds) },
                     onOpen = { openScreen(it) }, reselectRevision = reselectRevision,
                     scheduleContent = {
                         PlanScheduleContent(model, data, busy || timelineDrag != null, themeMode, onThemeMode,
@@ -532,14 +545,16 @@ private data class WorkoutTimerSwitch(
                     },
                     moduleContent = { index, onBack ->
                         when (index) {
-                            2 -> DeadlineScreen(data, model, onTask = { selected = it }, onClose = onBack)
+                            2 -> DeadlineScreen(data, model, onTask = { selected = it }, onClose = onBack,
+                                onSchedule = { editor = EditorRequest(EditorKind.PLAN, taskId = it.id, scheduleRange = true) },
+                                onToggleTask = { toggleTask(it) })
                             3 -> MinuteClockContent(model) { now ->
                                 ProjectScreen(data, model, now, zone, onTask = { selected = it }, onClose = onBack,
                                     onSchedule = { editor = EditorRequest(EditorKind.PLAN, taskId = it.id, scheduleRange = true) })
                             }
                             4 -> RecurringScreen(data, model, onTask = { selected = it }, onClose = onBack)
                         }
-                    })
+                    }) }
                 2 -> Column {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                         TextButton(onClick = { openScreen("health") }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_002)) }
@@ -606,7 +621,9 @@ private data class WorkoutTimerSwitch(
         }
         "attachments" -> AttachmentScreen(model, onClose = ::closeScreen)
         "calendar" -> CalendarHandoffScreen(calendarTitle, calendarStart, calendarEnd, onClose = ::closeScreen)
-        "deadlines" -> DeadlineScreen(data,model,onTask={selected=it},onClose=::closeScreen)
+        "deadlines" -> DeadlineScreen(data,model,onTask={selected=it},onClose=::closeScreen,
+            onSchedule = { editor = EditorRequest(EditorKind.PLAN, taskId = it.id, scheduleRange = true) },
+            onToggleTask = { toggleTask(it) })
         "recurring" -> RecurringScreen(data,model,onTask={selected=it},onClose=::closeScreen)
         "projects" -> MinuteClockContent(model) { now ->
             ProjectScreen(data, model, now, zone, onTask = { selected = it }, onClose = ::closeScreen,
@@ -753,8 +770,16 @@ private data class WorkoutTimerSwitch(
                         EditorKind.TASK -> {
                             val before = request.entity as? TaskEntity
                             val candidate = (before ?: TaskEntity(request.id, values.title)).copy(title = values.title, description = values.notes, estimatedMinutes = values.estimatedMinutes, priority = values.priority, dueAt = values.dueAt, categoryId = values.categoryId, activityId = values.activityId)
-                            if (request.scheduleNewTask) model.repository.saveTaskAndPlan(candidate, "${request.id}:plan", TimeSpan(Instant.ofEpochMilli(values.start), Instant.ofEpochMilli(values.end)))
-                            else model.repository.saveTask(candidate, before?.version)
+                            val result = model.repository.commands.execute(com.timeagent.domain.command.WriteTaskDetails(
+                                "editor:${request.id}", candidate, before?.version, updateOrganization = true,
+                                projectId = values.projectId, expectedPlacementVersion = values.expectedPlacementVersion,
+                                tagIds = values.tagIds, expectedTagIds = values.expectedTagIds,
+                                newPlan = if (request.scheduleNewTask) ScheduleBlockEntity("${request.id}:plan",
+                                    candidate.id, values.start, values.end, timezoneId = zone.id) else null))
+                            check(result.status in setOf(com.timeagent.domain.command.CommandStatus.APPLIED,
+                                com.timeagent.domain.command.CommandStatus.DUPLICATE)) { result.message }
+                            result.undoToken?.let { timelineUndo = com.timeagent.ui.components.UndoMessage(
+                                result.requestId, context.getString(com.timeagent.R.string.task_saved_undo), it) }
                         }
                         EditorKind.PLAN -> {
                             if (values.scheduleNewTask) {
@@ -814,7 +839,8 @@ private data class WorkoutTimerSwitch(
                         )
                     }
                 }
-            }, saveError = error, onKeepDraft = { editorDrafts[request.id] = tab to request; editor = null })
+            }, saveError = error, onKeepDraft = { editorDrafts[request.id] = tab to request; editor = null },
+                classification = taskClassification)
         }
         }
     }
@@ -841,7 +867,11 @@ private data class WorkoutTimerSwitch(
                     when (selection) {
                         is TaskEntity -> {
                             Text(selection.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, modifier = Modifier.testTag("task-detail-title"))
-                            Text("预计 ${selection.estimatedMinutes.toLong().minutesLabel()} · ${listOf("低", "中", "高")[selection.priority]}优先级 · ${if (selection.status == "COMPLETED") "已完成" else "待完成"}")
+                            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.task_detail_summary,
+                                selection.estimatedMinutes.toLong().minutesLabel(),
+                                androidx.compose.ui.res.stringResource(taskPriorityLabelResource(selection.priority)),
+                                androidx.compose.ui.res.stringResource(if (selection.status == "COMPLETED" || selection.status == "DONE")
+                                    com.timeagent.R.string.task_status_done else com.timeagent.R.string.task_status_open)))
                             TimelineColorChoice(selection.timelineColorSubject(), selection.title)
                             selection.dueAt?.let { Text("截止 ${Instant.ofEpochMilli(it).label(zone)}") }
                             if (selection.description.isNotBlank()) Text(selection.description)
@@ -856,7 +886,7 @@ private data class WorkoutTimerSwitch(
                             Row {
                                 TextButton(onClick = { editor = EditorRequest(EditorKind.TASK, selection); selected = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_022)) }
                                 TextButton(onClick = { openNote("TASK", selection.id, selection.title) }, modifier = Modifier.testTag("task-note-entry")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_activities_007)) }
-                                TextButton(onClick = { model.perform(onSuccess = { selected = null }) { model.repository.saveTask(selection.copy(status = if (selection.status == "COMPLETED") "TODO" else "COMPLETED"), selection.version) } }, enabled = !busy) { Text(if (selection.status == "COMPLETED") "重新打开" else "标记完成") }
+                                TextButton(onClick = { toggleTask(selection) { selected = null } }, enabled = !busy) { Text(if (selection.status == "COMPLETED") "重新打开" else "标记完成") }
                                 TextButton(onClick = { deletingTask = selection }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_delete)) }
                             }
                         }
@@ -1055,7 +1085,7 @@ private data class WorkoutTimerSwitch(
             Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(task.title, fontWeight = FontWeight.SemiBold)
-                    Text("${task.estimatedMinutes.toLong().minutesLabel()} · ${listOf("低", "中", "高")[task.priority]}优先级", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.task_row_summary, task.estimatedMinutes.toLong().minutesLabel(), androidx.compose.ui.res.stringResource(taskPriorityLabelResource(task.priority))), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     task.dueAt?.let { Text("截止 ${Instant.ofEpochMilli(it).label(zone)}", style = MaterialTheme.typography.labelSmall) }
                 }
                 IconButton(onClick = { onStart(task.id) }) { Icon(Icons.Rounded.PlayCircleOutline, "开始计时 ${task.title}", tint = RecordGreen) }

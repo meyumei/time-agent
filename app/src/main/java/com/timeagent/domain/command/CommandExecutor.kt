@@ -122,6 +122,68 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
                             is AdjustRecurringTimeline -> RecurringService(repository).adjustTimelineRaw(command).map {
                                 ScheduleWarning(it.id, it.title, it.span.start.toEpochMilli(), it.span.end.toEpochMilli())
                             }
+                            is WriteTaskDetails -> {
+                                version("TASK", command.task.id, command.expectedVersion, command.expectedVersion == null)
+                                val org = repository.database.organizationDao()
+                                val placement = dao.placement(command.task.id)
+                                val tags = org.taskTags().filter { it.taskId == command.task.id }.map { it.tagId }.distinct().sorted()
+                                if (command.updateOrganization &&
+                                    (placement?.version != command.expectedPlacementVersion || tags != command.expectedTagIds.distinct().sorted()))
+                                    throw StaleChange()
+                                if (command.updateOrganization) for (id in command.tagIds.distinct()) {
+                                    require(org.tag(id) != null) {
+                                        repository.applicationContext?.getString(com.timeagent.R.string.task_tag_missing)
+                                            ?: "The selected tag was deleted; reopen the editor."
+                                    }
+                                }
+                                if (command.updateOrganization) command.projectId?.let { id ->
+                                    require(dao.project(id)?.let { it.deletedAt == null } == true) {
+                                        repository.applicationContext?.getString(com.timeagent.R.string.task_project_missing)
+                                            ?: "The selected project was deleted; reopen the editor."
+                                    }
+                                }
+                                val saved = repository.saveTaskRaw(command.task, command.expectedVersion)
+                                if (command.updateOrganization) {
+                                    if (placement?.projectId != command.projectId) repository.savePlacementRaw(
+                                        (placement ?: TaskPlacementEntity(saved.id)).copy(projectId = command.projectId), placement?.version)
+                                    val nextTags = command.tagIds.distinct().sorted()
+                                    if (tags != nextTags) {
+                                        org.clearTaskTags(saved.id)
+                                        nextTags.forEach { org.addTaskTag(TaskTagEntity(saved.id, it)) }
+                                        repository.journal("ORG_TASK_TAGS", saved.id,
+                                            com.timeagent.organization.OrgTagLinks(tags), com.timeagent.organization.OrgTagLinks(nextTags), "Task tags")
+                                    }
+                                }
+                                val conflicts = command.newPlan?.let { plan ->
+                                    require(plan.taskId == saved.id)
+                                    version("PLAN", plan.id, null, true)
+                                    repository.savePlanRaw(plan, expectedTaskVersion = saved.version)
+                                }.orEmpty()
+                                payload = gson.toJson(saved)
+                                conflicts.map { ScheduleWarning(it.id, it.title, it.span.start.toEpochMilli(), it.span.end.toEpochMilli()) }
+                            }
+                            is WriteProject -> {
+                                payload = gson.toJson(when (val mutation = command.mutation) {
+                                    is ProjectMutation.Save -> {
+                                        version("PROJECT", mutation.project.id, mutation.expectedVersion, mutation.expectedVersion == null)
+                                        repository.saveProjectRaw(mutation.project, mutation.expectedVersion)
+                                    }
+                                    is ProjectMutation.Delete -> {
+                                        version("PROJECT", mutation.id, mutation.expectedVersion)
+                                        repository.deleteProjectRaw(mutation.id, mutation.expectedVersion)
+                                        dao.project(mutation.id)
+                                    }
+                                    is ProjectMutation.PlaceTask -> {
+                                        version("PLACEMENT", mutation.placement.taskId, mutation.expectedVersion, mutation.expectedVersion == null)
+                                        repository.savePlacementRaw(mutation.placement, mutation.expectedVersion)
+                                    }
+                                    is ProjectMutation.SaveGoal -> {
+                                        version("GOAL", mutation.goal.id, mutation.expectedVersion, mutation.expectedVersion == null)
+                                        repository.saveWeeklyGoalRaw(mutation.goal, mutation.expectedVersion)
+                                    }
+                                })
+                                emptyList()
+                            }
                             is WriteLedger -> {
                                 val ledger = com.timeagent.ledger.LedgerRepository(
                                     repository.database,
@@ -230,6 +292,9 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
             "OCCURRENCE" -> dao.occurrence(id)
             "RECURRING_RULE" -> dao.recurringRule(id)
             "RECURRING_INSTANCE" -> dao.recurringInstance(id)
+            "PROJECT" -> dao.project(id)
+            "PLACEMENT" -> dao.placement(id)
+            "GOAL" -> dao.weeklyGoal(id)
             else -> error("未知实体类型")
         }
         val current = when (entity) {
@@ -241,10 +306,14 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
             is CourseOccurrenceEntity -> entity.version
             is RecurringRuleEntity -> entity.version
             is RecurringInstanceEntity -> entity.version
+            is ProjectEntity -> entity.version
+            is TaskPlacementEntity -> entity.version
+            is WeeklyGoalEntity -> entity.version
             else -> null
         }
         val deleted = when (entity) {
             is TaskEntity -> entity.deletedAt != null || (!allowCancelled && entity.status == "CANCELLED")
+            is ProjectEntity -> entity.deletedAt != null
             else -> false
         }
         if (!create && (entity == null || deleted)) throw Rejected(CommandStatus.NOT_FOUND, "内容不存在或已删除，尚未保存")
@@ -379,6 +448,8 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
         is ActRecurringInstance -> "处理周期实例"
         is MoveRecurringInstance -> "改期周期实例"
         is AdjustRecurringTimeline -> "调整周期日程"
+        is WriteTaskDetails -> repository.applicationContext?.getString(com.timeagent.R.string.task_save_action) ?: "Save task"
+        is WriteProject -> repository.applicationContext?.getString(com.timeagent.R.string.project_write_action) ?: "Update project"
         is WriteLedger -> when (command.mutation) {
             is LedgerMutation.SaveAccount -> "保存账户"
             is LedgerMutation.ArchiveAccount -> "归档账户"

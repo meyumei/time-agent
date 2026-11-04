@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="project_week_progress">本周已投入 %1$d / %2$d 分钟 · %3$d%%</string>
+    <string name="project_week_target_no_records">本周目标 %1$d 分钟 · 暂无实际记录</string>
+    <string name="project_week_no_target_progress">本周未设目标 · 已投入 %1$d 分钟</string>
+    <string name="project_week_no_target_no_records">本周未设目标 · 暂无实际记录</string>
+    <string name="project_next_plan_actual">下一步投入：计划 %1$d 分钟 · 实际 %2$d 分钟</string>
+    <string name="project_next_no_actual">（暂无实际记录）</string>
+    <string name="project_next_actual_sources">（实际来自 %1$d 条记录）</string>
+</resources>

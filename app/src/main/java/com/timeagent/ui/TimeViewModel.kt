@@ -72,6 +72,19 @@ class TimeViewModel(
     val busy = _busy.asStateFlow()
     val data = repository.observe().catch { _error.value = "读取失败：${it.message}，请重新打开应用重试" }
         .stateIn(viewModelScope, SharingStarted.Eagerly, LocalSnapshot())
+    val taskClassification = repository.database.invalidationTracker.createFlow("tags", "task_tags", emitInitialState = true)
+        .map {
+            repository.transaction {
+                val org = repository.database.organizationDao()
+                TaskClassification(org.tags(), org.taskTags().groupBy { it.taskId }
+                    .mapValues { (_, links) -> links.map { it.tagId }.toSet() }, loading = false)
+            }
+        }.flowOn(Dispatchers.IO)
+        .catch { error ->
+            if (error is CancellationException) throw error
+            _error.value = appContext?.getString(com.timeagent.R.string.task_tags_read_failed)
+                ?: "Task tags could not be read; reopen the editor."
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TaskClassification())
     fun timeline(range: TimelineRange): Flow<LocalSnapshot> =
         repository.observeTimeline(range.start, range.end).catch {
             _error.value = "时间轴读取失败：${it.message}，请重新打开应用重试"
