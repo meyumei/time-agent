@@ -44,9 +44,20 @@ data class LocalSnapshot(
 class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock = Clock.systemDefaultZone()) {
     val commands by lazy { CommandExecutor(this) }
     internal val database: TimeAgentDatabase get() = db
+    internal val commandClock: Clock get() = clock
+    internal var workoutDatabase: com.timeagent.workout.data.WorkoutDatabase? = null
+        private set
+    internal fun bindWorkoutDatabase(database: com.timeagent.workout.data.WorkoutDatabase) {
+        workoutDatabase = database
+    }
+    internal suspend fun checkWorkoutSlot() {
+        if (workoutDatabase?.dao()?.activeSession() != null) throw com.timeagent.core.workout.WorkoutAlreadyActive()
+    }
     private class CommitEffects : AbstractCoroutineContextElement(Key) {
         companion object Key : CoroutineContext.Key<CommitEffects>
         val actions = mutableListOf<suspend () -> Unit>()
+        val workoutRollback = mutableListOf<suspend () -> Unit>()
+        var workoutRecovery: com.timeagent.workout.data.WorkoutWriteRecovery? = null
         var rollbackOnly = false
     }
     internal suspend fun <T> transaction(block: suspend () -> T): T = withContext(Dispatchers.IO) {
@@ -61,14 +72,29 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
             try {
                 PersonalDataGate.access {
                     withContext(NonCancellable + effects) {
-                        val result = db.withTransaction {
-                            val value = withContext(callerJob) { block() }
-                            callerJob.ensureActive()
-                            check(!effects.rollbackOnly) { "事务中有未完成的操作，已整体回滚" }
-                            value
+                        try {
+                            workoutDatabase?.let { com.timeagent.workout.data.WorkoutWriteRecovery.recover(db, it) }
+                            val result = db.withTransaction {
+                                val value = withContext(callerJob) { block() }
+                                callerJob.ensureActive()
+                                check(!effects.rollbackOnly) { "事务中有未完成的操作，已整体回滚" }
+                                value
+                            }
+                            committed = true
+                            effects.workoutRecovery?.clear()
+                            result
+                        } catch (error: Throwable) {
+                            // A rejected main write must also restore rows already saved in workouts.db.
+                            var restored = true
+                            if (!committed) effects.workoutRollback.asReversed().forEach { restore ->
+                                try { restore() } catch (rollbackError: Throwable) {
+                                    restored = false
+                                    error.addSuppressed(rollbackError)
+                                }
+                            }
+                            if (!committed && restored) effects.workoutRecovery?.clear()
+                            throw error
                         }
-                        committed = true
-                        result
                     }
                 }
             } finally {
@@ -80,6 +106,25 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
     internal suspend fun afterCommit(action: suspend () -> Unit) {
         checkNotNull(currentCoroutineContext()[CommitEffects]).actions += action
     }
+    internal suspend fun rollbackWorkoutOnFailure(restore: suspend () -> Unit) {
+        checkNotNull(currentCoroutineContext()[CommitEffects]).workoutRollback += restore
+    }
+    internal suspend fun beginWorkoutWrite() {
+        val effects = checkNotNull(currentCoroutineContext()[CommitEffects])
+        if (effects.workoutRecovery == null) {
+            val token = "workout-commit:${UUID.randomUUID()}"
+            val recovery = com.timeagent.workout.data.WorkoutWriteRecovery(checkNotNull(workoutDatabase), token)
+            dao.putCommandResult(CommandLogEntity(token, "WORKOUT_COMMIT", "{}", now().toEpochMilli()))
+            effects.workoutRecovery = recovery
+        }
+    }
+    internal suspend fun preserveWorkoutSession(id: String, row: com.timeagent.workout.data.WorkoutSessionRow?) {
+        checkNotNull(currentCoroutineContext()[CommitEffects]?.workoutRecovery).preserveSession(id, row)
+    }
+    internal suspend fun preserveWorkoutTemplate(id: String, row: com.timeagent.workout.data.WorkoutTemplateRow?) {
+        checkNotNull(currentCoroutineContext()[CommitEffects]?.workoutRecovery).preserveTemplate(id, row)
+    }
+    internal suspend fun recoverWorkoutWrites() = transaction {}
     private val dao = db.dao()
     private val gson = Gson()
     val zone: ZoneId get() = clock.zone
@@ -740,6 +785,7 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
 
     internal suspend fun startTimerRaw(taskId: String?, requestId: String, switchExisting: Boolean = false, expectedTaskVersion: Long? = null, source: String = "TIMER"): TimeRecordEntity = transaction {
         dao.record(requestId)?.let { return@transaction it } // Stable request ID makes a double tap harmless.
+        checkWorkoutSlot()
         val task = taskId?.let { activeTask(it) }
         checkVersion(task?.version, expectedTaskVersion)
         val running = dao.runningTimer()
@@ -879,6 +925,12 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
     }
 
     private suspend fun applyHistory(action: OperationEntity, forward: Boolean) {
+        if (action.entityType in setOf("WORKOUT_SESSION", "WORKOUT_TEMPLATE")) {
+            com.timeagent.workout.data.WorkoutRepository(
+                checkNotNull(workoutDatabase) { "训练库尚未就绪，请重新打开训练" }, this, clock,
+            ).applyHistory(action, forward)
+            return
+        }
         if (action.entityType.startsWith("ORG_")) {
             com.timeagent.organization.OrganizationRepository(db, clock).applyHistory(action, forward)
             return
@@ -1003,6 +1055,7 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
                 val version = nextVersion("RECORD", action.entityId, current?.version)
                 val restored = target?.let { gson.fromJson(it, TimeRecordEntity::class.java) }
                 if (restored != null && restored.endAt == null && dao.runningTimer()?.let { it.id != restored.id } == true) throw StaleChange()
+                if (restored != null && restored.endAt == null) checkWorkoutSlot()
                 if (restored == null) { if (hasNotes("RECORD")) throw StaleChange(); dao.removeRecord(action.entityId) }
                 else dao.putRecord(restored.copy(title = restored.title.orEmpty(), version = version, updatedAt = now().toEpochMilli()))
             }

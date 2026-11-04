@@ -40,6 +40,8 @@ interface WorkoutDao {
     @Query("SELECT * FROM workout_sessions WHERE id=:id") suspend fun session(id: String): WorkoutSessionRow?
     @Query("SELECT * FROM workout_sessions WHERE activeSlot=1 LIMIT 1") suspend fun activeSession(): WorkoutSessionRow?
     @Upsert suspend fun putSession(row: WorkoutSessionRow)
+    /** Used only when undo removes a session that was created by the start command. */
+    @Query("DELETE FROM workout_sessions WHERE id=:id") suspend fun deleteSession(id: String)
     @Query("SELECT * FROM workout_templates ORDER BY updatedAt DESC, id") fun observeTemplates(): Flow<List<WorkoutTemplateRow>>
     @Query("SELECT * FROM workout_templates WHERE id=:id") suspend fun template(id: String): WorkoutTemplateRow?
     @Upsert suspend fun putTemplate(row: WorkoutTemplateRow)

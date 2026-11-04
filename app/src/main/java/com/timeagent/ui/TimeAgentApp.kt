@@ -41,7 +41,9 @@ import com.timeagent.assistant.SpeechInputFactory
 import com.timeagent.assistant.OfflineSpeechInputFactory
 import com.timeagent.imports.CourseImportScreen
 import com.timeagent.health.*
-import com.timeagent.workout.WorkoutActivity
+import com.timeagent.workout.WorkoutNavScreen
+import com.timeagent.core.workout.WorkoutSessionStatus
+import com.timeagent.core.workout.WorkoutRules
 import com.timeagent.suggestions.SuggestionCoordinator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -55,6 +57,13 @@ import kotlinx.coroutines.withContext
 import java.time.*
 import java.util.UUID
 import com.timeagent.ui.navigation.*
+
+private data class WorkoutTimerSwitch(
+    val session: com.timeagent.core.workout.WorkoutSession,
+    val taskId: String?,
+    val taskVersion: Long?,
+    val requestId: String,
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun TimeAgentApp(
@@ -123,6 +132,9 @@ import com.timeagent.ui.navigation.*
     val workoutsRepository = remember(context, model) { WorkoutRepository(context.applicationContext, model.repository) }
     var workoutReadError by remember { mutableStateOf<String?>(null) }
     val workouts by remember(workoutsRepository) { workoutsRepository.observeSessions().catch { workoutReadError = "训练读取失败：${it.message}"; emit(emptyList()) } }.collectAsStateWithLifecycle(emptyList())
+    val activeWorkout = workouts.firstOrNull { it.status == WorkoutSessionStatus.ACTIVE || it.status == WorkoutSessionStatus.PAUSED }
+    LaunchedEffect(activeWorkout) { com.timeagent.workout.WorkoutNotifications.sync(context, activeWorkout) }
+    var workoutSwitch by remember { mutableStateOf<WorkoutTimerSwitch?>(null) }
     val healthScope = rememberCoroutineScope()
     androidx.lifecycle.compose.LifecycleEventEffect(androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
         if (healthSettings.enabled()) healthScope.launch {
@@ -144,7 +156,6 @@ import com.timeagent.ui.navigation.*
     fun openScreen(destination: String) {
         if (destination == "ledger") ledgerReadRevision++
         when (destination) {
-            "workout" -> context.startActivity(WorkoutActivity.intent(context))
             "organization" -> context.startActivity(android.content.Intent(context, com.timeagent.organization.OrganizationActivity::class.java))
             else -> navigator.open(destination)
         }
@@ -250,7 +261,7 @@ import com.timeagent.ui.navigation.*
     }
     fun openOriginal(type: String, id: String) {
         when (type) {
-            "WORKOUT" -> context.startActivity(WorkoutActivity.intent(context, id))
+            "WORKOUT" -> openScreen("workout:$id")
             "TASK" -> data.tasks.find { it.id == id }?.let { selected = it } ?: run { notice = "原任务已被删除" }
             "REMINDER" -> data.reminders.find { it.id == id }?.let { reminderDetail = it } ?: run { notice = "原提醒已被删除" }
             "PROJECT" -> openScreen("project:$id")
@@ -284,7 +295,10 @@ import com.timeagent.ui.navigation.*
     val running = data.records.firstOrNull { it.endAt == null }
     fun startTimer(taskId: String?) {
         val requestId = UUID.randomUUID().toString()
-        if (running != null) switchTask = taskId to requestId else model.perform { model.repository.startTimer(taskId, requestId) }
+        if (activeWorkout != null) workoutSwitch = WorkoutTimerSwitch(activeWorkout, taskId,
+            taskId?.let { id -> data.tasks.firstOrNull { it.id == id }?.version }, requestId)
+        else if (running != null) switchTask = taskId to requestId
+        else model.perform { model.repository.startTimer(taskId, requestId) }
     }
     val filePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) model.perform {
@@ -331,6 +345,9 @@ import com.timeagent.ui.navigation.*
             if (!voiceSheetOpen) VoiceInputBanner(voiceStatus, liveVoiceText)
             chat.localDestination?.let { destination -> TextButton(onClick = { openScreen(destination) }, modifier = Modifier.testTag("assistant-local-result")) { Text(if (destination == "history") "查看历史结果与原记录" else "查看个人记忆") } }
             if (tab == 2) WeekHeader(reviewWeek, data, { model.changeReviewWeek(-1) }, { model.changeReviewWeek(1) }, model::currentWeek)
+            activeWorkout?.let { session ->
+                RunningWorkoutBar(session, model.clock, busy, onOpen = { openScreen("workout:${session.id}") })
+            }
             running?.let { item ->
                 RunningTimerBar(item, data.tasks.firstOrNull { it.id == item.taskId }?.title ?: "自由计时",
                     model.clock, busy, onStop = { model.perform { model.repository.stopTimer(item.id, item.version, requestId = "timer-stop:${item.id}:${item.version}") } })
@@ -398,7 +415,7 @@ import com.timeagent.ui.navigation.*
                                         TextButton(onClick = { editor = EditorRequest(EditorKind.RECORD) }, modifier = Modifier.testTag("today-record")) { Text("补记时间") }
                                         TextButton(onClick = { openScreen("recurring") }, modifier = Modifier.testTag("today-recurring")) { Text("本次习惯") }
                                         TextButton(onClick = { openScreen("deadlines") }, modifier = Modifier.testTag("today-deadlines")) { Text("处理期限") }
-                                        TextButton(onClick = { context.startActivity(WorkoutActivity.intent(context)) }, modifier = Modifier.testTag("today-workout")) { Text("训练") }
+                                        TextButton(onClick = { openScreen("workout") }, modifier = Modifier.testTag("today-workout")) { Text("训练") }
                                     }
                                     workoutReadError?.let { Text(it, Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.error) }
                                 })
@@ -464,7 +481,7 @@ import com.timeagent.ui.navigation.*
             SettingsScreen(data, busy,
                 { filePicker.launch(arrayOf("application/json", "text/*")) }, { editor = EditorRequest(EditorKind.COURSE, it) },
                 onPdfImport = { openScreen("import") }, onActivities = { openScreen("activities") }, onAssistant = { assistantSettingsOpen = true },
-                onHealthSync = { openScreen("health") }, onWorkout = { context.startActivity(WorkoutActivity.intent(context)) }, onBackup = { openScreen("backup") },
+                onHealthSync = { openScreen("health") }, onWorkout = { openScreen("workout") }, onBackup = { openScreen("backup") },
                 onMemory = { openScreen("memory") }, onHistory = { openScreen("history") }, onExtract = { extractionText = ""; openScreen("extract") })
         }
         "tasks" -> Column(Modifier.fillMaxSize().statusBarsPadding()) {
@@ -472,7 +489,7 @@ import com.timeagent.ui.navigation.*
             TaskScreen(data, zone, { selected = it }, { editor = EditorRequest(EditorKind.TASK) }, ::startTimer,
                 onInbox = { openScreen("inbox") }, onProjects = { openScreen("projects") }, onRecurring = { openScreen("recurring") },
                 onDeadlines = { openScreen("deadlines") }, onAttachments = { openScreen("attachments") },
-                onReply = { extractionText = ""; openScreen("reply") }, onWorkout = { context.startActivity(WorkoutActivity.intent(context)) })
+                onReply = { extractionText = ""; openScreen("reply") }, onWorkout = { openScreen("workout") })
         }
         "attachments" -> AttachmentScreen(model, onClose = ::closeScreen)
         "calendar" -> CalendarHandoffScreen(calendarTitle, calendarStart, calendarEnd, onClose = ::closeScreen)
@@ -510,6 +527,7 @@ import com.timeagent.ui.navigation.*
             onOpenTask = { id -> selected = data.tasks.firstOrNull { it.id == id } },
         )
         "health" -> HealthSyncScreen(model, healthReader, healthSettings, zone, onClose = ::closeScreen)
+        "workout" -> WorkoutNavScreen(workoutsRepository, onClose = ::closeScreen)
         "ledger" -> LedgerScreen(
             repository = ledgerRepository,
             initialCaptureId = null,
@@ -521,7 +539,9 @@ import com.timeagent.ui.navigation.*
         "history" -> HistoryScreen(model, onClose = ::closeScreen, onOpen = ::openOriginal)
         "extract" -> ChatExtractionScreen(model, extractionText, onReply = { extractionText = it; openScreen("reply") }, onClose = ::closeScreen)
         "reply" -> ReplyCopilotScreen(model, extractionText, onClose = ::closeScreen)
-        else -> if (destination.startsWith("project:")) MinuteClockContent(model) { now -> ProjectScreen(data, model, now, zone,
+        else -> if (destination.startsWith("workout:")) WorkoutNavScreen(workoutsRepository,
+            initialSessionId = destination.removePrefix("workout:"), onClose = ::closeScreen)
+        else if (destination.startsWith("project:")) MinuteClockContent(model) { now -> ProjectScreen(data, model, now, zone,
             onTask = { selected = it }, onClose = ::closeScreen, initialProjectId = destination.removePrefix("project:"),
             onSchedule = { editor = EditorRequest(EditorKind.PLAN, taskId = it.id, scheduleRange = true) }) }
             }
@@ -556,7 +576,7 @@ import com.timeagent.ui.navigation.*
             TextButton(onClick = { addMenu = false; editor = EditorRequest(EditorKind.PLAN) }) { Text("安排计划") }
             TextButton(onClick = { addMenu = false; editor = EditorRequest(EditorKind.RECORD) }) { Text("补录时间") }
             TextButton(onClick = { addMenu = false; startTimer(null) }) { Text("开始自由计时") }
-            TextButton(onClick = { addMenu = false; context.startActivity(WorkoutActivity.intent(context)) }, modifier = Modifier.testTag("start-workout-entry")) { Text("开始健身训练") }
+            TextButton(onClick = { addMenu = false; openScreen("workout") }, modifier = Modifier.testTag("start-workout-entry")) { Text("开始健身训练") }
         }
     }, confirmButton = { TextButton(onClick = { addMenu = false }) { Text("关闭") } })
 
@@ -676,7 +696,7 @@ import com.timeagent.ui.navigation.*
                                 selected = null; openScreen("calendar")
                             }) { Text("交给系统日历确认添加") }
                             (selection.entity as? TimeRecordEntity)?.takeIf { it.source == "WORKOUT" && it.id.startsWith("workout:") }?.let { record ->
-                                Button(onClick = { selected = null; context.startActivity(WorkoutActivity.intent(context, record.id.removePrefix("workout:"))) }) { Text("查看完整训练记录") }
+                                Button(onClick = { selected = null; openScreen("workout:${record.id.removePrefix("workout:")}") }) { Text("查看完整训练记录") }
                             }
                             val overlaps = data.timeline(now).filter { it.id != selection.id && (it.kind == ItemKind.RECORD) == (selection.kind == ItemKind.RECORD) && selection.span.overlaps(it.span) }
                             if (overlaps.isNotEmpty()) Text((if (selection.kind == ItemKind.RECORD) "与实际记录重叠：" else "时间冲突：") + overlaps.joinToString("、") { it.title }, color = MaterialTheme.colorScheme.error)
@@ -711,6 +731,19 @@ import com.timeagent.ui.navigation.*
                 Text("确认后写入本机。重复实例跳过，保留手工修改。", style = MaterialTheme.typography.bodySmall)
             }
         }, confirmButton = { TextButton(onClick = { model.perform(onSuccess = { preview = null; navigator.resetToToday() }) { model.repository.commitImport(value, requestId) } }, enabled = !busy) { Text("确认导入") } }, dismissButton = { TextButton(onClick = { preview = null }, enabled = !busy) { Text("取消") } })
+    }
+    workoutSwitch?.let { target ->
+        val hasSets = WorkoutRules.summary(target.session, model.clock.now().toEpochMilli()).completedSets > 0
+        AlertDialog(onDismissRequest = { workoutSwitch = null },
+            title = { Text("切换主计时？") },
+            text = { Text(if (hasSets) "结束当前训练并保存实际记录，再开始计时。" else "当前训练还没有完成的组，放弃本次空训练后再开始计时。") },
+            confirmButton = { TextButton(onClick = {
+                model.perform(onSuccess = { workoutSwitch = null }) {
+                    workoutsRepository.switchToTimer(target.session.id, target.session.updatedAt, target.taskId,
+                        target.taskVersion, target.requestId)
+                }
+            }, enabled = !busy) { Text(if (hasSets) "结束并开始" else "放弃空训练并开始") } },
+            dismissButton = { TextButton(onClick = { workoutSwitch = null }) { Text("取消") } })
     }
     switchTask?.let { target -> AlertDialog(onDismissRequest = { switchTask = null }, title = { Text("切换计时任务？") }, text = { Text("先结束当前计时，再开始新任务。已有记录会保留。") }, confirmButton = { TextButton(onClick = { model.perform(onSuccess = { switchTask = null }) { model.repository.startTimer(target.first, target.second, switchExisting = true) } }, enabled = !busy) { Text("结束并开始") } }, dismissButton = { TextButton(onClick = { switchTask = null }) { Text("取消") } }) }
     deletingTask?.let { task ->

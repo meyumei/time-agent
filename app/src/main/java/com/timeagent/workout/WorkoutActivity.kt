@@ -1,50 +1,20 @@
 package com.timeagent.workout
 
-import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.timeagent.data.TimeRepository
-import com.timeagent.workout.data.WorkoutDatabase
-import com.timeagent.ui.TimeAgentTheme
-import com.timeagent.ui.returnToButler
-import com.timeagent.workout.data.WorkoutRepository
-import com.timeagent.backup.recoverPersonalDataBeforeOpen
-import dagger.Lazy
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import com.timeagent.MainActivity
 
-@AndroidEntryPoint
+/** Retains installed notification intents while the training UI lives in the main navigation. */
 class WorkoutActivity : ComponentActivity() {
-    @Inject lateinit var timeRepository: Lazy<TimeRepository>
-    @Inject lateinit var workoutDatabase: Lazy<WorkoutDatabase>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!recoverPersonalDataBeforeOpen()) return
-        enableEdgeToEdge()
-        if (getSharedPreferences("workout", MODE_PRIVATE).getBoolean("keepAwake", true)) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        setContent {
-            val model: WorkoutViewModel = viewModel(factory = object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST") override fun <T : ViewModel> create(modelClass: Class<T>): T = WorkoutViewModel(
-                    WorkoutRepository(workoutDatabase.get(), timeRepository.get()), WorkoutCatalog(applicationContext),
-                ) as T
-            })
-            TimeAgentTheme {
-                WorkoutApp(model, intent.getStringExtra(EXTRA_SESSION_ID), onClose = ::returnToButler)
-            }
-        }
-        if (Build.VERSION.SDK_INT >= 33 && !getSharedPreferences("workout", MODE_PRIVATE).getBoolean("notificationAsked", false)) {
-            getSharedPreferences("workout", MODE_PRIVATE).edit().putBoolean("notificationAsked", true).apply()
-            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 520)
-        }
+        val sessionId = intent.getStringExtra(EXTRA_SESSION_ID)
+        startActivity(Intent(this, MainActivity::class.java)
+            .putExtra("appDestination", sessionId?.let { "workout:$it" } ?: "workout")
+            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP))
+        finish()
     }
 
     companion object {

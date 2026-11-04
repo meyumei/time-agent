@@ -1,0 +1,94 @@
+{
+  "cli": "WorkBuddy/CodeBuddy CLI",
+  "version": "2.171.0",
+  "requestedModel": "deepseek-v4.1-flash",
+  "requestedEffort": "max",
+  "serverReportedEffort": null,
+  "phases": [
+    {
+      "phase": "backend",
+      "observedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "sessionIds": [
+        "01a1a47a-ed59-7cc5-bb3f-7b7d02cc9dbf"
+      ],
+      "toolCalls": 44
+    },
+    {
+      "phase": "ui",
+      "observedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "sessionIds": [
+        "01a1a47b-2e35-7aba-8d7e-da04b141b2d3"
+      ],
+      "toolCalls": 24
+    },
+    {
+      "phase": "review",
+      "observedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "sessionIds": [
+        "01a1a483-5864-779d-badd-08dada87922c"
+      ],
+      "toolCalls": 13
+    },
+    {
+      "phase": "review2",
+      "observedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "sessionIds": [
+        "01a1a48f-c000-7138-bdcc-b819c6a993f5"
+      ],
+      "toolCalls": 8
+    },
+    {
+      "phase": "review3",
+      "observedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "sessionIds": [
+        "01a1a4a0-dd4a-78bd-845c-d664f50986c2"
+      ],
+      "toolCalls": 0
+    },
+    {
+      "phase": "device-adapt",
+      "observedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "sessionIds": [
+        "01a1a4ac-52fa-7a0d-bc0e-a5ba532cee7c"
+      ],
+      "toolCalls": 18
+    }
+  ],
+  "ownership": {
+    "backend": [
+      "workout/data/WorkoutRepository.kt",
+      "workout/data/WorkoutDatabase.kt",
+      "domain/command/WorkoutCommand.kt",
+      "domain/command/CommandExecutor.kt"
+    ],
+    "workoutUi": [
+      "workout/WorkoutScreens.kt",
+      "workout/WorkoutViewModel.kt"
+    ],
+    "deviceAdapt": [
+      "androidTest/ui/NavigationDeviceTest.kt",
+      "androidTest/ui/ShellRecreationDeviceTest.kt",
+      "androidTest/workout/WorkoutAnatomyDeviceTest.kt"
+    ],
+    "main": "Shared app integration, repository transaction and backup recovery, independent diff/build/device evidence review; phone DS runs only fixed drivers."
+  },
+  "reviewDisposition": [
+    "Cross-database nested writes removed.",
+    "Touched workout rows retained before writes; main commit marker determines restart restoration.",
+    "Uses existing AndroidX AtomicFile for consistent staged first writes across supported Android versions.",
+    "No backend actual-effort value reported; no inference made."
+  ],
+  "privateDataSharedWithDs": false
+}

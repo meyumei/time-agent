@@ -5,6 +5,7 @@ import com.timeagent.data.*
 import com.timeagent.assistant.*
 import com.timeagent.fish.TimeToolQueries
 import com.timeagent.recurring.RecurringService
+import com.timeagent.workout.data.WorkoutRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -115,6 +116,11 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
                                 payload = gson.toJson(ledger.applyMutation(command.mutation))
                                 emptyList()
                             }
+                            is WriteWorkout -> {
+                                val workoutDb = requireNotNull(repository.workoutDatabase) { "训练数据库尚未就绪" }
+                                payload = gson.toJson(WorkoutRepository(workoutDb, repository, repository.commandClock).applyMutation(command.mutation))
+                                emptyList()
+                            }
                             else -> error("不支持的命令")
                         }
                     }
@@ -149,6 +155,10 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
     } catch (_: TimerAlreadyRunning) {
         CommandResult(command.requestId, CommandStatus.CONFLICT, message = "已有计时正在进行，请先确认切换",
             conflict = ConflictInfo("RECORD", "", null, null, null, "RUNNING_TIMER"))
+    } catch (_: com.timeagent.core.workout.WorkoutAlreadyActive) {
+        CommandResult(command.requestId, CommandStatus.CONFLICT,
+            message = "已有训练正在进行或暂停，请返回训练结束或确认切换后再开始",
+            conflict = ConflictInfo("WORKOUT_SESSION", "", null, null, null, "RUNNING_WORKOUT"))
     } catch (_: DateTimeException) {
         CommandResult(command.requestId, CommandStatus.INVALID, message = "日期时间格式无效，请使用带时区的 ISO-8601 时间，尚未保存")
     } catch (e: IllegalArgumentException) {
@@ -327,6 +337,14 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
             is LedgerMutation.Ignore -> "忽略支付草稿"
             is LedgerMutation.Confirm -> "确认支付草稿"
             is LedgerMutation.Import -> "导入账单"
+        }
+        is WriteWorkout -> when (val mutation = command.mutation) {
+            is WorkoutMutation.Start, is WorkoutMutation.StartFromTemplate, is WorkoutMutation.RepeatSession -> "开始训练"
+            is WorkoutMutation.SaveSession -> mutation.label
+            is WorkoutMutation.Finish -> "结束训练"
+            is WorkoutMutation.SaveTemplate -> "保存训练模板"
+            is WorkoutMutation.DeleteTemplate -> "删除训练模板"
+            is WorkoutMutation.SwitchToTimer -> "结束训练并开始计时"
         }
         is DeliverReminder -> "投递提醒"
         is ReadTimeData -> "查询"

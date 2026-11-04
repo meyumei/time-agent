@@ -1,0 +1,112 @@
+{
+  "date": "2026-11-04",
+  "device": "Redmi K70 Ultra, USB",
+  "firstAttempt": {
+    "tests": 78,
+    "failures": 5,
+    "groups": {
+      "ui": {
+        "tests": 13,
+        "failures": 4
+      },
+      "business": {
+        "tests": 11,
+        "failures": 1
+      },
+      "commands": {
+        "tests": 54,
+        "failures": 0
+      }
+    },
+    "artifact": "pre-recovery and pre-adapted device scripts",
+    "resolution": "Current navigation locators and workout trampoline expectation updated without dropping business assertions; current frozen artifact retested."
+  },
+  "currentAttempt": {
+    "groups": {
+      "ui": {
+        "group": "ui",
+        "fontScale": "1.0",
+        "passed": true,
+        "testCount": 13,
+        "failures": null,
+        "instrumentationProcessExitCode": 0,
+        "elapsedSeconds": 237.18
+      },
+      "business": {
+        "group": "business",
+        "fontScale": "1.0",
+        "passed": true,
+        "testCount": 11,
+        "failures": null,
+        "instrumentationProcessExitCode": 0,
+        "elapsedSeconds": 11.72
+      },
+      "commands": {
+        "group": "commands",
+        "fontScale": "1.0",
+        "passed": true,
+        "testCount": 54,
+        "failures": null,
+        "instrumentationProcessExitCode": 0,
+        "elapsedSeconds": 5.55
+      }
+    },
+    "totalTests": 78,
+    "failures": 0,
+    "isolatedPackage": "com.timeagent.acceptance",
+    "formalAppUpdated": false
+  },
+  "recoveryProbe": {
+    "passed": true,
+    "scope": "isolated app; synthetic interrupted states followed by actual process restart and UI completion",
+    "exactTimedKillBetweenCommits": false,
+    "apkSha256": "14a4e385a0d50c809a329ef360c902045baa9d43dc3c64c86b2a0fb0a71da759",
+    "fontScale": "1.0",
+    "cases": [
+      {
+        "case": "uncommitted-start-switch-restores-original-and-removes-new",
+        "passed": true
+      },
+      {
+        "case": "uncommitted-finish-restores-active-without-actual",
+        "passed": true
+      },
+      {
+        "case": "committed-marker-retains-result",
+        "passed": true
+      },
+      {
+        "case": "interrupted-first-file-write-does-not-block-startup",
+        "passed": true
+      },
+      {
+        "case": "real-ui-finish-preserves-eight-metrics-four-set-types-and-one-actual",
+        "passed": true
+      },
+      {
+        "case": "completed-reopen-does-not-duplicate-actual",
+        "passed": true
+      }
+    ]
+  },
+  "systemFontScale": "1.0",
+  "privateBackup": {
+    "complete": true,
+    "bytes": 288914440,
+    "mainVersion": 14,
+    "workoutVersion": 1,
+    "integrity": "ok",
+    "contentsPublished": false
+  },
+  "limitations": [
+    "Only this connected Android device; not the full API/permission/background matrix.",
+    "No timed process kill between actual commits proven yet.",
+    "Eight-metric UI recording and notifications still need separate evidence."
+  ],
+  "formalAppUpdated": false,
+  "probeFailuresRetained": [
+    "fixture-upload-was-not-applied",
+    "missing-active-session-wait",
+    "synthetic-bodyweight-missing"
+  ]
+}

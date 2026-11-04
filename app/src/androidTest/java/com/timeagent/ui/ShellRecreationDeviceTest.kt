@@ -27,7 +27,7 @@ class ShellRecreationDeviceTest {
         ready()
         val fish = FishSession.current()
         tab("计划")
-        compose.onNodeWithTag("plan-create").performClick()
+        compose.onNodeWithContentDescription("新建任务").performClick()
         compose.onNodeWithText("任务名称").performTextInput("DEVICE_ROTATION_DRAFT")
         compose.onNodeWithText("取消").performClick()
         compose.onNodeWithText("保留草稿").performClick()
