@@ -190,7 +190,13 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         val saved=item.copy(version=nextVersion("RECURRING_INSTANCE",item.id,before?.version))
         dao.putRecurringInstance(saved);journal("RECURRING_INSTANCE",item.id,before,saved,"保存周期实例");saved
     }
-    suspend fun saveProject(item: ProjectEntity, expectedVersion: Long? = null): ProjectEntity = transaction {
+    suspend fun saveProject(item: ProjectEntity, expectedVersion: Long? = null,
+        requestId: String = UUID.randomUUID().toString()): ProjectEntity = transaction {
+        val result = commands.executeForRepository(WriteProject(requestId, ProjectMutation.Save(item, expectedVersion)))
+        result.throwIfRejected()
+        gson.fromJson(requireNotNull(result.payload), ProjectEntity::class.java)
+    }
+    internal suspend fun saveProjectRaw(item: ProjectEntity, expectedVersion: Long? = null): ProjectEntity = transaction {
         require(item.id.isNotBlank() && item.name.trim().length in 1..100) { "请填写项目名称，最多100字" }
         require(item.status in setOf("ACTIVE", "PAUSED", "COMPLETED")) { "项目状态无效" }
         val before = dao.project(item.id); checkVersion(before?.version, expectedVersion)
@@ -198,7 +204,10 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         val saved = item.copy(name = item.name.trim(), deletedAt = before?.deletedAt, createdAt = before?.createdAt ?: now().toEpochMilli(), updatedAt = now().toEpochMilli(), version = nextVersion("PROJECT", item.id, before?.version))
         dao.putProject(saved); journal("PROJECT", item.id, before, saved, "保存项目"); saved
     }
-    suspend fun deleteProject(id: String, expectedVersion: Long) = transaction {
+    suspend fun deleteProject(id: String, expectedVersion: Long, requestId: String = UUID.randomUUID().toString()) = transaction {
+        commands.executeForRepository(WriteProject(requestId, ProjectMutation.Delete(id, expectedVersion))).throwIfRejected()
+    }
+    internal suspend fun deleteProjectRaw(id: String, expectedVersion: Long) = transaction {
         val before = requireNotNull(dao.project(id)); checkVersion(before.version, expectedVersion)
         val saved = before.copy(deletedAt = now().toEpochMilli(), updatedAt = now().toEpochMilli(), version = nextVersion("PROJECT",id,before.version))
         dao.putProject(saved); journal("PROJECT", id, before, saved, "删除项目（保留任务及历史归属）")
@@ -216,7 +225,13 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         }
         require(all.none { child -> child.parentTaskId == item.taskId && (item.parentTaskId != null || child.projectId != item.projectId) }) { "请先处理子任务归属；不自动移动整组任务" }
     }
-    suspend fun savePlacement(item: TaskPlacementEntity, expectedVersion: Long? = null): TaskPlacementEntity = transaction {
+    suspend fun savePlacement(item: TaskPlacementEntity, expectedVersion: Long? = null,
+        requestId: String = UUID.randomUUID().toString()): TaskPlacementEntity = transaction {
+        val result = commands.executeForRepository(WriteProject(requestId, ProjectMutation.PlaceTask(item, expectedVersion)))
+        result.throwIfRejected()
+        gson.fromJson(requireNotNull(result.payload), TaskPlacementEntity::class.java)
+    }
+    internal suspend fun savePlacementRaw(item: TaskPlacementEntity, expectedVersion: Long? = null): TaskPlacementEntity = transaction {
         val before = dao.placement(item.taskId); checkVersion(before?.version, expectedVersion)
         validatePlacement(item)
         val saved = item.copy(version = nextVersion("PLACEMENT",item.taskId,before?.version))
@@ -229,7 +244,13 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         item.activityId?.let { require(dao.activity(it)?.let { a -> a.archivedAt == null } == true) { "活动不存在或已归档" } }
         require(dao.weeklyGoals().none { it.id != item.id && it.projectId == item.projectId && it.activityId == item.activityId && it.weekStart == item.weekStart }) { "此目标已有本周投入，请编辑原目标" }
     }
-    suspend fun saveWeeklyGoal(item: WeeklyGoalEntity, expectedVersion: Long? = null): WeeklyGoalEntity = transaction {
+    suspend fun saveWeeklyGoal(item: WeeklyGoalEntity, expectedVersion: Long? = null,
+        requestId: String = UUID.randomUUID().toString()): WeeklyGoalEntity = transaction {
+        val result = commands.executeForRepository(WriteProject(requestId, ProjectMutation.SaveGoal(item, expectedVersion)))
+        result.throwIfRejected()
+        gson.fromJson(requireNotNull(result.payload), WeeklyGoalEntity::class.java)
+    }
+    internal suspend fun saveWeeklyGoalRaw(item: WeeklyGoalEntity, expectedVersion: Long? = null): WeeklyGoalEntity = transaction {
         val before = dao.weeklyGoal(item.id); checkVersion(before?.version, expectedVersion); validateGoal(item)
         val saved = item.copy(version = nextVersion("GOAL",item.id,before?.version))
         dao.putWeeklyGoal(saved); journal("GOAL",item.id,before,saved,"保存周目标"); saved
@@ -490,9 +511,18 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
     }
     private suspend fun activeTask(id: String): TaskEntity = requireNotNull(dao.task(id)?.takeIf { it.deletedAt == null && it.status != "CANCELLED" }) { "任务不存在或已删除" }
 
-    suspend fun saveTask(task: TaskEntity, expectedVersion: Long? = null): TaskEntity = transaction {
+    suspend fun saveTask(task: TaskEntity, expectedVersion: Long? = null,
+        requestId: String = UUID.randomUUID().toString()): TaskEntity = transaction {
+        val result = commands.executeForRepository(WriteTaskDetails(requestId, task, expectedVersion))
+        result.throwIfRejected()
+        gson.fromJson(requireNotNull(result.payload), TaskEntity::class.java)
+    }
+    internal suspend fun saveTaskRaw(task: TaskEntity, expectedVersion: Long? = null): TaskEntity = transaction {
         require(task.id.isNotBlank() && task.title.isNotBlank()) { "任务名称不能为空" }
-        require(task.estimatedMinutes in 1..10080 && task.priority in 0..2) { "预计时长或优先级无效" }
+        require(task.estimatedMinutes in 1..10080 && task.priority in -1..2) {
+            applicationContext?.getString(com.timeagent.R.string.task_invalid_estimate_priority)
+                ?: "Estimated duration or priority is invalid."
+        }
         require(task.status in setOf("TODO", "IN_PROGRESS", "COMPLETED", "CANCELLED")) { "任务状态无效" }
         val before = dao.task(task.id)
         checkVersion(before?.version, expectedVersion)
@@ -506,14 +536,10 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
 
     /** Grid creation is one atomic operation; an invalid plan never leaves an orphan task. */
     suspend fun saveTaskAndPlan(task: TaskEntity, planId: String, span: TimeSpan): TaskEntity = transaction {
-        dao.plan(planId)?.let { existing ->
-            require(existing.taskId == task.id && existing.startAt == span.start.toEpochMilli() && existing.endAt == span.end.toEpochMilli()) { "请求已使用，请重新创建日程" }
-            return@transaction requireNotNull(dao.task(task.id))
-        }
-        require(dao.task(task.id) == null) { "任务已存在，请重新创建日程" }
-        val saved = saveTask(task)
-        savePlan(ScheduleBlockEntity(planId, saved.id, span.start.toEpochMilli(), span.end.toEpochMilli()))
-        saved
+        val result = commands.executeForRepository(WriteTaskDetails("task-plan:$planId", task, null,
+            newPlan = ScheduleBlockEntity(planId, task.id, span.start.toEpochMilli(), span.end.toEpochMilli(), timezoneId = zone.id)))
+        result.throwIfRejected()
+        gson.fromJson(requireNotNull(result.payload), TaskEntity::class.java)
     }
 
     suspend fun saveAssistantEvent(task: TaskEntity, plan: ScheduleBlockEntity, expectedConflicts: List<Conflict>) = transaction {

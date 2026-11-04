@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="task_tag_missing">所选标签已删除，本次未保存；请重新选择标签。</string>
+    <string name="task_tags_read_failed">任务标签读取失败，本次未保存；请重新打开页面。</string>
+    <string name="task_save_action">保存任务</string>
+    <string name="task_saved_undo">任务已保存</string>
+    <string name="task_completed_undo">任务已完成，未自动添加实际记录</string>
+    <string name="task_reopened_undo">任务已恢复</string>
+    <string name="task_project_field">项目</string>
+    <string name="task_tags_field">标签</string>
+    <string name="task_no_project">无项目</string>
+    <string name="task_adjust_time">调整时间</string>
+    <string name="task_project_missing">所选项目已删除，本次未保存；请重新选择项目。</string>
+    <string name="task_remove_missing_tags">移除已删除的标签</string>
+    <string name="task_priority_none">无优先级</string>
+    <string name="task_priority_low">低优先级</string>
+    <string name="task_priority_medium">中优先级</string>
+    <string name="task_priority_high">高优先级</string>
+    <string name="task_invalid_estimate_priority">预计耗时须为 1 至 10080 分钟，优先级须为无、低、中或高。</string>
+    <string name="task_detail_summary">预计 %1$s · %2$s · %3$s</string>
+    <string name="task_row_summary">%1$s · %2$s</string>
+    <string name="task_status_done">已完成</string>
+    <string name="task_status_open">待完成</string>
+    <string name="project_write_action">更新项目与周目标</string>
+</resources>

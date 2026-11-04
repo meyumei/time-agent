@@ -8,15 +8,18 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.activity.compose.BackHandler
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.timeagent.R
 import com.timeagent.data.*
+import com.timeagent.projects.projectProgress
 import java.time.DayOfWeek
-import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -24,6 +27,36 @@ import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 private val PROJECT_STATUSES = listOf("ACTIVE", "PAUSED", "COMPLETED")
+
+/** Freezes the version shown by an open editor across configuration changes; never re-reads the latest row. */
+private val projectEntitySaver: Saver<ProjectEntity?, ArrayList<String>> = Saver(
+    save = { project ->
+        if (project == null) arrayListOf("")
+        else arrayListOf(
+            project.id,
+            project.name,
+            project.dueAt?.toString() ?: "",
+            project.status,
+            project.createdAt.toString(),
+            project.updatedAt.toString(),
+            project.version.toString(),
+            project.deletedAt?.toString() ?: ""
+        )
+    },
+    restore = { values ->
+        if (values.isEmpty() || values[0].isEmpty()) null
+        else ProjectEntity(
+            id = values[0],
+            name = values[1],
+            dueAt = values[2].toLongOrNull(),
+            status = values[3],
+            createdAt = values[4].toLong(),
+            updatedAt = values[5].toLong(),
+            version = values[6].toLong(),
+            deletedAt = values[7].toLongOrNull()
+        )
+    }
+)
 
 private fun projectStatusLabel(status: String): String = when (status) {
     "ACTIVE" -> "进行中"
@@ -71,17 +104,18 @@ fun ProjectScreen(
     }
     val tasks = remember(data.tasks) { data.tasks.filter { it.deletedAt == null && it.status != "CANCELLED" } }
     val placements = remember(data.placements) { data.placements.associateBy { it.taskId } }
+    val weekStart = mondayOf(now, zone)
 
     var detailId by rememberSaveable(initialProjectId) { mutableStateOf(initialProjectId) }
     val detail = projects.firstOrNull { it.id == detailId }
     BackHandler(enabled = detailId != null) { detailId = null }
-    var showCreate by remember { mutableStateOf(false) }
-    var editing by remember { mutableStateOf<ProjectEntity?>(null) }
-    var deleting by remember { mutableStateOf<ProjectEntity?>(null) }
-    var addingExistingFor by remember { mutableStateOf<ProjectEntity?>(null) }
-    var addingTaskFor by remember { mutableStateOf<ProjectEntity?>(null) }
-    var addingTaskParentId by remember { mutableStateOf<String?>(null) }
-    var goalFor by remember { mutableStateOf<ProjectEntity?>(null) }
+    var showCreate by rememberSaveable { mutableStateOf(false) }
+    var editing by rememberSaveable(stateSaver = projectEntitySaver) { mutableStateOf<ProjectEntity?>(null) }
+    var deleting by rememberSaveable(stateSaver = projectEntitySaver) { mutableStateOf<ProjectEntity?>(null) }
+    var addingExistingFor by rememberSaveable(stateSaver = projectEntitySaver) { mutableStateOf<ProjectEntity?>(null) }
+    var addingTaskFor by rememberSaveable(stateSaver = projectEntitySaver) { mutableStateOf<ProjectEntity?>(null) }
+    var addingTaskParentId by rememberSaveable { mutableStateOf<String?>(null) }
+    var goalFor by rememberSaveable(stateSaver = projectEntitySaver) { mutableStateOf<ProjectEntity?>(null) }
 
     Scaffold(
         topBar = {
@@ -115,6 +149,14 @@ fun ProjectScreen(
             items(if (detail != null) listOf(detail) else projects, key = { it.id }) { project ->
                 val owned = tasks.filter { placements[it.id]?.projectId == project.id }
                 val projectTasks = owned
+                val weekProgress = remember(project.id, data, weekStart, now) {
+                    projectProgress(data, project.id, weekStart, now, zone)
+                }
+                val weekTargetMinutes = remember(project.id, data.weeklyGoals, weekStart) {
+                    data.weeklyGoals
+                        .firstOrNull { it.projectId == project.id && it.weekStart == weekStart.toString() }
+                        ?.targetMinutes?.toLong()
+                }
                 if (detail != null) {
                     val completed = owned.count { it.status == "COMPLETED" }
                     Text("已完成 $completed / ${owned.size} 项", style = MaterialTheme.typography.titleMedium)
@@ -126,18 +168,21 @@ fun ProjectScreen(
                             .firstOrNull()
                         if (next != null) {
                             val plannedMinutes = data.plans
-                                .filter { it.taskId == next.id && it.status == "SCHEDULED" && it.endAt > it.startAt }
-                                .sumOf { (it.endAt - it.startAt) / 60_000L }
+                                .filter {
+                                    it.taskId == next.id && it.status == "SCHEDULED" &&
+                                        it.deletedAt == null && it.kind != "POINT" && it.endAt > it.startAt
+                                }
+                                .sumOf { plan ->
+                                    (plan.endAt - plan.startAt) / 1000L
+                                } / 60
                             val nextRecords = data.records.filter { it.taskId == next.id }
-                            val actualMinutes = nextRecords.sumOf { record ->
-                                val start = Instant.ofEpochMilli(record.startAt)
-                                val end = minOf(record.endAt?.let(Instant::ofEpochMilli) ?: now, now)
-                                if (end.isAfter(start)) Duration.between(start, end).seconds / 60 else 0L
-                            }
+                            val actualSpans = nextRecords.flatMap { data.actualSpans(it, now) }
+                            val actualMinutes = actualSpans.sumOf { it.seconds } / 60
                             Button(onClick = { onTask(next) }, modifier = Modifier.fillMaxWidth().testTag("project-next-task")) { Text("下一步 · ${next.title}") }
                             Text(
-                                text = "下一步投入：计划 $plannedMinutes 分钟 · 实际 $actualMinutes 分钟" +
-                                    if (nextRecords.isEmpty()) "（暂无实际记录）" else "（实际来自 ${nextRecords.size} 条记录）",
+                                text = stringResource(R.string.project_next_plan_actual, plannedMinutes, actualMinutes) +
+                                    if (actualSpans.isEmpty()) stringResource(R.string.project_next_no_actual)
+                                    else stringResource(R.string.project_next_actual_sources, nextRecords.size),
                                 style = MaterialTheme.typography.bodySmall
                             )
                             if (onSchedule != null) {
@@ -154,6 +199,9 @@ fun ProjectScreen(
                     projectTasks = projectTasks,
                     placements = placements,
                     zone = zone,
+                    weekTargetMinutes = weekTargetMinutes,
+                    weekRecordedMinutes = weekProgress.recordedMinutes,
+                    weekHasRecords = weekProgress.records.isNotEmpty(),
                     expanded = project.id == detailId,
                     onToggle = {
                         detailId = project.id
@@ -358,6 +406,9 @@ private fun ProjectSection(
     projectTasks: List<TaskEntity>,
     placements: Map<String, TaskPlacementEntity>,
     zone: ZoneId,
+    weekTargetMinutes: Long?,
+    weekRecordedMinutes: Long,
+    weekHasRecords: Boolean,
     expanded: Boolean,
     onToggle: () -> Unit,
     onTask: (TaskEntity) -> Unit,
@@ -404,6 +455,25 @@ private fun ProjectSection(
                 Text(
                     text = if (expanded) "项目详情" else "查看",
                     style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            val weekText = when {
+                weekTargetMinutes != null && weekHasRecords -> stringResource(
+                    R.string.project_week_progress,
+                    weekRecordedMinutes,
+                    weekTargetMinutes,
+                    (weekRecordedMinutes * 100 / weekTargetMinutes).coerceAtMost(100)
+                )
+                weekTargetMinutes != null -> stringResource(R.string.project_week_target_no_records, weekTargetMinutes)
+                weekHasRecords -> stringResource(R.string.project_week_no_target_progress, weekRecordedMinutes)
+                else -> stringResource(R.string.project_week_no_target_no_records)
+            }
+            Text(text = weekText, style = MaterialTheme.typography.bodySmall)
+            if (weekTargetMinutes != null && weekTargetMinutes > 0) {
+                LinearProgressIndicator(
+                    progress = { (weekRecordedMinutes.toFloat() / weekTargetMinutes).coerceIn(0f, 1f) },
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
 
@@ -507,12 +577,12 @@ private fun ProjectEditDialog(
     onDismiss: () -> Unit,
     onSave: (name: String, dueAt: Long?, status: String) -> Unit
 ) {
-    var name by remember(initial?.id) { mutableStateOf(initial?.name ?: "") }
-    var dueText by remember(initial?.id) {
+    var name by rememberSaveable(initial?.id) { mutableStateOf(initial?.name ?: "") }
+    var dueText by rememberSaveable(initial?.id) {
         mutableStateOf(initial?.dueAt?.let { formatDate(it, zone) } ?: "")
     }
-    var status by remember(initial?.id) { mutableStateOf(initial?.status ?: "ACTIVE") }
-    var error by remember(initial?.id) { mutableStateOf<String?>(null) }
+    var status by rememberSaveable(initial?.id) { mutableStateOf(initial?.status ?: "ACTIVE") }
+    var error by rememberSaveable(initial?.id) { mutableStateOf<String?>(null) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -605,7 +675,7 @@ private fun AddExistingTaskDialog(
             p == null || (p.projectId == null && p.parentTaskId == null)
         }.sortedBy { it.title }
     }
-    var selectedId by remember { mutableStateOf<String?>(null) }
+    var selectedId by rememberSaveable { mutableStateOf<String?>(null) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -666,10 +736,10 @@ private fun AddTaskDialog(
     onDismiss: () -> Unit,
     onConfirm: (title: String, minutes: Int, parentId: String?) -> Unit
 ) {
-    var title by remember { mutableStateOf("") }
-    var minutesText by remember { mutableStateOf("30") }
-    var parentId by remember { mutableStateOf(initialParentId) }
-    var error by remember { mutableStateOf<String?>(null) }
+    var title by rememberSaveable { mutableStateOf("") }
+    var minutesText by rememberSaveable { mutableStateOf("30") }
+    var parentId by rememberSaveable { mutableStateOf(initialParentId) }
+    var error by rememberSaveable { mutableStateOf<String?>(null) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -762,12 +832,16 @@ internal fun WeeklyGoalDialog(
     onDismiss: () -> Unit,
     onSave: (WeeklyGoalEntity, Long?) -> Unit
 ) {
-    var useProject by remember { mutableStateOf(project != null) }
-    var selectedProjectId by remember { mutableStateOf<String?>(project?.id) }
-    var selectedActivityId by remember { mutableStateOf<String?>(null) }
-    var weekText by remember { mutableStateOf(mondayOf(now, zone).toString()) }
-    var minutesText by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf<String?>(null) }
+    var useProject by rememberSaveable { mutableStateOf(project != null) }
+    val seenGoalsJson = rememberSaveable { com.google.gson.Gson().toJson(goals) }
+    val seenGoals = remember(seenGoalsJson) {
+        com.google.gson.Gson().fromJson(seenGoalsJson, Array<WeeklyGoalEntity>::class.java).toList()
+    }
+    var selectedProjectId by rememberSaveable { mutableStateOf<String?>(project?.id) }
+    var selectedActivityId by rememberSaveable { mutableStateOf<String?>(null) }
+    var weekText by rememberSaveable { mutableStateOf(mondayOf(now, zone).toString()) }
+    var minutesText by rememberSaveable { mutableStateOf("") }
+    var error by rememberSaveable { mutableStateOf<String?>(null) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -876,7 +950,7 @@ internal fun WeeklyGoalDialog(
                         return@TextButton
                     }
                     val week = weekDate.toString()
-                    val existing = goals.firstOrNull {
+                    val existing = seenGoals.firstOrNull {
                         it.weekStart == week &&
                             it.projectId == targetProjectId &&
                             it.activityId == targetActivityId

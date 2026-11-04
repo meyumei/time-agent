@@ -1,0 +1,115 @@
+{
+  "date": "2026-11-04",
+  "task": "T4.1 follow-up",
+  "branch": "codex/t4.1-tasklist-followup",
+  "status": "development checkpoint; paused after local commit",
+  "ledger": [
+    "L01",
+    "L03",
+    "L04",
+    "L05",
+    "L20",
+    "L34"
+  ],
+  "databaseSchemaChanged": false,
+  "mainDatabaseVersion": 22,
+  "verification": {
+    "command": "./scripts/build.ps1 -Tasks @(':app:compileDebugKotlin')",
+    "final": {
+      "exitCode": 0,
+      "duration": "9s",
+      "log": ".tmp/remaining-development-20261104/compile-task-details-final-2.log"
+    },
+    "previousSuccess": {
+      "exitCode": 0,
+      "duration": "2m 26s",
+      "log": ".tmp/remaining-development-20261104/compile-task-details-final.log"
+    },
+    "earlierFailure": {
+      "duration": "39s",
+      "log": ".tmp/remaining-development-20261104/compile-task-details-2.log",
+      "issues": [
+        "nullable rememberSaveable type",
+        "empty-state function overload",
+        "project resource generation during active DS edits"
+      ]
+    },
+    "interruptedLog": ".tmp/remaining-development-20261104/compile-task-details-1.log",
+    "diffCheckExitCode": 0,
+    "warnings": [
+      "existing aapt2 Android SDK path warning",
+      "existing deprecated API warnings"
+    ],
+    "testsRun": false,
+    "lintAnalysisRun": false,
+    "deviceUsed": false
+  },
+  "collaboration": {
+    "cliVersion": "2.171.0",
+    "requestedModel": "deepseek-v4.1-flash",
+    "requestedEffort": "max",
+    "actualEffort": null,
+    "taskList": {
+      "requestedModel": "deepseek-v4.1-flash",
+      "observedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "actualEffort": null,
+      "toolCalls": 32,
+      "stop": "time_limit",
+      "exitCode": 1,
+      "durationSeconds": 540.91,
+      "result": null
+    },
+    "projects": {
+      "requestedModel": "deepseek-v4.1-flash",
+      "observedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "actualEffort": null,
+      "toolCalls": 30,
+      "stop": null,
+      "exitCode": 0,
+      "durationSeconds": 206.09,
+      "result": {
+        "subtype": "success",
+        "num_turns": 83,
+        "is_error": false
+      }
+    },
+    "recurringReview": {
+      "status": "no final report; process absent at checkpoint",
+      "observedModel": "deepseek-v4.1-flash",
+      "toolCalls": 4,
+      "passed": false
+    },
+    "activeOwnedAgentProcessesAtCheckpoint": 0
+  },
+  "sources": {
+    "app/src/main/java/com/timeagent/backup/BackupSql.kt": "f18a5f68bf447190817fb66552345735f3f8ddd3a0d5dd7556336aecfb16761b",
+    "app/src/main/java/com/timeagent/data/TaskClassification.kt": "bfd1c077320e9f6465da9a6e6ad50e2215a021fb99b92999c50456f67d3d5a66",
+    "app/src/main/java/com/timeagent/data/TimeRepository.kt": "a53f645987d0bf1c64684e6b41dbb53e809600701ecbbed6bba537871a3f3eab",
+    "app/src/main/java/com/timeagent/domain/command/CommandExecutor.kt": "a5c12f7c626d3a1c06359cfa02c6cdce025cdb71a8d6db9a9ad94dc12869246d",
+    "app/src/main/java/com/timeagent/domain/command/WriteProject.kt": "eb77bef2d3c483e48d86eb10c0008026b583461bb917eeca751845715af21fd4",
+    "app/src/main/java/com/timeagent/domain/command/WriteTaskDetails.kt": "c663ea36b334c645778d62c7474a09201ff9c3d322bd4304600e248a78eb9ad7",
+    "app/src/main/java/com/timeagent/ui/ButlerHomeScreens.kt": "dcb9de1e815d7739f7e9c63bd971acb63d03b817d649991b5cc84d0e7fa97494",
+    "app/src/main/java/com/timeagent/ui/DeadlineOverview.kt": "de74263fc3bc7a8d6f3468a37b3fdad5c4711c061dab43b849b78fb2f85ef3e4",
+    "app/src/main/java/com/timeagent/ui/DeadlineScreen.kt": "3392080294f50506a1a95d53dbbbcddd87eaaaca2dfda01c675612e4376a77bf",
+    "app/src/main/java/com/timeagent/ui/Editors.kt": "635c50cf52585de4ad72241b89b2685f716111ee9117d5dd7a143bce649b1f2e",
+    "app/src/main/java/com/timeagent/ui/ProjectScreens.kt": "9055547287226df04522907751d795b295ca713706be3b23680af651f34430a6",
+    "app/src/main/java/com/timeagent/ui/TaskListContent.kt": "7a0f884717727cca8001a94750ed9adcfa998791733d5963234107bf887c34a6",
+    "app/src/main/java/com/timeagent/ui/TaskListPreferences.kt": "16dea1a4d721317ff787a806d9a9798922cd4de8fa9f75565db7a5f36776fb30",
+    "app/src/main/java/com/timeagent/ui/TaskPriority.kt": "baacb23a64fa198d06286c9b508111199745fd59d46884812cdc0e6446a16c40",
+    "app/src/main/java/com/timeagent/ui/TaskQuickDraft.kt": "11983fe8968d52eebb1ef4e59e0d115278bd7fb4073aa1b5b5b8cf3e7a614274",
+    "app/src/main/java/com/timeagent/ui/TimeAgentApp.kt": "12fad6378e43e27c59286e35ca946af4fec5d117ad997c356e144a5b1a1ff685",
+    "app/src/main/java/com/timeagent/ui/TimeViewModel.kt": "14b68a1645485c1252e156f43fc4493de87817dfe64da9fd0cc8dc4e38d76caa",
+    "app/src/main/res/values/deadline_overview_strings.xml": "c7bedd1c0e8d8371c1a6edc0284992215bec0a96b7e406d5278601a77761daf3",
+    "app/src/main/res/values/project_progress_strings.xml": "88e936901eaffa56bd56800a815f86f7ca7dce36700a937f52993f0a6eae07de",
+    "app/src/main/res/values/task_editor_strings.xml": "a9da6dd9802e555ca756dc165130db2339865b1a72c9360bba13ad3c371ddc99",
+    "app/src/main/res/values/task_list_strings.xml": "0928c84e0aaea33332f71c7656456fbbf6c87121a4643e210d249b9250b4f983"
+  },
+  "limitations": [
+    "No device, migration, backup round-trip or gesture acceptance",
+    "No complete T4.1, T2.5 or stage2-5 completion claim",
+    "Further module gaps listed in docs/t4.1-tasklist-followup.md",
+    "No push, new draft PR or main merge at pause checkpoint"
+  ]
+}

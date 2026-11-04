@@ -78,6 +78,10 @@ fun PlanHubScreen(
     reselectRevision: Int = 0,
     scheduleContent: @Composable () -> Unit = {},
     moduleContent: @Composable (Int, () -> Unit) -> Unit = { _, _ -> },
+    tags: List<com.timeagent.data.TagEntity> = emptyList(),
+    taskTagIds: Map<String, Set<String>> = emptyMap(),
+    now: Instant = Instant.now(),
+    onQuickDraft: ((QuickTaskDraft) -> Unit)? = null,
 ) {
     var selectedTab by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableIntStateOf(0) }
     val tabStates = androidx.compose.runtime.saveable.rememberSaveableStateHolder()
@@ -108,6 +112,7 @@ fun PlanHubScreen(
                 data = data, zone = zone, onSelect = onSelect, onCreate = onCreate, onStart = onStart,
                 onToggle = onToggle, onSchedule = onSchedule, onDelete = onDelete,
                 onQuickPreview = onQuickPreview, reselectRevision = reselectRevision,
+                tags = tags, taskTagIds = taskTagIds, now = now, onQuickDraft = onQuickDraft,
             )
         } else {
             moduleContent(selectedTab) { selectedTab = 0 }
@@ -468,7 +473,7 @@ private fun PlanTaskRow(
 ) {
     val meta = buildList {
         add("预计 ${task.estimatedMinutes} 分钟")
-        add("${planPriorityLabel(task.priority)}优先级")
+        add(androidx.compose.ui.res.stringResource(taskPriorityLabelResource(task.priority)))
         if (task.status == "IN_PROGRESS") add("进行中")
         task.dueAt?.let { add("截止 ${planDateTime(it, zone)}") }
     }.joinToString(" · ")
@@ -575,9 +580,6 @@ private fun planWeekday(day: Int): String = when (day) {
     7 -> "日"
     else -> "?"
 }
-
-private fun planPriorityLabel(priority: Int): String =
-    listOf("低", "中", "高").getOrElse(priority) { "中" }
 
 private fun planInstanceDate(instance: RecurringInstanceEntity, zone: ZoneId): LocalDate? {
     val scheduled = instance.scheduledAt

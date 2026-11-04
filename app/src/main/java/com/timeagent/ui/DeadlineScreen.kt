@@ -142,6 +142,8 @@ fun DeadlineScreen(
     model: TimeViewModel,
     onTask: (TaskEntity) -> Unit,
     onClose: () -> Unit,
+    onSchedule: (TaskEntity) -> Unit = onTask,
+    onToggleTask: (TaskEntity) -> Unit = onTask,
 ) {
     val context = LocalContext.current
     val now by model.now.collectAsStateWithLifecycle()
@@ -166,7 +168,6 @@ fun DeadlineScreen(
     val rules = data.recurringRules.filter { it.domain == DEADLINE_DOMAIN && it.deletedAt == null }
     val taskById = data.tasks.associateBy { it.id }
     val nextItems = nextPendingDeadlines(rules, data.recurringInstances, taskById, zone)
-    val grouped = nextItems.groupBy { deadlineBucketFor(it.dueAt, now.toEpochMilli(), zone) }
     val handledItems = handledDeadlines(rules, data.recurringInstances, taskById, zone)
 
     fun editRule(rule: RecurringRuleEntity, from: LocalDate? = null) {
@@ -255,34 +256,9 @@ fun DeadlineScreen(
                     )
                 }
 
-                if (nextItems.isEmpty()) {
-                    Text(
-                        androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_007),
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(vertical = 12.dp),
-                    )
-                }
-                DeadlineBucket.values().forEach { bucket ->
-                    val items = grouped[bucket].orEmpty()
-                    if (items.isNotEmpty()) {
-                        Text(
-                            "${bucketLabel(bucket)} · ${items.size}",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(top = 12.dp, bottom = 2.dp),
-                        )
-                        items.forEach { item ->
-                            DeadlineFocusRow(
-                                item = item,
-                                zone = zone,
-                                onTask = onTask,
-                                onHandle = { act(item.instance, "COMPLETE") },
-                                onReopen = { act(item.instance, "REOPEN") },
-                                onDelay = { delayChoice = item.instance },
-                            )
-                        }
-                    }
-                }
+                DeadlineOverview(data, nextItems, now, zone, onTask, onSchedule, onToggleTask,
+                    onHandleRecurring = { act(it.instance, "COMPLETE") },
+                    onDelayRecurring = { delayChoice = it.instance })
 
                 if (handledItems.isNotEmpty()) {
                     Row(
