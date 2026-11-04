@@ -45,7 +45,13 @@ export function projectMessages(events) {
     if (!role) return [];
     const message = role === 'user' ? event.data : event.data?.message;
     if (role === 'user' && message?.source?.kind && message.source.kind !== 'user') return [];
-    const text = (message?.content ?? []).filter(b => b.type === 'text').map(b => b.text).join('');
+    let text = (message?.content ?? []).filter(b => b.type === 'text').map(b => b.text).join('');
+    if (role === 'user' && text.startsWith('<!--time-agent-local-context:v1-->\n')) {
+      try {
+        const envelope = JSON.parse(text.split('\n')[1]);
+        if (typeof envelope.userMessage === 'string' && Array.isArray(envelope.confirmedLocalResults)) text = envelope.userMessage;
+      } catch { /* Ordinary user text with the same prefix remains ordinary chat. */ }
+    }
     return text ? [{id:String(event.seq), role, text}] : [];
   });
 }

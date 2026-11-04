@@ -94,6 +94,7 @@ fun SettingsHub(
                 description = "管理通知权限和提醒方式。",
                 testTag = "settings-group-reminders",
             ) {
+                SettingsLink("计时与快捷通知", "计时操作和锁屏隐私。", "timer-settings", onOpen)
                 SettingsLink(
                     title = "通知设置",
                     subtitle = "查看通知与精确闹钟权限。",
@@ -171,7 +172,7 @@ fun SettingsHub(
                 SettingsLink(
                     title = "日历设置",
                     subtitle = "查看发送到系统日历的使用方式。",
-                    route = "calendar-settings",
+                    route = "calendar-sync",
                     onOpen = onOpen,
                 )
             }
@@ -187,6 +188,10 @@ fun SettingsHub(
                     route = "backup",
                     onOpen = onOpen,
                 )
+                SettingsLink("数据导出", "按时间与类型导出 CSV、JSON 或 ICS。", "export", onOpen)
+                SettingsLink("模板与快捷记录", "固定常用计时和批量应用计划。", "quick-entries", onOpen)
+                SettingsLink("计划模板", "保存并应用一组日程与任务。", "plan-templates", onOpen)
+                SettingsLink("引导与示例数据", "重新查看引导，加载或清除示例。", "sample-data", onOpen)
                 SettingsLink(
                     title = "已有工具",
                     subtitle = "课表导入、健康、训练与记录整理。",

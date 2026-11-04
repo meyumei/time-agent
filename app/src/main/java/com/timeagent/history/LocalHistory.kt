@@ -57,17 +57,18 @@ object LocalHistory {
         val tasks = data.tasks.associateBy { it.id }
         val activities = data.activities.associateBy { it.id }
         val categories = data.categories.associateBy { it.id }
+        val contexts = data.entryContexts.filter { it.entityType == "RECORD" }.associateBy { it.entityId }
         val notesByTarget = data.notes.groupBy { it.targetType.uppercase() to it.targetId }
 
         fun chain(id: String?) = activityChain(id, activities)
+        fun activityFor(r: TimeRecordEntity) = contexts[r.id]?.activityId ?: r.taskId?.let { tasks[it] }?.activityId
         fun noteTexts(type: String, id: String?): List<String> =
             if (id == null) emptyList() else notesByTarget[type to id].orEmpty().flatMap { listOf(it.title, it.body) }
 
         fun inScope(r: TimeRecordEntity): Boolean {
             if (filter.taskId != null && r.taskId != filter.taskId) return false
             if (filter.activityId != null) {
-                val taskActivity = r.taskId?.let { tasks[it] }?.activityId
-                if (chain(taskActivity).none { it.id == filter.activityId }) return false
+                if (chain(activityFor(r)).none { it.id == filter.activityId }) return false
             }
             return true
         }
@@ -75,7 +76,7 @@ object LocalHistory {
         // Deleted / archived tasks and activities stay readable here on purpose: history is historical.
         fun haystack(r: TimeRecordEntity): String {
             val task = r.taskId?.let { tasks[it] }
-            val trail = chain(task?.activityId)
+            val trail = chain(activityFor(r))
             val sb = StringBuilder()
             sb.append(r.title).append(' ').append(r.notes).append(' ').append(r.source).append(' ')
             if (task != null) sb.append(task.title).append(' ').append(task.description).append(' ')
@@ -91,7 +92,7 @@ object LocalHistory {
         val spans = ArrayList<TimeSpan>()
         val matchedRecords = ArrayList<TimeRecordEntity>()
         if (includeRecords) {
-            for (r in data.records) {
+            for (r in data.recordsForStatistics(now)) {
                 if (!inScope(r)) continue
                 if (kw.isNotEmpty() && !haystack(r).contains(kw, ignoreCase = true)) continue
                 val span = clipToWindow(r, fromInstant, windowEnd, now) ?: continue
@@ -115,7 +116,7 @@ object LocalHistory {
         val matchedRecordIds = matchedRecords.map { it.id }.toHashSet()
         val matchedTaskIds = matchedRecords.mapNotNull { it.taskId }.toHashSet()
         val matchedActivityIds = HashSet<String>()
-        matchedRecords.forEach { r -> chain(r.taskId?.let { t -> tasks[t] }?.activityId).forEach { matchedActivityIds += it.id } }
+        matchedRecords.forEach { r -> chain(activityFor(r)).forEach { matchedActivityIds += it.id } }
         val matchedWorkoutIds = matchedWorkouts.map { it.id }.toHashSet()
 
         fun insideWindow(stamp: Long) =
@@ -145,7 +146,7 @@ object LocalHistory {
         val label = rangeLabel(filter)
         val text = buildText(
             label, filter, includeWorkouts, stats.recordedMinutes, stats.elapsedMinutes,
-            matchedWorkouts.size, effectiveWorkoutMinutes, matchedRecords.size, matchedNotes.size,
+            matchedWorkouts.size, effectiveWorkoutMinutes, matchedRecordIds.size, matchedNotes.size,
             listOfNotNull(
                 kw.takeIf { it.isNotEmpty() }?.let { "关键词「$it」" },
                 filter.taskId?.let { "任务「${tasks[it]?.title ?: "已移除的任务"}」" },
@@ -161,7 +162,7 @@ object LocalHistory {
             workoutCount = matchedWorkouts.size,
             workoutMinutes = effectiveWorkoutMinutes,
             lastAt = lastAt,
-            records = matchedRecords,
+            records = data.records.filter { it.id in matchedRecordIds },
             workouts = matchedWorkouts,
             notes = matchedNotes,
             text = text,

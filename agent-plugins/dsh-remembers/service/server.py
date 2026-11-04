@@ -518,22 +518,24 @@ class Handler(BaseHTTPRequestHandler):
             body = self._body()
             mem_id = int(body["id"])
             with _lock:
-                current = store.conn.execute("SELECT text FROM memory WHERE id=?", (mem_id,)).fetchone()
-                if current is None:
-                    self._json(404, {"error": "共同记忆不存在"})
-                    return
-                if current["text"] != str(body.get("expectedText", "")):
-                    self._json(409, {"error": "共同记忆已变化，请刷新后重新编辑"})
-                    return
+                text = None
                 if path.endswith("/edit"):
                     text = str(body.get("text", "")).strip()
                     if not text or len(text) > 20000:
                         self._json(400, {"error": "记忆内容须为1至20000字"})
                         return
-                    store.update_text(mem_id, text, summary="")
-                else:
-                    store.forget(mem_id)
-            self._json(200, {"ok": True, "id": mem_id})
+                result = store.change_memory(str(body.get("requestId", "")), mem_id,
+                                             str(body.get("expectedText", "")), text)
+            self._json(200, result)
+        elif path == "/memories/history":
+            with _lock:
+                result = store.memory_changes()
+            self._json(200, {"changes": result})
+        elif path == "/memories/restore":
+            body = self._body()
+            with _lock:
+                result = store.restore_memory_change(str(body["undoToken"]), bool(body.get("undo", True)))
+            self._json(200, result)
         elif path.startswith("/forget/"):
             mem_id = path.rsplit("/", 1)[-1]
             self._guard(lambda: self._forget(mem_id))

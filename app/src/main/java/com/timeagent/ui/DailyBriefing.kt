@@ -39,6 +39,7 @@ import com.timeagent.core.SleepSummary
 import com.timeagent.core.TimeSpan
 import com.timeagent.core.workout.WorkoutSession
 import com.timeagent.core.workout.WorkoutSessionStatus
+import com.timeagent.onboarding.withoutSampleStatistics
 import com.timeagent.data.LocalSnapshot
 import com.timeagent.data.TaskEntity
 import com.timeagent.suggestions.suggestionFreeSlots
@@ -165,12 +166,13 @@ fun buildDailyBriefing(
     sync: BriefingSyncStatus,
     workouts: List<WorkoutSession> = emptyList(),
 ): DailyBriefing {
+    val facts = data.withoutSampleStatistics()
     val nowMs = now.toEpochMilli()
     val today = now.atZone(zone).toLocalDate()
     val tomorrowStartMs = today.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli()
 
     // ---- Due tasks: overdue first, then priority desc, then deadline asc ----
-    val rankedTasks = data.tasks.asSequence()
+    val rankedTasks = facts.tasks.asSequence()
         .filter { it.deletedAt == null }
         .filter { openTaskStatuses.contains(it.status.uppercase(Locale.ROOT)) }
         .mapNotNull { task ->
@@ -190,11 +192,11 @@ fun buildDailyBriefing(
     val overdueCount = rankedTasks.count { it.overdue }
 
     // ---- Next item: earliest actual instant across plans, course occurrences and reminders ----
-    val tasksById = data.tasks.associateBy { it.id }
-    val coursesById = data.courses.associateBy { it.id }
+    val tasksById = facts.tasks.associateBy { it.id }
+    val coursesById = facts.courses.associateBy { it.id }
     val candidates = ArrayList<BriefingItem>()
 
-    for (plan in data.plans) {
+    for (plan in facts.plans) {
         if (excludedBlockStatuses.contains(plan.status.uppercase(Locale.ROOT))) continue
         if (plan.deletedAt != null || (if (plan.kind == "POINT") plan.startAt < nowMs else plan.endAt <= nowMs)) continue
         val task = tasksById[plan.taskId]
@@ -202,13 +204,13 @@ fun buildDailyBriefing(
         val title = plan.displayTitle(task)
         candidates += BriefingItem("PLAN", plan.id, title, plan.startAt, plan.endAt)
     }
-    for (occurrence in data.occurrences) {
+    for (occurrence in facts.occurrences) {
         if (excludedBlockStatuses.contains(occurrence.status.uppercase(Locale.ROOT))) continue
         if (occurrence.endAt <= nowMs) continue
         val title = coursesById[occurrence.courseId]?.name?.takeIf { it.isNotBlank() } ?: "课程"
         candidates += BriefingItem("OCCURRENCE", occurrence.id, title, occurrence.startAt, occurrence.endAt)
     }
-    for (reminder in data.reminders) {
+    for (reminder in facts.reminders) {
         if (!reminder.enabled || reminder.deliveredAt != null) continue
         if (reminder.remindAt < nowMs) continue
         if (reminder.taskId != null && tasksById[reminder.taskId]?.let { it.deletedAt == null && it.status in openTaskStatuses } != true) continue
@@ -227,7 +229,7 @@ fun buildDailyBriefing(
         runCatching { suggestionFreeSlots(data, zone, now, 15) }.getOrDefault(emptyList())
 
     // ---- Sleep: main and nap kept separate, never guessed ----
-    val sleepDays = data.sleepDays(now, zone)
+    val sleepDays = facts.sleepDays(now, zone)
     val todaySleep = sleepDays[today]
     val latestPastDate = sleepDays.keys.filter { it < today }.maxOrNull()
     val latestPast = latestPastDate?.let { sleepDays[it] }
@@ -266,7 +268,7 @@ fun buildDailyBriefing(
             endAt = session.endedAt,
         ) to 2
     }
-    for (record in data.records) {
+    for (record in facts.records) {
         if (!record.source.uppercase(Locale.ROOT).contains("WORKOUT")) continue
         if (record.startAt > nowMs) continue
         trainingCandidates += BriefingTraining(
@@ -277,8 +279,8 @@ fun buildDailyBriefing(
             endAt = record.endAt,
         ) to 1
     }
-    for (item in data.healthItems) {
-        if (item.userDeleted || item.recordId == null || data.records.none { it.id == item.recordId }) continue
+    for (item in facts.healthItems) {
+        if (item.userDeleted || item.recordId == null || facts.records.none { it.id == item.recordId }) continue
         if (!item.kind.uppercase(Locale.ROOT).contains("EXERCISE")) continue
         if (item.startAt > nowMs) continue
         trainingCandidates += BriefingTraining(
@@ -303,7 +305,7 @@ fun buildDailyBriefing(
         sleep = sleepBriefing,
         latestTraining = latestTraining,
         health = buildHealthBriefing(sync),
-        focusTasks = data.tasks.filter { it.deletedAt == null && it.status in openTaskStatuses && it.priority == 2 && dueTasks.none { due -> due.id == it.id } }.map { BriefingTask(it.id, it.title, false) },
+        focusTasks = facts.tasks.filter { it.deletedAt == null && it.status in openTaskStatuses && it.priority == 2 && dueTasks.none { due -> due.id == it.id } }.map { BriefingTask(it.id, it.title, false) },
     )
 }
 
@@ -380,6 +382,7 @@ fun DailyBriefingCard(
     val briefing = remember(data, now.epochSecond / 60, zone, sync, workouts) {
         buildDailyBriefing(data, now, zone, sync, workouts)
     }
+    val facts = remember(data) { data.withoutSampleStatistics() }
     var expanded by rememberSaveable { mutableStateOf(false) }
     val scrollState = rememberScrollState()
 
@@ -432,10 +435,10 @@ fun DailyBriefingCard(
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                     )
-                    val dueProjects = data.projects.filter { it.deletedAt == null && it.status == "ACTIVE" && it.dueAt != null && Instant.ofEpochMilli(it.dueAt).atZone(zone).toLocalDate() <= now.atZone(zone).toLocalDate().plusDays(7) }.sortedBy { it.dueAt }
+                    val dueProjects = facts.projects.filter { it.deletedAt == null && it.status == "ACTIVE" && it.dueAt != null && Instant.ofEpochMilli(it.dueAt).atZone(zone).toLocalDate() <= now.atZone(zone).toLocalDate().plusDays(7) }.sortedBy { it.dueAt }
                     if (dueProjects.isNotEmpty()) Text("临近截止项目（含逾期）", style=MaterialTheme.typography.labelLarge)
                     dueProjects.forEach { project ->
-                        TextButton(onClick={onOpen("PROJECT",project.id)},modifier=Modifier.testTag("briefing-project-${project.id}")) { Text("${project.name} · 截止 ${Instant.ofEpochMilli(project.dueAt!!).atZone(zone).toLocalDate()} · ${data.tasks.count { t -> t.deletedAt == null && t.status in setOf("TODO","IN_PROGRESS") && data.placements.any { it.taskId == t.id && it.projectId == project.id } }} 项待办") }
+                        TextButton(onClick={onOpen("PROJECT",project.id)},modifier=Modifier.testTag("briefing-project-${project.id}")) { Text("${project.name} · 截止 ${Instant.ofEpochMilli(project.dueAt!!).atZone(zone).toLocalDate()} · ${facts.tasks.count { t -> t.deletedAt == null && t.status in setOf("TODO","IN_PROGRESS") && facts.placements.any { it.taskId == t.id && it.projectId == project.id } }} 项待办") }
                     }
                     ExpandedBriefing(briefing = briefing, zone = zone, onOpen = onOpen, onHealth = onHealth)
                 }

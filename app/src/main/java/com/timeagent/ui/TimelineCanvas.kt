@@ -116,7 +116,7 @@ import kotlin.math.roundToInt
             }
         }
         fun updateDrag(item: TimelineItem, kind: TimelineDragKind, amount: Offset) {
-            if (item.kind == ItemKind.COURSE || item.isPoint || item.isAllDay ||
+            if (item.dragReadOnlyReason != null || item.isPoint || item.isAllDay ||
                 (item.kind == ItemKind.RECORD && (item.entity as? TimeRecordEntity)?.endAt == null)
             ) return
             val current = activeDrag
@@ -448,7 +448,7 @@ import kotlin.math.roundToInt
                                 .distinctBy { it.layoutKey } else listOf(live)
                             if (overlapping.size > 1) onConflictGroup(overlapping) else onSelect(live)
                         },
-                        onDragDelta = { kind, amount -> onDragDelta(live, kind, amount) },
+                        onDragDelta = if (live.dragReadOnlyReason == null) { kind, amount -> onDragDelta(live, kind, amount) } else null,
                         onDragEnd = { onDragEnd(live) },
                         onDragCancel = { onDragCancel(live) },
                     )

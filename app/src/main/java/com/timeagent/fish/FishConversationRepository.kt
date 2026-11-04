@@ -50,6 +50,10 @@ class FishConversationRepository(context: Context) {
         _chat.value = _chat.value.copy(busy = value)
     }
 
+    fun completeTurn() {
+        _chat.value = _chat.value.copy(completionRevision = _chat.value.completionRevision + 1)
+    }
+
     fun lastAssistantText(): String = lastAssistantText
 
     fun appendUser(text: String) {
@@ -66,11 +70,14 @@ class FishConversationRepository(context: Context) {
      */
     fun handleHistory(event: JSONObject, onNewAssistantReply: (String) -> Unit) {
         val messages = event.optJSONArray("messages") ?: return
+        val existing = _chat.value.turns.groupBy { it.role to it.text }.mapValues { it.value.toMutableList() }
         val turns = (0 until messages.length()).mapNotNull { index ->
             val message = messages.optJSONObject(index) ?: return@mapNotNull null
             val role = message.optString("role")
             val text = message.optString("text")
-            if (role.isBlank() || text.isBlank()) null else ConversationTurn(role, text)
+            val previous = existing[role to text]?.removeFirstOrNull()
+            if (role.isBlank() || text.isBlank()) null else ConversationTurn(role, text,
+                at = message.optLong("at", previous?.at ?: System.currentTimeMillis()))
         }
         _chat.value = _chat.value.copy(turns = turns)
         val text = turns.lastOrNull { it.role == "assistant" }?.text.orEmpty()
@@ -128,7 +135,7 @@ class FishConversationRepository(context: Context) {
                 val role = item.optString("role")
                 val text = item.optString("text")
                 if (role.isBlank() || text.isBlank()) null
-                else ConversationTurn(role, text, item.optBoolean("localOnly", false))
+                else ConversationTurn(role, text, item.optBoolean("localOnly", false), item.optLong("at", 0))
             }
         } catch (_: Exception) {
             emptyList()
@@ -143,7 +150,8 @@ class FishConversationRepository(context: Context) {
                     JSONObject()
                         .put("role", turn.role)
                         .put("text", turn.text)
-                        .put("localOnly", turn.localOnly),
+                        .put("localOnly", turn.localOnly)
+                        .put("at", turn.at),
                 )
             }
             preferences.edit().putString(KEY_TURNS, array.toString()).apply()

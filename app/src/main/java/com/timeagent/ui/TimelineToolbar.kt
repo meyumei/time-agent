@@ -26,6 +26,7 @@ internal fun TimelineToolbar(
     onDensity: (Double) -> Unit, onToggleList: () -> Unit,
     themeMode: ThemeMode, onThemeMode: (ThemeMode) -> Unit, conflicts: Int, onConflicts: () -> Unit,
     dayCount: Int, onDayCount: (Int) -> Unit, filterState: TimelineFilterState, onFilterState: (TimelineFilterState) -> Unit,
+    onSelectTemplate: (() -> Unit)? = null,
 ) {
     var more by remember { mutableStateOf(false) }
     Row(
@@ -59,6 +60,9 @@ internal fun TimelineToolbar(
                 DropdownMenuItem(text = { Text("重做") }, enabled = canRedo && !busy, onClick = { more = false; onRedo() })
                 DropdownMenuItem(text = { Text("查看冲突（$conflicts）") }, onClick = { more = false; onConflicts() })
                 DropdownMenuItem(text = { Text("添加日程") }, enabled = !busy, onClick = { more = false; onCreate() })
+                onSelectTemplate?.let { action ->
+                    DropdownMenuItem(text = { Text("多选日程存为模板") }, enabled = !busy, onClick = { more = false; action() })
+                }
                 DropdownMenuItem(text = { Text("打开语音输入") }, onClick = { more = false; onAssistant() })
                 HorizontalDivider()
                 DropdownMenuItem(text = { Text("放大 · 每小时 ${(64 * zoom * 1.25).coerceAtMost(160.0).toInt()}dp") },

@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.WarningAmber
+import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -260,6 +261,8 @@ fun TimelineEventCard(
                 } else Modifier)
                 .semantics(mergeDescendants = true) { contentDescription = description }
         ) {
+            if (item.dragReadOnlyReason != null) Icon(Icons.Rounded.Lock, item.dragReadOnlyReason,
+                Modifier.align(Alignment.TopEnd).size(12.dp), tint = muted)
             Row(Modifier.fillMaxSize()) {
                 if (showTitle) {
                     Column(

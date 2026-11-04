@@ -78,7 +78,10 @@ class PersonalBackup(
 
     private suspend fun capture(privateSettings: Boolean): BackupPayload {
         com.timeagent.workout.data.WorkoutWriteRecovery.recover(main, workout)
-        val mainData = main.withTransaction { BackupTables.capture(main.openHelper.writableDatabase.backupSql(), BackupTables.main) }
+        val mainData = main.withTransaction {
+            val captured = BackupTables.capture(main.openHelper.writableDatabase.backupSql(), BackupTables.main)
+            if (privateSettings) captured else captured.withoutSamples()
+        }
         val workoutData = workout.withTransaction { BackupTables.capture(workout.openHelper.writableDatabase.backupSql(), BackupTables.workout) }
         return BackupPayload(System.currentTimeMillis(), context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "unknown",
             requireNotNull(main.openHelper.databaseName) { "完整备份需要本地数据库文件" }, requireNotNull(workout.openHelper.databaseName), mainData, workoutData,

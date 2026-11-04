@@ -480,7 +480,7 @@ class MemoryStore:
         )
         self.conn.commit()
 
-    def update_text(self, mem_id: int, text: str, summary: str | None = None) -> bool:
+    def update_text(self, mem_id: int, text: str, summary: str | None = None, *, commit: bool = True) -> bool:
         """改一条记忆的正文，并重建它的倒排索引。
 
         UPDATE 操作走这里：保留 id 和 created_at，只换内容和索引。
@@ -506,7 +506,8 @@ class MemoryStore:
             (text, effective_summary, time.time(), mem_id),
         )
         self._index_terms(mem_id, text, effective_summary, json.loads(row["tags"] or "[]"))
-        self.conn.commit()
+        if commit:
+            self.conn.commit()
         return True
 
     def reindex(self) -> dict:
@@ -526,7 +527,7 @@ class MemoryStore:
         terms = self.conn.execute("SELECT COUNT(*) FROM term_stat").fetchone()[0]
         return {"reindexed": len(rows), "terms": terms}
 
-    def forget(self, mem_id: int) -> bool:
+    def forget(self, mem_id: int, *, commit: bool = True) -> bool:
         self._invalidate_caches()
         rows = self.conn.execute("SELECT term FROM doc_term WHERE mem_id=?", (mem_id,)).fetchall()
         self.conn.execute("DELETE FROM memory WHERE id=?", (mem_id,))
@@ -535,8 +536,81 @@ class MemoryStore:
         for r in rows:  # 递减 df，删到 0 就清掉
             self.conn.execute("UPDATE term_stat SET df = df - 1 WHERE term=?", (r["term"],))
         self.conn.execute("DELETE FROM term_stat WHERE df <= 0")
-        self.conn.commit()
+        if commit:
+            self.conn.commit()
         return True
+
+    def _memory_snapshot(self, mem_id: int) -> str | None:
+        row = self.conn.execute("SELECT * FROM memory WHERE id=?", (mem_id,)).fetchone()
+        if row is None:
+            return None
+        # Preserve vectors and all original metadata; undo must not re-ingest a new memory.
+        values = {key: ({"bytes": base64.b64encode(value).decode("ascii")}
+                        if isinstance(value, bytes) else value) for key, value in dict(row).items()}
+        return json.dumps(values, ensure_ascii=False, sort_keys=True)
+
+    def change_memory(self, request_id: str, mem_id: int, expected_text: str, text: str | None) -> dict:
+        if not request_id:
+            raise ValueError("Missing request id")
+        with self.conn:
+            existing = self.conn.execute("SELECT * FROM memory_changes WHERE request_id=?", (request_id,)).fetchone()
+            if existing is not None:
+                return {"ok": True, "id": existing["mem_id"], "undoToken": request_id, "undone": bool(existing["undone"])}
+            before = self._memory_snapshot(mem_id)
+            if before is None or json.loads(before)["text"] != expected_text:
+                raise ValueError("共同记忆已变化，请刷新后重新编辑")
+            if text is None:
+                self.forget(mem_id, commit=False)
+            else:
+                self.update_text(mem_id, text, summary="", commit=False)
+                self.conn.execute("UPDATE memory SET vec=NULL, vec_dim=NULL, vec_model=NULL WHERE id=?", (mem_id,))
+            after = self._memory_snapshot(mem_id)
+            self.conn.execute(
+                "INSERT INTO memory_changes(request_id,mem_id,before_json,after_json,created_at) VALUES(?,?,?,?,?)",
+                (request_id, mem_id, before, after, time.time()))
+        return {"ok": True, "id": mem_id, "undoToken": request_id, "undone": False}
+
+    def restore_memory_change(self, request_id: str, undo: bool) -> dict:
+        self._invalidate_caches()
+        with self.conn:
+            change = self.conn.execute("SELECT * FROM memory_changes WHERE request_id=?", (request_id,)).fetchone()
+            if change is None:
+                raise ValueError("共同记忆历史不存在")
+            if bool(change["undone"]) == undo:
+                return {"ok": True, "id": change["mem_id"], "undoToken": request_id, "undone": undo}
+            current = self._memory_snapshot(change["mem_id"])
+            expected = change["after_json"] if undo else change["before_json"]
+            target = change["before_json"] if undo else change["after_json"]
+            def business(snapshot):
+                if snapshot is None:
+                    return None
+                return {key: value for key, value in json.loads(snapshot).items()
+                        if key not in {"vec", "vec_dim", "vec_model", "updated_at"}}
+            # A background embedding refresh is not another user edit.
+            if business(current) != business(expected):
+                raise ValueError("共同记忆已有后续变化，未覆盖。请刷新后核对")
+            if current is not None:
+                self.forget(change["mem_id"], commit=False)
+            if target is not None:
+                values = json.loads(target)
+                values = {key: (base64.b64decode(value["bytes"]) if isinstance(value, dict) else value)
+                          for key, value in values.items()}
+                columns = list(values)
+                self.conn.execute(
+                    "INSERT INTO memory(" + ",".join('"' + key + '"' for key in columns) +
+                    ") VALUES(" + ",".join("?" for _ in columns) + ")",
+                    [values[key] for key in columns])
+                self._index_terms(change["mem_id"], values["text"], values["summary"], json.loads(values["tags"] or "[]"))
+            self.conn.execute("UPDATE memory_changes SET undone=? WHERE request_id=?", (int(undo), request_id))
+        return {"ok": True, "id": change["mem_id"], "undoToken": request_id, "undone": undo}
+
+    def memory_changes(self) -> list[dict]:
+        rows = self.conn.execute(
+            "SELECT request_id,mem_id,before_json,after_json,undone,created_at FROM memory_changes ORDER BY created_at DESC").fetchall()
+        return [{"undoToken": row["request_id"], "id": row["mem_id"],
+                 "text": json.loads(row["before_json"])["text"],
+                 "deleted": row["after_json"] is None, "undone": bool(row["undone"]),
+                 "createdAt": row["created_at"]} for row in rows]
 
     def _index_terms(self, mem_id: int, text: str, summary: str | None,
                      tags: Sequence[str] | None = None) -> None:

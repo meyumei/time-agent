@@ -1,0 +1,137 @@
+{
+  "date": "2026-11-04",
+  "newCallsThisSegment": 0,
+  "privateDataShared": false,
+  "modules": [
+    {
+      "module": "t4.7",
+      "observedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "requestedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "actualEffort": null,
+      "resultSubtype": "success",
+      "isError": false,
+      "reportedTurns": 173,
+      "quotaBlocked": false
+    },
+    {
+      "module": "t4.8",
+      "observedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "requestedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "actualEffort": null,
+      "resultSubtype": "success",
+      "isError": false,
+      "reportedTurns": 384,
+      "quotaBlocked": false
+    },
+    {
+      "module": "t5.1",
+      "observedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "requestedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "actualEffort": null,
+      "resultSubtype": "success",
+      "isError": false,
+      "reportedTurns": 310,
+      "quotaBlocked": false
+    },
+    {
+      "module": "t5.2",
+      "observedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "requestedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "actualEffort": null,
+      "resultSubtype": "error_during_execution",
+      "isError": true,
+      "reportedTurns": 276,
+      "quotaBlocked": false
+    },
+    {
+      "module": "t5.4",
+      "observedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "requestedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "actualEffort": null,
+      "resultSubtype": "success",
+      "isError": false,
+      "reportedTurns": 287,
+      "quotaBlocked": false
+    },
+    {
+      "module": "t5.5",
+      "observedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "requestedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "actualEffort": null,
+      "resultSubtype": "error_during_execution",
+      "isError": true,
+      "reportedTurns": 2,
+      "quotaBlocked": true
+    },
+    {
+      "module": "t5.6",
+      "observedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "requestedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "actualEffort": null,
+      "resultSubtype": "error_during_execution",
+      "isError": true,
+      "reportedTurns": 315,
+      "quotaBlocked": true
+    },
+    {
+      "module": "t5.7",
+      "observedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "requestedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "actualEffort": null,
+      "resultSubtype": "error_during_execution",
+      "isError": true,
+      "reportedTurns": 143,
+      "quotaBlocked": true
+    },
+    {
+      "module": "t5.8",
+      "observedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "requestedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "actualEffort": null,
+      "resultSubtype": "error_during_execution",
+      "isError": true,
+      "reportedTurns": 137,
+      "quotaBlocked": true
+    },
+    {
+      "module": "t5.9",
+      "observedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "requestedModel": "deepseek-v4.1-flash",
+      "requestedEffort": "max",
+      "actualEffort": null,
+      "resultSubtype": "error_during_execution",
+      "isError": true,
+      "reportedTurns": 110,
+      "quotaBlocked": true
+    }
+  ]
+}

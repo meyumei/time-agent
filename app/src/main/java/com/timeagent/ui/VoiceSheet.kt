@@ -19,6 +19,7 @@ fun VoiceSheet(
     chat: AssistantChatState, draft: String, onDraft: (String) -> Unit, onSend: (String) -> Unit,
     voice: HomeVoiceState, liveText: String, suggestion: String?, onSuggestion: () -> Unit,
     onClose: () -> Unit, onSettings: () -> Unit, fish: FishSession?,
+    onOpenLocalResult: (String) -> Unit = {},
 ) {
     BackHandler(onBack = onClose)
     ModalBottomSheet(onDismissRequest = onClose, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
@@ -40,6 +41,9 @@ fun VoiceSheet(
                 }
             }
             VoiceInputBanner(voice.status, liveText)
+            chat.localDestination?.let { destination ->
+                TextButton(onClick = { onOpenLocalResult(destination) }) { Text("打开本地操作结果") }
+            }
             AssistantConversationPanel(chat, draft, onDraft, true, { if (!it) onClose() }, onSend, onSettings,
                 suggestion, onSuggestion, inputAccessory = { fish?.let { com.timeagent.fish.FishStickerPicker(it) } })
             HomeVoiceDock(enabled = !chat.busy, onRecognized = onSend, onMessage = {},

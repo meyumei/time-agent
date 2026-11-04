@@ -38,14 +38,16 @@ class FishSession private constructor(private val context: Context, private val 
         conversation.chat, localAssistant.state,
     ) { remote, local ->
         local.copy(
-            turns = remote.turns + local.turns.map { turn ->
+            turns = (remote.turns + local.turns.map { turn ->
                 if (turn.role == "assistant") turn.copy(text = "本地执行 · ${turn.text}", localOnly = true)
                 else turn.copy(localOnly = true)
-            },
+            }).sortedBy { it.at },
             busy = remote.busy || local.busy,
+            completionRevision = remote.completionRevision + local.completionRevision,
         )
     }.stateIn(scope, kotlinx.coroutines.flow.SharingStarted.Eagerly, conversation.chat.value)
     val draft: StateFlow<String> = conversation.draft
+    fun latestRemoteReply(): String = conversation.lastAssistantText()
     val message: StateFlow<String?> = conversation.notice
     val zone = repository.zone
 
@@ -90,6 +92,8 @@ class FishSession private constructor(private val context: Context, private val 
     val discoveries: StateFlow<List<FishDiscovery>> = memoryGateway.discoveries
     val memoryLoading: StateFlow<Boolean> = memoryGateway.loading
     val memoryReadOnly: StateFlow<Boolean> = memoryGateway.readOnly
+    val memoryHistory = memoryGateway.history
+    val memoryLastChange = memoryGateway.lastChange
 
     private val toolBridge = FishToolBridge(
         scope = scope,
@@ -106,7 +110,28 @@ class FishSession private constructor(private val context: Context, private val 
     private val _characterStatus = MutableStateFlow("")
     val characterStatus: StateFlow<String> = _characterStatus.asStateFlow()
     private val sendLock = Mutex()
-    private val localContextEvents = mutableListOf<String>()
+    private val localContextPreferences = context.getSharedPreferences("fish_local_context", Context.MODE_PRIVATE)
+    private val localContextEvents = JSONObject(localContextPreferences.getString("pending", "{}") ?: "{}")
+    private var sentContextIds: List<String> = emptyList()
+
+    private fun rememberLocalContext(requestId: String, text: String) {
+        localContextEvents.put(requestId, text)
+        localContextPreferences.edit().putString("pending", localContextEvents.toString()).apply()
+    }
+
+    private suspend fun sendRemote(text: String) {
+        sentContextIds = localContextEvents.keys().asSequence().toList()
+        val events = org.json.JSONArray()
+        sentContextIds.forEach { id -> events.put(JSONObject().put("id", id).put("text", localContextEvents.getString(id))) }
+        if (sentContextIds.isNotEmpty()) runtime.rpc.send(JSONObject().put("action", "local_context").put("events", events))
+        runtime.rpc.sendChat(text)
+    }
+
+    private suspend fun flushPending() = sendLock.withLock {
+        if (chat.value.busy || !runtime.status.value.ready || conversation.pending.value.isEmpty()) return@withLock
+        setChatBusy(true)
+        if (conversation.flushPending(::sendRemote) == 0) setChatBusy(false)
+    }
 
     init {
         scope.launch {
@@ -151,6 +176,8 @@ class FishSession private constructor(private val context: Context, private val 
                 if (appForeground) voice.autoRead(text)
             }
             "memories" -> memoryGateway.handle(event)
+            "memory_changed" -> memoryGateway.handleChanged(event)
+            "memory_history" -> memoryGateway.handleHistory(event)
             "platform", "qq", "qq_voice", "proactive" -> platformController.handle(event)
             "voice" -> voice.receive(event)
             "speech" -> voice.handleSpeech(event)
@@ -161,7 +188,13 @@ class FishSession private constructor(private val context: Context, private val 
                     "本机档案已保存，同步未完成：${event.optString("error")}"
                 }
             }
-            "done" -> platformController.companionEvent("done", conversation.lastAssistantText(), "app")
+            "done" -> {
+                sentContextIds.forEach { localContextEvents.remove(it) }
+                sentContextIds = emptyList()
+                localContextPreferences.edit().putString("pending", localContextEvents.toString()).apply()
+                conversation.completeTurn()
+                platformController.companionEvent("done", conversation.lastAssistantText(), "app")
+            }
             "busy" -> {
                 val busy = event.optBoolean("busy")
                 setChatBusy(busy)
@@ -172,7 +205,7 @@ class FishSession private constructor(private val context: Context, private val 
                 ) {
                     platformController.companionEvent("cancel", "", "app")
                 }
-                if (!busy) conversation.flushPending { text -> runtime.rpc.sendChat(text) }
+                if (!busy) flushPending()
             }
             "session_event" -> when (event.optJSONObject("event")?.optString("type")) {
                 "tool/call" -> presence.event("tool")
@@ -190,7 +223,7 @@ class FishSession private constructor(private val context: Context, private val 
             "ready" -> {
                 conversation.setNotice(null)
                 if (character.configured) syncCharacter()
-                conversation.flushPending { text -> runtime.rpc.sendChat(text) }
+                flushPending()
             }
             "stopped" -> {
                 platformController.companionEvent("stopped", "", "app")
@@ -268,12 +301,13 @@ class FishSession private constructor(private val context: Context, private val 
                 val parsed = com.timeagent.assistant.LocalAssistantParser().parse(input, assistantContext)
                 val continuing = localAssistant.state.value.pending != null ||
                     input in setOf("撤销", "重做", "取消", "确认", "确认保存", "确认执行")
-                if (parsed is com.timeagent.assistant.Interpretation.Parsed || continuing) {
+                if (parsed is com.timeagent.assistant.Interpretation.Parsed || continuing ||
+                    localAssistant.matchingQuickEntries(input).isNotEmpty()) {
                     localAssistant.submit(input, assistantContext)
                     localAssistant.state.value.commandResult?.takeIf {
-                        it.status == com.timeagent.domain.command.CommandStatus.APPLIED
+                        it.status in setOf(com.timeagent.domain.command.CommandStatus.APPLIED, com.timeagent.domain.command.CommandStatus.DUPLICATE)
                     }?.let { result ->
-                        localContextEvents += "本地指令：$input；结果：${result.message}"
+                        rememberLocalContext(result.requestId, "本地指令：$input；结果：${result.message}")
                     }
                     if (draft.value.trim() == text.trim()) conversation.editDraft("")
                     return@withLock
@@ -302,12 +336,7 @@ class FishSession private constructor(private val context: Context, private val 
             conversation.appendUser(text)
             setChatBusy(true)
             try {
-                if (localContextEvents.isNotEmpty()) {
-                    runtime.rpc.send(JSONObject().put("action", "local_context")
-                        .put("text", localContextEvents.joinToString("\n")))
-                    localContextEvents.clear()
-                }
-                runtime.rpc.sendChat(input)
+                sendRemote(input)
                 if (draft.value.trim() == text.trim()) conversation.editDraft("")
             } catch (cancelled: CancellationException) {
                 throw cancelled
@@ -333,6 +362,7 @@ class FishSession private constructor(private val context: Context, private val 
     fun loadMemories(query: String = ""): Job = scope.launch { memoryGateway.load(query) }
     fun editMemory(item: FishMemory, text: String) = memoryGateway.edit(item, text)
     fun deleteMemory(item: FishMemory) = memoryGateway.delete(item)
+    fun restoreMemory(token: String, undo: Boolean) = memoryGateway.restore(token, undo)
 
     fun platformAction(operation: String, key: String = "", enabled: Boolean = false): Job =
         platformController.platformAction(operation, key, enabled)

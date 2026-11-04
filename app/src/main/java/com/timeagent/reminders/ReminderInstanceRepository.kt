@@ -178,14 +178,14 @@ class ReminderInstanceRepository(private val repository: TimeRepository) {
     private suspend fun saveRaw(item: ReminderEntity, expectedVersion: Long?, automatic: Boolean): ReminderEntity {
         val normalized = normalize(item)
         val owner = ownerState(normalized)
-        require(owner.active) { ownerError(normalized) }
+        require(owner.active || !normalized.enabled) { ownerError(normalized) }
         val saved = repository.saveReminderRaw(
             item = normalized,
             expectedVersion = expectedVersion,
             automatic = automatic,
         )
-        cancelScheduled(saved.id, journal = true, action = "提醒已更新，取消旧实例")
-        planCanonical(saved, journal = true)
+        cancelScheduled(saved.id, journal = !automatic, action = "提醒已更新，取消旧实例")
+        planCanonical(saved, journal = !automatic)
         return saved
     }
 
@@ -259,7 +259,7 @@ class ReminderInstanceRepository(private val repository: TimeRepository) {
                 reminder.taskId != null -> reminder.taskId
                 else -> null
             }
-            taskId?.let { coreDao.task(it) }?.takeIf(isTaskActive)?.let { task ->
+            taskId?.let { coreDao.task(it) }?.takeIf(::isTaskActive)?.let { task ->
                 repository.saveTask(task.copy(status = "COMPLETED"), expectedVersion = task.version)
             }
         }
@@ -283,6 +283,17 @@ class ReminderInstanceRepository(private val repository: TimeRepository) {
         ) {
             return null
         }
+        if (owner.type == "HABIT") {
+            val deliver = com.timeagent.habits.HabitRepository(repository, repository.applicationContext)
+                .shouldDeliverReminder(requireNotNull(owner.id), instance.fireAt)
+            repository.applicationContext?.let { context ->
+                repository.afterCommit { com.timeagent.habits.HabitReminderRefresh.request(context) }
+            }
+            if (!deliver) {
+                instanceDao.put(instance.copy(state = REMINDER_STATE_CANCELLED, version = instance.version + 1))
+                return null
+            }
+        }
         val fired = instance.copy(state = REMINDER_STATE_FIRED, version = instance.version + 1)
         instanceDao.put(fired)
         // Keep the legacy delivered marker for old UI/read fallbacks. Repeats never consult it.
@@ -293,6 +304,7 @@ class ReminderInstanceRepository(private val repository: TimeRepository) {
                 if (error is kotlinx.coroutines.CancellationException) throw error
             }
         }
+        planCanonical(coreDao.reminder(reminder.id) ?: reminder, journal = false)
         return ReminderFireEvent(
             instanceId = fired.id,
             reminderId = reminder.id,
@@ -388,36 +400,21 @@ class ReminderInstanceRepository(private val repository: TimeRepository) {
 
         val interval = reminder.repeatIntervalMinutes
         val max = reminder.repeatMaxCount ?: 0
-        if (interval != null && interval > 0 && max > 0) {
-            // Do not invent repeats for a primary that was missed entirely. If a primary already
-            // fired, the remaining future tail may still be planned.
-            val repeatTailAllowed = (reminder.deliveredAt == null && reminder.remindAt > stamp) ||
-                versioned.any { it.state == REMINDER_STATE_FIRED }
-            if (repeatTailAllowed) {
-                for (index in 1..max) {
-                    val fireAt = repeatFireAt(reminder, interval, index) ?: break
-                    if (fireAt <= stamp) continue
-                    val id = repeatInstanceId(reminder, index)
-                    val existing = versioned.firstOrNull { it.id == id }
-                    if (existing == null || existing.state == REMINDER_STATE_CANCELLED) {
-                        val after = newInstance(
-                            reminder = reminder,
-                            owner = owner,
-                            id = id,
-                            fireAt = fireAt,
-                            kind = REMINDER_INSTANCE_REPEAT,
-                            repeatIndex = index,
-                            state = REMINDER_STATE_SCHEDULED,
-                            version = (existing?.version ?: -1L) + 1,
-                        )
-                        put(
-                            after,
-                            existing,
-                            journal,
-                            if (existing == null) "创建重复提醒" else "恢复重复提醒",
-                        )
-                        changed++
-                    }
+        val lastFired = versioned.filter { it.state == REMINDER_STATE_FIRED }.maxOfOrNull { it.repeatIndex }
+        if (interval != null && interval > 0 && max > 0 && lastFired != null && lastFired < max) {
+            // Persist only the next repeat; a user-defined count never expands into a huge batch.
+            val firstFuture = ((stamp - reminder.remindAt).coerceAtLeast(0) / (interval.toLong() * 60_000L) + 1)
+            val index = maxOf(lastFired.toLong() + 1, firstFuture)
+            if (index <= max.toLong()) {
+                val repeatIndex = index.toInt()
+                val fireAt = repeatFireAt(reminder, interval, repeatIndex)
+                val id = repeatInstanceId(reminder, repeatIndex)
+                val existing = versioned.firstOrNull { it.id == id }
+                if (fireAt != null && (existing == null || existing.state == REMINDER_STATE_CANCELLED)) {
+                    val after = newInstance(reminder, owner, id, fireAt, REMINDER_INSTANCE_REPEAT,
+                        repeatIndex, REMINDER_STATE_SCHEDULED, (existing?.version ?: -1L) + 1)
+                    put(after, existing, journal, "创建下一次重复提醒")
+                    changed++
                 }
             }
         }
@@ -559,7 +556,10 @@ class ReminderInstanceRepository(private val repository: TimeRepository) {
                     } ?: missing()
                 }
             }
-            "HABIT" -> OwnerSnapshot(type, id, 0, id != null)
+            "HABIT" -> id?.let { repository.database.habitDao().habit(it) }?.let { habit ->
+                val date = java.time.Instant.ofEpochMilli(reminder.remindAt).atZone(repository.zone).toLocalDate()
+                OwnerSnapshot(type, id, habit.version, !habit.archived && habit.isActive(date) && !date.isBefore(habit.start))
+            } ?: missing()
             "IDEA" -> id?.let { coreDao.idea(it) }?.let { idea ->
                 OwnerSnapshot(type, id, idea.version, idea.deletedAt == null && idea.status != "ARCHIVED")
             } ?: missing()

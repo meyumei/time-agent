@@ -39,9 +39,17 @@ data class LocalSnapshot(
     val recurringRules:List<RecurringRuleEntity> = emptyList(), val recurringInstances:List<RecurringInstanceEntity> = emptyList(),
     val projects: List<ProjectEntity> = emptyList(), val placements: List<TaskPlacementEntity> = emptyList(), val weeklyGoals: List<WeeklyGoalEntity> = emptyList(),
     val attachments: List<AttachmentEntity> = emptyList(),
+    val focusSessions: List<com.timeagent.focus.FocusSessionEntity> = emptyList(),
+    val calendarReadOnlyReasons: Map<String, String> = emptyMap(),
+    val entryContexts: List<com.timeagent.quickentry.EntryContextEntity> = emptyList(),
+    val sampleRecords: List<com.timeagent.onboarding.SampleRecordEntity> = emptyList(),
 )
 
 class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock = Clock.systemDefaultZone()) {
+    internal var applicationContext: android.content.Context? = null
+    internal suspend fun checkFocusSlot() {
+        check(db.focusDao().active() == null) { "已有专注正在进行，请返回专注结束后再开始" }
+    }
     val commands by lazy { CommandExecutor(this) }
     internal val database: TimeAgentDatabase get() = db
     internal val commandClock: Clock get() = clock
@@ -51,6 +59,7 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         workoutDatabase = database
     }
     internal suspend fun checkWorkoutSlot() {
+        checkFocusSlot()
         if (workoutDatabase?.dao()?.activeSession() != null) throw com.timeagent.core.workout.WorkoutAlreadyActive()
     }
     private class CommitEffects : AbstractCoroutineContextElement(Key) {
@@ -253,9 +262,9 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         saveMemory(PersonalMemoryEntity(UUID.randomUUID().toString(), "PREFERENCE", "我可能偏好${record.title.take(200)}", sourceType = "OBSERVATION", sourceText = "仅依据一条实际记录：${record.title} · ${Instant.ofEpochMilli(record.startAt).atZone(zone)}；不代表长期习惯", sourceId = record.id, confirmed = false))
     }
     suspend fun snapshot(): LocalSnapshot = transaction { readSnapshot() }
-    private suspend fun readSnapshot() = LocalSnapshot(dao.tasks(), dao.activePlans(), dao.records(), dao.courses(), dao.occurrences(), dao.terms(), dao.categories(), dao.history(), dao.importBatches(), false, dao.activities(), dao.reminders(), dao.ideas(), dao.notes(), dao.healthItems(), dao.suggestions(), dao.memories(), dao.recurringRules(), dao.recurringInstances(), dao.projects(), dao.placements(), dao.weeklyGoals(), dao.attachments())
+    private suspend fun readSnapshot() = LocalSnapshot(dao.tasks(), dao.activePlans(), dao.records(), dao.courses(), dao.occurrences(), dao.terms(), dao.categories(), dao.history(), dao.importBatches(), false, dao.activities(), dao.reminders(), dao.ideas(), dao.notes(), dao.healthItems(), dao.suggestions(), dao.memories(), dao.recurringRules(), dao.recurringInstances(), dao.projects(), dao.placements(), dao.weeklyGoals(), dao.attachments(), db.focusDao().all(), db.calendarSyncDao().links().mapNotNull { link -> link.readOnlyReason?.let { link.localEntityId to it } }.toMap(), db.entryContextDao().all(), db.sampleDataDao().all())
 
-    fun observe(): Flow<LocalSnapshot> = db.invalidationTracker.createFlow("tasks", "schedule_blocks", "time_records", "courses", "course_occurrences", "academic_terms", "categories", "tags", "task_tags", "record_tags", "operation_history", "import_batches", "activity_templates", "reminders", "ideas", "notes", "health_sync_items", "agent_suggestions", "personal_memories", "projects", "task_placements", "weekly_goals", "recurring_rules", "recurring_instances", "attachments")
+    fun observe(): Flow<LocalSnapshot> = db.invalidationTracker.createFlow("tasks", "schedule_blocks", "time_records", "courses", "course_occurrences", "academic_terms", "categories", "tags", "task_tags", "record_tags", "operation_history", "import_batches", "activity_templates", "reminders", "ideas", "notes", "health_sync_items", "agent_suggestions", "personal_memories", "projects", "task_placements", "weekly_goals", "recurring_rules", "recurring_instances", "attachments", "focus_sessions", "calendar_links", "entry_contexts", "sample_records")
         .map { transaction { readSnapshot() } }
         .flowOn(Dispatchers.IO)
 
@@ -321,7 +330,7 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         val saved = item.copy(title = item.title.trim(), enabled=item.enabled && afterOff!=1L, deliveredAt = delivered, createdAt = before?.createdAt ?: now().toEpochMilli(), updatedAt = now().toEpochMilli(), version = nextVersion("REMINDER", item.id, before?.version))
         fun policySnapshot(value:ReminderEntity?,off:Long)=value?.let{gson.toJsonTree(it).asJsonObject.apply{addProperty("__manualOff",off)}}
         dao.putRevision(EntityRevision(policyKey,afterOff))
-        dao.putReminder(saved); journal("REMINDER", saved.id, policySnapshot(before,beforeOff), policySnapshot(saved,afterOff), "保存任务点提醒")
+        dao.putReminder(saved); if (!automatic) journal("REMINDER", saved.id, policySnapshot(before,beforeOff), policySnapshot(saved,afterOff), "保存任务点提醒")
         saved
     }
     suspend fun markReminderDelivered(id: String, expectedRemindAt: Long): Boolean = transaction {
@@ -554,6 +563,9 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
     }
 
     internal suspend fun savePlanRaw(plan: ScheduleBlockEntity, expectedVersion: Long? = null, expectedTaskVersion: Long? = null, expectedConflicts: List<Conflict>? = null): List<Conflict> = transaction {
+        database.calendarSyncDao().linkForLocal(plan.id)?.readOnlyReason?.let {
+            throw IllegalArgumentException("此日程来自只读系统日历：$it。请在原日历中修改")
+        }
         val task = plan.taskId?.let { activeTask(it) }
         require(plan.title.trim().length <= 200 && (task != null || plan.title.isNotBlank())) { "日程名称不能为空，最多200字" }
         require(plan.source in setOf("MANUAL", "FISH", "VOICE", "CALENDAR", "TEMPLATE", "RECURRING", "SAMPLE")) { "日程来源无效" }
@@ -961,6 +973,7 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
     }
 
     private suspend fun applyHistory(action: OperationEntity, forward: Boolean) {
+        if (restoreFeatureHistory(action, forward)) return
         if (action.entityType in setOf("WORKOUT_SESSION", "WORKOUT_TEMPLATE")) {
             com.timeagent.workout.data.WorkoutRepository(
                 checkNotNull(workoutDatabase) { "训练库尚未就绪，请重新打开训练" }, this, clock,
@@ -981,7 +994,18 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         fun matches(current: Any?, against: String? = expected) {
             // Undo keeps revisions monotonic; compare business payload, not the revision of a later undo.
             fun payload(raw: String?) = raw?.let { JsonParser.parseString(it).asJsonObject.apply {
-                remove("version"); remove("updatedAt"); if (action.entityType == "REMINDER") { remove("deliveredAt");remove("__manualOff") }
+                remove("version"); remove("updatedAt"); if (action.entityType == "REMINDER") {
+                    remove("deliveredAt"); remove("__manualOff")
+                    if (!has("ownerType") || get("ownerType").isJsonNull) {
+                        val taskId = get("taskId")?.takeUnless { it.isJsonNull }?.asString
+                        addProperty("ownerType", if (taskId == null) "REMINDER" else "TASK")
+                        addProperty("ownerId", taskId ?: get("id").asString)
+                    }
+                }
+                if (action.entityType == "FOCUS") {
+                    listOf("phaseStartedAt", "phaseAnchorElapsedMs", "pausedAtElapsedMs", "lastResumedAt",
+                        "lastWallAt", "lastElapsedAt", "bootCount").forEach(::remove)
+                }
                 if (action.entityType == "SUGGESTION") remove("taskVersion")
                 if (action.entityType == "ATTACHMENT") remove("purgedAt")
                 if (action.entityType == "RECURRING_INSTANCE") { remove("taskVersion");remove("planVersion");remove("placementVersion") }
@@ -994,13 +1018,35 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
             if (payload(current?.let { gson.toJson(it) }) != payload(against)) throw StaleChange()
         }
         when (action.entityType) {
+            "FOCUS" -> {
+                val focusDao = database.focusDao()
+                val current = focusDao.session(action.entityId)
+                matches(current)
+                val restored = target?.let { gson.fromJson(it, com.timeagent.focus.FocusSessionEntity::class.java) }
+                if (restored?.isActive == true) {
+                    if (focusDao.active()?.id?.let { it != restored.id } == true ||
+                        dao.runningTimer() != null || workoutDatabase?.dao()?.activeSession() != null) throw StaleChange()
+                }
+                if (restored == null) focusDao.remove(action.entityId)
+                else {
+                    val stamp = now().toEpochMilli()
+                    val elapsed = com.timeagent.focus.FocusClock.nowElapsed()
+                    focusDao.put(restored.copy(version = nextVersion("FOCUS", restored.id, current?.version),
+                        phaseStartedAt = if (restored.isActive) stamp else restored.phaseStartedAt,
+                        phaseAnchorElapsedMs = if (restored.isActive) elapsed else restored.phaseAnchorElapsedMs,
+                        pausedAtElapsedMs = if (restored.state == "PAUSED") elapsed else null,
+                        lastResumedAt = if (restored.isActive) stamp else restored.lastResumedAt,
+                        bootCount = if (restored.isActive) com.timeagent.focus.FocusClock.bootCount(applicationContext) else restored.bootCount,
+                        lastWallAt = stamp, lastElapsedAt = elapsed))
+                }
+            }
             "REMINDER_INSTANCE" -> {
                 val instances = database.reminderInstanceDao()
                 val current = instances.instance(action.entityId)
                 matches(current)
                 val version = nextVersion("REMINDER_INSTANCE", action.entityId, current?.version)
                 if (target == null) {
-                    current?.let { instances.put(it.copy(state = "CANCELLED", version = version)) }
+                    instances.remove(action.entityId)
                 } else {
                     instances.put(gson.fromJson(target, com.timeagent.reminders.ReminderInstanceEntity::class.java).copy(version = version))
                 }
@@ -1149,7 +1195,13 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
                 val version = nextVersion("REMINDER", action.entityId, current?.version)
                 if (target == null) { if (hasNotes("REMINDER")) throw StaleChange(); dao.removeReminder(action.entityId) }
                 else {
-                    val item = gson.fromJson(target, ReminderEntity::class.java)
+                    val raw = JsonParser.parseString(target).asJsonObject
+                    if (!raw.has("ownerType") || raw.get("ownerType").isJsonNull) {
+                        val taskId = raw.get("taskId")?.takeUnless { it.isJsonNull }?.asString
+                        raw.addProperty("ownerType", if (taskId == null) "REMINDER" else "TASK")
+                        raw.addProperty("ownerId", taskId ?: action.entityId)
+                    }
+                    val item = gson.fromJson(raw, ReminderEntity::class.java)
                     val delivered = dao.revision(reminderDeliveryKey(item.id, item.remindAt))?.revision ?: current?.deliveredAt?.takeIf { current.remindAt == item.remindAt } ?: item.deliveredAt
                     dao.putReminder(item.copy(version = version, deliveredAt = delivered, updatedAt = now().toEpochMilli()))
                 }

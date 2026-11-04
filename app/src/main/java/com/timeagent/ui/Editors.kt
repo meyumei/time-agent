@@ -36,6 +36,13 @@ data class EditorRequest(
     val ideaVersion: Long? = null,
     val title: String? = null,
     val notes: String = "",
+    val initialStartAt: Long? = null,
+    val initialEndAt: Long? = null,
+    val quickEntryId: String? = null,
+    val quickEntryVersion: Long? = null,
+    val focusSessionId: String? = null,
+    val focusVersion: Long? = null,
+    val focusSegmentIndex: Int? = null,
 )
 data class EditValues(val title: String, val notes: String, val estimatedMinutes: Int, val priority: Int, val dueAt: Long?, val taskId: String?, val categoryId: String?, val start: Long, val end: Long, val allowFuture: Boolean, val location: String, val teacher: String, val activityId: String? = null, val kind: EditorKind? = null, val scheduleNewTask: Boolean = false, val allDayStartDate: String? = null, val allDayEndDate: String? = null)
 
@@ -69,15 +76,15 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
     val newPlan = request.kind == EditorKind.PLAN && request.entity == null && request.selection == null && !request.scheduleRange
     val showModeSwitch = newPlan
     var pointMode by rememberSaveable(request.id) { mutableStateOf(request.kind == EditorKind.REMINDER || newPlan) }
-    val initialStart = rememberSaveable(request.id) { plan?.startAt ?: record?.startAt ?: course?.startAt ?: reminder?.remindAt
+    val initialStart = rememberSaveable(request.id) { request.initialStartAt ?: plan?.startAt ?: record?.startAt ?: course?.startAt ?: reminder?.remindAt
         ?: selectedSpan?.start?.toEpochMilli()
         ?: if (newPlan || request.kind == EditorKind.REMINDER) now.plusSeconds(3600).toEpochMilli()
         else now.minusSeconds(if (request.kind == EditorKind.RECORD) 1800 else 0).toEpochMilli() }
-    val initialEnd = rememberSaveable(request.id) { plan?.endAt ?: record?.endAt ?: course?.endAt ?: reminder?.remindAt?.plus(1_800_000L)
+    val initialEnd = rememberSaveable(request.id) { request.initialEndAt ?: plan?.endAt ?: record?.endAt ?: course?.endAt ?: reminder?.remindAt?.plus(1_800_000L)
         ?: selectedSpan?.end?.toEpochMilli() ?: if (request.kind == EditorKind.RECORD) now.toEpochMilli() else now.plusSeconds(1800).toEpochMilli() }
     val timeFormat = DateTimeFormatter.ofPattern("HH:mm")
-    val initialTitle = plan?.displayTitle(data.tasks.firstOrNull { it.id == plan.taskId }) ?: record?.title?.takeIf(String::isNotBlank) ?: task?.title ?: activity?.fullName(data.activities).orEmpty().takeIf { it.isNotBlank() }
-        ?: reminder?.title ?: request.title.orEmpty()
+    val initialTitle = plan?.displayTitle(data.tasks.firstOrNull { it.id == plan.taskId }) ?: record?.title?.takeIf(String::isNotBlank) ?: task?.title
+        ?: request.title ?: activity?.fullName(data.activities).orEmpty().takeIf { it.isNotBlank() } ?: reminder?.title.orEmpty()
     var title by rememberSaveable(request.id) { mutableStateOf(initialTitle) }
     var notes by rememberSaveable(request.id) { mutableStateOf(plan?.notes ?: task?.description ?: record?.notes ?: request.notes) }
     var estimated by rememberSaveable(request.id) { mutableStateOf((task?.estimatedMinutes ?: activity?.defaultMinutes ?: if (request.scheduleNewTask) ((initialEnd - initialStart) / 60000).toInt() else 30).toString()) }

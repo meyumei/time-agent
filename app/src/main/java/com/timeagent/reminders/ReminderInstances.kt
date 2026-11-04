@@ -73,6 +73,9 @@ interface ReminderInstanceDao {
 
     @Upsert
     suspend fun put(item: ReminderInstanceEntity)
+
+    @Query("DELETE FROM reminder_instances WHERE id=:id")
+    suspend fun remove(id: String)
 }
 
 /**

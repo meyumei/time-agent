@@ -108,13 +108,19 @@ interface TimeDao {
     @Query("UPDATE agent_suggestions SET status=:status, decidedAt=:decidedAt WHERE id=:id") suspend fun updateSuggestionStatus(id: String, status: String, decidedAt: Long?)
 }
 
-@Database(entities = [TaskEntity::class, ScheduleBlockEntity::class, CommandLogEntity::class, TimeRecordEntity::class, CategoryEntity::class, TagEntity::class, TaskTagEntity::class, RecordTagEntity::class, AcademicTermEntity::class, CourseEntity::class, CourseOccurrenceEntity::class, OperationEntity::class, ImportBatchEntity::class, EntityRevision::class, ActivityTemplateEntity::class, ReminderEntity::class, IdeaEntity::class, NoteEntity::class, HealthSyncItemEntity::class, AgentSuggestionEntity::class, PersonalMemoryEntity::class, ProjectEntity::class, TaskPlacementEntity::class, WeeklyGoalEntity::class, RecurringRuleEntity::class, RecurringInstanceEntity::class, AttachmentEntity::class, LedgerAccountEntity::class, LedgerCategoryEntity::class, PaymentCaptureEntity::class, LedgerTransactionEntity::class, LedgerTransactionSourceEntity::class, com.timeagent.reminders.ReminderInstanceEntity::class], version = 16, exportSchema = true)
+@Database(entities = [TaskEntity::class, ScheduleBlockEntity::class, CommandLogEntity::class, TimeRecordEntity::class, CategoryEntity::class, TagEntity::class, TaskTagEntity::class, RecordTagEntity::class, AcademicTermEntity::class, CourseEntity::class, CourseOccurrenceEntity::class, OperationEntity::class, ImportBatchEntity::class, EntityRevision::class, ActivityTemplateEntity::class, ReminderEntity::class, IdeaEntity::class, NoteEntity::class, HealthSyncItemEntity::class, AgentSuggestionEntity::class, PersonalMemoryEntity::class, ProjectEntity::class, TaskPlacementEntity::class, WeeklyGoalEntity::class, RecurringRuleEntity::class, RecurringInstanceEntity::class, AttachmentEntity::class, LedgerAccountEntity::class, LedgerCategoryEntity::class, PaymentCaptureEntity::class, LedgerTransactionEntity::class, LedgerTransactionSourceEntity::class, com.timeagent.reminders.ReminderInstanceEntity::class, com.timeagent.focus.FocusSessionEntity::class, com.timeagent.quickentry.QuickEntryEntity::class, com.timeagent.quickentry.PlanTemplateEntity::class, com.timeagent.quickentry.PlanTemplateItemEntity::class, com.timeagent.habits.HabitEntity::class, com.timeagent.habits.HabitCheckinEntity::class, com.timeagent.calendar.CalendarLinkEntity::class, com.timeagent.calendar.CalendarSyncStateEntity::class, com.timeagent.onboarding.SampleRecordEntity::class, com.timeagent.quickentry.EntryContextEntity::class], version = 22, exportSchema = true)
 abstract class TimeAgentDatabase : RoomDatabase() {
     abstract fun dao(): TimeDao
     abstract fun timelineDao(): TimelineDao
     abstract fun organizationDao(): OrganizationDao
     abstract fun ledgerDao(): LedgerDao
     abstract fun reminderInstanceDao(): com.timeagent.reminders.ReminderInstanceDao
+    abstract fun focusDao(): com.timeagent.focus.FocusDao
+    abstract fun quickEntryDao(): com.timeagent.quickentry.QuickEntryDao
+    abstract fun habitDao(): com.timeagent.habits.HabitDao
+    abstract fun calendarSyncDao(): com.timeagent.calendar.CalendarSyncDao
+    abstract fun sampleDataDao(): com.timeagent.onboarding.SampleDataDao
+    abstract fun entryContextDao(): com.timeagent.quickentry.EntryContextDao
 
     override fun close() = synchronized(Companion) {
         super.close()
@@ -208,7 +214,7 @@ abstract class TimeAgentDatabase : RoomDatabase() {
                 instance ?: Room.databaseBuilder(context.applicationContext, TimeAgentDatabase::class.java, "time-agent.db")
                     // Never use fallbackToDestructiveMigration: future versions must supply explicit migrations.
                     .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, LedgerSchema.MIGRATION_11_12, ScheduleMigration.withBackup(context.applicationContext), TimelineIndexMigration.withBackup(context.applicationContext), LedgerSourceMigration.withBackup(context.applicationContext))
-                    .addMigrations(ReminderMigration.withBackup(context.applicationContext))
+                    .addMigrations(ReminderMigration.withBackup(context.applicationContext), com.timeagent.focus.FocusMigration.withBackup(context.applicationContext), com.timeagent.quickentry.QuickEntryMigration.withBackup(context.applicationContext), com.timeagent.habits.HabitMigration.withBackup(context.applicationContext), com.timeagent.calendar.CalendarSyncMigration.withBackup(context.applicationContext), com.timeagent.onboarding.SampleDataMigration.withBackup(context.applicationContext), com.timeagent.quickentry.EntryContextMigration.withBackup(context.applicationContext))
                     .enableMultiInstanceInvalidation()
                     .apply { singleThreadedTransactions() }
                     .build().also { instance = it }

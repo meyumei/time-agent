@@ -15,7 +15,7 @@ fun TimeRepository.observeRecords(start: Long, end: Long) =
 
 fun TimeRepository.observeTimeline(rangeStart: Long, rangeEnd: Long): Flow<LocalSnapshot> =
     database.invalidationTracker
-        .createFlow("schedule_blocks", "time_records", "course_occurrences", "courses", "tasks", "reminders")
+        .createFlow("schedule_blocks", "time_records", "course_occurrences", "courses", "tasks", "reminders", "focus_sessions", "calendar_links", "sample_records")
         .map {
             transaction {
                 val dao = database.timelineDao()
@@ -32,7 +32,13 @@ fun TimeRepository.observeTimeline(rangeStart: Long, rangeEnd: Long): Flow<Local
                     tasks = if (taskIds.isEmpty()) emptyList() else taskIds.chunked(999).flatMap { dao.tasks(it) },
                     courses = if (courseIds.isEmpty()) emptyList() else courseIds.chunked(999).flatMap { dao.courses(it) },
                     reminders = dao.reminders(rangeStart, rangeEnd),
+                    focusSessions = records.filter { it.source == "FOCUS" }.map { it.id.removePrefix("focus:") }
+                        .chunked(999).flatMap { database.focusDao().sessions(it) },
+                    calendarReadOnlyReasons = plans.map { it.id }.chunked(999)
+                        .flatMap { database.calendarSyncDao().readOnlyLinks(it) }
+                        .associate { it.localEntityId to requireNotNull(it.readOnlyReason) },
                     loading = false,
+                    sampleRecords = database.sampleDataDao().all(),
                 )
             }
         }

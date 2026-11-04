@@ -195,7 +195,7 @@ class FishRuntimeController(
 
             val raw = rpc.state.value
             if (raw.error != null) {
-                fail(classifyRuntimeFailure(raw.error, exitCodeFrom(raw.error)), raw.error)
+                fail(classifyRuntimeFailure(raw.error, exitCodeFrom(raw.error)), requireNotNull(raw.error))
             } else {
                 applyRuntimeState(raw)
             }
@@ -334,7 +334,7 @@ class FishRuntimeController(
 
         if (raw.error != null) {
             if (current is FishRuntimeStatus.Failed && current.reason.terminal) return
-            fail(classifyRuntimeFailure(raw.error, exitCodeFrom(raw.error)), raw.error)
+            fail(classifyRuntimeFailure(raw.error, exitCodeFrom(raw.error)), requireNotNull(raw.error))
             return
         }
 
