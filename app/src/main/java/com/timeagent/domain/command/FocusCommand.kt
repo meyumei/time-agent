@@ -50,6 +50,7 @@ sealed interface FocusMutation {
         val endAt: Long,
         val title: String? = null,
         val notes: String? = null,
+        val allowFuture: Boolean = false,
     ) : FocusMutation
 }
 

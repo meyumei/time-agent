@@ -12,6 +12,11 @@ internal class TimelinePreference(context: Context, private val page: String) {
         prefs.getBoolean("$page.course", true), prefs.getBoolean("$page.health", true),
     )
     fun listMode() = prefs.getBoolean("$page.list", false)
+    fun snapMinutes() = prefs.getInt("drag.snapMinutes", 15).takeIf { it in listOf(5, 15, 30) } ?: 15
+    fun saveSnapMinutes(value: Int) {
+        require(value in listOf(5, 15, 30))
+        prefs.edit().putInt("drag.snapMinutes", value).apply()
+    }
 
     fun save(dayCount: Int, hourHeight: Double, filters: TimelineFilterState, listMode: Boolean) {
         prefs.edit().putInt("$page.days", dayCount).putFloat("$page.hourHeight", hourHeight.toFloat())

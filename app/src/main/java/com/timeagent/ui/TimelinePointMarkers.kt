@@ -34,6 +34,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.geometry.Offset
+import com.timeagent.ui.timeline.TimelineDragKind
+import com.timeagent.ui.timeline.detectTimelineItemDrag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -53,8 +59,17 @@ internal fun TimelinePointMarkers(
     firstMinute: Double,
     graphHeight: Dp,
     onSelect: (TimelineItem) -> Unit,
+    onDragDelta: (TimelineItem, TimelineDragKind, Offset) -> Unit = { _, _, _ -> },
+    onDragEnd: (TimelineItem) -> Unit = {},
+    onDragCancel: (TimelineItem) -> Unit = {},
+    onAdjust: (TimelineItem, TimelineDragKind, Int) -> Unit = { _, _, _ -> },
+    selectedKey: String? = null,
 ) {
-    val groups = markerGroups(points, zone, minuteHeight, firstMinute, graphHeight)
+    val groups = markerGroups(points, zone, minuteHeight, firstMinute, graphHeight).flatMap { group ->
+        val selected = group.firstOrNull { it.item.layoutKey == selectedKey }
+        if (selected == null || group.size == 1) listOf(group)
+        else listOf(group.filterNot { it == selected }, listOf(selected))
+    }
     var pending by remember { mutableStateOf<List<TimelineItem>?>(null) }
 
     Box(modifier = Modifier.fillMaxWidth().height(graphHeight)) {
@@ -72,6 +87,11 @@ internal fun TimelinePointMarkers(
                     .offset(y = group.first().top.dp)
                     .height(MarkerRowHeight)
                     .clip(MaterialTheme.shapes.small)
+                    .then(if (!merged) Modifier.pointerInput(first.layoutKey) {
+                        detectTimelineItemDrag(onStart = { onDragDelta(first, TimelineDragKind.MOVE, Offset.Zero) },
+                            onDelta = { onDragDelta(first, TimelineDragKind.MOVE, it) },
+                            onEnd = { onDragEnd(first) }, onCancel = { onDragCancel(first) })
+                    } else Modifier)
                     .clickable {
                         if (merged) {
                             pending = group.map { it.item }.sortedBy { it.span.start }
@@ -82,6 +102,10 @@ internal fun TimelinePointMarkers(
                     .semantics {
                         contentDescription = if (merged) "${group.size} 条提醒点" else "提醒点 ${first.title}"
                         if (merged) stateDescription = "${group.size} 条提醒"
+                        if (!merged && first.dragReadOnlyReason == null) customActions = listOf(
+                            CustomAccessibilityAction("整体提前15分钟") { onAdjust(first, TimelineDragKind.MOVE, -15); true },
+                            CustomAccessibilityAction("整体后移15分钟") { onAdjust(first, TimelineDragKind.MOVE, 15); true },
+                        )
                     }
                     .padding(start = 16.dp, end = 2.dp),
                 verticalAlignment = Alignment.CenterVertically,

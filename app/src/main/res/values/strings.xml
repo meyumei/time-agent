@@ -1055,4 +1055,23 @@
     <string name="text_workout_template_editor_002" formatted="false">"训练说明"</string>
     <string name="text_workout_template_editor_003" formatted="false">"超级组"</string>
     <string name="text_workout_template_editor_004" formatted="false">"添加动作"</string>
+    <string name="timeline_snap_minutes">拖动吸附 · %1$d 分钟</string>
+    <string name="timeline_selected_details">已选 %1$s · 详情／调整时间</string>
+    <string name="timeline_continues_tomorrow"> · 延续到次日</string>
+    <string name="timeline_drag_conflict">内容已变化，本次调整未保存</string>
+    <string name="timeline_drag_failed">调整未保存</string>
+    <string name="timeline_drag_scope">调整哪些周期日程？</string>
+    <string name="timeline_drag_future">实际记录包含未来时间</string>
+    <string name="timeline_drag_long_span">确认超过七天的时段</string>
+    <string name="timeline_drag_future_explanation">确认后保存为实际；也可保留原实际记录，另建一条日程。</string>
+    <string name="timeline_drag_scope_explanation">仅此次会保留为手工例外；此次及以后同时调整后续未完成、未手工修改的实例和规则。整个操作可以一次撤销。</string>
+    <string name="timeline_drag_scope_count">后续可调整 %1$d 项，已完成或手工修改的 %2$d 项保持原状。</string>
+    <string name="timeline_drag_show_latest">查看最新内容</string>
+    <string name="timeline_drag_only_this">仅此次</string>
+    <string name="timeline_drag_this_and_future">此次及以后</string>
+    <string name="timeline_drag_create_plan">保留原记录，另建日程</string>
+    <string name="timeline_drag_saved">时间已调整</string>
+    <string name="timeline_all_day_start">起 ↔</string>
+    <string name="timeline_all_day_end">止 ↔</string>
+    <string name="timeline_drag_saved_conflicts">时间已调整，存在 %1$d 项重叠，可在详情中查看</string>
 </resources>

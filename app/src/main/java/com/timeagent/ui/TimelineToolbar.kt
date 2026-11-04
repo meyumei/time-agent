@@ -27,6 +27,8 @@ internal fun TimelineToolbar(
     themeMode: ThemeMode, onThemeMode: (ThemeMode) -> Unit, conflicts: Int, onConflicts: () -> Unit,
     dayCount: Int, onDayCount: (Int) -> Unit, filterState: TimelineFilterState, onFilterState: (TimelineFilterState) -> Unit,
     onSelectTemplate: (() -> Unit)? = null,
+    snapMinutes: Int = 15,
+    onSnapMinutes: (Int) -> Unit = {},
 ) {
     var more by remember { mutableStateOf(false) }
     Row(
@@ -65,6 +67,12 @@ internal fun TimelineToolbar(
                 }
                 DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_timeline_toolbar_003)) }, onClick = { more = false; onAssistant() })
                 HorizontalDivider()
+                listOf(5, 15, 30).forEach { minutes ->
+                    DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(
+                        com.timeagent.R.string.timeline_snap_minutes, minutes)) },
+                        leadingIcon = { if (snapMinutes == minutes) Icon(Icons.Rounded.Check, null) },
+                        onClick = { more = false; onSnapMinutes(minutes) })
+                }
                 DropdownMenuItem(text = { Text("放大 · 每小时 ${(64 * zoom * 1.25).coerceAtMost(160.0).toInt()}dp") },
                     onClick = { more = false; onDensity(1.25) }, enabled = zoom < 2.5)
                 DropdownMenuItem(text = { Text("缩小 · 每小时 ${(64 * zoom / 1.25).coerceAtLeast(32.0).toInt()}dp") },
