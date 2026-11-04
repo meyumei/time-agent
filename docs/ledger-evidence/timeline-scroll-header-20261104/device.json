@@ -1,0 +1,87 @@
+{
+  "deviceModel": "Redmi K70 Ultra",
+  "connection": "USB",
+  "fontScaleBefore": "1.0",
+  "fontScaleAfter": "1.0",
+  "acceptanceApkSha256": "d5b47ca9c69422f4320dea24e049893ff49b1836452705ad510978eb42e0ab91",
+  "instrumentation": [
+    {
+      "group": "ui",
+      "tests": 14,
+      "passed": true,
+      "seconds": 24.208
+    },
+    {
+      "group": "timeline-gesture-font2.0",
+      "tests": 1,
+      "passed": true,
+      "seconds": 11.586
+    },
+    {
+      "group": "clock-shortcut",
+      "tests": 1,
+      "passed": true,
+      "seconds": 4.433
+    }
+  ],
+  "realUi": {
+    "passed": true,
+    "apkSha256": "d5b47ca9c69422f4320dea24e049893ff49b1836452705ad510978eb42e0ab91",
+    "fontScale": "1.0",
+    "cases": [
+      {
+        "case": "compact-header",
+        "viewportTopPx": 464,
+        "viewportBottomPx": 2475,
+        "passed": true
+      },
+      {
+        "case": "all-four-shortcuts-preserved",
+        "passed": true
+      },
+      {
+        "case": "3-day-short-horizontal-reverse-vertical",
+        "passed": true,
+        "initialDates": [
+          "2026-11-03",
+          "2026-11-04",
+          "2026-11-05"
+        ]
+      },
+      {
+        "case": "1-day-short-horizontal-reverse-vertical",
+        "passed": true,
+        "initialDates": [
+          "2026-11-04"
+        ]
+      },
+      {
+        "case": "7-day-short-horizontal-reverse-vertical",
+        "passed": true,
+        "initialDates": [
+          "2026-11-02",
+          "2026-11-03",
+          "2026-11-04",
+          "2026-11-05",
+          "2026-11-06",
+          "2026-11-07",
+          "2026-11-08"
+        ]
+      }
+    ],
+    "limitations": [
+      "No physical two-finger injection in this UIAutomator script",
+      "No system display size or font changes"
+    ]
+  },
+  "formalAppUpdated": true,
+  "formalVersionCode": 29,
+  "formalVersionName": "0.16.0-preview",
+  "originalRecordChanges": 0,
+  "databaseIntegrity": "ok",
+  "auditPassed": false,
+  "auditLimitation": "Raw XML comparison reported one theme difference; offline values are LIGHT before and after. No new audit was run after the user stopped testing.",
+  "isolatedPackagesRemoved": false,
+  "oldApkCleanupPerformed": false,
+  "previousFailuresRetained": true
+}

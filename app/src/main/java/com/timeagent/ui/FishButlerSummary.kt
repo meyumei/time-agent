@@ -9,34 +9,41 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.timeagent.fish.FishSession
-import com.timeagent.fish.fishPlainText
 import com.timeagent.fish.CharacterSprite
-import com.timeagent.ui.design.LocalPresentation
 
 @Composable
 fun FishButlerSummary(session: FishSession, summary: String, onOpen: () -> Unit) {
     val profile by session.character.profile.collectAsStateWithLifecycle()
-    val chat by session.chat.collectAsStateWithLifecycle()
-    val latest = chat.turns.lastOrNull { it.role != "user" }?.text
-    val presentation = LocalPresentation.current
-    Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerLow,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp)
-            .testTag("butler-summary").clickable(onClick = onOpen)) {
-        Row(Modifier.padding(horizontal = 14.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) {
-                CharacterSprite(session, Modifier.size(presentation.avatarSize))
-            }
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                Text("${profile.name} · 今日简报", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
-                Text(summary, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                latest?.let { Text(fishPlainText(it), style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis) }
-            }
-            Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, "打开管家对话")
+    val title = "${profile.name} · 今日简报"
+    Surface(shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.surfaceContainerLow,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 2.dp)
+            .testTag("butler-summary")
+            .semantics { contentDescription = "$title：$summary" }
+            .clickable(onClick = onOpen)) {
+        Row(
+            Modifier.fillMaxWidth().heightIn(min = 48.dp).padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            CharacterSprite(session, Modifier.size(24.dp))
+            Spacer(Modifier.width(8.dp))
+            Text(
+                summary,
+                Modifier.weight(1f),
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Icon(
+                Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                "打开管家对话",
+                modifier = Modifier.size(18.dp),
+            )
         }
     }
 }

@@ -164,6 +164,7 @@ class ClockRecompositionDeviceTest {
         compose.onNodeWithContentDescription("复盘页面").performClick()
         assertEquals(1, source.secondCollectors)
         compose.onNodeWithContentDescription("今天页面").performClick()
+        compose.onNodeWithTag("today-quick-actions").performClick()
         compose.onNodeWithTag("today-record").performClick()
         compose.waitForIdle()
         assertEquals("The hidden timer must release its second flow", 0, source.secondCollectors)

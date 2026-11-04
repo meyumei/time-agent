@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-04",
+  "formalBuild": {
+    "command": "./scripts/build.ps1 -Tasks @(':app:assembleDebug', ':app:lintDebug')",
+    "exitCode": 0,
+    "elapsed": "6m 14s"
+  },
+  "isolatedBuild": {
+    "command": "./scripts/build.ps1 -Tasks @(':app:assembleDebug', ':app:assembleDebugAndroidTest', '-PisolatedDeviceTests')",
+    "exitCode": 0,
+    "elapsed": "21s"
+  },
+  "hostUnitAndNodeTestsRun": false,
+  "lintIssues": {
+    "Warning": 84,
+    "Information": 2
+  },
+  "artifacts": [
+    {
+      "file": "latest.apk",
+      "package": "com.timeagent",
+      "bytes": 891147781,
+      "sha256": "cf813d48eab35a060bb5268275eace9a121984c28f3e333513e7192cef44fc84"
+    },
+    {
+      "file": "acceptance.apk",
+      "package": "com.timeagent.acceptance",
+      "bytes": 891148549,
+      "sha256": "d5b47ca9c69422f4320dea24e049893ff49b1836452705ad510978eb42e0ab91"
+    },
+    {
+      "file": "acceptance-tests.apk",
+      "package": "com.timeagent.acceptance.test",
+      "bytes": 2675949,
+      "sha256": "d14d01e78dabe2099599984da6005097c26cb874c1d4f44fae9dac65cd8d08fb"
+    }
+  ]
+}

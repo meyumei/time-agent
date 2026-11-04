@@ -2,15 +2,17 @@ package com.timeagent.ui.timeline
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.FilterList
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,27 +35,38 @@ private fun sourceLabel(filter: TimelineSourceFilter): String = when (filter) {
     TimelineSourceFilter.HEALTH -> "健康"
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimelineDayCountSwitch(
     selected: Int,
     onSelected: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    SingleChoiceSegmentedButtonRow(modifier = modifier.testTag("timeline-days")) {
-        TimelineDayCountOptions.forEachIndexed { index, days ->
-            SegmentedButton(
-                selected = selected == days,
-                onClick = { if (selected != days) onSelected(days) },
-                shape = SegmentedButtonDefaults.itemShape(index, TimelineDayCountOptions.size),
-                modifier = Modifier
-                    .heightIn(min = MinControlHeight)
-                    .testTag("timeline-days-$days")
-                    .semantics { contentDescription = "${days}日视图" },
-                label = {
-                    Text("${days}日", maxLines = 1, overflow = TextOverflow.Ellipsis)
-                },
-            )
+    var expanded by remember { mutableStateOf(false) }
+    Box(modifier = modifier) {
+        TextButton(
+            onClick = { expanded = true },
+            modifier = Modifier
+                .heightIn(min = MinControlHeight)
+                .testTag("timeline-days")
+                .semantics { contentDescription = "时间轴天数，当前${selected}日" },
+        ) {
+            Text("${selected}日", maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Icon(Icons.Rounded.KeyboardArrowDown, contentDescription = null, modifier = Modifier.size(16.dp))
+        }
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            TimelineDayCountOptions.forEach { days ->
+                DropdownMenuItem(
+                    text = { Text("${days}日") },
+                    onClick = {
+                        expanded = false
+                        if (selected != days) onSelected(days)
+                    },
+                    modifier = Modifier
+                        .heightIn(min = MinControlHeight)
+                        .testTag("timeline-days-$days")
+                        .semantics { contentDescription = "${days}日视图" },
+                )
+            }
         }
     }
 }
@@ -66,13 +79,17 @@ fun TimelineFilterButton(
 ) {
     var expanded by remember { mutableStateOf(false) }
     Box(modifier = modifier) {
-        OutlinedButton(
+        IconButton(
             onClick = { expanded = true },
             modifier = Modifier
-                .heightIn(min = MinControlHeight)
+                .size(MinControlHeight)
                 .testTag("timeline-filter-button"),
         ) {
-            Text("过滤", maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Icon(
+                Icons.Rounded.FilterList,
+                contentDescription = "来源过滤",
+                modifier = Modifier.size(20.dp),
+            )
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             TimelineSourceFilter.values().forEach { filter ->
