@@ -5,7 +5,9 @@ import android.content.ContextWrapper
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.compose.runtime.*
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.lifecycle.viewModelScope
@@ -78,6 +80,85 @@ class NavigationDeviceTest {
     }
 
     private fun tab(name: String) { compose.onNodeWithContentDescription("${name}页面").performClick() }
+
+    @Test fun timelinePinchAndCancelledDragRestoreDateAnchor() {
+        show()
+        compose.onNodeWithTag("timeline-days").performClick()
+        compose.onNodeWithTag("timeline-days-3").performClick()
+        val dateHeaders = SemanticsMatcher("date header") { node ->
+            val key = SemanticsProperties.ContentDescription
+            node.config.contains(key) && node.config[key].any {
+                it.matches(Regex("\\d{4}-\\d{2}-\\d{2} 周."))
+            }
+        }
+        fun dates(): List<String> = compose.onAllNodes(dateHeaders, useUnmergedTree = true)
+            .fetchSemanticsNodes().flatMap { it.config[SemanticsProperties.ContentDescription] }
+            .map { it.take(10) }.distinct().sorted()
+        val hourLabels = SemanticsMatcher("hour ruler") { node ->
+            val key = SemanticsProperties.Text
+            node.config.contains(key) && node.config[key].any { it.text.matches(Regex("\\d{2}:00")) }
+        }
+        fun hours() = compose.onAllNodes(hourLabels, useUnmergedTree = true).fetchSemanticsNodes()
+            .associate { it.config[SemanticsProperties.Text].single().text to it.boundsInRoot.top }
+        for (count in listOf(3, 1, 7)) {
+            compose.onNodeWithTag("timeline-days").performClick()
+            compose.onNodeWithTag("timeline-days-$count").performClick()
+            val initial = dates()
+            val initialHours = hours()
+            assertEquals(count, initial.size)
+            compose.onNodeWithTag("timeline-viewport").performTouchInput {
+                down(Offset(width * .20f, height * .70f))
+                moveBy(Offset(40f, -4f))
+                up()
+            }
+            compose.waitForIdle()
+            assertEquals("Short drag must not page in $count-day view", initial, dates())
+            compose.onNodeWithTag("timeline-viewport").performTouchInput {
+                swipe(Offset(width * .65f, height * .70f), Offset(width * .20f, height * .66f), 300)
+            }
+            compose.waitForIdle()
+            val step = if (count == 7) 7L else 1L
+            assertEquals(initial.map { java.time.LocalDate.parse(it).plusDays(step).toString() }, dates())
+            assertEquals("Horizontal swipe must not shift the hour ruler", initialHours, hours())
+            compose.onNodeWithTag("timeline-viewport").performTouchInput {
+                swipe(Offset(width * .20f, height * .66f), Offset(width * .65f, height * .70f), 300)
+            }
+            compose.waitForIdle()
+            assertEquals("Reverse swipe must restore dates", initial, dates())
+            assertEquals("Reverse swipe must not shift hours", initialHours, hours())
+            val scrollEarlier = hours().keys.minOf { it.take(2).toInt() } > 0
+            compose.onNodeWithTag("timeline-viewport").performTouchInput {
+                val from = if (scrollEarlier) .35f else .70f
+                val to = if (scrollEarlier) .70f else .35f
+                swipe(Offset(width * .20f, height * from), Offset(width * .21f, height * to), 300)
+            }
+            compose.waitForIdle()
+            assertEquals("Vertical swipe must not change dates", initial, dates())
+            assertNotEquals("Vertical swipe must scroll hours", initialHours, hours())
+        }
+        compose.onNodeWithTag("timeline-days").performClick()
+        compose.onNodeWithTag("timeline-days-3").performClick()
+        val before = dates()
+        assertEquals(3, before.size)
+        compose.onNodeWithTag("timeline-viewport").performTouchInput {
+            down(0, Offset(width * .25f, height * .70f))
+            moveBy(0, Offset(width * .12f, 0f))
+            down(1, Offset(width * .65f, height * .65f))
+            moveBy(1, Offset(0f, -height * .12f))
+            up(1)
+            up(0)
+        }
+        compose.waitForIdle()
+        assertEquals("Adding a second finger must restore the date preview", before, dates())
+        compose.onNodeWithTag("timeline-viewport").performTouchInput {
+            down(Offset(width * .20f, height * .70f))
+            moveBy(Offset(width * .30f, 0f))
+            cancel()
+        }
+        compose.waitForIdle()
+        assertEquals("Cancellation must not leave a partial date column", before, dates())
+    }
+
     private fun back() {
         androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().uiAutomation
             .executeShellCommand("input keyevent 4").use { descriptor ->

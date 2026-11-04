@@ -1,5 +1,6 @@
 package com.timeagent.ui
 
+import android.view.MotionEvent
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
@@ -73,8 +74,15 @@ import kotlin.math.roundToInt
     var pendingSelection by remember { mutableStateOf<TimelineSelection?>(null) }
     var pendingDrag by remember { mutableStateOf<PendingSelectionDrag?>(null) }
     var activeDrag by remember { mutableStateOf<ActiveTimelineDrag?>(null) }
-    var gestureFirstDay by remember { mutableStateOf<Double?>(null) }
-    var gestureScrolled by remember { mutableStateOf(false) }
+    val released = remember { booleanArrayOf(false) }
+    val observeRelease = remember<(MotionEvent) -> Unit> {
+        { event ->
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN, MotionEvent.ACTION_CANCEL -> released[0] = false
+                MotionEvent.ACTION_UP -> released[0] = true
+            }
+        }
+    }
     val horizontalScroll = rememberScrollState()
     var previousHeight by remember { mutableStateOf<Dp?>(null) }
     BoxWithConstraints(modifier.fillMaxWidth().clipToBounds().testTag("timeline-viewport")) {
@@ -82,7 +90,9 @@ import kotlin.math.roundToInt
         val header = 42.dp
         val labelInset = 7.dp
         val availableWidth = (maxWidth - gutter - 3.dp).coerceAtLeast(1.dp)
-        val graphWidth = if (viewport.dayCount == 7) availableWidth.coerceAtLeast(336.dp) else availableWidth
+        val touchSlop = with(LocalDensity.current) { LocalViewConfiguration.current.touchSlop.toDp() }
+        // Ignore week overflow smaller than touch slop; keep 336dp only for genuinely narrow screens.
+        val graphWidth = if (viewport.dayCount == 7 && availableWidth < 336.dp - touchSlop) 336.dp else availableWidth
         val maxAllDay = rendered.dates.maxOf { date -> allDayItems.count { it.span.overlaps(TimeSpan(date.atStartOfDay(zone).toInstant(), date.plusDays(1).atStartOfDay(zone).toInstant())) } }
         val allDayHeight = when { maxAllDay == 0 -> 0.dp; maxAllDay == 1 -> 52.dp; else -> 100.dp }
         val bodyHeight = (maxHeight - header - allDayHeight).coerceAtLeast(16.dp)
@@ -174,8 +184,15 @@ import kotlin.math.roundToInt
         }
         val dates = rendered.dates
         val gridColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = .55f)
-        Box(Modifier.fillMaxSize().pointerInput(widthPx, heightPx) {
+        Box(Modifier.fillMaxSize().motionEventSpy(observeRelease).pointerInput(widthPx, heightPx, viewport.dayCount) {
+            val flipThresholdPx = 48.dp.toPx()
+            val pageWidthPx = (widthPx / viewport.dayCount * if (viewport.dayCount == 7) 7 else 1).toFloat()
+            var gestureStartFirstDay: Double? = null
+            var gestureStartDayCount = 0
+            var gestureRemainingX = 0f
+            var gesturePreviewX = 0f
             detectTimelineGestures(
+                released = { released[0] },
                 onTap = { point -> if (latestCreate != null && !hitEvent(point)) pick(point)?.let { latestCreate?.invoke(it) } },
                 onSelectionPress = { pressSelection(it) },
                 onSelectionStart = { point ->
@@ -194,33 +211,75 @@ import kotlin.math.roundToInt
                     anchor = null; dragSelection = null; pendingDrag = null; pendingSelection = null
                     if (commit && picked != null) latestCreate?.invoke(picked)
                 },
-                onGestureEnd = { pan, singlePointer ->
-                    val start = gestureFirstDay
-                    gestureFirstDay = null
-                    if (start != null && singlePointer && !gestureScrolled && kotlin.math.abs(pan.x) > kotlin.math.abs(pan.y)) {
+                onGestureEnd = { _, singlePointer ->
+                    val start = gestureStartFirstDay
+                    val startDayCount = gestureStartDayCount
+                    val horizontal = gestureRemainingX
+                    gestureStartFirstDay = null
+                    gestureRemainingX = 0f
+                    gesturePreviewX = 0f
+                    if (start != null) {
+                        val anchor = start
                         latestOnViewport { current ->
-                            current.withFirstDay(start + (if (pan.x < 0) 1 else -1) * (if (current.dayCount == 7) 7 else 1))
+                            if (current.dayCount != startDayCount) current
+                            else {
+                                // Cancel or multi-touch only restores the anchor; only a deliberate single-finger swipe pages.
+                                val page = if (startDayCount == 7) 7 else 1
+                                val shift = when {
+                                    !singlePointer -> 0
+                                    horizontal <= -flipThresholdPx -> page
+                                    horizontal >= flipThresholdPx -> -page
+                                    else -> 0
+                                }
+                                if (shift != 0) horizontalScroll.dispatchRawDelta(-horizontalScroll.value.toFloat())
+                                current.withFirstDay(anchor + shift.toDouble())
+                            }
                         }
-                    } else if (start != null && singlePointer) {
-                        latestOnViewport { current -> current.withFirstDay(start) }
                     }
-                    gestureScrolled = false
                 },
             ) { centroid, pan, zoom, singlePointer ->
                 pendingSelection = null
                 latestOnViewport { current ->
-                    if (gestureFirstDay == null) gestureFirstDay = current.firstDay
-                    var horizontalPan = if (kotlin.math.abs(pan.x) > kotlin.math.abs(pan.y)) pan.x else 0f
-                    if (singlePointer && current.dayCount == 7 && horizontalPan != 0f) {
-                        if (horizontalScroll.dispatchRawDelta(-horizontalPan) != 0f) gestureScrolled = true
-                        if (gestureScrolled) horizontalPan = 0f
+                    if (gestureStartFirstDay == null) {
+                        gestureStartFirstDay = kotlin.math.round(current.firstDay)
+                        gestureStartDayCount = current.dayCount
+                        gestureRemainingX = 0f
+                        gesturePreviewX = 0f
                     }
-                    // Pinching changes only vertical density. Narrow weeks scroll inside the same dates.
-                    if (!singlePointer) horizontalPan = 0f
-                    current.transform(horizontalPan.toDouble(), pan.y.toDouble(), zoom.toDouble(), (centroid.x - gutterPx + horizontalScroll.value).toDouble(), (centroid.y - topPx).toDouble(), widthPx, heightPx, density.density.toDouble())
+                    val start = gestureStartFirstDay
+                    val focusX = (centroid.x - gutterPx + horizontalScroll.value).toDouble()
+                    val focusY = (centroid.y - topPx).toDouble()
+                    if (start == null || current.dayCount != gestureStartDayCount) current
+                    else if (!singlePointer) {
+                        // Pinching is vertical only. Snap any one-finger date preview before scaling.
+                        var next = current
+                        if (gestureRemainingX != 0f || gesturePreviewX != 0f) {
+                            next = current.withFirstDay(start)
+                        }
+                        gestureRemainingX = 0f
+                        gesturePreviewX = 0f
+                        next.transform(0.0, pan.y.toDouble(), zoom.toDouble(), focusX, focusY, widthPx, heightPx, density.density.toDouble())
+                    } else {
+                        var next = current
+                        if (pan.x != 0f) {
+                            var delta = pan.x
+                            if (current.dayCount == 7) delta += horizontalScroll.dispatchRawDelta(-delta)
+                            gestureRemainingX += delta
+                            val preview = gestureRemainingX.coerceIn(-pageWidthPx, pageWidthPx)
+                            val previewDelta = preview - gesturePreviewX
+                            gesturePreviewX = preview
+                            if (previewDelta != 0f) {
+                                next = next.transform(previewDelta.toDouble(), 0.0, 1.0, focusX, focusY, widthPx, heightPx, density.density.toDouble())
+                            }
+                        }
+                        if (pan.y != 0f) {
+                            next = next.transform(0.0, pan.y.toDouble(), 1.0, focusX, focusY, widthPx, heightPx, density.density.toDouble())
+                        }
+                        next
+                    }
                 }
             }
-        }.semantics { contentDescription = "连续时间轴"; stateDescription = "缩放${(viewport.zoom * 100).roundToInt()}%，左右滑动日期，双指缩放，点空白选时段，再点加号或拖动松手添加" }) {
+        }.semantics { contentDescription = "连续时间轴"; stateDescription = "缩放${(viewport.zoom * 100).roundToInt()}%，左右滑动切换日期，双指上下缩放，点空白直接新建日程，长按拖动选择时段，拖动卡片调整时间" }) {
             Box(Modifier.offset(y = header + allDayHeight).width(gutter).height(bodyHeight).clipToBounds()) {
                 TimelineHourLabels(gutter, bodyHeight, labelInset, minuteHeight, viewport.firstMinute)
             }

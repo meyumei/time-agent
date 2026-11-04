@@ -3,10 +3,11 @@ package com.timeagent.ui
 import androidx.compose.foundation.gestures.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.*
-import androidx.compose.ui.unit.dp
+import kotlin.math.abs
 
-/** Short date drags retain their initial travel once a deliberate gesture is recognized. */
+/** Once touch slop is crossed the dominant axis stays locked for the rest of the gesture. */
 internal suspend fun PointerInputScope.detectTimelineGestures(
+    released: () -> Boolean,
     onTap: (Offset) -> Unit,
     onSelectionPress: (Offset) -> Boolean,
     onSelectionStart: (Offset) -> Boolean,
@@ -15,7 +16,7 @@ internal suspend fun PointerInputScope.detectTimelineGestures(
     onGestureEnd: (Offset, Boolean) -> Unit,
     onTransform: (Offset, Offset, Float, Boolean) -> Unit,
 ) {
-    val threshold = minOf(viewConfiguration.touchSlop, 4.dp.toPx())
+    val threshold = viewConfiguration.touchSlop
     awaitEachGesture {
         val down = awaitFirstDown(requireUnconsumed = false)
         val downWasConsumed = down.isConsumed
@@ -30,6 +31,7 @@ internal suspend fun PointerInputScope.detectTimelineGestures(
         var totalPan = Offset.Zero
         var ended = false
         var lastTime = down.uptimeMillis
+        var horizontalAxis: Boolean? = null
         try { while (true) {
             val remaining = (down.uptimeMillis + viewConfiguration.longPressTimeoutMillis - lastTime).coerceAtLeast(1)
             val event = if (!active && !selecting && !waited) withTimeoutOrNull(remaining) { awaitPointerEvent() } else awaitPointerEvent()
@@ -46,7 +48,14 @@ internal suspend fun PointerInputScope.detectTimelineGestures(
                 if (selecting) { onSelectionEnd(false); selecting = false }
             }
             // A second down may be consumed by a clickable child; the calendar owns multitouch.
-            if (event.changes.any { it.isConsumed } && !hadMultiplePointers && !selecting) return@awaitEachGesture
+            if (event.changes.any { it.isConsumed } && !hadMultiplePointers && !selecting) {
+                // Compose also consumes synthetic cancellation releases; only a native UP commits.
+                if (active && event.changes.none { it.pressed } && released()) {
+                    onGestureEnd(totalPan, true)
+                    ended = true
+                }
+                return@awaitEachGesture
+            }
             if (selecting) {
                 if (event.changes.count { it.pressed } > 1) { onSelectionEnd(false); selecting = false; active = true }
                 else {
@@ -57,7 +66,7 @@ internal suspend fun PointerInputScope.detectTimelineGestures(
                         }
                     }
                     event.changes.forEach { it.consume() }
-                    if (event.changes.none { it.pressed }) { onSelectionEnd(true); selecting = false; break }
+                    if (event.changes.none { it.pressed }) { onSelectionEnd(released()); selecting = false; break }
                     continue
                 }
             }
@@ -65,24 +74,43 @@ internal suspend fun PointerInputScope.detectTimelineGestures(
             val pan = event.calculatePan()
             totalPan += pan
             val scale = event.calculateZoom()
-            if (focus != Offset.Unspecified && (pan != Offset.Zero || scale != 1f)) {
-                if (active) onTransform(focus, pan, scale, !hadMultiplePointers)
-                else if (event.changes.count { it.pressed && it.previousPressed } >= 2) {
-                    active = true
-                    onTransform(focus, pan, scale, false)
-                } else {
-                    if (origin == null) origin = focus
-                    travel += pan
-                    if (travel.getDistance() > threshold) {
+            val singlePointer = !hadMultiplePointers
+            if (focus != Offset.Unspecified) {
+                if (pan != Offset.Zero || scale != 1f) {
+                    if (active) {
+                        if (singlePointer) {
+                            val horizontal = horizontalAxis ?: run {
+                                val locked = abs(pan.x) >= abs(pan.y)
+                                horizontalAxis = locked
+                                locked
+                            }
+                            onTransform(focus, if (horizontal) Offset(pan.x, 0f) else Offset(0f, pan.y), 1f, true)
+                        } else {
+                            onTransform(focus, Offset(0f, pan.y), scale, false)
+                        }
+                    } else if (event.changes.count { it.pressed && it.previousPressed } >= 2) {
                         active = true
-                        onTransform(requireNotNull(origin), travel, 1f, true)
+                        onTransform(focus, Offset(0f, pan.y), scale, false)
+                    } else {
+                        if (origin == null) origin = focus
+                        travel += pan
+                        if (travel.getDistance() > threshold) {
+                            active = true
+                            val horizontal = abs(travel.x) >= abs(travel.y)
+                            horizontalAxis = horizontal
+                            onTransform(requireNotNull(origin), if (horizontal) Offset(travel.x, 0f) else Offset(0f, travel.y), 1f, true)
+                        }
                     }
+                } else if (active && !singlePointer) {
+                    // A pinch may reuse a previous single-finger preview; let the canvas snap it before zooming.
+                    onTransform(focus, Offset.Zero, scale, false)
                 }
             }
             if (active) event.changes.filter { it.positionChanged() }.forEach { it.consume() }
             if (event.changes.none { it.pressed }) {
-                if (!active) onTap(down.position)
-                else { onGestureEnd(totalPan, !hadMultiplePointers); ended = true }
+                if (!active) {
+                    if (released()) onTap(down.position)
+                } else { onGestureEnd(totalPan, !hadMultiplePointers && released()); ended = true }
                 break
             }
         } } finally {

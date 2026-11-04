@@ -401,21 +401,25 @@ private data class WorkoutTimerSwitch(
                                     }
                                 },
                                 briefing = {
-                                    if (fish != null) {
-                                        val daily = remember(data, now.epochSecond / 60, zone, briefingSync, workouts) {
-                                            buildDailyBriefing(data, now, zone, briefingSync, workouts)
+                                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                        Box(Modifier.weight(1f)) {
+                                            if (fish != null) {
+                                                val daily = remember(data, now.epochSecond / 60, zone, briefingSync, workouts) {
+                                                    buildDailyBriefing(data, now, zone, briefingSync, workouts)
+                                                }
+                                                FishButlerSummary(fish, if (data.loading) "正在读取今天的安排" else collapsedSummary(daily, zone), onOpen = { openScreen("fish-chat") })
+                                            } else briefingContent()
                                         }
-                                        FishButlerSummary(fish, if (data.loading) "正在读取今天的安排" else collapsedSummary(daily, zone), onOpen = { openScreen("fish-chat") })
-                                    } else briefingContent()
+                                        TodayQuickActions(
+                                            onRecord = { editor = EditorRequest(EditorKind.RECORD) },
+                                            onRecurring = { openScreen("recurring") },
+                                            onDeadline = { openScreen("deadlines") },
+                                            onWorkout = { openScreen("workout") },
+                                        )
+                                    }
                                     PendingPaymentCard(pendingLedgerCount, onOpen = { openScreen("ledger") })
                                     ledgerReadError?.let {
                                         TextButton(onClick = { openScreen("ledger") }) { Text(it) }
-                                    }
-                                    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
-                                        TextButton(onClick = { editor = EditorRequest(EditorKind.RECORD) }, modifier = Modifier.testTag("today-record")) { Text("补记时间") }
-                                        TextButton(onClick = { openScreen("recurring") }, modifier = Modifier.testTag("today-recurring")) { Text("本次习惯") }
-                                        TextButton(onClick = { openScreen("deadlines") }, modifier = Modifier.testTag("today-deadlines")) { Text("处理期限") }
-                                        TextButton(onClick = { openScreen("workout") }, modifier = Modifier.testTag("today-workout")) { Text("训练") }
                                     }
                                     workoutReadError?.let { Text(it, Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.error) }
                                 })
