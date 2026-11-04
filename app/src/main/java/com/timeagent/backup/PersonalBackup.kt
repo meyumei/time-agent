@@ -111,6 +111,21 @@ class PersonalBackup(
                 }
             }))
         }
+        if (payload.main.version < 16) {
+            val old = tables.getValue("reminders")
+            val columns = live.query("PRAGMA table_info(reminders)").use { c -> buildList { while (c.moveToNext()) add(c.getString(1)) } }
+            tables = tables + ("reminders" to BackupTable(columns, old.rows.map { row ->
+                val task = row[old.columns.indexOf("taskId")]
+                columns.map { name ->
+                    val index = old.columns.indexOf(name)
+                    if (index >= 0) row[index] else when (name) {
+                        "ownerType" -> BackupCell(android.database.Cursor.FIELD_TYPE_STRING, if (task.value != null) "TASK" else "REMINDER")
+                        "ownerId" -> if (task.value != null) task else row[old.columns.indexOf("id")]
+                        else -> BackupCell(android.database.Cursor.FIELD_TYPE_NULL)
+                    }
+                }
+            }))
+        }
         return payload.copy(main=BackupDatabase(live.version,tables))
     }
 

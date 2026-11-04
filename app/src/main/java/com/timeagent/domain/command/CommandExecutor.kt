@@ -133,6 +133,10 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
                                 payload = gson.toJson(WorkoutRepository(workoutDb, repository, repository.commandClock).applyMutation(command.mutation))
                                 emptyList()
                             }
+                            is WriteReminder -> {
+                                payload = gson.toJson(com.timeagent.reminders.ReminderInstanceRepository(repository).applyMutation(command.mutation))
+                                emptyList()
+                            }
                             else -> error("不支持的命令")
                         }
                     }
@@ -362,6 +366,14 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
             is WorkoutMutation.SwitchToTimer -> "结束训练并开始计时"
         }
         is DeliverReminder -> "投递提醒"
+        is WriteReminder -> when (command.mutation) {
+            is ReminderMutation.Save -> "保存提醒"
+            is ReminderMutation.Delete -> "删除提醒"
+            is ReminderMutation.Snooze -> "稍后提醒"
+            is ReminderMutation.Act -> "处理提醒"
+            is ReminderMutation.Fire -> "投递提醒"
+            ReminderMutation.Reconcile -> "重新排程提醒"
+        }
         is ReadTimeData -> "查询"
         is ReadAssistantQuery -> "查询"
         is CountActualRecords -> "查询实际记录"

@@ -293,7 +293,15 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
     }
 
     private fun reminderDeliveryKey(id: String, at: Long) = "REMINDER_DELIVERY:$id:$at"
-    suspend fun saveReminder(item: ReminderEntity, expectedVersion: Long? = null, automatic: Boolean = false): ReminderEntity = transaction {
+    suspend fun saveReminder(item: ReminderEntity, expectedVersion: Long? = null, automatic: Boolean = false): ReminderEntity {
+        val result = commands.executeForRepository(WriteReminder(
+            UUID.randomUUID().toString(), ReminderMutation.Save(item, expectedVersion, automatic),
+            if (automatic) Origin.SYSTEM else Origin.UI,
+        ))
+        result.throwIfRejected()
+        return gson.fromJson(result.payload, ReminderEntity::class.java)
+    }
+    internal suspend fun saveReminderRaw(item: ReminderEntity, expectedVersion: Long? = null, automatic: Boolean = false): ReminderEntity = transaction {
         require(item.id.isNotBlank() && item.title.trim().length in 1..200) { "请填写提醒内容，最多200字" }
         val before = dao.reminder(item.id)
         checkVersion(before?.version, expectedVersion)
@@ -452,7 +460,12 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         saved
     }
 
-    suspend fun deleteReminder(id: String, expectedVersion: Long? = null) = transaction {
+    suspend fun deleteReminder(id: String, expectedVersion: Long? = null) {
+        commands.executeForRepository(WriteReminder(
+            UUID.randomUUID().toString(), ReminderMutation.Delete(id, expectedVersion),
+        )).throwIfRejected()
+    }
+    internal suspend fun deleteReminderRaw(id: String, expectedVersion: Long? = null) = transaction {
         val before = requireNotNull(dao.reminder(id)) { "提醒不存在" }
         checkVersion(before.version, expectedVersion)
         nextVersion("REMINDER", id, before.version)
@@ -981,6 +994,17 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
             if (payload(current?.let { gson.toJson(it) }) != payload(against)) throw StaleChange()
         }
         when (action.entityType) {
+            "REMINDER_INSTANCE" -> {
+                val instances = database.reminderInstanceDao()
+                val current = instances.instance(action.entityId)
+                matches(current)
+                val version = nextVersion("REMINDER_INSTANCE", action.entityId, current?.version)
+                if (target == null) {
+                    current?.let { instances.put(it.copy(state = "CANCELLED", version = version)) }
+                } else {
+                    instances.put(gson.fromJson(target, com.timeagent.reminders.ReminderInstanceEntity::class.java).copy(version = version))
+                }
+            }
             "SUGGESTION_POLICY" -> {
                 val current = dao.revision(action.entityId) ?: EntityRevision(action.entityId, 0)
                 if (current != gson.fromJson(expected, EntityRevision::class.java)) throw StaleChange()

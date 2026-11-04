@@ -37,6 +37,10 @@ class MainActivity : ComponentActivity() {
         openReminderId = intent?.getStringExtra(ReminderIntents.EXTRA_REMINDER_ID)
         sharedText = shared(intent)
         appDestination = intent?.getStringExtra("appDestination")
+        if (intent?.getBooleanExtra(ReminderIntents.EXTRA_SNOOZE_REQUEST, false) == true) {
+            appDestination = "reminder-snooze:$openReminderId"
+            intent.removeExtra(ReminderIntents.EXTRA_SNOOZE_REQUEST)
+        }
         intent?.removeExtra("appDestination")
         fishDestination = takeFishDestination(intent)
         enableEdgeToEdge()
@@ -67,6 +71,10 @@ class MainActivity : ComponentActivity() {
         openReminderId = intent.getStringExtra(ReminderIntents.EXTRA_REMINDER_ID)
         sharedText = shared(intent)
         appDestination = intent?.getStringExtra("appDestination")
+        if (intent.getBooleanExtra(ReminderIntents.EXTRA_SNOOZE_REQUEST, false)) {
+            appDestination = "reminder-snooze:$openReminderId"
+            intent.removeExtra(ReminderIntents.EXTRA_SNOOZE_REQUEST)
+        }
         intent?.removeExtra("appDestination")
         fishDestination = takeFishDestination(intent)
     }
