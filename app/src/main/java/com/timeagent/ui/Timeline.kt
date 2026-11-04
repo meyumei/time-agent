@@ -60,6 +60,7 @@ val TimelineItem.dragReadOnlyReason: String? get() = readOnlyReason ?: when {
     kind == ItemKind.COURSE -> "课表来源不能拖动，请在课程详情中修改"
     (entity as? TimeRecordEntity)?.source == "HEALTH_SYNC" -> "健康同步记录不能拖动，请查看原始健康来源"
     (entity as? ScheduleBlockEntity)?.isLocked == true -> "此日程已锁定"
+    (entity as? TimeRecordEntity)?.endAt == null && kind == ItemKind.RECORD -> "正在计时，结束后可调整"
     else -> null
 }
 val TimelineItem.isPoint: Boolean get() = (entity as? ScheduleBlockEntity)?.kind == "POINT"
@@ -68,6 +69,7 @@ internal data class ActiveTimelineDrag(
     val kind: TimelineDragKind,
     val deltaPixels: Offset,
     val result: TimelineDragResult,
+    val scrollMinutes: Double = 0.0,
 )
 fun LocalSnapshot.timeline(now: Instant, filters: TimelineFilterState = TimelineFilterState()): List<TimelineItem> {
     val taskNames = tasks.associateBy { it.id }
@@ -181,6 +183,7 @@ internal val DayNames = listOf("周一", "周二", "周三", "周四", "周五",
     }
     var conflictGroup by remember { mutableStateOf<List<TimelineItem>?>(null) }
     var listMode by rememberSaveable { mutableStateOf(preference.listMode()) }
+    var snapMinutes by rememberSaveable { mutableIntStateOf(preference.snapMinutes()) }
     var viewport by rememberSaveable(stateSaver = ViewportSaver) { mutableStateOf(initialViewport()) }
     var filterState by rememberSaveable(stateSaver = listSaver<TimelineFilterState, Boolean>(
         save = { listOf(it.plan, it.record, it.course, it.health) },
@@ -262,6 +265,8 @@ internal val DayNames = listOf("周一", "周二", "周三", "周四", "周五",
             themeMode = themeMode, onThemeMode = onThemeMode,
             conflicts = conflicts.size, onConflicts = { showConflicts = true },
             onSelectTemplate = onSaveTemplate?.let { { selectingTemplate = true; updateSelectedPlans(emptyList()) } },
+            snapMinutes = snapMinutes,
+            onSnapMinutes = { snapMinutes = it; preference.saveSnapMinutes(it) },
         )
         if (selectingTemplate) Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically) {
@@ -297,6 +302,7 @@ internal val DayNames = listOf("周一", "周二", "周三", "周四", "周五",
                 resolve = rendered::currentItem, remindersByDate = remindersByDate, onReminder = onReminder,
                 onConflictGroup = { conflictGroup = it }, allDayItems = items.filter(TimelineItem::isAllDay),
                 onDragCommit = onDragCommit,
+                snapMinutes = snapMinutes,
             )
         }
     }

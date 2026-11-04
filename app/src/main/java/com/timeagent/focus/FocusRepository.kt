@@ -168,7 +168,7 @@ class FocusRepository(
     private suspend fun adjustSegment(mutation: FocusMutation.AdjustSegment): FocusSessionEntity {
         val before = requireActive(mutation.id, mutation.expectedVersion)
         require(!before.isActive && before.actualRecordId != null) { "请先结束并保存专注，再调整实际记录" }
-        require(mutation.endAt > mutation.startAt && mutation.endAt <= wallNow()) { "实际片段须有正时长，不能延伸到未来" }
+        require(mutation.endAt > mutation.startAt && (mutation.allowFuture || mutation.endAt <= wallNow())) { "实际片段须有正时长，未来时间须先确认" }
         val segments = FocusSegments.decode(before.segmentsJson).toMutableList()
         val segment = segments.getOrNull(mutation.segmentIndex) ?: throw StaleChange()
         require(segments.withIndex().none { (index, other) ->
@@ -181,7 +181,7 @@ class FocusRepository(
         val record = requireNotNull(recordDao.record(requireNotNull(before.actualRecordId))) { "专注实际记录已删除" }
         repository.saveRecordRaw(record.copy(startAt = next.first().startAt, endAt = next.last().endAt,
             title = mutation.title ?: record.title, notes = mutation.notes ?: record.notes, isManuallyEdited = true),
-            expectedVersion = record.version)
+            expectedVersion = record.version, allowFuture = mutation.allowFuture)
         return persist(before, before.copy(segmentsJson = FocusSegments.encode(next),
             focusedElapsedMs = next.sumOf { it.elapsedMs }, label = mutation.title ?: before.label),
             wallNow(), FocusClock.nowElapsed(), "调整专注实际片段", true)

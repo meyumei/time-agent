@@ -1,0 +1,76 @@
+{
+  "date": "2026-11-04",
+  "commands": [
+    ":app:compileDebugKotlin"
+  ],
+  "builds": [
+    {
+      "log": ".tmp/remaining-development-20261104/compile-timeline-drag-1.log",
+      "exitCode": 0,
+      "endedAt": "2026-11-04T19:59:04.6723785+08:00",
+      "summary": "BUILD SUCCESSFUL in 27s"
+    },
+    {
+      "log": ".tmp/remaining-development-20261104/compile-timeline-drag-2.log",
+      "exitCode": 0,
+      "endedAt": "2026-11-04T20:07:26.4037132+08:00",
+      "summary": "BUILD SUCCESSFUL in 1m 5s"
+    },
+    {
+      "log": ".tmp/remaining-development-20261104/compile-timeline-drag-3.log",
+      "endedAt": "2026-11-04T20:09:22.6147999+08:00",
+      "exitCode": 0,
+      "summary": "BUILD SUCCESSFUL in 9s"
+    },
+    {
+      "log": ".tmp/remaining-development-20261104/compile-timeline-drag-4.log",
+      "exitCode": 0,
+      "endedAt": "2026-11-04T20:11:38.9364158+08:00",
+      "summary": "BUILD SUCCESSFUL in 9s"
+    },
+    {
+      "log": ".tmp/remaining-development-20261104/compile-timeline-drag-final.log",
+      "endedAt": "2026-11-04T20:14:17.1614797+08:00",
+      "exitCode": 0,
+      "summary": "BUILD SUCCESSFUL in 9s"
+    }
+  ],
+  "sourceSha256": {
+    "app/src/main/java/com/timeagent/domain/command/CommandExecutor.kt": "16a748ac2e690d814ec1a1197a454b52a6aad80119867b0e9b03c21c65548d23",
+    "app/src/main/java/com/timeagent/domain/command/FocusCommand.kt": "0e8a6f31eb7f30ce694ad1167a6aae53c89e0953b6fb4ce03897a28d28ce5619",
+    "app/src/main/java/com/timeagent/focus/FocusRepository.kt": "8d5c84ad9b6bb0538010c05c8ccff1c5cccc0f0decce80cc47d9698a3ab1ea91",
+    "app/src/main/java/com/timeagent/recurring/RecurringService.kt": "07fa2f162d62ed05ae3ed987e1cf2801d45cac5d63b07c3fc93da48d90c06b36",
+    "app/src/main/java/com/timeagent/ui/TimeAgentApp.kt": "e89b72486330cb392e75f621b6b3c006905f1ac6b31d026fef14604d759c6856",
+    "app/src/main/java/com/timeagent/ui/Timeline.kt": "3580f6194b0397b7e9e52dccfbbd447bc343decd80462ee5d82e6fbd813131e4",
+    "app/src/main/java/com/timeagent/ui/TimelineAllDayRow.kt": "ee845cf5615ba42d6b4dd003484d9ebeb3228d4667afcee7d2e89e71cf91b86a",
+    "app/src/main/java/com/timeagent/ui/TimelineAppearance.kt": "e78cbe4161b56a5335c9a500df5773a15f4353e8090a25e80936004f668b2e55",
+    "app/src/main/java/com/timeagent/ui/TimelineCanvas.kt": "1a0eb62041dd4225fe7a302f995ef246019514dad9afd511e3364974b46ec03d",
+    "app/src/main/java/com/timeagent/ui/TimelinePointMarkers.kt": "3777617e745d5ba5f451c5c7753c9d923c808dec6f987b85180235cdb0b1d26e",
+    "app/src/main/java/com/timeagent/ui/TimelineToolbar.kt": "99f1f65ba231fe4858eff3de99358d2ecd2d906ea1c248140de865481b1f46b8",
+    "app/src/main/java/com/timeagent/ui/timeline/TimelineDragMath.kt": "6daf04167519fec0ced7d6b7ee91779e3de48604ecf76cd18caee209fb8a2aa3",
+    "app/src/main/java/com/timeagent/ui/timeline/TimelinePreference.kt": "943f9e8c4b0ac4674182621e0c70af8905d956ed739047ce71e91b02f4ef5790",
+    "app/src/main/res/values/strings.xml": "c232d9be8c58d7dfb46e79239499eb3c10502c7d82ae0ca292f976096c96f9d1",
+    "app/src/main/java/com/timeagent/domain/command/AdjustRecurringTimeline.kt": "5a49106175d8c600640243aaa71253b7fedec433f86b247e9b6ab19343d593d6",
+    "app/src/main/java/com/timeagent/ui/TimelineDragSubmission.kt": "e41ad2077d797ba952f706c2d2dbabc0dc34044a53e7d5ed3f720b1de15c9e35",
+    "app/src/main/java/com/timeagent/ui/timeline/TimelineItemGestures.kt": "df0bc9fbdc9387f345e50bcd9fef2ebe67c01e4b758fcecd900b1b04a9b292bd"
+  },
+  "testsRun": false,
+  "deviceActions": false,
+  "schemaChanged": false,
+  "affectedLedger": [
+    "L01",
+    "L02",
+    "L06",
+    "L07",
+    "L09",
+    "L36"
+  ],
+  "collaboration": {
+    "newDsCalls": 0,
+    "reason": "Prior CLI quota reset at 2026-11-04T20:31:11+08:00; main agent implemented this follow-up"
+  },
+  "limitations": [
+    "Compilation only; no gesture or device acceptance",
+    "Calendar/DST, recurring date-shifts, cancellation and undo require later device acceptance"
+  ]
+}

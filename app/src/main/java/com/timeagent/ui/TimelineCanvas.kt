@@ -1,6 +1,7 @@
 package com.timeagent.ui
 
 import android.view.MotionEvent
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
@@ -50,6 +51,11 @@ import com.timeagent.ui.timeline.TimelineFilterButton
 import com.timeagent.ui.timeline.TimelineFilterState
 import com.timeagent.ui.timeline.minuteDelta
 import com.timeagent.ui.timeline.preview
+import com.timeagent.ui.timeline.previewCalendarDrag
+import com.timeagent.ui.timeline.detectTimelineItemDrag
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -65,6 +71,7 @@ import kotlin.math.roundToInt
     onConflictGroup: (List<TimelineItem>) -> Unit = {},
     allDayItems: List<TimelineItem> = emptyList(),
     onDragCommit: (TimelineItem, TimelineDragResult) -> Unit = { _, _ -> },
+    snapMinutes: Int = 15,
 ) {
     val latestOnViewport by rememberUpdatedState(onViewport)
     val latestCreate by rememberUpdatedState(onCreateAt)
@@ -74,11 +81,27 @@ import kotlin.math.roundToInt
     var pendingSelection by remember { mutableStateOf<TimelineSelection?>(null) }
     var pendingDrag by remember { mutableStateOf<PendingSelectionDrag?>(null) }
     var activeDrag by remember { mutableStateOf<ActiveTimelineDrag?>(null) }
+    var selectedKey by remember { mutableStateOf<String?>(null) }
+    var dragCancelled by remember { mutableStateOf(false) }
+    val pointer = remember { arrayOf(Offset.Zero) }
+    val selectItem: (TimelineItem) -> Unit = { item ->
+        selectedKey = item.layoutKey
+        onSelect(item)
+    }
+    val haptics = androidx.compose.ui.platform.LocalHapticFeedback.current
+    BackHandler(activeDrag != null || selectedKey != null) {
+        dragCancelled = true
+        activeDrag = null
+        selectedKey = null
+    }
     val released = remember { booleanArrayOf(false) }
     val observeRelease = remember<(MotionEvent) -> Unit> {
         { event ->
             when (event.actionMasked) {
-                MotionEvent.ACTION_DOWN, MotionEvent.ACTION_CANCEL -> released[0] = false
+                MotionEvent.ACTION_DOWN -> { released[0] = false; dragCancelled = false }
+                MotionEvent.ACTION_CANCEL -> {
+                    released[0] = false; dragCancelled = true; activeDrag = null
+                }
                 MotionEvent.ACTION_UP -> released[0] = true
             }
         }
@@ -94,7 +117,9 @@ import kotlin.math.roundToInt
         // Ignore week overflow smaller than touch slop; keep 336dp only for genuinely narrow screens.
         val graphWidth = if (viewport.dayCount == 7 && availableWidth < 336.dp - touchSlop) 336.dp else availableWidth
         val maxAllDay = rendered.dates.maxOf { date -> allDayItems.count { it.span.overlaps(TimeSpan(date.atStartOfDay(zone).toInstant(), date.plusDays(1).atStartOfDay(zone).toInstant())) } }
-        val allDayHeight = when { maxAllDay == 0 -> 0.dp; maxAllDay == 1 -> 52.dp; else -> 100.dp }
+        val editingAllDay = allDayItems.any { it.layoutKey == selectedKey && it.dragReadOnlyReason == null }
+        val allDayHeight = when { maxAllDay == 0 -> 0.dp; maxAllDay == 1 -> 52.dp; else -> 100.dp } +
+            if (editingAllDay) 48.dp else 0.dp
         val bodyHeight = (maxHeight - header - allDayHeight).coerceAtLeast(16.dp)
         val graphHeight = (bodyHeight - labelInset * 2).coerceAtLeast(1.dp)
         val dayWidth = graphWidth / viewport.dayCount
@@ -116,30 +141,38 @@ import kotlin.math.roundToInt
             }
         }
         fun updateDrag(item: TimelineItem, kind: TimelineDragKind, amount: Offset) {
-            if (item.dragReadOnlyReason != null || item.isPoint || item.isAllDay ||
-                (item.kind == ItemKind.RECORD && (item.entity as? TimeRecordEntity)?.endAt == null)
-            ) return
+            if (dragCancelled) return
+            if (item.dragReadOnlyReason != null) {
+                if (amount == Offset.Zero) onSelect(item)
+                return
+            }
+            selectedKey = item.layoutKey
             val current = activeDrag
+            if (current == null) haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
             val nextPixels = if (current?.item?.layoutKey == item.layoutKey && current.kind == kind) {
                 current.deltaPixels + amount
             } else {
                 amount
             }
-            val deltaMinutes = minuteDelta(
-                nextPixels.x / dayWidthPx * 1440f + nextPixels.y / minuteHeightPx,
-                1f,
-            )
+            val scrollMinutes = current?.takeIf { it.item.layoutKey == item.layoutKey }?.scrollMinutes ?: 0.0
+            val deltaMinutes = (nextPixels.y / minuteHeightPx + scrollMinutes).roundToInt()
+            val deltaDays = (nextPixels.x / dayWidthPx).roundToInt()
             activeDrag = ActiveTimelineDrag(
                 item,
                 kind,
                 nextPixels,
-                preview(item.span.start.toEpochMilli(), item.span.end.toEpochMilli(), deltaMinutes, kind),
+                previewCalendarDrag(item.span.start.toEpochMilli(), item.span.end.toEpochMilli(),
+                    deltaMinutes, deltaDays, kind,
+                    if (item.isAllDay) ZoneId.of((item.entity as ScheduleBlockEntity).timezoneId) else zone,
+                    snapMinutes, point = item.isPoint, allDay = item.isAllDay),
+                scrollMinutes,
             )
         }
         fun finishDrag(item: TimelineItem) {
             val drag = activeDrag?.takeIf { it.item.layoutKey == item.layoutKey }
             activeDrag = null
-            if (drag != null && (drag.result.startAt != item.span.start.toEpochMilli() || drag.result.endAt != item.span.end.toEpochMilli())) {
+            if (!dragCancelled && drag != null && (drag.result.startAt != item.span.start.toEpochMilli() ||
+                    (!item.isPoint && drag.result.endAt != item.span.end.toEpochMilli()))) {
                 onDragCommit(item, drag.result)
             }
         }
@@ -148,6 +181,47 @@ import kotlin.math.roundToInt
         }
         val gutterPx = with(density) { gutter.toPx() }
         val topPx = with(density) { (header + allDayHeight + labelInset).toPx() }
+        // Frame-driven scrolling continues while a finger rests at an edge; it does not write data.
+        LaunchedEffect(activeDrag?.item?.layoutKey, activeDrag?.kind) {
+            var previous = withFrameNanos { it }
+            while (activeDrag != null) {
+                val frame = withFrameNanos { it }
+                val seconds = ((frame - previous) / 1_000_000_000.0).coerceAtMost(.05)
+                previous = frame
+                val drag = activeDrag ?: break
+                val edge = with(density) { 48.dp.toPx() }
+                val y = pointer[0].y - topPx
+                val intensity = when {
+                    y < edge -> -((edge - y) / edge).coerceIn(0f, 1f)
+                    y > heightPx - edge -> ((y - heightPx + edge) / edge).toFloat().coerceIn(0f, 1f)
+                    else -> 0f
+                }
+                if (intensity != 0f && !drag.item.isAllDay) {
+                    val delta = intensity * 120.0 * seconds
+                    latestOnViewport { current ->
+                        val maxMinute = (1440 - current.visibleMinutes(graphHeight.value.toDouble())).coerceAtLeast(0.0)
+                        current.copy(firstMinute = (current.firstMinute + delta).coerceIn(0.0, maxMinute))
+                    }
+                    // At midnight keep extending the preview, even when the viewport has reached 24:00.
+                    val next = drag.copy(scrollMinutes = drag.scrollMinutes + delta)
+                    activeDrag = next.copy(result = previewCalendarDrag(drag.item.span.start.toEpochMilli(),
+                        drag.item.span.end.toEpochMilli(), (drag.deltaPixels.y / minuteHeightPx + next.scrollMinutes).roundToInt(),
+                        (drag.deltaPixels.x / dayWidthPx).roundToInt(), drag.kind, zone, snapMinutes,
+                        point = drag.item.isPoint))
+                }
+                val x = pointer[0].x - gutterPx
+                val visibleWidthPx = with(density) { availableWidth.toPx() }
+                val horizontalSpeed = when {
+                    x < edge -> -((edge - x) / edge).coerceIn(0f, 1f)
+                    x > visibleWidthPx - edge -> ((x - visibleWidthPx + edge) / edge).coerceIn(0f, 1f)
+                    else -> 0f
+                }
+                if (horizontalSpeed != 0f) {
+                    val consumed = horizontalScroll.dispatchRawDelta((horizontalSpeed * 180 * density.density * seconds).toFloat())
+                    if (consumed != 0f) updateDrag(drag.item, drag.kind, Offset(consumed, 0f))
+                }
+            }
+        }
         val hitEvent by rememberUpdatedState<(Offset) -> Boolean> { point ->
             rendered.isOccupiedAt(
                 placementViewport.value, graphWidth.value.toDouble(), graphHeight.value.toDouble(),
@@ -184,7 +258,19 @@ import kotlin.math.roundToInt
         }
         val dates = rendered.dates
         val gridColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = .55f)
-        Box(Modifier.fillMaxSize().motionEventSpy(observeRelease).pointerInput(widthPx, heightPx, viewport.dayCount) {
+        Box(Modifier.fillMaxSize().motionEventSpy(observeRelease).pointerInput(Unit) {
+            awaitPointerEventScope {
+                while (true) {
+                    val event = awaitPointerEvent(PointerEventPass.Initial)
+                    pointer[0] = event.changes.firstOrNull()?.position ?: Offset.Zero
+                    if (event.changes.count { it.pressed } > 1 && activeDrag != null) {
+                        dragCancelled = true
+                        activeDrag = null
+                    }
+                    if (dragCancelled) event.changes.forEach { it.consume() }
+                }
+            }
+        }.pointerInput(widthPx, heightPx, viewport.dayCount) {
             val flipThresholdPx = 48.dp.toPx()
             val pageWidthPx = (widthPx / viewport.dayCount * if (viewport.dayCount == 7) 7 else 1).toFloat()
             var gestureStartFirstDay: Double? = null
@@ -302,7 +388,10 @@ import kotlin.math.roundToInt
                     dayWidth = dayWidth,
                     height = allDayHeight,
                     zone = zone,
-                    onSelect = onSelect,
+                    onSelect = selectItem,
+                    selectedKey = selectedKey, activeDrag = activeDrag,
+                    onDragDelta = ::updateDrag, onDragEnd = ::finishDrag, onDragCancel = ::cancelDrag,
+                    onAdjust = onDragCommit,
                     modifier = Modifier.offset(y = header).width(graphWidth),
                 )
             }
@@ -326,9 +415,14 @@ import kotlin.math.roundToInt
                     dates.forEach { date -> key(date) {
                         TimelineDay(
                             rendered.days.getValue(date), placementViewport, dayWidth, minuteHeight, graphHeight,
-                            viewport.zoom, viewport.firstMinute, today, now, zone, rendered.conflictingKeys, onSelect,
+                            viewport.zoom, viewport.firstMinute, today, now, zone, rendered.conflictingKeys, selectItem,
                             resolve = resolve, points = rendered.items.filter { it.isPoint && it.span.start.atZone(zone).toLocalDate() == date }, reminders = remindersByDate[date].orEmpty(), onReminder = onReminder, onConflictGroup = onConflictGroup,
                             activeDrag = activeDrag, onDragDelta = ::updateDrag, onDragEnd = ::finishDrag, onDragCancel = ::cancelDrag,
+                            selectedKey = selectedKey,
+                            onAdjust = { item, kind, minutes ->
+                                onDragCommit(item, preview(item.span.start.toEpochMilli(), item.span.end.toEpochMilli(),
+                                    minutes, kind, snapMinutes = 15))
+                            },
                         )
                     } }
                     (dragSelection ?: pendingSelection)?.takeIf { it.date in dates }?.let { selected ->
@@ -341,9 +435,32 @@ import kotlin.math.roundToInt
             }
             }
             }
+            activeDrag?.takeIf { !it.item.isAllDay }?.let { drag ->
+                val previewColor = MaterialTheme.colorScheme.primary
+                Canvas(Modifier.offset(x = gutter, y = header + allDayHeight + labelInset)
+                    .width(availableWidth).height(graphHeight).clipToBounds()) {
+                    val span = TimeSpan(Instant.ofEpochMilli(drag.result.startAt),
+                        Instant.ofEpochMilli(maxOf(drag.result.endAt, drag.result.startAt + 1)))
+                    TimelineLayout.split(span, zone).forEach { segment ->
+                        val x = ((segment.date.toEpochDay() - viewport.firstDay) * dayWidthPx).toFloat() - horizontalScroll.value
+                        val y = ((segment.startMinute - viewport.firstMinute) * minuteHeightPx).toFloat()
+                        val height = ((segment.endMinute - segment.startMinute) * minuteHeightPx).coerceAtLeast(3f)
+                        drawRect(previewColor.copy(alpha = .18f), Offset(x, y), Size(dayWidthPx, height))
+                        drawRect(previewColor, Offset(x, y), Size(dayWidthPx, height), style = Stroke(2.dp.toPx()))
+                    }
+                }
+            }
+            if (activeDrag == null) rendered.items.firstOrNull { it.layoutKey == selectedKey }?.let { item ->
+                TextButton(onClick = { onSelect(item) }, modifier = Modifier.align(Alignment.TopCenter)) {
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.timeline_selected_details, item.title))
+                }
+            }
             activeDrag?.let { drag ->
                 Text(
-                    "预览 ${Instant.ofEpochMilli(drag.result.startAt).label(zone)} – ${Instant.ofEpochMilli(drag.result.endAt).label(zone)}",
+                    "${Instant.ofEpochMilli(drag.result.startAt).label(zone)} – ${Instant.ofEpochMilli(drag.result.endAt).label(zone)}" +
+                        (if (drag.item.isPoint) "" else " · ${((drag.result.endAt - drag.result.startAt) / 60000).minutesLabel()}") +
+                        (if (viewport.dayCount == 1 && drag.result.endAt > drag.item.span.start.atZone(zone).toLocalDate().plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli())
+                            androidx.compose.ui.res.stringResource(com.timeagent.R.string.timeline_continues_tomorrow) else ""),
                     Modifier.align(Alignment.TopCenter).padding(top = 2.dp)
                         .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(8.dp))
                         .padding(horizontal = 8.dp, vertical = 3.dp),
@@ -401,6 +518,8 @@ import kotlin.math.roundToInt
     onDragDelta: (TimelineItem, TimelineDragKind, Offset) -> Unit,
     onDragEnd: (TimelineItem) -> Unit,
     onDragCancel: (TimelineItem) -> Unit,
+    selectedKey: String?,
+    onAdjust: (TimelineItem, TimelineDragKind, Int) -> Unit,
 ) {
     val visibleMinutes = graphHeight.value / minuteHeight.value.toDouble()
     Box(Modifier.offset {
@@ -423,22 +542,27 @@ import kotlin.math.roundToInt
             }
         }
         day.events.sortedBy { if (it.item.kind == ItemKind.RECORD) 0 else 1 }.forEach { event -> key(event.item.kind, event.item.id) {
-            val grouped = viewport.value.dayCount != 7 && event.item.kind != ItemKind.RECORD && event.item.layoutKey in day.groupedKeys
+            val grouped = viewport.value.dayCount != 7 && event.item.kind != ItemKind.RECORD &&
+                event.item.layoutKey in day.groupedKeys && event.item.layoutKey != selectedKey
             if (!grouped) {
                 val live = resolve(event.item)
                 val dragging = activeDrag?.takeIf { it.item.layoutKey == live.layoutKey }
-                val display = dragging?.let {
-                    live.copy(span = TimeSpan(Instant.ofEpochMilli(it.result.startAt), Instant.ofEpochMilli(it.result.endAt)))
-                } ?: live
-                val displayEvent = if (dragging == null) event else {
-                    val segment = TimelineLayout.split(display.span, zone).firstOrNull { it.date == day.date } ?: event.segment
-                    event.copy(item = display, segment = segment)
-                }
-                val bounds = day.bounds(displayEvent, dayWidth.value.toDouble(), minuteHeight.value.toDouble(), firstMinute, visibleMinutes)
+                // Keep the gesture owner mounted at its original bounds while the separate preview crosses lanes.
+                val anchorBounds = remember(live.layoutKey) { arrayOfNulls<TimelineCardBounds>(1) }
+                val calculated = day.bounds(event, dayWidth.value.toDouble(), minuteHeight.value.toDouble(), firstMinute, visibleMinutes)
+                if (dragging == null) anchorBounds[0] = calculated
+                val bounds = if (dragging != null) anchorBounds[0] else calculated
                 if (bounds != null) {
                     TimelineEventCard(
-                        display, zone, zoom, display.layoutKey in conflictingKeys,
-                        Modifier.offset(x = bounds.x.dp, y = bounds.y.dp).width(bounds.width.dp).height(bounds.height.dp),
+                        live, zone, zoom, live.layoutKey in conflictingKeys,
+                        Modifier.offset(x = bounds.x.dp, y = bounds.y.dp).width(bounds.width.dp).height(bounds.height.dp)
+                            .semantics {
+                                if (live.dragReadOnlyReason == null) customActions = listOf(
+                                    CustomAccessibilityAction("开始提前15分钟") { onAdjust(live, if (live.isPoint) TimelineDragKind.MOVE else TimelineDragKind.RESIZE_START, -15); true },
+                                    CustomAccessibilityAction("结束延后15分钟") { onAdjust(live, if (live.isPoint) TimelineDragKind.MOVE else TimelineDragKind.RESIZE_END, 15); true },
+                                    CustomAccessibilityAction("整体后移15分钟") { onAdjust(live, TimelineDragKind.MOVE, 15); true },
+                                )
+                            },
                         cardSize = DpSize(bounds.width.dp, bounds.height.dp),
                         overlayPlan = viewport.value.dayCount == 7,
                         compactView = viewport.value.dayCount == 7,
@@ -448,14 +572,26 @@ import kotlin.math.roundToInt
                                 .distinctBy { it.layoutKey } else listOf(live)
                             if (overlapping.size > 1) onConflictGroup(overlapping) else onSelect(live)
                         },
-                        onDragDelta = if (live.dragReadOnlyReason == null) { kind, amount -> onDragDelta(live, kind, amount) } else null,
+                        onDragDelta = { kind, amount -> onDragDelta(live, kind, amount) },
                         onDragEnd = { onDragEnd(live) },
                         onDragCancel = { onDragCancel(live) },
                     )
+                    if (selectedKey == live.layoutKey && live.dragReadOnlyReason == null) {
+                        if (event.segment.startMinute >= firstMinute && live.span.start.atZone(zone).toLocalDate() == day.date)
+                            TimelineResizeHandle(live, TimelineDragKind.RESIZE_START,
+                                Modifier.offset(x = bounds.x.dp, y = bounds.y.dp - 48.dp).width(bounds.width.dp.coerceAtLeast(48.dp)),
+                                onDragDelta, onDragEnd, onDragCancel)
+                        if (live.span.end.atZone(zone).toLocalDate() == day.date &&
+                            event.segment.endMinute <= firstMinute + visibleMinutes)
+                            TimelineResizeHandle(live, TimelineDragKind.RESIZE_END,
+                                Modifier.offset(x = bounds.x.dp, y = (bounds.y + bounds.height).dp).width(bounds.width.dp.coerceAtLeast(48.dp)),
+                                onDragDelta, onDragEnd, onDragCancel)
+                    }
                 }
             }
         } }
-        TimelinePointMarkers(points, zone, minuteHeight, firstMinute, graphHeight, onSelect)
+        TimelinePointMarkers(points, zone, minuteHeight, firstMinute, graphHeight, onSelect,
+            onDragDelta, onDragEnd, onDragCancel, onAdjust, selectedKey)
         reminders.forEach { reminder ->
             val minute = Instant.ofEpochMilli(reminder.remindAt).atZone(zone).toLocalTime().toSecondOfDay() / 60.0
             val y = minuteHeight * (minute - firstMinute).toFloat()
@@ -473,6 +609,24 @@ import kotlin.math.roundToInt
             val minute = now.atZone(zone).toLocalTime().toSecondOfDay() / 60.0
             val y = minuteHeight * (minute - firstMinute).toFloat()
             if (y in 0.dp..graphHeight) Box(Modifier.offset(y = y).width(dayWidth).height(1.dp).background(MaterialTheme.colorScheme.error))
+        }
+    }
+}
+
+@Composable
+private fun TimelineResizeHandle(
+    item: TimelineItem, kind: TimelineDragKind, modifier: Modifier,
+    onDelta: (TimelineItem, TimelineDragKind, Offset) -> Unit,
+    onEnd: (TimelineItem) -> Unit, onCancel: (TimelineItem) -> Unit,
+) {
+    Box(modifier.height(48.dp).pointerInput(item.layoutKey, kind) {
+        detectTimelineItemDrag(immediate = true, onStart = { onDelta(item, kind, Offset.Zero) },
+            onDelta = { onDelta(item, kind, it) }, onEnd = { onEnd(item) }, onCancel = { onCancel(item) })
+    }.semantics { contentDescription = if (kind == TimelineDragKind.RESIZE_START) "拖动调整开始时间" else "拖动调整结束时间" },
+        contentAlignment = Alignment.Center) {
+        Box(Modifier.size(24.dp).background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(12.dp)),
+            contentAlignment = Alignment.Center) {
+            Box(Modifier.width(14.dp).height(3.dp).background(MaterialTheme.colorScheme.primary))
         }
     }
 }

@@ -119,6 +119,9 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
                                 RecurringService(repository).moveRaw(command.check)
                                 emptyList()
                             }
+                            is AdjustRecurringTimeline -> RecurringService(repository).adjustTimelineRaw(command).map {
+                                ScheduleWarning(it.id, it.title, it.span.start.toEpochMilli(), it.span.end.toEpochMilli())
+                            }
                             is WriteLedger -> {
                                 val ledger = com.timeagent.ledger.LedgerRepository(
                                     repository.database,
@@ -375,6 +378,7 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
         is SaveRecurringRule -> "保存周期规则"
         is ActRecurringInstance -> "处理周期实例"
         is MoveRecurringInstance -> "改期周期实例"
+        is AdjustRecurringTimeline -> "调整周期日程"
         is WriteLedger -> when (command.mutation) {
             is LedgerMutation.SaveAccount -> "保存账户"
             is LedgerMutation.ArchiveAccount -> "归档账户"

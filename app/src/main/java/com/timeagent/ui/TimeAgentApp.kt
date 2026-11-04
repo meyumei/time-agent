@@ -301,6 +301,15 @@ private data class WorkoutTimerSwitch(
     }
     LaunchedEffect(voiceMessage) { if (voiceMessage != null) { delay(6000); voiceMessage = null } }
     var confirmation by remember { mutableStateOf<Pair<String, () -> Unit>?>(null) }
+    var timelineDrag by remember { mutableStateOf<TimelineDragRequest?>(null) }
+    val timelineSnackbar = remember { SnackbarHostState() }
+    var timelineUndo by remember { mutableStateOf<com.timeagent.ui.components.UndoMessage?>(null) }
+    com.timeagent.ui.components.UndoSnackbar(timelineSnackbar, timelineUndo,
+        onUndo = { token -> model.perform {
+            model.repository.commands.execute(com.timeagent.domain.command.UndoCommand(UUID.randomUUID().toString(), token))
+                .also { if (it.status !in setOf(com.timeagent.domain.command.CommandStatus.APPLIED, com.timeagent.domain.command.CommandStatus.DUPLICATE)) error(it.message) }
+        } },
+        onConsumed = { if (timelineUndo?.id == it) timelineUndo = null })
     var deletingTask by remember { mutableStateOf<TaskEntity?>(null) }
     var preview by remember { mutableStateOf<ImportPreview?>(null) }
     var switchTask by remember { mutableStateOf<Pair<String?, String>?>(null) }
@@ -399,7 +408,7 @@ private data class WorkoutTimerSwitch(
     }
     val voiceControl = rememberHomeVoiceState(!busy && !data.loading && !chat.busy, ::sendAssistant, { voiceMessage = it },
         { state, text -> voiceStatus = state; liveVoiceText = text }, { voiceSuggestion = it }, speechFactory)
-    Scaffold(modifier = Modifier.imePadding(), topBar = {
+    Scaffold(modifier = Modifier.imePadding(), snackbarHost = { SnackbarHost(timelineSnackbar) }, topBar = {
         if (extraScreen == null && editor == null) Column(Modifier.statusBarsPadding()) {
             if (LocalAppearance.current.modeHintPending) {
                 Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -454,7 +463,7 @@ private data class WorkoutTimerSwitch(
                             TimelineScreen(timelineData, week, now, zone, { selected = it }, model::changeWeek,
                                 onCreate = { addMenu = true }, onAssistant = { voiceSheetOpen = true },
                                 onUndo = { model.perform { model.repository.undoLastAction() } },
-                                canUndo = data.history.any { !it.undone }, busy = busy || data.loading || timelineData.loading,
+                                canUndo = data.history.any { !it.undone }, busy = busy || timelineDrag != null || data.loading || timelineData.loading,
                                 onVisibleRange = reportRange,
                                 onVisibleDate = model::reportVisibleDate, navigationRevision = timelineNavigationRevision,
                                 navigationOwner = model.timelineNavigationOwner,
@@ -464,29 +473,7 @@ private data class WorkoutTimerSwitch(
                                 onReminder = { reminderDetail = it },
                                 onSaveTemplate = { captureTemplateJson = com.google.gson.Gson().toJson(it) },
                                 onDragCommit = { item, result ->
-                                    model.perform {
-                                        when (val entity = item.entity) {
-                                            is ScheduleBlockEntity -> model.repository.savePlan(
-                                                entity.copy(startAt = result.startAt, endAt = result.endAt),
-                                                expectedVersion = entity.version,
-                                                requestId = "timeline-drag:${entity.id}:${entity.version}:${result.startAt}:${result.endAt}",
-                                            )
-                                            is TimeRecordEntity -> {
-                                                if (entity.source == "FOCUS") {
-                                                    val focus = requireNotNull(data.focusSessions.firstOrNull { "focus:${it.id}" == entity.id })
-                                                    val index = requireNotNull(item.id.substringAfter("#segment:", "").toIntOrNull())
-                                                    model.repository.commands.execute(com.timeagent.domain.command.WriteFocus(
-                                                        "focus-drag:${focus.id}:${focus.version}:$index:${result.startAt}:${result.endAt}",
-                                                        com.timeagent.domain.command.FocusMutation.AdjustSegment(focus.id, focus.version, index, result.startAt, result.endAt),
-                                                    )).also { if (it.status !in setOf(com.timeagent.domain.command.CommandStatus.APPLIED, com.timeagent.domain.command.CommandStatus.DUPLICATE)) error(it.message) }
-                                                } else model.repository.saveRecord(
-                                                    entity.copy(startAt = result.startAt, endAt = result.endAt),
-                                                    expectedVersion = entity.version,
-                                                    requestId = "timeline-drag:${entity.id}:${entity.version}:${result.startAt}:${result.endAt}",
-                                                )
-                                            }
-                                        }
-                                    }
+                                    timelineDrag = TimelineDragRequest.capture(item, result, data)
                                 },
                                 briefing = {
                                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -815,6 +802,21 @@ private data class WorkoutTimerSwitch(
         }
     }
 
+    timelineDrag?.let { request ->
+        key(request.requestId) {
+            TimelineDragSubmission(request, model.repository, onDismiss = { timelineDrag = null },
+                onSaved = { result ->
+                    timelineDrag = null
+                    val message = if (result.warnings.isEmpty()) context.getString(com.timeagent.R.string.timeline_drag_saved)
+                        else context.getString(com.timeagent.R.string.timeline_drag_saved_conflicts, result.warnings.size)
+                    result.undoToken?.let { timelineUndo = com.timeagent.ui.components.UndoMessage(result.requestId, message, it) }
+                },
+                onShowLatest = {
+                    timelineDrag = null
+                    selected = data.timeline(model.clock.now()).firstOrNull { it.layoutKey == request.item.layoutKey }
+                })
+        }
+    }
     selected?.let { selection ->
         MinuteClockContent(model) { now ->
             ModalBottomSheet(onDismissRequest = { if (!busy) selected = null }) {

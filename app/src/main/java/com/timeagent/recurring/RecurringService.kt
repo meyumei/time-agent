@@ -18,14 +18,74 @@ class RecurringService(private val repository: TimeRepository) {
     private var checkedMove:RecurringMovePreview?=null
     private fun today(): LocalDate = repository.now().atZone(repository.zone).toLocalDate()
 
+    internal suspend fun adjustTimelineRaw(command: com.timeagent.domain.command.AdjustRecurringTimeline): List<Conflict> {
+        val instance = dao().recurringInstance(command.instanceId) ?: throw StaleChange()
+        val before = dao().plan(command.plan.id) ?: throw StaleChange()
+        val task = dao().task(instance.taskId) ?: throw StaleChange()
+        val rule = dao().recurringRule(instance.ruleId) ?: throw StaleChange()
+        if (before.id != "recurring-plan:${instance.id}" || before.version != command.expectedPlanVersion ||
+            instance.version != command.expectedInstanceVersion || task.version != command.expectedTaskVersion ||
+            rule.version != command.expectedRuleVersion) throw StaleChange()
+        val from = LocalDate.parse(instance.originalDate)
+        if (command.includingFuture && (command.preview == null || previewRuleChange(rule.id, from) != command.preview))
+            throw StaleChange()
+        val pattern = RecurringValidation.pattern(rule)
+        val zone = ZoneId.of(pattern.zoneId)
+        val start = Instant.ofEpochMilli(before.startAt).atZone(zone)
+        val target = Instant.ofEpochMilli(command.plan.startAt).atZone(zone)
+        val days = java.time.temporal.ChronoUnit.DAYS.between(start.toLocalDate(), target.toLocalDate())
+        val minutes = target.hour * 60 + target.minute - (start.hour * 60 + start.minute)
+        val duration = if (before.kind == "POINT") pattern.durationMinutes
+            else ((command.plan.endAt - command.plan.startAt) / 60_000).toInt()
+        fun shifted(stamp: Long): Long = Instant.ofEpochMilli(stamp).atZone(zone)
+            .plusDays(days).plusMinutes(minutes.toLong()).toInstant().toEpochMilli()
+        val protected = if (command.includingFuture) dao().recurringInstances().filter {
+            it.ruleId == rule.id && appliesFrom(it, from) && (it.id == instance.id || !untouched(it))
+        } else emptyList()
+        val due = if (task.dueAt == before.endAt) command.plan.endAt else task.dueAt?.let(::shifted)
+        val savedTask = repository.saveTask(task.copy(dueAt = due,
+            estimatedMinutes = if (command.includingFuture) duration else task.estimatedMinutes), task.version)
+        repository.savePlanRaw(command.plan, before.version, savedTask.version)
+        val sourcePattern = RecurringValidation.pattern(gson.fromJson(instance.ruleSnapshot, RecurringRuleEntity::class.java))
+        resyncReminder(instance.id, task.id, task.title,
+            Slot(due ?: command.plan.startAt, command.plan.startAt, command.plan.startAt), sourcePattern)
+        repository.saveRecurringInstance(instance.copy(scheduledAt = command.plan.startAt, manualOverride = true,
+            taskVersion = savedTask.version, planVersion = dao().plan(before.id)?.version,
+            scheduleNote = if (command.includingFuture) "此次及以后调整；保留原始规则依据" else "仅此次调整"), instance.version)
+        if (command.includingFuture) {
+            val changed = pattern.copy(startDate = target.toLocalDate().toString(),
+                weekdays = pattern.weekdays.map { Math.floorMod(it - 1 + days.toInt(), 7) + 1 },
+                minuteOfDay = target.hour * 60 + target.minute, durationMinutes = duration,
+                untilDate = pattern.untilDate?.let { LocalDate.parse(it).plusDays(days).toString() },
+                effectiveFrom = target.toLocalDate().toString())
+            // The selected identity remains an exception; later untouched seeds stay automatic.
+            saveRuleRaw(rule.copy(patternJson = gson.toJson(changed)), rule.version, from,
+                RuleChangeScope.INCLUDING_PENDING, null, target.toLocalDate())
+            for (kept in protected) {
+                val shiftedDate = LocalDate.parse(kept.originalDate).plusDays(days)
+                val seeds = RecurringRules.expand(changed.copy(paused = false), shiftedDate, shiftedDate)
+                for (seed in seeds) {
+                    val duplicate = dao().recurringInstance(seed.key) ?: continue
+                    if (duplicate.id == kept.id || protected.any { it.id == duplicate.id } || !untouched(duplicate)) continue
+                    retire(duplicate, "SKIPPED", "保留已调整或手工修改的原实例，不另建重复日程")
+                    val retired = requireNotNull(dao().recurringInstance(duplicate.id))
+                    repository.saveRecurringInstance(retired.copy(manualOverride = true), retired.version)
+                }
+            }
+        }
+        return if (command.plan.kind == "POINT") emptyList()
+            else repository.conflicts(span(command.plan.startAt, command.plan.endAt), command.plan.id)
+    }
+
     suspend fun saveRule(item: RecurringRuleEntity, expectedVersion: Long?, from: LocalDate, requestId: String, scope: RuleChangeScope = RuleChangeScope.INCLUDING_PENDING, preview: RuleChangePreview? = null) {
         repository.commands.executeForRepository(com.timeagent.domain.command.SaveRecurringRule(requestId, item, expectedVersion, from, scope, preview)).throwIfRejected()
     }
 
-    internal suspend fun saveRuleRaw(item: RecurringRuleEntity, expectedVersion: Long?, from: LocalDate, scope: RuleChangeScope, preview: RuleChangePreview?) {
+    internal suspend fun saveRuleRaw(item: RecurringRuleEntity, expectedVersion: Long?, from: LocalDate, scope: RuleChangeScope, preview: RuleChangePreview?,
+        effectiveFromOverride: LocalDate? = null) {
         repository.transaction {
             if (preview != null && previewRuleChange(item.id, from) != preview) throw StaleChange()
-            val effectiveFrom = if (scope == RuleChangeScope.FUTURE_ONLY) firstUnmaterializedDate(item.id, from) else from
+            val effectiveFrom = effectiveFromOverride ?: if (scope == RuleChangeScope.FUTURE_ONLY) firstUnmaterializedDate(item.id, from) else from
             val pattern=RecurringValidation.pattern(item).copy(effectiveFrom=effectiveFrom.toString())
             val saved=repository.saveRecurringRule(item.copy(patternJson=gson.toJson(pattern)),expectedVersion)
             // FUTURE_ONLY 不改写任何已落地实例、任务、计划、提醒及其快照；只有尚未生成的 seed 使用新规则
