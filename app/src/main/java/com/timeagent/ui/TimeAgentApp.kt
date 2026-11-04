@@ -982,14 +982,41 @@ private data class WorkoutTimerSwitch(
     }
     switchTask?.let { target -> AlertDialog(onDismissRequest = { switchTask = null }, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_029)) }, text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_030)) }, confirmButton = { TextButton(onClick = { model.perform(onSuccess = { switchTask = null }) { model.repository.startTimer(target.first, target.second, switchExisting = true) } }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_007)) } }, dismissButton = { TextButton(onClick = { switchTask = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } }) }
     deletingTask?.let { task ->
+        val deleteRequestId = rememberSaveable(task.id, task.version) { UUID.randomUUID().toString() }
+        var deletePreviewJson by rememberSaveable(task.id, task.version) { mutableStateOf<String?>(null) }
+        val deletePreview = remember(deletePreviewJson) { deletePreviewJson?.let {
+            com.google.gson.Gson().fromJson(it, com.timeagent.domain.command.TaskDeletionPreview::class.java)
+        } }
+        LaunchedEffect(task.id, task.version) {
+            if (deletePreviewJson == null) {
+                try {
+                    deletePreviewJson = com.google.gson.Gson().toJson(model.repository.previewTaskDeletion(task.id, task.version))
+                } catch (failure: Exception) {
+                    if (failure is kotlinx.coroutines.CancellationException) throw failure
+                    model.report(failure.message ?: context.getString(com.timeagent.R.string.task_delete_preview_failed))
+                }
+            }
+        }
         fun delete(action: LinkedScheduleAction) {
-            model.perform(onSuccess = { deletingTask = null; selected = null }) { model.repository.deleteTask(task.id, action, task.version) }
+            val preview = deletePreview ?: return
+            model.perform(onSuccess = { deletingTask = null; selected = null }) {
+                val result = model.repository.commands.execute(com.timeagent.domain.command.DeleteTask(deleteRequestId, preview, action))
+                check(result.status in setOf(com.timeagent.domain.command.CommandStatus.APPLIED,
+                    com.timeagent.domain.command.CommandStatus.DUPLICATE)) { result.message }
+                result.undoToken?.let { timelineUndo = com.timeagent.ui.components.UndoMessage(
+                    result.requestId, context.getString(com.timeagent.R.string.task_deleted_undo), it) }
+            }
         }
         AlertDialog(onDismissRequest = { if (!busy) deletingTask = null }, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_031)) },
-            text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_032)) },
+            text = { Column {
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_032))
+                Text(if (deletePreview == null) context.getString(com.timeagent.R.string.task_delete_preview_loading)
+                    else context.getString(com.timeagent.R.string.task_delete_preview_counts,
+                        deletePreview.planVersions.size, deletePreview.reminderVersions.size))
+            } },
             confirmButton = { Column {
-                TextButton(onClick = { delete(LinkedScheduleAction.KEEP_INDEPENDENT) }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_033)) }
-                TextButton(onClick = { delete(LinkedScheduleAction.DELETE) }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_034)) }
+                TextButton(onClick = { delete(LinkedScheduleAction.KEEP_INDEPENDENT) }, enabled = !busy && deletePreview != null) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_033)) }
+                TextButton(onClick = { delete(LinkedScheduleAction.DELETE) }, enabled = !busy && deletePreview != null) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_034)) }
             } }, dismissButton = { TextButton(onClick = { deletingTask = null }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } })
     }
     confirmation?.let { (message, action) -> AlertDialog(onDismissRequest = { confirmation = null }, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_035)) }, text = { Text(message) }, confirmButton = { TextButton(onClick = { confirmation = null; action() }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_confirm)) } }, dismissButton = { TextButton(onClick = { confirmation = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } }) }

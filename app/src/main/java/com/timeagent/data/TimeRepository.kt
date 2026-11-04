@@ -337,7 +337,8 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         checkVersion(before?.version, expectedVersion)
         require(!item.enabled || item.remindAt > now().toEpochMilli() || before?.remindAt == item.remindAt) { "提醒时间已经过去，请选择未来时间" }
         item.taskId?.let { id ->
-            requireNotNull(dao.task(id)?.takeIf { it.deletedAt == null && it.status !in setOf("CANCELLED", "COMPLETED") }) {
+            requireNotNull(dao.task(id)?.takeIf { it.deletedAt == null &&
+                (!item.enabled || it.status !in setOf("CANCELLED", "COMPLETED")) }) {
                 "任务不存在、已删除或已完成"
             }
         }
@@ -548,26 +549,52 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         savePlan(plan, expectedTaskVersion = saved.version, expectedConflicts = expectedConflicts)
     }
 
-    suspend fun deleteTask(id: String, linkedSchedules: LinkedScheduleAction? = null, expectedVersion: Long? = null) = transaction {
+    suspend fun previewTaskDeletion(id: String, expectedVersion: Long? = null): TaskDeletionPreview = transaction {
         val before = activeTask(id)
         checkVersion(before.version, expectedVersion)
+        TaskDeletionPreview(id, before.version,
+            dao.plans().filter { it.taskId == id && it.deletedAt == null }.associate { it.id to it.version },
+            dao.reminders().filter { it.taskId == id }.associate { it.id to it.version })
+    }
+
+    suspend fun deleteTask(id: String, linkedSchedules: LinkedScheduleAction? = null, expectedVersion: Long? = null,
+        requestId: String = UUID.randomUUID().toString()): Boolean = transaction {
+        val result = commands.replay(requestId) ?: commands.executeForRepository(
+            DeleteTask(requestId, previewTaskDeletion(id, expectedVersion), linkedSchedules))
+        result.throwIfRejected()
+        result.status == CommandStatus.APPLIED
+    }
+
+    internal suspend fun deleteTaskRaw(preview: TaskDeletionPreview, linkedSchedules: LinkedScheduleAction?) = transaction {
+        val id = preview.taskId
+        val before = activeTask(id)
+        checkVersion(before.version, preview.taskVersion)
         require(dao.runningTimer()?.taskId != id) { "请先结束此任务的计时，再删除任务" }
-        val plans = dao.plans().filter { it.taskId == id && it.deletedAt == null }
-        require(plans.isEmpty() || linkedSchedules != null) { "请选择同时删除关联日程，或保留为独立日程" }
-        assistantTransaction("delete-task:${UUID.randomUUID()}", actionLabel = "删除任务") {
-            plans.forEach { plan ->
-                if (linkedSchedules == LinkedScheduleAction.DELETE) deletePlan(plan.id)
-                else {
-                    val detached = plan.copy(taskId = null, title = plan.displayTitle(before), updatedAt = now().toEpochMilli(),
-                        version = nextVersion("PLAN", plan.id, plan.version))
-                    dao.putPlan(detached)
-                    journal("PLAN", plan.id, plan, detached, "保留为独立日程")
-                }
-            }
-            val after = before.copy(deletedAt = now().toEpochMilli(), updatedAt = now().toEpochMilli(), version = nextVersion("TASK", id, before.version))
-            dao.putTask(after)
-            journal("TASK", id, before, after, "删除任务")
+        require(db.focusDao().active()?.taskId != id) {
+            applicationContext?.getString(com.timeagent.R.string.task_delete_focus_active)
+                ?: "End this task's focus session before deleting it. Nothing was saved."
         }
+        val plans = dao.plans().filter { it.taskId == id && it.deletedAt == null }
+        val reminders = dao.reminders().filter { it.taskId == id }
+        if (plans.associate { it.id to it.version } != preview.planVersions ||
+            reminders.associate { it.id to it.version } != preview.reminderVersions) throw StaleChange()
+        require(plans.isEmpty() || linkedSchedules != null) { "请选择同时删除关联日程，或保留为独立日程" }
+        plans.forEach { plan ->
+            if (linkedSchedules == LinkedScheduleAction.DELETE) deletePlanRaw(plan.id, plan.version)
+            else {
+                val detached = plan.copy(taskId = null, title = plan.displayTitle(before), updatedAt = now().toEpochMilli(),
+                    version = nextVersion("PLAN", plan.id, plan.version))
+                dao.putPlan(detached)
+                journal("PLAN", plan.id, plan, detached, "保留为独立日程")
+            }
+        }
+        val reminderWriter = com.timeagent.reminders.ReminderInstanceRepository(this)
+        reminders.filter { it.enabled }.forEach { reminder ->
+            reminderWriter.applyMutation(ReminderMutation.Save(reminder.copy(enabled = false), reminder.version))
+        }
+        val after = before.copy(deletedAt = now().toEpochMilli(), updatedAt = now().toEpochMilli(), version = nextVersion("TASK", id, before.version))
+        dao.putTask(after)
+        journal("TASK", id, before, after, "删除任务")
     }
 
     suspend fun conflicts(span: TimeSpan, excluding: String? = null): List<Conflict> {

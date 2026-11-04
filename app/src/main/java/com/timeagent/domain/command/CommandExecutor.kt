@@ -122,6 +122,11 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
                             is AdjustRecurringTimeline -> RecurringService(repository).adjustTimelineRaw(command).map {
                                 ScheduleWarning(it.id, it.title, it.span.start.toEpochMilli(), it.span.end.toEpochMilli())
                             }
+                            is DeleteTask -> {
+                                version("TASK", command.preview.taskId, command.preview.taskVersion)
+                                repository.deleteTaskRaw(command.preview, command.linkedSchedules)
+                                emptyList()
+                            }
                             is WriteTaskDetails -> {
                                 version("TASK", command.task.id, command.expectedVersion, command.expectedVersion == null)
                                 val org = repository.database.organizationDao()
@@ -466,6 +471,7 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
         is MoveRecurringInstance -> "改期周期实例"
         is AdjustRecurringTimeline -> "调整周期日程"
         is WriteTaskDetails -> repository.applicationContext?.getString(com.timeagent.R.string.task_save_action) ?: "Save task"
+        is DeleteTask -> repository.applicationContext?.getString(com.timeagent.R.string.task_delete_action) ?: "Delete task"
         is WriteProject -> repository.applicationContext?.getString(com.timeagent.R.string.project_write_action) ?: "Update project"
         is WriteLedger -> when (command.mutation) {
             is LedgerMutation.SaveAccount -> "保存账户"

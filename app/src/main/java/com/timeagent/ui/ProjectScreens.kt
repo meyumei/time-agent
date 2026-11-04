@@ -102,6 +102,17 @@ fun ProjectScreen(
     initialProjectId: String? = null,
     onSchedule: ((TaskEntity) -> Unit)? = null,
 ) {
+    val context = LocalContext.current
+    val deleteSnackbar = remember { SnackbarHostState() }
+    var deleteUndo by remember { mutableStateOf<com.timeagent.ui.components.UndoMessage?>(null) }
+    com.timeagent.ui.components.UndoSnackbar(deleteSnackbar, deleteUndo,
+        onUndo = { token -> model.perform {
+            val result = model.repository.commands.execute(com.timeagent.domain.command.UndoCommand(
+                UUID.randomUUID().toString(), token))
+            check(result.status in setOf(com.timeagent.domain.command.CommandStatus.APPLIED,
+                com.timeagent.domain.command.CommandStatus.DUPLICATE)) { result.message }
+        } },
+        onConsumed = { if (deleteUndo?.id == it) deleteUndo = null })
     val projects = remember(data.projects) {
         data.projects.filter { it.deletedAt == null }.sortedBy { it.createdAt }
     }
@@ -121,6 +132,7 @@ fun ProjectScreen(
     var goalFor by rememberSaveable(stateSaver = projectEntitySaver) { mutableStateOf<ProjectEntity?>(null) }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(deleteSnackbar) },
         topBar = {
             TopAppBar(
                 title = { Text(detail?.name ?: "项目") },
@@ -294,18 +306,26 @@ fun ProjectScreen(
     }
 
     deleting?.let { project ->
+        val deleteRequestId = rememberSaveable(project.id, project.version) { UUID.randomUUID().toString() }
         AlertDialog(
             onDismissRequest = { deleting = null },
             title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_004)) },
             text = {
-                Text("确定删除「${project.name}」吗？这是软删除：项目记录会保留，可用应用顶部的撤销按钮恢复；项目下的任务与历史归属保留，可在任务列表继续使用。")
+                Text(stringResource(R.string.project_delete_confirmation, project.name))
             },
             confirmButton = {
                 TextButton(
                     onClick = {
                         model.perform(
                             onSuccess = { deleting = null },
-                            action = { model.repository.deleteProject(project.id, project.version) }
+                            action = {
+                                val result = model.repository.commands.execute(com.timeagent.domain.command.WriteProject(
+                                    deleteRequestId, com.timeagent.domain.command.ProjectMutation.Delete(project.id, project.version)))
+                                check(result.status in setOf(com.timeagent.domain.command.CommandStatus.APPLIED,
+                                    com.timeagent.domain.command.CommandStatus.DUPLICATE)) { result.message }
+                                result.undoToken?.let { deleteUndo = com.timeagent.ui.components.UndoMessage(
+                                    result.requestId, context.getString(R.string.project_deleted_undo), it) }
+                            }
                         )
                     }
                 ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_005)) }
