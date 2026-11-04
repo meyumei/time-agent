@@ -106,6 +106,15 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
                                 RecurringService(repository).moveRaw(command.check)
                                 emptyList()
                             }
+                            is WriteLedger -> {
+                                val ledger = com.timeagent.ledger.LedgerRepository(
+                                    repository.database,
+                                    java.time.Clock.fixed(repository.now(), repository.zone),
+                                    repository,
+                                )
+                                payload = gson.toJson(ledger.applyMutation(command.mutation))
+                                emptyList()
+                            }
                             else -> error("不支持的命令")
                         }
                     }
@@ -305,6 +314,20 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
         is SaveRecurringRule -> "保存周期规则"
         is ActRecurringInstance -> "处理周期实例"
         is MoveRecurringInstance -> "改期周期实例"
+        is WriteLedger -> when (command.mutation) {
+            is LedgerMutation.SaveAccount -> "保存账户"
+            is LedgerMutation.ArchiveAccount -> "归档账户"
+            is LedgerMutation.SaveCategory -> "保存记账分类"
+            is LedgerMutation.ArchiveCategory -> "归档记账分类"
+            is LedgerMutation.SaveTransaction -> "保存账目"
+            is LedgerMutation.DeleteTransaction -> "删除账目"
+            is LedgerMutation.Merge -> "合并账目"
+            is LedgerMutation.Split -> "拆分账目"
+            is LedgerMutation.Capture -> "捕获支付草稿"
+            is LedgerMutation.Ignore -> "忽略支付草稿"
+            is LedgerMutation.Confirm -> "确认支付草稿"
+            is LedgerMutation.Import -> "导入账单"
+        }
         is DeliverReminder -> "投递提醒"
         is ReadTimeData -> "查询"
         is ReadAssistantQuery -> "查询"

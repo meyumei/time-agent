@@ -1,0 +1,9 @@
+你是本任务真实 WorkBuddy CLI DS4.1 协作者。仓库是 F:/261019_时间agent，当前分支 codex/t3.2-timeline-followup。执行 T4.5 记账的界面抽取子任务。
+
+目标：把现有 LedgerActivity.kt 中的私有 LedgerApp 及其账本 UI 辅助 Composable 抽取为可被主导航复用的 LedgerScreen.kt；LedgerActivity 只保留 Activity 壳、注入独立账本数据库、恢复数据、旧深链参数和旧入口行为，并调用新的可复用 LedgerScreen。不要删除任何旧能力。
+
+允许读取：LedgerActivity.kt、LedgerRepository.kt、LedgerEntities.kt、LedgerDao.kt。允许修改：LedgerActivity.kt；允许新建：LedgerScreen.kt。严禁修改其他文件，严禁改主导航、SettingsHub、Manifest、数据库、Repository、DAO、实体、Gradle、测试。不要添加依赖，不要做防御性工程，不要把账本数据迁入主库。
+
+必须保留：待确认、支付通知监听开关及明确说明只读取微信/支付宝支付完成通知且仅本机处理、系统设置入口、Android通知权限、CSV导入导出、手工记账、整数分和最多两位小数校验、账户与分类、合并/拆分及现有入口、撤销/重做、删除/归档、capture 深链和旧 Activity 返回行为。若合并/拆分代码在当前文件其他区域，原样保留并随抽取迁移。不要改业务语义和 repository 调用。
+
+完成后仅报告：修改文件、是否编译未运行、未验证项。不要自行运行命令或启动其他代理，不要宣称任务完成已验收。最多 20 轮。

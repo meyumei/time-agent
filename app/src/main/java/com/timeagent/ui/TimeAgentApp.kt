@@ -46,7 +46,11 @@ import com.timeagent.suggestions.SuggestionCoordinator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onEach
 import com.timeagent.workout.data.WorkoutRepository
+import com.timeagent.ledger.LedgerRepository
+import com.timeagent.ledger.LedgerScreen
+import com.timeagent.ledger.PendingPaymentCard
 import kotlinx.coroutines.withContext
 import java.time.*
 import java.util.UUID
@@ -105,6 +109,17 @@ import com.timeagent.ui.navigation.*
     val context = LocalContext.current
     val healthSettings = remember(context) { HealthSyncSettings(context.applicationContext) }
     val healthReader = remember(context) { HealthConnectReader(context.applicationContext) }
+    val ledgerRepository = remember(model.repository) {
+        LedgerRepository(model.repository.database, core = model.repository)
+    }
+    var ledgerReadError by remember { mutableStateOf<String?>(null) }
+    var ledgerReadRevision by remember { mutableIntStateOf(0) }
+    val pendingLedgerCount by remember(ledgerRepository, ledgerReadRevision) {
+        ledgerRepository.observePendingCount().onEach { ledgerReadError = null }.catch {
+            ledgerReadError = "支付草稿读取失败，请打开记账重试"
+            emit(0)
+        }
+    }.collectAsStateWithLifecycle(0)
     val workoutsRepository = remember(context, model) { WorkoutRepository(context.applicationContext, model.repository) }
     var workoutReadError by remember { mutableStateOf<String?>(null) }
     val workouts by remember(workoutsRepository) { workoutsRepository.observeSessions().catch { workoutReadError = "训练读取失败：${it.message}"; emit(emptyList()) } }.collectAsStateWithLifecycle(emptyList())
@@ -127,9 +142,9 @@ import com.timeagent.ui.navigation.*
     var addMenu by remember { mutableStateOf(false) }
     val screenState = rememberSaveableStateHolder()
     fun openScreen(destination: String) {
+        if (destination == "ledger") ledgerReadRevision++
         when (destination) {
             "workout" -> context.startActivity(WorkoutActivity.intent(context))
-            "ledger" -> context.startActivity(android.content.Intent(context, com.timeagent.ledger.LedgerActivity::class.java))
             "organization" -> context.startActivity(android.content.Intent(context, com.timeagent.organization.OrganizationActivity::class.java))
             else -> navigator.open(destination)
         }
@@ -375,6 +390,10 @@ import com.timeagent.ui.navigation.*
                                         }
                                         FishButlerSummary(fish, if (data.loading) "正在读取今天的安排" else collapsedSummary(daily, zone), onOpen = { openScreen("fish-chat") })
                                     } else briefingContent()
+                                    PendingPaymentCard(pendingLedgerCount, onOpen = { openScreen("ledger") })
+                                    ledgerReadError?.let {
+                                        TextButton(onClick = { openScreen("ledger") }) { Text(it) }
+                                    }
                                     Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
                                         TextButton(onClick = { editor = EditorRequest(EditorKind.RECORD) }, modifier = Modifier.testTag("today-record")) { Text("补记时间") }
                                         TextButton(onClick = { openScreen("recurring") }, modifier = Modifier.testTag("today-recurring")) { Text("本次习惯") }
@@ -412,7 +431,7 @@ import com.timeagent.ui.navigation.*
                         ReviewScreen(data, reviewWeek, now, zone, ::openOriginal, { openScreen("goals") }, reselectRevision)
                     }
                 }
-                3 -> ButlerHub(::openScreen, reselectRevision)
+                3 -> ButlerHub(::openScreen, reselectRevision, pendingLedgerCount, ledgerReadError)
             }
             }, pageContent = { destination ->
             when (destination) {
@@ -440,7 +459,7 @@ import com.timeagent.ui.navigation.*
             TextButton(onClick = ::closeScreen) { Text("返回管家") }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                 TextButton(onClick = { context.startActivity(android.content.Intent(context, com.timeagent.organization.OrganizationActivity::class.java)) }) { Text("分类、标签与记录整理") }
-                TextButton(onClick = { context.startActivity(android.content.Intent(context, com.timeagent.ledger.LedgerActivity::class.java)) }) { Text("支付记账") }
+                TextButton(onClick = { openScreen("ledger") }) { Text("支付记账") }
             }
             SettingsScreen(data, busy,
                 { filePicker.launch(arrayOf("application/json", "text/*")) }, { editor = EditorRequest(EditorKind.COURSE, it) },
@@ -491,6 +510,12 @@ import com.timeagent.ui.navigation.*
             onOpenTask = { id -> selected = data.tasks.firstOrNull { it.id == id } },
         )
         "health" -> HealthSyncScreen(model, healthReader, healthSettings, zone, onClose = ::closeScreen)
+        "ledger" -> LedgerScreen(
+            repository = ledgerRepository,
+            initialCaptureId = null,
+            initialIgnore = false,
+            onClose = ::closeScreen,
+        )
         "backup" -> BackupScreen(model, onClose = ::closeScreen)
         "memory" -> PersonalMemoryScreen(model, onClose = ::closeScreen, onOpenRecord = { openOriginal("RECORD", it) })
         "history" -> HistoryScreen(model, onClose = ::closeScreen, onOpen = ::openOriginal)

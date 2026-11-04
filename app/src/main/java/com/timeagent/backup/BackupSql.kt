@@ -17,10 +17,10 @@ internal fun SupportSQLiteDatabase.backupSql() = BackupSql(version, { query(it) 
 internal fun SQLiteDatabase.backupSql() = BackupSql(version, { rawQuery(it, null) }, { sql, args -> if (args.isEmpty()) execSQL(sql) else execSQL(sql, args) })
 
 internal object BackupTables {
-    val main = listOf("categories", "tags", "academic_terms", "activity_templates", "tasks", "courses", "course_occurrences", "schedule_blocks", "time_records", "task_tags", "record_tags", "reminders", "ideas", "notes", "import_batches", "health_sync_items", "agent_suggestions", "entity_revisions", "operation_history", "personal_memories", "projects", "task_placements", "weekly_goals", "recurring_rules", "recurring_instances", "attachments", "ledger_accounts", "ledger_categories", "payment_captures", "ledger_transactions", "command_log")
+    val main = listOf("categories", "tags", "academic_terms", "activity_templates", "tasks", "courses", "course_occurrences", "schedule_blocks", "time_records", "task_tags", "record_tags", "reminders", "ideas", "notes", "import_batches", "health_sync_items", "agent_suggestions", "entity_revisions", "operation_history", "personal_memories", "projects", "task_placements", "weekly_goals", "recurring_rules", "recurring_instances", "attachments", "ledger_accounts", "ledger_categories", "payment_captures", "ledger_transactions", "ledger_transaction_sources", "command_log")
     fun mainForVersion(version: Int): List<String> {
-        require(version in 7..14) { "备份数据库版本不受支持" }
-        return main.filterNot { (version < 13 && it == "command_log") || (version < 12 && it in setOf("ledger_accounts", "ledger_categories", "payment_captures", "ledger_transactions")) || (version < 11 && it == "attachments") || (version < 8 && it == "personal_memories") || (version < 9 && it in setOf("projects","task_placements","weekly_goals")) || (version < 10 && it in setOf("recurring_rules","recurring_instances")) }
+        require(version in 7..15) { "备份数据库版本不受支持" }
+        return main.filterNot { (version < 15 && it == "ledger_transaction_sources") || (version < 13 && it == "command_log") || (version < 12 && it in setOf("ledger_accounts", "ledger_categories", "payment_captures", "ledger_transactions")) || (version < 11 && it == "attachments") || (version < 8 && it == "personal_memories") || (version < 9 && it in setOf("projects","task_placements","weekly_goals")) || (version < 10 && it in setOf("recurring_rules","recurring_instances")) }
     }
     val workout = listOf("workout_sessions", "workout_templates")
     private val gson = Gson()

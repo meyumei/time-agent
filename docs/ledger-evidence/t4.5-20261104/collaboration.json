@@ -1,0 +1,81 @@
+{
+  "date": "2026-11-04",
+  "cli": "WorkBuddy / CodeBuddy CLI",
+  "versionObserved": "2.171.0",
+  "phases": [
+    {
+      "phase": "reshape-ui",
+      "requestedModel": "deepseek-v4.1-flash",
+      "observedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "requestedEffort": "max",
+      "actualEffort": null,
+      "actualEffortExplanation": "Server did not report an actual effort value.",
+      "cliResultType": "success",
+      "toolErrors": 30,
+      "sessionId": "01a1a45d-44e6-773b-bbb2-0c80c93160f4",
+      "sourceSha256": "c610e7489f8bc455bf5d7795cc405cf606e4c1cdcb2fb9bcf03550750b069fb7",
+      "permissions": "Exact file allow-list, no shell or nested agent; review read-only."
+    },
+    {
+      "phase": "reshape-schema",
+      "requestedModel": "deepseek-v4.1-flash",
+      "observedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "requestedEffort": "max",
+      "actualEffort": null,
+      "actualEffortExplanation": "Server did not report an actual effort value.",
+      "cliResultType": "success",
+      "toolErrors": 21,
+      "sessionId": "01a1a45d-44fd-7bb7-8872-3007d81b94d1",
+      "sourceSha256": "a1e9fad4e6fa15d83b95151f569b512427dd322fa4d91dd85d38c5f9579179f9",
+      "permissions": "Exact file allow-list, no shell or nested agent; review read-only."
+    },
+    {
+      "phase": "reshape-schema-retry",
+      "requestedModel": "deepseek-v4.1-flash",
+      "observedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "requestedEffort": "max",
+      "actualEffort": null,
+      "actualEffortExplanation": "Server did not report an actual effort value.",
+      "cliResultType": "success",
+      "toolErrors": 0,
+      "sessionId": "01a1a460-ac36-7a59-9ba3-785f5188aa35",
+      "sourceSha256": "6ebc5fb879f4cb45ebcb6e47a71f6cf369c44f3bdc20e024ee75cb568ce20007",
+      "permissions": "Exact file allow-list, no shell or nested agent; review read-only."
+    },
+    {
+      "phase": "reshape-review",
+      "requestedModel": "deepseek-v4.1-flash",
+      "observedModels": [
+        "deepseek-v4.1-flash"
+      ],
+      "requestedEffort": "max",
+      "actualEffort": null,
+      "actualEffortExplanation": "Server did not report an actual effort value.",
+      "cliResultType": "success",
+      "toolErrors": 1,
+      "sessionId": "01a1a465-01e3-7406-9060-e38b33610d57",
+      "sourceSha256": "1a0933cccfef2b76d5cd36fa0c52ea00bcd298e872b5d577781a66ec1ecf7ef9",
+      "permissions": "Exact file allow-list, no shell or nested agent; review read-only."
+    }
+  ],
+  "schemaFirstAttempt": "Only entity and version registration completed. Wrong-path writes were denied. Exact paths supplied on retry; permissions not broadened.",
+  "independentReview": {
+    "findings": [
+      "Archived original categories rejected by reshape defaults.",
+      "Changing account currency after transactions could relabel historic amounts."
+    ],
+    "mainAgentResolution": [
+      "Allow original category inheritance in repository and category picker.",
+      "Keep currency fixed once historical transactions exist; show explanation in account editor."
+    ],
+    "unrecoverableLegacyAmbiguity": "Currency changes made by old versions cannot be reconstructed reliably because transactions lack historic currency.",
+    "runtimeVerification": "Deferred until stage 5 completes, per user instruction."
+  },
+  "rawLogs": "Kept locally; not published."
+}

@@ -1,0 +1,29 @@
+{
+  "date": "2026-11-04",
+  "command": "./scripts/build.ps1 -Tasks @(':app:assembleDebug', ':app:assembleDebugAndroidTest', ':app:lintDebug')",
+  "exitCode": 0,
+  "gradleSummary": [
+    "BUILD SUCCESSFUL in 4m 34s",
+    "122 actionable tasks: 19 executed, 103 up-to-date"
+  ],
+  "lintIssueSeverities": {
+    "Warning": 84,
+    "Information": 2
+  },
+  "artifacts": [
+    {
+      "path": "app/build/outputs/apk/debug/app-debug.apk",
+      "bytes": 890915649,
+      "sha256": "5181bfd866807a0fab62d6fa08b786e2b2483dc25ecf60e5759be6e4c93a0d7f"
+    },
+    {
+      "path": "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk",
+      "bytes": 2570188,
+      "sha256": "0c3f88111673a8cf80224cc8f7520f061d8c9d5b95a7d0ea9840e9ff7f783011"
+    }
+  ],
+  "schema": "app/schemas/com.timeagent.data.TimeAgentDatabase/15.json",
+  "deviceTests": "Compiled only, not executed. Device regression deferred until stage 5 completion.",
+  "hostUnitTests": "Not executed per user instruction.",
+  "nodeTests": "Not executed per user instruction."
+}

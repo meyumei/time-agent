@@ -108,7 +108,7 @@ interface TimeDao {
     @Query("UPDATE agent_suggestions SET status=:status, decidedAt=:decidedAt WHERE id=:id") suspend fun updateSuggestionStatus(id: String, status: String, decidedAt: Long?)
 }
 
-@Database(entities = [TaskEntity::class, ScheduleBlockEntity::class, CommandLogEntity::class, TimeRecordEntity::class, CategoryEntity::class, TagEntity::class, TaskTagEntity::class, RecordTagEntity::class, AcademicTermEntity::class, CourseEntity::class, CourseOccurrenceEntity::class, OperationEntity::class, ImportBatchEntity::class, EntityRevision::class, ActivityTemplateEntity::class, ReminderEntity::class, IdeaEntity::class, NoteEntity::class, HealthSyncItemEntity::class, AgentSuggestionEntity::class, PersonalMemoryEntity::class, ProjectEntity::class, TaskPlacementEntity::class, WeeklyGoalEntity::class, RecurringRuleEntity::class, RecurringInstanceEntity::class, AttachmentEntity::class, LedgerAccountEntity::class, LedgerCategoryEntity::class, PaymentCaptureEntity::class, LedgerTransactionEntity::class], version = 14, exportSchema = true)
+@Database(entities = [TaskEntity::class, ScheduleBlockEntity::class, CommandLogEntity::class, TimeRecordEntity::class, CategoryEntity::class, TagEntity::class, TaskTagEntity::class, RecordTagEntity::class, AcademicTermEntity::class, CourseEntity::class, CourseOccurrenceEntity::class, OperationEntity::class, ImportBatchEntity::class, EntityRevision::class, ActivityTemplateEntity::class, ReminderEntity::class, IdeaEntity::class, NoteEntity::class, HealthSyncItemEntity::class, AgentSuggestionEntity::class, PersonalMemoryEntity::class, ProjectEntity::class, TaskPlacementEntity::class, WeeklyGoalEntity::class, RecurringRuleEntity::class, RecurringInstanceEntity::class, AttachmentEntity::class, LedgerAccountEntity::class, LedgerCategoryEntity::class, PaymentCaptureEntity::class, LedgerTransactionEntity::class, LedgerTransactionSourceEntity::class], version = 15, exportSchema = true)
 abstract class TimeAgentDatabase : RoomDatabase() {
     abstract fun dao(): TimeDao
     abstract fun timelineDao(): TimelineDao
@@ -206,7 +206,7 @@ abstract class TimeAgentDatabase : RoomDatabase() {
             return instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(context.applicationContext, TimeAgentDatabase::class.java, "time-agent.db")
                     // Never use fallbackToDestructiveMigration: future versions must supply explicit migrations.
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, LedgerSchema.MIGRATION_11_12, ScheduleMigration.withBackup(context.applicationContext), TimelineIndexMigration.withBackup(context.applicationContext))
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, LedgerSchema.MIGRATION_11_12, ScheduleMigration.withBackup(context.applicationContext), TimelineIndexMigration.withBackup(context.applicationContext), LedgerSourceMigration.withBackup(context.applicationContext))
                     .enableMultiInstanceInvalidation()
                     .apply { singleThreadedTransactions() }
                     .build().also { instance = it }
