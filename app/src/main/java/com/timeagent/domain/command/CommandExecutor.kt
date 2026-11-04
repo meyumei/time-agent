@@ -127,8 +127,10 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
                                 val org = repository.database.organizationDao()
                                 val placement = dao.placement(command.task.id)
                                 val tags = org.taskTags().filter { it.taskId == command.task.id }.map { it.tagId }.distinct().sorted()
-                                if (command.updateOrganization &&
-                                    (placement?.version != command.expectedPlacementVersion || tags != command.expectedTagIds.distinct().sorted()))
+                                if ((command.updateOrganization || command.newSubtasks.isNotEmpty()) &&
+                                    placement?.version != command.expectedPlacementVersion)
+                                    throw StaleChange()
+                                if (command.updateOrganization && tags != command.expectedTagIds.distinct().sorted())
                                     throw StaleChange()
                                 if (command.updateOrganization) for (id in command.tagIds.distinct()) {
                                     require(org.tag(id) != null) {
@@ -154,6 +156,21 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
                                             com.timeagent.organization.OrgTagLinks(tags), com.timeagent.organization.OrgTagLinks(nextTags), "Task tags")
                                     }
                                 }
+                                val invalidLinks = repository.applicationContext?.getString(com.timeagent.R.string.task_links_invalid)
+                                    ?: "Task links are invalid. Nothing was saved; reopen the editor."
+                                require(command.newSubtasks.map { it.id }.distinct().size == command.newSubtasks.size) { invalidLinks }
+                                if (command.newSubtasks.isNotEmpty()) {
+                                    val parent = dao.placement(saved.id)
+                                        ?: repository.savePlacementRaw(TaskPlacementEntity(saved.id), null)
+                                    for (child in command.newSubtasks) {
+                                        require(child.id != saved.id) { invalidLinks }
+                                        version("TASK", child.id, null, create = true)
+                                        val subtask = repository.saveTaskRaw(child, null)
+                                        repository.savePlacementRaw(TaskPlacementEntity(subtask.id,
+                                            projectId = parent.projectId, parentTaskId = saved.id), null)
+                                    }
+                                }
+                                command.linkedDetails?.let { repository.applyTaskLinkedDetails(saved, it) }
                                 val conflicts = command.newPlan?.let { plan ->
                                     require(plan.taskId == saved.id)
                                     version("PLAN", plan.id, null, true)

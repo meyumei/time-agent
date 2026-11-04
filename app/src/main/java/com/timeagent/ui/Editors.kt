@@ -9,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -17,6 +18,9 @@ import com.timeagent.core.TimeInput
 import com.timeagent.core.TimelineSelection
 import com.timeagent.data.*
 import com.timeagent.ui.components.DateTimeRangeField
+import com.timeagent.domain.command.TaskLinkedDetails
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -49,7 +53,11 @@ data class EditorRequest(
 )
 data class EditValues(val title: String, val notes: String, val estimatedMinutes: Int, val priority: Int, val dueAt: Long?, val taskId: String?, val categoryId: String?, val start: Long, val end: Long, val allowFuture: Boolean, val location: String, val teacher: String, val activityId: String? = null, val kind: EditorKind? = null, val scheduleNewTask: Boolean = false, val allDayStartDate: String? = null, val allDayEndDate: String? = null,
     val projectId: String? = null, val tagIds: List<String> = emptyList(),
-    val expectedPlacementVersion: Long? = null, val expectedTagIds: List<String> = emptyList())
+    val expectedPlacementVersion: Long? = null, val expectedTagIds: List<String> = emptyList(),
+    val linkedDetails: TaskLinkedDetails? = null, val newSubtasks: List<TaskEntity> = emptyList(),
+    val subtaskOrder: List<String> = emptyList())
+
+private val taskEditorVersionMapType = object : TypeToken<Map<String, Long>>() {}.type
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun EditorScreen(
@@ -64,6 +72,9 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
     saveError: String? = null,
     onKeepDraft: (() -> Unit)? = null,
     classification: TaskClassification = TaskClassification(loading = false),
+    onOpenTask: ((String) -> Unit)? = null,
+    onArrangeTask: (() -> Unit)? = null,
+    attachmentThumbnail: @Composable (AttachmentEntity) -> Unit = {},
 ) {
     if (request.kind == EditorKind.TASK && (classification.loading || data.loading)) {
         BackHandler(onBack = onDismiss)
@@ -78,6 +89,39 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
         return
     }
     val task = request.entity as? TaskEntity
+    val context = LocalContext.current
+    val gson = remember { Gson() }
+    val relatedTaskId = task?.id ?: request.id
+    var subtasksJson by rememberSaveable(request.id) { mutableStateOf(run {
+        val children = data.placements.filter { it.parentTaskId == relatedTaskId }.mapNotNull { child ->
+            data.tasks.firstOrNull { it.id == child.taskId && it.deletedAt == null && it.status != "CANCELLED" }?.let {
+                TaskSubtaskDraft(it.id, it.title, completed = it.status == "COMPLETED")
+            }
+        }
+        val order = TaskListPreferences(context).loadSubtaskOrder(relatedTaskId, children.map { it.id })
+        gson.toJson(children.sortedBy { order.indexOf(it.id) })
+    }) }
+    val subtasks = remember(subtasksJson) { gson.fromJson(subtasksJson, Array<TaskSubtaskDraft>::class.java).toList() }
+    var pendingSubtaskTitle by rememberSaveable(request.id) { mutableStateOf("") }
+    val seenRemindersJson = rememberSaveable(request.id) {
+        gson.toJson(data.reminders.filter { it.taskId == relatedTaskId }.associate { it.id to it.version })
+    }
+    var remindersJson by rememberSaveable(request.id) {
+        mutableStateOf(gson.toJson(data.reminders.filter { it.taskId == relatedTaskId }))
+    }
+    val taskReminders = remember(remindersJson) { gson.fromJson(remindersJson, Array<ReminderEntity>::class.java).toList() }
+    val linkedAttachmentIds = rememberSaveable(request.id) {
+        data.attachments.filter { it.taskId == relatedTaskId && it.deletedAt == null }.map { it.id }.toCollection(ArrayList())
+    }
+    var attachmentIds by rememberSaveable(request.id) { mutableStateOf(ArrayList(linkedAttachmentIds)) }
+    val availableAttachments = data.attachments.filter { it.deletedAt == null &&
+        (it.taskId == relatedTaskId || it.taskId == null && it.projectId == null) }
+    var seenAttachmentsJson by rememberSaveable(request.id) {
+        mutableStateOf(gson.toJson(availableAttachments.associate { it.id to it.version }))
+    }
+    val seenAttachmentVersions: Map<String, Long> = remember(seenAttachmentsJson) {
+        gson.fromJson(seenAttachmentsJson, taskEditorVersionMapType)
+    }
     val plan = request.entity as? ScheduleBlockEntity
     val schedulePoint = plan?.kind == "POINT"
     val scheduleAllDay = plan?.kind == "ALL_DAY"
@@ -136,6 +180,8 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
     val future = request.kind == EditorKind.RECORD && candidate?.end?.isAfter(now) == true
     val save: () -> Unit = {
         try {
+            val savedSubtasks = subtasks + if (pendingSubtaskTitle.isBlank()) emptyList() else listOf(
+                TaskSubtaskDraft("${request.id}:subtask-draft", pendingSubtaskTitle.trim(), isNew = true))
             val start = if (!hasTime) 0 else point(date, startTime, originalStart)
             val end = if (!hasTime) 0 else if (schedulePoint) start else point(endDate, endTime, originalEnd)
             if (hasTime && !schedulePoint && !scheduleAllDay) TimeSpan(Instant.ofEpochMilli(start), Instant.ofEpochMilli(end))
@@ -144,7 +190,12 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
             if (request.kind == EditorKind.TASK) require(title.isNotBlank()) { "任务名称不能为空" }
             onSave(EditValues(title.trim(), notes, if (request.kind == EditorKind.TASK) estimated.toIntOrNull() ?: error("预计耗时须为整数") else 30, priority, if (dueDate.isBlank()) null else point(dueDate, dueTime, task?.dueAt), selectedTask, category, start, end, futureConfirmed, location, teacher, activityId,
                 allDayStartDate = if (scheduleAllDay) date else null, allDayEndDate = if (scheduleAllDay) endDate else null,
-                projectId = projectId, tagIds = tagIds, expectedPlacementVersion = expectedPlacementVersion, expectedTagIds = expectedTagIds))
+                projectId = projectId, tagIds = tagIds, expectedPlacementVersion = expectedPlacementVersion, expectedTagIds = expectedTagIds,
+                linkedDetails = if (request.kind == EditorKind.TASK) TaskLinkedDetails(
+                    gson.fromJson(seenRemindersJson, taskEditorVersionMapType), taskReminders,
+                    seenAttachmentVersions, linkedAttachmentIds.toSet(), attachmentIds.toSet()) else null,
+                newSubtasks = savedSubtasks.filter { it.isNew }.map { TaskEntity(it.id, it.title.trim(), priority = -1, categoryId = category) },
+                subtaskOrder = savedSubtasks.map { it.id }))
         } catch (e: Exception) { validation = e.message?.takeIf { it.contains("必须") || it.contains("请选择") || it.contains("名称") || it.contains("整数") } ?: "请检查日期、时间和时长格式" }
     }
     val savePoint: () -> Unit = {
@@ -158,7 +209,8 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
         }
     }
     val dismiss = rememberDraftExit(request.id, listOf(title, notes, estimated, priority, dueDate, dueTime,
-        date, endDate, startTime, endTime, selectedTask, category, activityId, location, teacher, pointMode, futureConfirmed, projectId, tagIds),
+        date, endDate, startTime, endTime, selectedTask, category, activityId, location, teacher, pointMode, futureConfirmed, projectId, tagIds,
+        subtasksJson, pendingSubtaskTitle, remindersJson, attachmentIds),
         busy, onDismiss, onKeepDraft)
     BackHandler(onBack = dismiss)
     val pointScreen = pointMode
@@ -169,6 +221,11 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
     }
     Scaffold(topBar = {
         TopAppBar(title = { Text(titleText, fontWeight = FontWeight.Bold) }, navigationIcon = { TextButton(onClick = dismiss, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } }, actions = {
+            if (request.kind == EditorKind.TASK && !request.scheduleNewTask && onArrangeTask != null) {
+                TextButton(onClick = onArrangeTask, enabled = !busy) {
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.task_editor_arrange))
+                }
+            }
             TextButton(
                 onClick = if (pointScreen) savePoint else save,
                 enabled = !busy && (pointScreen || !future || futureConfirmed),
@@ -309,6 +366,21 @@ data class EditValues(val title: String, val notes: String, val estimatedMinutes
                         data.categories.forEach { item -> FilterChip(selected = category == item.id, onClick = { category = item.id }, label = { Text(item.name) }) }
                     }
                     OutlinedTextField(notes, { notes = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.field_notes)) }, modifier = Modifier.fillMaxWidth(), minLines = 2)
+                }
+                if (request.kind == EditorKind.TASK) {
+                    TaskSubtasksField(subtasks, { subtasksJson = gson.toJson(it) },
+                        allowAdd = placement?.parentTaskId == null, onOpenExisting = onOpenTask,
+                        onPendingInputChange = { pendingSubtaskTitle = it })
+                    TaskRemindersField(relatedTaskId, title, taskReminders, now, zone,
+                        { remindersJson = gson.toJson(it) })
+                    TaskAttachmentsField(availableAttachments, attachmentIds.toSet(), { ids ->
+                        val versions = seenAttachmentVersions.toMutableMap()
+                        availableAttachments.filter { it.id in ids }.forEach { item ->
+                            versions.putIfAbsent(item.id, item.version)
+                        }
+                        seenAttachmentsJson = gson.toJson(versions)
+                        attachmentIds = ids.toCollection(ArrayList())
+                    }, thumbnail = attachmentThumbnail)
                 }
             }
             com.timeagent.ui.components.InlineError(validation)

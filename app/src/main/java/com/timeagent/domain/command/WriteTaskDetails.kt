@@ -13,5 +13,7 @@ data class WriteTaskDetails(
     val tagIds: List<String> = emptyList(),
     val expectedTagIds: List<String> = emptyList(),
     val newPlan: ScheduleBlockEntity? = null,
+    val linkedDetails: TaskLinkedDetails? = null,
+    val newSubtasks: List<TaskEntity> = emptyList(),
     override val origin: Origin = Origin.UI,
 ) : Command

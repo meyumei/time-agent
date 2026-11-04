@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="task_reminders_section_title">任务提醒</string>
+    <string name="task_reminders_empty_hint">暂未设置任务提醒</string>
+    <string name="task_reminders_add_action">新增提醒</string>
+    <string name="task_reminders_default_title">任务提醒</string>
+    <string name="task_reminders_date_label">提醒日期</string>
+    <string name="task_reminders_time_label">提醒时间</string>
+    <string name="task_reminders_status_delivered">已送达（%1$s）</string>
+    <string name="task_reminders_status_pending">待送达</string>
+    <string name="task_reminders_enabled_label">启用提醒</string>
+    <string name="task_reminders_remove_action">移除提醒</string>
+    <string name="task_reminders_past_warning">这个提醒时间已过，保存后不会再提醒</string>
+    <string name="task_reminders_past_repeat_hint">首次提醒已过；已送达提醒的后续重复仍按原设置处理，可在这里关闭。</string>
+    <string name="task_editor_arrange">安排时间</string>
+    <string name="task_links_invalid">任务关联内容无效，尚未保存；请重新打开编辑器核对。</string>
+    <string name="task_reminders_repeat_interval_and_count">每 %1$d 分钟重复，最多 %2$d 次</string>
+    <string name="task_reminders_repeat_interval_only">每 %1$d 分钟重复</string>
+    <string name="task_reminders_repeat_count_only">最多重复 %1$d 次</string>
+
+    <string name="task_attachments_section_title">关联附件</string>
+    <string name="task_attachments_empty_hint">暂无可选附件，请先在附件收件箱导入后再关联</string>
+    <string name="task_attachments_missing_error">有 %1$d 个已关联附件在当前列表中缺失（%2$s），无法加载详情</string>
+    <string name="task_attachments_remove_missing_action">移除失效选择</string>
+    <string name="task_attachments_selected_header">已关联附件（%1$d）</string>
+    <string name="task_attachments_selected_empty">当前未关联任何附件</string>
+    <string name="task_attachments_unlink_action">取消关联</string>
+    <string name="task_attachments_link_action">关联此附件</string>
+    <string name="task_attachments_unselected_expand">展开可选未关联附件（%1$d）</string>
+    <string name="task_attachments_unselected_collapse">收起可选未关联附件（%1$d）</string>
+    <string name="task_attachments_search_label">搜索未关联附件（文件名或类型）</string>
+    <string name="task_attachments_search_clear">清空搜索</string>
+    <string name="task_attachments_search_empty">没有匹配的未关联附件</string>
+    <string name="task_attachments_meta_format">%1$s · %2$s</string>
+    <string name="task_attachments_unknown_type">未知类型</string>
+    <string name="task_attachments_size_bytes">%1$d B</string>
+    <string name="task_attachments_size_kb">%1$.1f KB</string>
+    <string name="task_attachments_size_mb">%1$.1f MB</string>
+</resources>

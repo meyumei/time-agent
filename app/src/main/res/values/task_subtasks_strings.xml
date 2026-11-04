@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="task_subtasks_title">子任务</string>
+    <string name="task_subtasks_progress">已完成 %1$d/%2$d</string>
+    <string name="task_subtasks_empty">还没有子任务。</string>
+    <string name="task_subtasks_add_disabled_hint">当前任务已是子任务，只支持一级子任务，因此不能再添加；仍可查看和排序。</string>
+    <string name="task_subtasks_input_label">新子任务标题</string>
+    <string name="task_subtasks_add">添加子任务</string>
+    <string name="task_subtasks_remove">移除未保存的子任务：%1$s</string>
+    <string name="task_subtasks_open">打开子任务：%1$s</string>
+    <string name="task_subtasks_move_up">上移：%1$s</string>
+    <string name="task_subtasks_move_down">下移：%1$s</string>
+    <string name="task_subtasks_drag_handle">长按拖动排序：%1$s</string>
+    <string name="task_subtasks_drag_hint">长按右侧拖动柄可排序，也可使用上移、下移按钮。</string>
+    <string name="task_subtasks_state_done">已完成</string>
+    <string name="task_subtasks_state_todo">未完成</string>
+    <string name="task_subtasks_state_new">未保存</string>
+    <string name="task_subtasks_existing_readonly">已有子任务在此只读，不能在此删除或修改。</string>
+</resources>

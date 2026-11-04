@@ -335,7 +335,7 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         require(item.id.isNotBlank() && item.title.trim().length in 1..200) { "请填写提醒内容，最多200字" }
         val before = dao.reminder(item.id)
         checkVersion(before?.version, expectedVersion)
-        require(item.remindAt > now().toEpochMilli() || before?.remindAt == item.remindAt) { "提醒时间已经过去，请选择未来时间" }
+        require(!item.enabled || item.remindAt > now().toEpochMilli() || before?.remindAt == item.remindAt) { "提醒时间已经过去，请选择未来时间" }
         item.taskId?.let { id ->
             requireNotNull(dao.task(id)?.takeIf { it.deletedAt == null && it.status !in setOf("CANCELLED", "COMPLETED") }) {
                 "任务不存在、已删除或已完成"

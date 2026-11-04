@@ -774,10 +774,12 @@ private data class WorkoutTimerSwitch(
                                 "editor:${request.id}", candidate, before?.version, updateOrganization = true,
                                 projectId = values.projectId, expectedPlacementVersion = values.expectedPlacementVersion,
                                 tagIds = values.tagIds, expectedTagIds = values.expectedTagIds,
+                                linkedDetails = values.linkedDetails, newSubtasks = values.newSubtasks,
                                 newPlan = if (request.scheduleNewTask) ScheduleBlockEntity("${request.id}:plan",
                                     candidate.id, values.start, values.end, timezoneId = zone.id) else null))
                             check(result.status in setOf(com.timeagent.domain.command.CommandStatus.APPLIED,
                                 com.timeagent.domain.command.CommandStatus.DUPLICATE)) { result.message }
+                            TaskListPreferences(context).saveSubtaskOrder(candidate.id, values.subtaskOrder)
                             result.undoToken?.let { timelineUndo = com.timeagent.ui.components.UndoMessage(
                                 result.requestId, context.getString(com.timeagent.R.string.task_saved_undo), it) }
                         }
@@ -840,7 +842,15 @@ private data class WorkoutTimerSwitch(
                     }
                 }
             }, saveError = error, onKeepDraft = { editorDrafts[request.id] = tab to request; editor = null },
-                classification = taskClassification)
+                classification = taskClassification,
+                onOpenTask = { id ->
+                    data.tasks.firstOrNull { it.id == id && it.deletedAt == null && it.status != "CANCELLED" }?.let { child ->
+                        editorDrafts[request.id] = tab to request
+                        editor = EditorRequest(EditorKind.TASK, child)
+                    }
+                },
+                onArrangeTask = { editor = request.copy(scheduleNewTask = true) },
+                attachmentThumbnail = { item -> TaskEditorAttachmentPreview(item, model.repository) })
         }
         }
     }
