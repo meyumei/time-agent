@@ -13,11 +13,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.activity.compose.BackHandler
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.timeagent.R
 import com.timeagent.data.*
+import com.timeagent.ui.components.DateField
+import com.timeagent.ui.components.DurationField
 import com.timeagent.projects.projectProgress
 import java.time.DayOfWeek
 import java.time.Instant
@@ -235,6 +238,7 @@ fun ProjectScreen(
         ProjectEditDialog(
             initial = null,
             zone = zone,
+            today = now.atZone(zone).toLocalDate(),
             onDismiss = { showCreate = false },
             onSave = { name, dueAt, status ->
                 val stamp = now.toEpochMilli()
@@ -264,6 +268,7 @@ fun ProjectScreen(
         ProjectEditDialog(
             initial = project,
             zone = zone,
+            today = now.atZone(zone).toLocalDate(),
             onDismiss = { editing = null },
             onSave = { name, dueAt, status ->
                 model.perform(
@@ -574,9 +579,11 @@ private fun TaskRow(
 private fun ProjectEditDialog(
     initial: ProjectEntity?,
     zone: ZoneId,
+    today: LocalDate,
     onDismiss: () -> Unit,
     onSave: (name: String, dueAt: Long?, status: String) -> Unit
 ) {
+    val context = LocalContext.current
     var name by rememberSaveable(initial?.id) { mutableStateOf(initial?.name ?: "") }
     var dueText by rememberSaveable(initial?.id) {
         mutableStateOf(initial?.dueAt?.let { formatDate(it, zone) } ?: "")
@@ -586,7 +593,14 @@ private fun ProjectEditDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (initial == null) "新建项目" else "修改项目") },
+        title = {
+            Text(
+                stringResource(
+                    if (initial == null) R.string.project_editor_title_create
+                    else R.string.project_editor_title_edit
+                )
+            )
+        },
         text = {
             Column(
                 modifier = Modifier
@@ -603,21 +617,37 @@ private fun ProjectEditDialog(
                         .testTag("project-name")
                 )
                 Spacer(Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = dueText,
-                    onValueChange = { dueText = it; error = null },
-                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_012)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                val dueDate = tryParseDate(dueText.trim())
+                if (dueText.isBlank()) {
+                    OutlinedButton(
+                        onClick = { dueText = today.toString(); error = null },
+                        modifier = Modifier.fillMaxWidth()
+                    ) { Text(stringResource(R.string.project_editor_due_set)) }
+                } else {
+                    DateField(
+                        label = stringResource(R.string.text_project_screens_012),
+                        value = dueDate ?: today,
+                        onValueChange = { dueText = it.toString(); error = null },
+                        error = if (dueDate == null) context.getString(R.string.project_editor_error_due_format) else null
+                    )
+                    TextButton(onClick = { dueText = ""; error = null }) {
+                        Text(stringResource(R.string.project_editor_due_clear))
+                    }
+                }
                 Spacer(Modifier.height(8.dp))
                 Text(text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_013), style = MaterialTheme.typography.bodySmall)
                 Row {
                     PROJECT_STATUSES.forEach { option ->
+                        val label = when (option) {
+                            "ACTIVE" -> stringResource(R.string.project_editor_status_active)
+                            "PAUSED" -> stringResource(R.string.project_editor_status_paused)
+                            "COMPLETED" -> stringResource(R.string.project_editor_status_completed)
+                            else -> option
+                        }
                         TextButton(onClick = { status = option; error = null }) {
                             Text(
-                                text = if (status == option) "✓ ${projectStatusLabel(option)}"
-                                else projectStatusLabel(option)
+                                text = if (status == option) stringResource(R.string.project_editor_option_selected, label)
+                                else label
                             )
                         }
                     }
@@ -636,7 +666,7 @@ private fun ProjectEditDialog(
                 onClick = {
                     val trimmedName = name.trim()
                     if (trimmedName.isEmpty()) {
-                        error = "项目名称不能为空"
+                        error = context.getString(R.string.project_editor_error_name_required)
                         return@TextButton
                     }
                     val due = dueText.trim()
@@ -646,7 +676,7 @@ private fun ProjectEditDialog(
                     } else {
                         val parsed = tryParseDate(due)
                         if (parsed == null) {
-                            error = "截止日期格式应为 yyyy-MM-dd"
+                            error = context.getString(R.string.project_editor_error_due_format)
                             return@TextButton
                         }
                         dueAt = parsed.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli() - 1
@@ -736,6 +766,7 @@ private fun AddTaskDialog(
     onDismiss: () -> Unit,
     onConfirm: (title: String, minutes: Int, parentId: String?) -> Unit
 ) {
+    val context = LocalContext.current
     var title by rememberSaveable { mutableStateOf("") }
     var minutesText by rememberSaveable { mutableStateOf("30") }
     var parentId by rememberSaveable { mutableStateOf(initialParentId) }
@@ -758,12 +789,11 @@ private fun AddTaskDialog(
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = minutesText,
-                    onValueChange = { minutesText = it; error = null },
-                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_017)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                DurationField(
+                    minutes = minutesText.trim().toIntOrNull()?.takeIf { it > 0 } ?: 0,
+                    onChange = { },
+                    textValue = minutesText,
+                    onTextChange = { minutesText = it; error = null }
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_018), style = MaterialTheme.typography.bodySmall)
@@ -803,12 +833,12 @@ private fun AddTaskDialog(
                 onClick = {
                     val trimmed = title.trim()
                     if (trimmed.isEmpty()) {
-                        error = "任务名称不能为空"
+                        error = context.getString(R.string.project_editor_error_task_name_required)
                         return@TextButton
                     }
                     val minutes = minutesText.trim().toIntOrNull()
                     if (minutes == null || minutes <= 0) {
-                        error = "预计分钟必须为正整数"
+                        error = context.getString(R.string.project_editor_error_minutes_positive)
                         return@TextButton
                     }
                     onConfirm(trimmed, minutes, parentId)
@@ -832,6 +862,7 @@ internal fun WeeklyGoalDialog(
     onDismiss: () -> Unit,
     onSave: (WeeklyGoalEntity, Long?) -> Unit
 ) {
+    val context = LocalContext.current
     var useProject by rememberSaveable { mutableStateOf(project != null) }
     val seenGoalsJson = rememberSaveable { com.google.gson.Gson().toJson(goals) }
     val seenGoals = remember(seenGoalsJson) {
@@ -854,11 +885,19 @@ internal fun WeeklyGoalDialog(
             ) {
                 Text(text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_020), style = MaterialTheme.typography.bodySmall)
                 Row {
+                    val projectType = stringResource(R.string.project_editor_goal_type_project)
+                    val activityType = stringResource(R.string.project_editor_goal_type_activity)
                     TextButton(onClick = { useProject = true; error = null }) {
-                        Text(if (useProject) "✓ 项目" else "项目")
+                        Text(
+                            if (useProject) stringResource(R.string.project_editor_option_selected, projectType)
+                            else projectType
+                        )
                     }
                     TextButton(onClick = { useProject = false; error = null }) {
-                        Text(if (!useProject) "✓ 活动" else "活动")
+                        Text(
+                            if (!useProject) stringResource(R.string.project_editor_option_selected, activityType)
+                            else activityType
+                        )
                     }
                 }
                 if (useProject) {
@@ -898,20 +937,23 @@ internal fun WeeklyGoalDialog(
                     }
                 }
                 Spacer(Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = weekText,
-                    onValueChange = { weekText = it; error = null },
-                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_022)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                val parsedWeek = tryParseDate(weekText.trim())
+                DateField(
+                    label = stringResource(R.string.text_project_screens_022),
+                    value = parsedWeek ?: mondayOf(now, zone),
+                    onValueChange = { weekText = it.toString(); error = null },
+                    error = if (weekText.isNotBlank() && parsedWeek == null) {
+                        context.getString(R.string.project_editor_error_week_format)
+                    } else {
+                        null
+                    }
                 )
                 Spacer(Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = minutesText,
-                    onValueChange = { minutesText = it; error = null },
-                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_023)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                DurationField(
+                    minutes = minutesText.trim().toIntOrNull()?.takeIf { it > 0 } ?: 0,
+                    onChange = { },
+                    textValue = minutesText,
+                    onTextChange = { minutesText = it; error = null }
                 )
                 error?.let {
                     Text(
@@ -931,22 +973,22 @@ internal fun WeeklyGoalDialog(
                 onClick = {
                     val weekDate = tryParseDate(weekText.trim())
                     if (weekDate == null) {
-                        error = "周起始日期格式应为 yyyy-MM-dd"
+                        error = context.getString(R.string.project_editor_error_week_format)
                         return@TextButton
                     }
                     if (weekDate.dayOfWeek != DayOfWeek.MONDAY) {
-                        error = "周起始日期必须是周一"
+                        error = context.getString(R.string.project_editor_error_week_monday)
                         return@TextButton
                     }
                     val minutes = minutesText.trim().toIntOrNull()
                     if (minutes == null || minutes <= 0) {
-                        error = "目标分钟数必须为正整数"
+                        error = context.getString(R.string.project_editor_error_goal_minutes_positive)
                         return@TextButton
                     }
                     val targetProjectId = if (useProject) selectedProjectId else null
                     val targetActivityId = if (useProject) null else selectedActivityId
                     if (targetProjectId == null && targetActivityId == null) {
-                        error = "请明确选择项目或活动"
+                        error = context.getString(R.string.project_editor_error_goal_target_required)
                         return@TextButton
                     }
                     val week = weekDate.toString()

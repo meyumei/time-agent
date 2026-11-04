@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="project_editor_title_create">新建项目</string>
+    <string name="project_editor_title_edit">修改项目</string>
+
+    <string name="project_editor_status_active">进行中</string>
+    <string name="project_editor_status_paused">已暂停</string>
+    <string name="project_editor_status_completed">已完成</string>
+    <string name="project_editor_option_selected">✓ %1$s</string>
+
+    <string name="project_editor_due_set">设置截止日期</string>
+    <string name="project_editor_due_clear">清除截止</string>
+    <string name="project_editor_error_due_format">截止日期格式应为 yyyy-MM-dd</string>
+    <string name="project_editor_error_name_required">项目名称不能为空</string>
+
+    <string name="project_editor_error_task_name_required">任务名称不能为空</string>
+    <string name="project_editor_error_minutes_positive">预计分钟必须为正整数</string>
+
+    <string name="project_editor_goal_type_project">项目</string>
+    <string name="project_editor_goal_type_activity">活动</string>
+    <string name="project_editor_error_week_format">周起始日期格式应为 yyyy-MM-dd</string>
+    <string name="project_editor_error_week_monday">周起始日期必须是周一</string>
+    <string name="project_editor_error_goal_minutes_positive">目标分钟数必须为正整数</string>
+    <string name="project_editor_error_goal_target_required">请明确选择项目或活动</string>
+</resources>
