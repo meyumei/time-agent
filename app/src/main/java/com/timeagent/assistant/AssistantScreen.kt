@@ -82,13 +82,13 @@ fun AssistantScreen(model: TimeViewModel, onClose: () -> Unit, initialInput: Str
     BackHandler(onBack = ::close)
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("时间助手") }, navigationIcon = { IconButton(onClick = ::close) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, "关闭时间助手") } },
+        topBar = { TopAppBar(title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_001)) }, navigationIcon = { IconButton(onClick = ::close) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, "关闭时间助手") } },
             actions = { IconButton(onClick = { settingsOpen = !settingsOpen }, enabled = !busy) { Icon(Icons.Outlined.Settings, "DeepSeek设置") } }) },
     ) { insets ->
         Column(Modifier.fillMaxSize().padding(insets).imePadding().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            Text("说一句，先预览再确认", style = MaterialTheme.typography.titleLarge)
-            Text("本地常用指令可以直接使用，自由表达可选 DeepSeek。可以记录想法、设置单点提醒、记录睡眠，也可以撤销或恢复刚才撤销的操作。", style = MaterialTheme.typography.bodyMedium)
-            OutlinedTextField(value = input, onValueChange = ::updateInput, label = { Text("输入内容 · 可修改") }, placeholder = { Text("例如：记个想法 周末去骑车") },
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_002), style = MaterialTheme.typography.titleLarge)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_003), style = MaterialTheme.typography.bodyMedium)
+            OutlinedTextField(value = input, onValueChange = ::updateInput, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_004)) }, placeholder = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_005)) },
                 enabled = !busy, minLines = 3, maxLines = 6, modifier = Modifier.fillMaxWidth().testTag("assistant-input"))
             if (initialSuggestion != null && input == initialInput && input != initialSuggestion) {
                 OutlinedButton(enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("voice-command-suggestion"), onClick = {
@@ -100,12 +100,12 @@ fun AssistantScreen(model: TimeViewModel, onClose: () -> Unit, initialInput: Str
             if (settingsOpen) {
                 ElevatedCard(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Text("DeepSeek 设置", style = MaterialTheme.typography.titleMedium)
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_006), style = MaterialTheme.typography.titleMedium)
                         Text(if (keyConfigured) "API Key 已保存在本机；联通情况以实际请求结果为准。" else "尚未配置 API Key。文字输入与本地解析仍可使用。", style = MaterialTheme.typography.bodySmall)
                         OutlinedTextField(value = keyDraft, onValueChange = { keyDraft = it }, label = { Text(if (keyConfigured) "替换 API Key（留空则保留）" else "DeepSeek API Key") },
                             visualTransformation = PasswordVisualTransformation(), singleLine = true, enabled = !busy, modifier = Modifier.fillMaxWidth())
-                        OutlinedTextField(value = modelName, onValueChange = { modelName = it }, label = { Text("模型名") }, supportingText = { Text("当前官方默认：${DeepSeekProtocol.DEFAULT_MODEL}；仅使用官方 HTTPS 接口。") }, singleLine = true, enabled = !busy, modifier = Modifier.fillMaxWidth())
-                        Text("Key 由本机 Android Keystore 加密保存，不进入备份。应用不会显示已保存的 Key。", style = MaterialTheme.typography.bodySmall)
+                        OutlinedTextField(value = modelName, onValueChange = { modelName = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_conversation_panel_009)) }, supportingText = { Text("当前官方默认：${DeepSeekProtocol.DEFAULT_MODEL}；仅使用官方 HTTPS 接口。") }, singleLine = true, enabled = !busy, modifier = Modifier.fillMaxWidth())
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_007), style = MaterialTheme.typography.bodySmall)
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Button(enabled = !busy && DeepSeekProtocol.validModel(modelName.trim()), onClick = {
                                 configBusy = true
@@ -118,7 +118,7 @@ fun AssistantScreen(model: TimeViewModel, onClose: () -> Unit, initialInput: Str
                                     catch (_: Exception) { message = "配置保存失败，请检查模型名和设备密钥存储后重试。" }
                                     finally { configBusy = false }
                                 }
-                            }) { Text("保存配置") }
+                            }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_008)) }
                             TextButton(enabled = !busy && keyConfigured, onClick = {
                                 configBusy = true
                                 scope.launch {
@@ -127,7 +127,7 @@ fun AssistantScreen(model: TimeViewModel, onClose: () -> Unit, initialInput: Str
                                     catch (_: Exception) { message = "删除失败，请重试。" }
                                     finally { configBusy = false }
                                 }
-                            }) { Text("删除密钥") }
+                            }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_009)) }
                         }
                     }
                 }
@@ -136,18 +136,18 @@ fun AssistantScreen(model: TimeViewModel, onClose: () -> Unit, initialInput: Str
                 Button(modifier = Modifier.weight(1f), enabled = input.isNotBlank() && !busy && !snapshot.loading, onClick = {
                     message = null
                     showInterpretation(parser.parse(input, currentContext()), currentContext())
-                }) { Text("本地解析") }
+                }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_010)) }
             }
-            Text("首页底部按住说话，顶部实时显示文字；松开后可在上方修改。中文识别在本机完成，音频不保存也不上传。", style = MaterialTheme.typography.bodySmall)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_011), style = MaterialTheme.typography.bodySmall)
             HorizontalDivider()
             Row {
                 Checkbox(checked = cloudConsent, enabled = !busy && keyConfigured && input.isNotBlank(), onCheckedChange = {
                     cloudConsent = it; sharedContext = if (it) currentContext() else null
                 })
-                Text("同意将本次文字和有限清单发送给 DeepSeek 理解", modifier = Modifier.padding(top = 12.dp), style = MaterialTheme.typography.bodyMedium)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_012), modifier = Modifier.padding(top = 12.dp), style = MaterialTheme.typography.bodyMedium)
             }
-            Text("仅发送当前输入、时间、所选周、最多 50 项任务信息、50 条记录活动名与时间、70 项计划时间、70 节课程时间、30 条提醒标题与时间、30 条想法标题、内置示例课程数量及运行计时起点。任务描述、记录备注、想法正文、笔记正文和操作历史不发送。", style = MaterialTheme.typography.bodySmall)
-            if (!keyConfigured) TextButton(onClick = { settingsOpen = true }) { Text("配置 DeepSeek API Key") }
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_013), style = MaterialTheme.typography.bodySmall)
+            if (!keyConfigured) TextButton(onClick = { settingsOpen = true }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_014)) }
             if (cloudConsent && sharedContext != null) {
                 TextButton(onClick = { showContext = !showContext }) { Text(if (showContext) "收起发送内容" else "查看本次发送内容") }
                 if (showContext) CloudDisclosure(input, sharedContext!!)
@@ -167,8 +167,8 @@ fun AssistantScreen(model: TimeViewModel, onClose: () -> Unit, initialInput: Str
                         is CloudResult.Failure -> message = result.message
                     }
                 }
-            }, modifier = Modifier.fillMaxWidth()) { Icon(Icons.Outlined.AutoAwesome, null); Spacer(Modifier.width(6.dp)); Text("用 DeepSeek 理解") }
-            if (parsing) TextButton(onClick = { requests.cancel(); message = "请求已取消，没有执行操作；输入仍保留。" }) { Text("取消请求") }
+            }, modifier = Modifier.fillMaxWidth()) { Icon(Icons.Outlined.AutoAwesome, null); Spacer(Modifier.width(6.dp)); Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_015)) }
+            if (parsing) TextButton(onClick = { requests.cancel(); message = "请求已取消，没有执行操作；输入仍保留。" }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_016)) }
             if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
             message?.let { Text(it, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.bodyMedium) }
             when (val result = reply) {
@@ -181,7 +181,7 @@ fun AssistantScreen(model: TimeViewModel, onClose: () -> Unit, initialInput: Str
                     ) {
                             if (preview.needsFutureApproval) Row {
                                 Checkbox(checked = futureApproved, enabled = !busy, onCheckedChange = { futureApproved = it })
-                                Text("我确认将未来时间保存为实际记录", Modifier.padding(top = 12.dp))
+                                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_017), Modifier.padding(top = 12.dp))
                             }
                             Button(enabled = !busy && (!preview.needsFutureApproval || futureApproved), onClick = {
                                 saving = true
@@ -194,17 +194,17 @@ fun AssistantScreen(model: TimeViewModel, onClose: () -> Unit, initialInput: Str
                                         }
                                     } finally { saving = false }
                                 }
-                            }, modifier = Modifier.fillMaxWidth()) { Text("确认保存") }
+                            }, modifier = Modifier.fillMaxWidth()) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_018)) }
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                TextButton(enabled = !busy, onClick = { gate.cancel(); reply = null; futureApproved = false; message = "预览已取消，没有修改数据。" }) { Text("取消预览") }
-                                TextButton(enabled = !busy, onClick = { gate.cancel(); reply = null; futureApproved = false; message = "请修改上方文字，再重新解析。" }) { Text("修改输入") }
+                                TextButton(enabled = !busy, onClick = { gate.cancel(); reply = null; futureApproved = false; message = "预览已取消，没有修改数据。" }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_019)) }
+                                TextButton(enabled = !busy, onClick = { gate.cancel(); reply = null; futureApproved = false; message = "请修改上方文字，再重新解析。" }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_020)) }
                             }
                     }
                 }
                 null -> Unit
             }
             HorizontalDivider()
-            Text("可以这样说", style = MaterialTheme.typography.titleMedium)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_screen_021), style = MaterialTheme.typography.titleMedium)
             listOf("今天有什么安排", "明天有什么空闲", "查看任务", "记个想法 周末去骑车", "提醒 明天 15:00 交报告",
                 "记录 昨晚 23:30 到 今天 07:00 睡眠", "新建任务 阅读 半小时", "安排 明天 19:00 到 20:00 阅读",
                 "记录 今天 14:00 到 15:00 阅读", "开始计时 阅读", "停止计时", "撤销", "恢复刚才撤销的操作").forEach { example ->

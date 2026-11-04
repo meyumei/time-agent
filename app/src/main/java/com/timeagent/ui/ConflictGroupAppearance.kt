@@ -107,7 +107,7 @@ fun TimelineConflictGroupCard(
                         Modifier.fillMaxWidth().height(headerHeight).padding(horizontal = 4.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text("重叠", fontSize = headerSize, lineHeight = (headerSize.value + 2).sp,
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_conflict_group_appearance_001), fontSize = headerSize, lineHeight = (headerSize.value + 2).sp,
                             color = headerInk, fontWeight = FontWeight.Medium, maxLines = 1)
                         Spacer(Modifier.weight(1f))
                         Text(if (count > limit) "+${count - limit}" else "$count",

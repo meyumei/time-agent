@@ -59,7 +59,7 @@ fun AttachmentScreen(model: TimeViewModel, onClose: () -> Unit) {
     }
     BackHandler(enabled = !busy) { if (selectedId != null) selectedId = null else onClose() }
     Scaffold(topBar = { TopAppBar(title = { Text(if (selected != null) "附件详情" else "附件收件箱") }, navigationIcon = {
-        TextButton(onClick = { if (selectedId != null) selectedId = null else onClose() }, enabled = !busy) { Text("返回") }
+        TextButton(onClick = { if (selectedId != null) selectedId = null else onClose() }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_back)) }
     }) }) { padding ->
         if (selected != null) {
             AttachmentDetails(selected, data, service, ocr, model, busy, error,
@@ -67,15 +67,15 @@ fun AttachmentScreen(model: TimeViewModel, onClose: () -> Unit) {
         } else {
             LazyColumn(Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(10.dp), contentPadding = PaddingValues(bottom = 32.dp)) {
                 item {
-                    Button(onClick = { picker.launch(arrayOf("*/*")) }, enabled = !busy, modifier = Modifier.testTag("attachment-import")) { Text("选择文件或截图") }
-                    Text("主动选取后复制到应用私有存储。单件最多8 MiB，总空间12 MiB。图片可识别为可修正草稿。", style = MaterialTheme.typography.bodySmall)
+                    Button(onClick = { picker.launch(arrayOf("*/*")) }, enabled = !busy, modifier = Modifier.testTag("attachment-import")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_001)) }
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_002), style = MaterialTheme.typography.bodySmall)
                 }
                 item {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        FilterChip(!trash, { trash = false }, label = { Text("全部附件") })
-                        FilterChip(trash, { trash = true }, label = { Text("回收站") })
+                        FilterChip(!trash, { trash = false }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_003)) })
+                        FilterChip(trash, { trash = true }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_004)) })
                     }
-                    OutlinedTextField(query, { query = it }, label = { Text("筛选文件名或草稿") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                    OutlinedTextField(query, { query = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_005)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
                 }
                 if (error != null) item { Text(error!!, color = MaterialTheme.colorScheme.error) }
                 val visible = data.attachments.filter { (it.deletedAt != null) == trash && (query.isBlank() || it.originalName.contains(query, true) || it.ocrText.contains(query, true)) }.sortedByDescending { it.createdAt }
@@ -86,7 +86,7 @@ fun AttachmentScreen(model: TimeViewModel, onClose: () -> Unit) {
                             Text(item.originalName, style = MaterialTheme.typography.titleMedium)
                             Text("${item.mimeType} · ${item.sizeBytes / 1024} KiB", style = MaterialTheme.typography.bodySmall)
                             Text(attachmentLinkLabel(item, data), style = MaterialTheme.typography.bodySmall)
-                            if (item.purgedAt != null) Text("原件已清除 · 文字保留", style = MaterialTheme.typography.bodySmall)
+                            if (item.purgedAt != null) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_006), style = MaterialTheme.typography.bodySmall)
                             if (item.ocrText.isNotBlank()) Text(item.ocrText, maxLines = 2, style = MaterialTheme.typography.bodySmall)
                         }
                     }
@@ -125,8 +125,8 @@ private fun AttachmentDetails(item: AttachmentEntity, data: LocalSnapshot, servi
                     val uri = FileProvider.getUriForFile(context, "${context.packageName}.attachments", file)
                     try { context.startActivity(Intent(Intent.ACTION_VIEW).setDataAndType(uri, item.mimeType).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)) }
                     catch (_: ActivityNotFoundException) { model.report("没有可打开此文件的应用") }
-                } }, enabled = !busy && fileAvailable == true) { Text("查看原件") }
-                OutlinedButton(onClick = { linking = true }, enabled = !busy && !ocrBusy) { Text("修改关联") }
+                } }, enabled = !busy && fileAvailable == true) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_007)) }
+                OutlinedButton(onClick = { linking = true }, enabled = !busy && !ocrBusy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_008)) }
             }
             if (AttachmentOcr.supports(item.mimeType)) {
                 Button(onClick = {
@@ -152,25 +152,25 @@ private fun AttachmentDetails(item: AttachmentEntity, data: LocalSnapshot, servi
                     Text("识别失败：$it。可重试，已有文字草稿不会被清空。", color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall, modifier = Modifier.testTag("attachment-ocr-error"))
                 }
-            } else Text("此类型可保存附件；文字识别仅支持图片。", style = MaterialTheme.typography.bodySmall)
-            OutlinedTextField(draft, { draft = it }, label = { Text("文字草稿（可修正）") }, minLines = 5, modifier = Modifier.fillMaxWidth().testTag("attachment-draft"), enabled = !busy && !ocrBusy)
+            } else Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_009), style = MaterialTheme.typography.bodySmall)
+            OutlinedTextField(draft, { draft = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_010)) }, minLines = 5, modifier = Modifier.fillMaxWidth().testTag("attachment-draft"), enabled = !busy && !ocrBusy)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = { model.perform(onSuccess = { notice = "草稿已保存" }) { service.saveDraft(item.id, draft, item.version) } }, enabled = !busy && !ocrBusy && dirty, modifier = Modifier.testTag("attachment-save-draft")) { Text("保存草稿") }
-                OutlinedButton(onClick = { onExtract(draft) }, enabled = !busy && !ocrBusy && draft.isNotBlank()) { Text("提取候选事项") }
+                Button(onClick = { model.perform(onSuccess = { notice = "草稿已保存" }) { service.saveDraft(item.id, draft, item.version) } }, enabled = !busy && !ocrBusy && dirty, modifier = Modifier.testTag("attachment-save-draft")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_011)) }
+                OutlinedButton(onClick = { onExtract(draft) }, enabled = !busy && !ocrBusy && draft.isNotBlank()) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_012)) }
             }
-            Text("提取后还需逐条确认，附件不会自动归属到项目或任务。", style = MaterialTheme.typography.bodySmall)
-            TextButton(onClick = { model.perform(onSuccess = onRemoved) { service.trash(item.id, item.version) } }, enabled = !busy && !ocrBusy) { Text("移入回收站") }
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_013), style = MaterialTheme.typography.bodySmall)
+            TextButton(onClick = { model.perform(onSuccess = onRemoved) { service.trash(item.id, item.version) } }, enabled = !busy && !ocrBusy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_014)) }
         } else {
             Text(if (item.purgedAt != null) "原件已清除；恢复仅恢复条目与文字。" else "回收站保留原件；恢复后可继续编辑。")
-            Button(onClick = { model.perform(onSuccess = onRemoved) { service.restore(item.id, item.version) } }, enabled = !busy) { Text("恢复附件") }
-            TextButton(onClick = { purge = true }, enabled = !busy && item.purgedAt == null) { Text("彻底清除原件") }
+            Button(onClick = { model.perform(onSuccess = onRemoved) { service.restore(item.id, item.version) } }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_015)) }
+            TextButton(onClick = { purge = true }, enabled = !busy && item.purgedAt == null) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_016)) }
         }
     }
     if (linking) AttachmentLinkDialog(item, data, busy, onDismiss = { linking = false }) { projectId, taskId ->
         model.perform(onSuccess = { linking = false }) { service.link(item.id, projectId, taskId, item.version) }
     }
-    if (purge) AlertDialog(onDismissRequest = { purge = false }, title = { Text("彻底清除附件原件？") }, text = { Text("应用内的原文件将永久删除，无法撤销。文字草稿和条目信息仍保留。重新导入或恢复含此原件的备份才能找回原文件；原选取位置的文件不受影响。") }, confirmButton = { TextButton(onClick = { model.perform(onSuccess = { purge = false; onRemoved() }) { service.purge(item.id, item.version) } }, enabled = !busy) { Text("永久清除") } }, dismissButton = { TextButton(onClick = { purge = false }) { Text("取消") } })
-    if (discard) AlertDialog(onDismissRequest = { discard = false }, title = { Text("放弃未保存的草稿？") }, text = { Text("识别或修正的文字尚未保存。") }, confirmButton = { TextButton(onClick = { discard = false; onRemoved() }) { Text("放弃并返回") } }, dismissButton = { TextButton(onClick = { discard = false }) { Text("继续编辑") } })
+    if (purge) AlertDialog(onDismissRequest = { purge = false }, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_017)) }, text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_018)) }, confirmButton = { TextButton(onClick = { model.perform(onSuccess = { purge = false; onRemoved() }) { service.purge(item.id, item.version) } }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_019)) } }, dismissButton = { TextButton(onClick = { purge = false }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } })
+    if (discard) AlertDialog(onDismissRequest = { discard = false }, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_020)) }, text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_021)) }, confirmButton = { TextButton(onClick = { discard = false; onRemoved() }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_022)) } }, dismissButton = { TextButton(onClick = { discard = false }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_023)) } })
 }
 
 @Composable
@@ -214,11 +214,11 @@ private fun AttachmentLinkDialog(item: AttachmentEntity, data: LocalSnapshot, bu
     var projectId by remember { mutableStateOf(item.projectId) }
     var taskId by remember { mutableStateOf(item.taskId) }
     var query by remember { mutableStateOf("") }
-    AlertDialog(onDismissRequest = onDismiss, title = { Text("明确选择关联对象") }, text = {
+    AlertDialog(onDismissRequest = onDismiss, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_024)) }, text = {
         Column(Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text("选择项目或任务中的一个，保存后生效。")
-            OutlinedTextField(query, { query = it }, label = { Text("筛选名称") }, singleLine = true)
-            FilterChip(projectId == null && taskId == null, { projectId = null; taskId = null }, label = { Text("未关联") })
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_025))
+            OutlinedTextField(query, { query = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_026)) }, singleLine = true)
+            FilterChip(projectId == null && taskId == null, { projectId = null; taskId = null }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_027)) })
             data.projects.filter { it.deletedAt == null && it.name.contains(query, true) }.forEach { project ->
                 FilterChip(projectId == project.id, { projectId = project.id; taskId = null }, label = { Text("项目 · ${project.name}") })
             }
@@ -226,7 +226,7 @@ private fun AttachmentLinkDialog(item: AttachmentEntity, data: LocalSnapshot, bu
                 FilterChip(taskId == task.id, { taskId = task.id; projectId = null }, label = { Text("任务 · ${task.title}") })
             }
         }
-    }, confirmButton = { TextButton(onClick = { onSave(projectId, taskId) }, enabled = !busy) { Text("保存关联") } }, dismissButton = { TextButton(onClick = onDismiss, enabled = !busy) { Text("取消") } })
+    }, confirmButton = { TextButton(onClick = { onSave(projectId, taskId) }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_attachment_screen_028)) } }, dismissButton = { TextButton(onClick = onDismiss, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } })
 }
 
 

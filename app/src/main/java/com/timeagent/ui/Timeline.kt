@@ -107,7 +107,7 @@ fun Long.minutesLabel(): String = if (this < 60) "${this} 分钟" else "${this /
                 Text("${start.monthValue}月${start.dayOfMonth}日 — ${start.plusDays(6).monthValue}月${start.plusDays(6).dayOfMonth}日", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 Text("${start.year} · 把每一段时间留给重要的事", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            TextButton(onClick = onCurrent) { Text("本周") }
+            TextButton(onClick = onCurrent) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_habit_screen_006)) }
         }
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
             ItemKind.entries.forEach { kind ->
@@ -266,11 +266,11 @@ internal val DayNames = listOf("周一", "周二", "周三", "周四", "周五",
         if (selectingTemplate) Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically) {
             Text("点选日程 · 已选 ${selectedPlans.size}", Modifier.weight(1f), style = MaterialTheme.typography.labelMedium)
-            TextButton(onClick = { selectingTemplate = false; updateSelectedPlans(emptyList()) }) { Text("取消") }
+            TextButton(onClick = { selectingTemplate = false; updateSelectedPlans(emptyList()) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
             TextButton(enabled = selectedPlans.isNotEmpty(), onClick = {
                 onSaveTemplate?.invoke(selectedPlans)
                 selectingTemplate = false
-            }) { Text("存为模板") }
+            }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_timeline_001)) }
         }
         if (selectingTemplate && selectedPlans.isNotEmpty()) Row(
             Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 8.dp)) {

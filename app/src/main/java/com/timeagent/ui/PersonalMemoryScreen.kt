@@ -68,24 +68,24 @@ fun PersonalMemoryScreen(
         }
     }
     Scaffold(topBar = {
-        TopAppBar(title = { Text("个人记忆") }, navigationIcon = { IconButton(onClick = onClose, enabled = !busy) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "返回") } }, actions = {
+        TopAppBar(title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_001)) }, navigationIcon = { IconButton(onClick = onClose, enabled = !busy) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "返回") } }, actions = {
             IconButton(onClick = { model.perform(onSuccess = { message = "已撤销最近操作" }) { model.repository.undoLastAction() } }, enabled = !busy && data.history.any { !it.undone }) { Icon(Icons.AutoMirrored.Rounded.Undo, "撤销最近操作") }
         })
     }) { padding ->
         Column(Modifier.padding(padding).fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text("记忆用于保存你明确提供或从实际记录中提出的内容。普通文字不会自动限制排程；只有设置了排程约定规则的记忆才会参与检查。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_002), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = { creating = true }, enabled = !busy, modifier = Modifier.weight(1f).testTag("memory-add")) { Text("添加记忆") }
-                OutlinedButton(onClick = { model.perform { val candidate = model.repository.proposeMemoryCandidate(); message = if (candidate == null) "最近没有可用于提出候选的实际记录。" else "已提出一条候选，请核对后再确认。" } }, enabled = !busy, modifier = Modifier.weight(1f).testTag("memory-propose")) { Text("从最近实际记录提出候选") }
+                Button(onClick = { creating = true }, enabled = !busy, modifier = Modifier.weight(1f).testTag("memory-add")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_003)) }
+                OutlinedButton(onClick = { model.perform { val candidate = model.repository.proposeMemoryCandidate(); message = if (candidate == null) "最近没有可用于提出候选的实际记录。" else "已提出一条候选，请核对后再确认。" } }, enabled = !busy, modifier = Modifier.weight(1f).testTag("memory-propose")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_004)) }
             }
             OutlinedButton(onClick = {
                 val json = JSONArray()
                 memories.forEach { item -> json.put(item.toJson()) }
                 exportBytes = JSONObject().put("format", "time-agent-personal-memories-v1").put("memories", json).toString(2).toByteArray(Charsets.UTF_8)
                 export.launch("personal-memories-${model.repository.now().atZone(model.zone).toLocalDate()}.json")
-            }, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("memory-export")) { Text("导出个人记忆 JSON") }
+            }, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("memory-export")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_005)) }
             message?.let { Text(it, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.bodySmall) }
-            if (memories.isEmpty()) Text("还没有个人记忆。", style = MaterialTheme.typography.bodyMedium)
+            if (memories.isEmpty()) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_006), style = MaterialTheme.typography.bodyMedium)
             memories.forEach { item ->
                 Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surfaceContainer) {
                     Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -106,13 +106,13 @@ fun PersonalMemoryScreen(
                         Text(if (item.ruleType == "NONE") "无排程规则" else if (item.ruleType == "AVOID_WEEKDAY") "避免周${item.weekday} · ${item.keyword}" else "每日 ${item.startMinute.clock()}–${item.endMinute.clock()}${item.keyword.takeIf(String::isNotBlank)?.let { " · $it" }.orEmpty()}", style = MaterialTheme.typography.bodySmall)
                         Column {
                             Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                                TextButton(onClick = { editing = item }, enabled = !busy) { Text("编辑") }
+                                TextButton(onClick = { editing = item }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_edit)) }
                                 TextButton(onClick = { model.perform { model.repository.saveMemory(item.copy(enabled = !item.enabled), item.version) } }, enabled = !busy) { Text(if (item.enabled) "停用" else "启用") }
-                                if (!item.confirmed) TextButton(onClick = { model.perform { model.repository.saveMemory(item.copy(confirmed = true), item.version) } }, enabled = !busy) { Text("确认候选") }
+                                if (!item.confirmed) TextButton(onClick = { model.perform { model.repository.saveMemory(item.copy(confirmed = true), item.version) } }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_007)) }
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                                TextButton(onClick = { deleting = item }, enabled = !busy) { Text("删除") }
-                                if (item.sourceType == "OBSERVATION" && item.sourceId != null) TextButton(onClick = { onOpenRecord(item.sourceId) }) { Text("查看记录") }
+                                TextButton(onClick = { deleting = item }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_delete)) }
+                                if (item.sourceType == "OBSERVATION" && item.sourceId != null) TextButton(onClick = { onOpenRecord(item.sourceId) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_008)) }
                             }
                         }
                     }
@@ -123,7 +123,7 @@ fun PersonalMemoryScreen(
     }
     if (creating) MemoryEditorDialog(model, null, busy, initialText = prefill?.text.orEmpty(), initialSource = prefill?.sourceText.orEmpty(), onClose = { creating = false; prefill = null })
     editing?.let { item -> MemoryEditorDialog(model, item, busy, onClose = { editing = null }) }
-    deleting?.let { item -> AlertDialog(onDismissRequest = { deleting = null }, title = { Text("删除这条记忆？") }, text = { Text("删除后可以撤销恢复。") }, confirmButton = { TextButton(onClick = { deleting = null; model.perform { model.repository.deleteMemory(item.id, item.version) } }) { Text("删除") } }, dismissButton = { TextButton(onClick = { deleting = null }) { Text("取消") } }) }
+    deleting?.let { item -> AlertDialog(onDismissRequest = { deleting = null }, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_009)) }, text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_018)) }, confirmButton = { TextButton(onClick = { deleting = null; model.perform { model.repository.deleteMemory(item.id, item.version) } }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_delete)) } }, dismissButton = { TextButton(onClick = { deleting = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } }) }
 }
 
 @Composable
@@ -149,19 +149,19 @@ internal fun MemoryEditorDialog(
     var validation by remember { mutableStateOf<String?>(null) }
     AlertDialog(onDismissRequest = { if (!busy) onClose() }, title = { Text(if (existing == null) "添加个人记忆" else "编辑个人记忆") }, text = {
         Column(Modifier.heightIn(max = 520.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("类型：偏好 / 可核对事实 / 当前约定", style = MaterialTheme.typography.labelMedium)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_010), style = MaterialTheme.typography.labelMedium)
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { listOf("PREFERENCE", "FACT", "AGREEMENT").forEach { value -> FilterChip(kind == value, { kind = value }, label = { Text(value.label()) }) } }
-            OutlinedTextField(text, { text = it }, label = { Text("记忆内容") }, minLines = 2, modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(source, { source = it }, label = { Text("来源原文（可选）") }, minLines = 2, modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(from, { from = it }, label = { Text("生效日期 YYYY-MM-DD（可选）") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(until, { until = it }, label = { Text("失效日期，含当天（可选）") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-            Text("排程规则", style = MaterialTheme.typography.labelMedium)
+            OutlinedTextField(text, { text = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_011)) }, minLines = 2, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(source, { source = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_012)) }, minLines = 2, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(from, { from = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_013)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(until, { until = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_014)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_015), style = MaterialTheme.typography.labelMedium)
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { listOf("NONE", "AVOID_WEEKDAY", "TIME_WINDOW").forEach { value -> FilterChip(rule == value, { rule = value }, label = { Text(when(value) { "NONE" -> "无"; "AVOID_WEEKDAY" -> "避免星期"; else -> "每日时段" }) }) } }
-            if (rule != "NONE") OutlinedTextField(keyword, { keyword = it }, label = { Text("适用任务关键词") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-            if (rule == "AVOID_WEEKDAY") OutlinedTextField(weekday, { weekday = it }, label = { Text("星期 1–7（周一至周日）") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            if (rule != "NONE") OutlinedTextField(keyword, { keyword = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_016)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            if (rule == "AVOID_WEEKDAY") OutlinedTextField(weekday, { weekday = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_017)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
             if (rule == "TIME_WINDOW") {
-                OutlinedTextField(start, { start = it }, label = { Text("开始 HH:mm") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(end, { end = it }, label = { Text("结束 HH:mm") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(start, { start = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_018)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(end, { end = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_019)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
             }
             validation?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
         }
@@ -177,7 +177,7 @@ internal fun MemoryEditorDialog(
             if (onSaveDraft != null) onSaveDraft(item)
             else model.perform(onSuccess = onClose) { model.repository.saveMemory(item, existing?.version) }
         } catch (error: Exception) { validation = error.message ?: "请检查填写内容" }
-    }) { Text("保存") } }, dismissButton = { TextButton(onClick = onClose, enabled = !busy) { Text("取消") } })
+    }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) } }, dismissButton = { TextButton(onClick = onClose, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } })
 }
 
 private fun PersonalMemoryEntity.toJson() = JSONObject().apply {

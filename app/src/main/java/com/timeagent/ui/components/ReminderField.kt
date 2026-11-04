@@ -43,9 +43,9 @@ fun ReminderField(
     val customValue = customText.toIntOrNull()?.takeIf { it > 0 }
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text("提醒时间", style = MaterialTheme.typography.titleMedium)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_field_001), style = MaterialTheme.typography.titleMedium)
             Text(
-                "0 表示事件开始时提醒；可多选，也可添加自定义分钟数。",
+                androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_field_002),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -58,14 +58,14 @@ fun ReminderField(
                 shape = MaterialTheme.shapes.medium
             ) {
                 Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("通知权限未开启，提醒可能无法送达。", style = MaterialTheme.typography.bodyMedium)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_field_003), style = MaterialTheme.typography.bodyMedium)
                     Button(onClick = { onRequestPermission?.invoke() }, enabled = onRequestPermission != null) {
-                        Text("开启通知权限")
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_field_004))
                     }
                 }
             }
         } else {
-            Text("通知权限已开启", style = MaterialTheme.typography.bodySmall,
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_field_005), style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         FlowRow(
@@ -92,7 +92,7 @@ fun ReminderField(
             value = customText,
             onValueChange = { input -> customText = input.filter { it.isDigit() } },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("自定义分钟数（正整数）") },
+            label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_field_006)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
@@ -105,11 +105,11 @@ fun ReminderField(
             },
             enabled = customValue != null,
             modifier = Modifier.sizeIn(minHeight = 48.dp)
-        ) { Text("添加自定义提醒") }
-        Text("已选提醒（按提前时间升序）", style = MaterialTheme.typography.titleSmall)
+        ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_field_007)) }
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_field_008), style = MaterialTheme.typography.titleSmall)
         if (ordered.isEmpty()) {
             Text(
-                "尚未选择提醒时间。",
+                androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_reminder_field_009),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -125,7 +125,7 @@ fun ReminderField(
                         TextButton(
                             onClick = { onChange(normalizeReminderMinutes(minutes.filterNot { it == value })) },
                             modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp)
-                        ) { Text("移除") }
+                        ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_character_screens_015)) }
                     }
                 }
             }

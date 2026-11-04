@@ -68,25 +68,25 @@ fun CalendarSyncScreen(model: TimeViewModel, onClose: () -> Unit) {
     Scaffold(topBar = { AppTopBar("系统日历同步", onClose) }, snackbarHost = { SnackbarHost(snackbar) }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text("系统日历与云账户的同步由系统和账户应用负责，时间 Agent 无法保证云端同步时效。")
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_sync_screen_001))
             error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
             val snapshot = state
             if (snapshot == null) LinearProgressIndicator(Modifier.fillMaxWidth())
             else {
                 if (!snapshot.canRead || !snapshot.canWrite) {
-                    Text("日历权限已关闭，同步暂停。已有映射和日程保留。")
-                    Button(onClick = { permissions.launch(arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)) }) { Text("允许日历读写") }
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_sync_screen_002))
+                    Button(onClick = { permissions.launch(arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_sync_screen_003)) }
                 } else {
-                    Button(onClick = { act { repo.syncNow().let(::accepted) } }, enabled = !busy) { Text("立即同步") }
-                    OutlinedButton(onClick = { act { repo.createLocalCalendar("时间 Agent").let(::accepted) } }, enabled = !busy) { Text("创建时间 Agent 本地日历") }
-                    OutlinedTextField(pastRange, { pastRange = it }, label = { Text("同步范围 · 过去天数（可为 0）") })
-                    OutlinedTextField(range, { range = it }, label = { Text("同步范围 · 未来天数") })
+                    Button(onClick = { act { repo.syncNow().let(::accepted) } }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_sync_screen_004)) }
+                    OutlinedButton(onClick = { act { repo.createLocalCalendar("时间 Agent").let(::accepted) } }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_sync_screen_005)) }
+                    OutlinedTextField(pastRange, { pastRange = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_sync_screen_006)) })
+                    OutlinedTextField(range, { range = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_sync_screen_007)) })
                     OutlinedButton(onClick = { act {
                         repo.saveSettings(snapshot.exportCalendarId,
                             requireNotNull(range.toIntOrNull()) { "请填写未来天数" },
                             snapshot.actualCalendarId, snapshot.settingsVersion,
                             requireNotNull(pastRange.toIntOrNull()) { "请填写过去天数" }).let(::accepted)
-                    } }, enabled = !busy) { Text("保存同步范围") }
+                    } }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_sync_screen_008)) }
                     snapshot.calendars.forEach { calendar ->
                         Card(Modifier.fillMaxWidth()) {
                             Column(Modifier.padding(12.dp)) {
@@ -111,17 +111,17 @@ fun CalendarSyncScreen(model: TimeViewModel, onClose: () -> Unit) {
                                     act { repo.saveSettings(snapshot.exportCalendarId, snapshot.rangeDays, calendar.id,
                                         snapshot.settingsVersion).let(::accepted) }
                                 }, enabled = !busy) { Text(if (snapshot.actualCalendarId == calendar.id) "实际记录独立日历 · 已开启" else "将实际记录导出到此独立日历") }
-                                TextButton(onClick = { disconnect = calendar }, enabled = !busy) { Text("断开此日历") }
+                                TextButton(onClick = { disconnect = calendar }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_sync_screen_009)) }
                             }
                         }
                     }
-                    Text("实际记录默认不导出。开启后单向写入独立日历，以本地记录为准；专注只导出专注片段，休息和暂停不导出。")
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_sync_screen_010))
                     OutlinedButton(onClick = { act { repo.createActualCalendar().let(::accepted) } }, enabled = !busy) {
-                        Text("新建并启用实际记录独立日历")
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_sync_screen_011))
                     }
                     if (snapshot.actualCalendarId != 0L) TextButton(onClick = {
                         act { repo.saveSettings(snapshot.exportCalendarId, snapshot.rangeDays, 0L, snapshot.settingsVersion).let(::accepted) }
-                    }, enabled = !busy) { Text("关闭实际记录导出（保留已导出内容）") }
+                    }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_sync_screen_012)) }
                 }
                 snapshot.lastError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
                 snapshot.readOnlyReasons.forEach { Text(it) }
@@ -136,7 +136,7 @@ fun CalendarSyncScreen(model: TimeViewModel, onClose: () -> Unit) {
                                     android.content.ContentUris.withAppendedId(android.provider.CalendarContract.Events.CONTENT_URI, series.eventId))
                                 try { context.startActivity(intent) }
                                 catch (_: android.content.ActivityNotFoundException) { error = "没有可打开此周期的系统日历应用，请在原日历应用中修改" }
-                            }) { Text("在系统日历中查看周期") }
+                            }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_sync_screen_013)) }
                         }
                     }
                 }
@@ -145,15 +145,15 @@ fun CalendarSyncScreen(model: TimeViewModel, onClose: () -> Unit) {
                         Column(Modifier.padding(12.dp)) {
                             Text("同步冲突 · ${conflict.localTitle}")
                             Text("本地：${conflict.localSummary}\n系统日历：${conflict.remoteSummary}\n当前保留：${conflict.kept.orEmpty()}")
-                            Text("部分系统日历不提供真实修改时刻；保留的双方快照可在此核对并选择。",
+                            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_sync_screen_014),
                                 style = MaterialTheme.typography.bodySmall)
                             Row {
-                                TextButton(onClick = { act { repo.resolveConflict(conflict.linkId, CalendarConflictChoice.LOCAL, conflict.version).let(::accepted) } }, enabled = !busy && conflict.canUseLocal) { Text("改用本地") }
-                                TextButton(onClick = { act { repo.resolveConflict(conflict.linkId, CalendarConflictChoice.REMOTE, conflict.version).let(::accepted) } }, enabled = !busy && conflict.canUseRemote) { Text("改用系统日历") }
+                                TextButton(onClick = { act { repo.resolveConflict(conflict.linkId, CalendarConflictChoice.LOCAL, conflict.version).let(::accepted) } }, enabled = !busy && conflict.canUseLocal) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_sync_screen_015)) }
+                                TextButton(onClick = { act { repo.resolveConflict(conflict.linkId, CalendarConflictChoice.REMOTE, conflict.version).let(::accepted) } }, enabled = !busy && conflict.canUseRemote) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_sync_screen_016)) }
                             }
                             if (conflict.kind == CalendarConflictKind.LOCAL_DELETED_REMOTE_ORIGIN) {
-                                TextButton(onClick = { act { repo.resolveLocalDeletion(conflict.linkId, true, conflict.version).let(::accepted) } }, enabled = !busy) { Text("确认删除远端事件") }
-                                TextButton(onClick = { act { repo.resolveLocalDeletion(conflict.linkId, false, conflict.version).let(::accepted) } }, enabled = !busy) { Text("保留远端事件") }
+                                TextButton(onClick = { act { repo.resolveLocalDeletion(conflict.linkId, true, conflict.version).let(::accepted) } }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_sync_screen_017)) }
+                                TextButton(onClick = { act { repo.resolveLocalDeletion(conflict.linkId, false, conflict.version).let(::accepted) } }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_sync_screen_018)) }
                             }
                         }
                     }
@@ -164,10 +164,10 @@ fun CalendarSyncScreen(model: TimeViewModel, onClose: () -> Unit) {
     disconnect?.let { calendar ->
         AlertDialog(onDismissRequest = { disconnect = null }, title = { Text("断开${calendar.name}") },
             text = { Column {
-                Row { Checkbox(keepImported, { keepImported = it }); Text("保留已导入日程并转为本地") }
-                Row { Checkbox(deleteExported, { deleteExported = it }); Text("删除由时间 Agent 导出的远端事件") }
+                Row { Checkbox(keepImported, { keepImported = it }); Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_sync_screen_019)) }
+                Row { Checkbox(deleteExported, { deleteExported = it }); Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_sync_screen_020)) }
             } }, confirmButton = { TextButton(onClick = {
                 act { repo.disconnect(calendar.id, keepImported, deleteExported, calendar.version).let(::accepted); disconnect = null }
-            }, enabled = !busy) { Text("断开同步") } }, dismissButton = { TextButton(onClick = { disconnect = null }) { Text("取消") } })
+            }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_calendar_sync_screen_021)) } }, dismissButton = { TextButton(onClick = { disconnect = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } })
     }
 }

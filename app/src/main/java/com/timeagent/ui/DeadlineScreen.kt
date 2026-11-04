@@ -188,16 +188,16 @@ fun DeadlineScreen(
                 Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                TextButton(onClick = onClose) { Text("返回") }
-                Text("生活期限", style = MaterialTheme.typography.titleLarge)
+                TextButton(onClick = onClose) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_back)) }
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_001), style = MaterialTheme.typography.titleLarge)
                 Spacer(Modifier.weight(1f))
                 TextButton(
                     enabled = data.history.any { !it.undone },
                     onClick = { scope.launch { model.perform(action = { model.repository.undoLastAction() }) } },
-                ) { Text("撤销") }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_undo)) }
                 TextButton(
                     onClick = { scope.launch { model.perform(action = { model.repository.redoLastAction() }) } },
-                ) { Text("重做") }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_redo)) }
             }
 
             Column(
@@ -207,13 +207,13 @@ fun DeadlineScreen(
                     Button(
                         onClick = { editing = null; editingFrom = null; formOpen = true },
                         modifier = Modifier.testTag("deadline-create"),
-                    ) { Text("新建期限") }
+                    ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_002)) }
                     OutlinedButton(
                         onClick = { scope.launch { model.perform(action = { service.refresh() }) } },
-                    ) { Text("重新登记") }
+                    ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_003)) }
                 }
                 Text(
-                    "按本次到期日分组；处理只改状态，延期只改这一条。",
+                    androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_004),
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(vertical = 6.dp),
                 )
@@ -238,7 +238,7 @@ fun DeadlineScreen(
                         onAccessChanged = { access = reminderAccessState(context) },
                     )
                     Text(
-                        "通知显示受系统与省电设置影响，可在通知设置中核对权限。",
+                        androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_005),
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(bottom = 6.dp),
                     )
@@ -248,7 +248,7 @@ fun DeadlineScreen(
                 }
                 if (infoOpen) {
                     Text(
-                        "仅处理你主动填写的期限。月末取当月最后一天；2月29在平年按2月28、闰年回到29。" +
+                        androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_006) +
                             "过期提醒不补发，重启后只重新登记未来提醒。重新打开不会补打卡或恢复计划。",
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(bottom = 6.dp),
@@ -257,7 +257,7 @@ fun DeadlineScreen(
 
                 if (nextItems.isEmpty()) {
                     Text(
-                        "没有待处理的期限。",
+                        androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_007),
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(vertical = 12.dp),
                     )
@@ -311,21 +311,21 @@ fun DeadlineScreen(
                             )
                         }
                         if (handledItems.size > 5) {
-                            Text("仅显示最近 5 条，其余在规则详情查看", style = MaterialTheme.typography.bodySmall)
+                            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_008), style = MaterialTheme.typography.bodySmall)
                         }
                     }
                 }
 
                 Text(
-                    "全部规则",
+                    androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_009),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(top = 14.dp),
                 )
-                Text("规则编辑影响以后；已处理或手改的本次保持原样。", style = MaterialTheme.typography.bodySmall)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_010), style = MaterialTheme.typography.bodySmall)
 
                 if (rules.isEmpty()) {
-                    Text("暂无生活期限。", modifier = Modifier.padding(vertical = 12.dp))
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_011), modifier = Modifier.padding(vertical = 12.dp))
                 }
 
                 rules.forEach { rule ->
@@ -352,7 +352,7 @@ fun DeadlineScreen(
                                 TextButton(
                                     onClick = { editRule(rule) },
                                     modifier = Modifier.testTag("deadline-rule-${rule.id}"),
-                                ) { Text("改规则") }
+                                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_012)) }
                                 TextButton(onClick = {
                                     if (pattern == null) return@TextButton
                                     scope.launch {
@@ -379,7 +379,7 @@ fun DeadlineScreen(
                             }
 
                             if (active.isEmpty() && handled.isEmpty()) {
-                                Text("暂无关联期限。", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 6.dp))
+                                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_013), style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 6.dp))
                             }
 
                             (if (showAll) active else active.take(3)).forEach { instance ->
@@ -462,10 +462,10 @@ fun DeadlineScreen(
         val rule = data.recurringRules.firstOrNull { it.id == instance.ruleId }
         AlertDialog(
             onDismissRequest = { delayChoice = null },
-            title = { Text("延期") },
-            text = { Text("仅本次调整这一条的时间点；本次及以后会打开规则编辑，从原始日期生效，已完成或手改的实例保持原样。") },
+            title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_014)) },
+            text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_015)) },
             confirmButton = {
-                TextButton(onClick = { delayChoice = null; delayInput = instance }) { Text("仅本次延期") }
+                TextButton(onClick = { delayChoice = null; delayInput = instance }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_016)) }
             },
             dismissButton = {
                 TextButton(onClick = {
@@ -475,7 +475,7 @@ fun DeadlineScreen(
                         editingFrom = parseDate(instance.originalDate)
                         formOpen = true
                     }
-                }) { Text("本次及以后") }
+                }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_017)) }
             },
         )
     }
@@ -520,23 +520,23 @@ private fun DeadlineFocusRow(
             )
             val usable = task != null && task.deletedAt == null
             Row {
-                TextButton(enabled = usable, onClick = { task?.let(onTask) }) { Text("打开任务", fontSize = 12.sp) }
+                TextButton(enabled = usable, onClick = { task?.let(onTask) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_018), fontSize = 12.sp) }
                 if (usable && state == "PENDING" && (task?.status == "TODO" || task?.status == "IN_PROGRESS")) {
                     TextButton(
                         onClick = onHandle,
                         modifier = Modifier.testTag("deadline-focus-handle-${instance.id}"),
-                    ) { Text("处理", fontSize = 12.sp) }
+                    ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_019), fontSize = 12.sp) }
                 } else if (usable && state != "PENDING") {
                     TextButton(
                         onClick = onReopen,
                         modifier = Modifier.testTag("deadline-focus-handle-${instance.id}"),
-                    ) { Text("重新打开", fontSize = 12.sp) }
+                    ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_020), fontSize = 12.sp) }
                 }
                 if (state == "PENDING" && usable) {
                     TextButton(
                         onClick = onDelay,
                         modifier = Modifier.testTag("deadline-focus-delay-${instance.id}"),
-                    ) { Text("延期", fontSize = 12.sp) }
+                    ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_014), fontSize = 12.sp) }
                 }
             }
         }
@@ -567,7 +567,7 @@ private fun InstanceRow(
             style = MaterialTheme.typography.bodySmall,
         )
         if (task == null || task.deletedAt != null) {
-            Text("原任务已删", style = MaterialTheme.typography.bodySmall)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_021), style = MaterialTheme.typography.bodySmall)
         } else {
             Text(
                 deadlineReminderText(
@@ -586,25 +586,25 @@ private fun InstanceRow(
             }
         }
         Row {
-            TextButton(enabled = task != null, onClick = { task?.let(onTask) }) { Text("打开任务") }
+            TextButton(enabled = task != null, onClick = { task?.let(onTask) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_018)) }
             if (task != null && task.deletedAt == null) {
                 if (task.status == "TODO" || task.status == "IN_PROGRESS") {
                     TextButton(
                         onClick = onComplete,
                         modifier = Modifier.testTag("deadline-handle-${instance.id}"),
-                    ) { Text("处理") }
+                    ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_019)) }
                 } else if (task.status in setOf("COMPLETED","CANCELLED")) {
                     TextButton(
                         onClick = onReopen,
                         modifier = Modifier.testTag("deadline-handle-${instance.id}"),
-                    ) { Text("重新打开") }
+                    ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_020)) }
                 }
             }
             if (recurringState(instance,task) == "PENDING") {
                 TextButton(
                     onClick = onDelay,
                     modifier = Modifier.testTag("deadline-delay-${instance.id}"),
-                ) { Text("延期") }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_014)) }
             }
         }
     }
@@ -626,13 +626,13 @@ private fun DelayInputDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("仅本次延期") },
+        title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_016)) },
         text = {
             Column {
                 OutlinedTextField(
                     value = text,
                     onValueChange = { text = it; checked = null; error = null },
-                    label = { Text("新时间 yyyy-MM-dd HH:mm") },
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_022)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -641,11 +641,11 @@ private fun DelayInputDialog(
                 if (c != null) {
                     Text("检查时间：${fmtAt(c.target, zone)}", style = MaterialTheme.typography.bodySmall)
                     Text(
-                        "时间点已检查；只改本次期限，不创建计划时段。",
+                        androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_023),
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
-                Text("请先检查，修改文字后必须重新检查。", style = MaterialTheme.typography.bodySmall)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_024), style = MaterialTheme.typography.bodySmall)
             }
         },
         confirmButton = {
@@ -661,7 +661,7 @@ private fun DelayInputDialog(
                             })
                         }
                     }
-                }) { Text("检查") }
+                }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_025)) }
             } else {
                 TextButton(enabled = !busy, onClick = {
                     val c = checked ?: return@TextButton
@@ -680,10 +680,10 @@ private fun DelayInputDialog(
                             },
                         )
                     }
-                }) { Text("确认延期") }
+                }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_026)) }
             }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }
 
@@ -722,11 +722,11 @@ private fun RuleDialog(
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
-                    label = { Text("标题") },
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_template_editor_006)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth().testTag("deadline-title"),
                 )
-                Text("类别", style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(top = 8.dp))
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_027), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(top = 8.dp))
                 Row(Modifier.horizontalScroll(rememberScrollState())) {
                     listOf("续费", "归还", "报销", "生日", "其他").forEach { item ->
                         FilterChip(
@@ -741,7 +741,7 @@ private fun RuleDialog(
                     OutlinedTextField(
                         value = dateText,
                         onValueChange = { dateText = it },
-                        label = { Text("日期 yyyy-MM-dd") },
+                        label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_028)) },
                         singleLine = true,
                         modifier = Modifier.weight(1f).testTag("deadline-date"),
                     )
@@ -749,7 +749,7 @@ private fun RuleDialog(
                     OutlinedTextField(
                         value = timeText,
                         onValueChange = { timeText = it },
-                        label = { Text("时间 HH:mm") },
+                        label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_029)) },
                         singleLine = true,
                         modifier = Modifier.weight(0.7f).testTag("deadline-time"),
                     )
@@ -767,7 +767,7 @@ private fun RuleDialog(
                 OutlinedTextField(
                     value = leadText,
                     onValueChange = { leadText = it.filter { ch -> ch.isDigit() } },
-                    label = { Text("提前天数（空=不提醒，0=到点）") },
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_030)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth().testTag("deadline-lead"),
                 )
@@ -775,17 +775,17 @@ private fun RuleDialog(
                     OutlinedTextField(
                         value = fromText,
                         onValueChange = { fromText = it },
-                        label = { Text("从哪天生效 yyyy-MM-dd") },
+                        label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_031)) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
-                Text("项目", style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(top = 8.dp))
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_template_editor_009), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(top = 8.dp))
                 Row(Modifier.horizontalScroll(rememberScrollState())) {
                     FilterChip(
                         selected = projectId == null,
                         onClick = { projectId = null },
-                        label = { Text("不关联") },
+                        label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_032)) },
                         modifier = Modifier.padding(end = 6.dp),
                     )
                     projects.forEach { project ->
@@ -800,12 +800,12 @@ private fun RuleDialog(
                 OutlinedTextField(
                     value = reference,
                     onValueChange = { if (it.length <= 20000) reference = it },
-                    label = { Text("关联资料文字/链接（不会自动读取外部文件）") },
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_033)) },
                     minLines = 2,
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Text(
-                    "月末取当月最后一天；2月29在平年按2月28、闰年回到29。一次期限的过期日期也会保留为待处理。",
+                    androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_034),
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(top = 6.dp),
                 )
@@ -863,8 +863,8 @@ private fun RuleDialog(
                         onSave(item, initial?.version, from)
                     }
                 }
-            }) { Text("保存") }
+            }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }

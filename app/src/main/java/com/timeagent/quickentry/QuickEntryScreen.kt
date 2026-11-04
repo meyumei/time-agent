@@ -145,14 +145,14 @@ fun QuickEntryScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("快捷记录", fontWeight = FontWeight.Bold) },
-                navigationIcon = { TextButton(onClick = onClose) { Text("关闭") } },
+                title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_001), fontWeight = FontWeight.Bold) },
+                navigationIcon = { TextButton(onClick = onClose) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_close)) } },
             )
         },
         snackbarHost = { SnackbarHost(snackbar) },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                text = { Text("新建快捷") },
+                text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_002)) },
                 icon = { Text("+", style = MaterialTheme.typography.titleLarge) },
                 onClick = { creating = true },
                 modifier = Modifier.testTag("quick-entry-add"),
@@ -165,7 +165,7 @@ fun QuickEntryScreen(
                     Row(Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                         Text(message, Modifier.weight(1f), color = MaterialTheme.colorScheme.onErrorContainer,
                             style = MaterialTheme.typography.bodyMedium)
-                        TextButton(onClick = { model.clearMessages() }) { Text("知道了") }
+                        TextButton(onClick = { model.clearMessages() }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_acknowledge)) }
                     }
                 }
             }
@@ -173,7 +173,7 @@ fun QuickEntryScreen(
                 Surface(color = MaterialTheme.colorScheme.secondaryContainer, modifier = Modifier.fillMaxWidth()) {
                     Row(Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                         Text(message, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
-                        TextButton(onClick = { model.clearMessages() }) { Text("知道了") }
+                        TextButton(onClick = { model.clearMessages() }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_acknowledge)) }
                     }
                 }
             }
@@ -231,10 +231,10 @@ fun QuickEntryScreen(
                             Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp),
                                 color = MaterialTheme.colorScheme.surfaceContainerLow) {
                                 Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    Text("还没有快捷记录", style = MaterialTheme.typography.titleMedium)
-                                    Text("把常用活动做成一个芯片：开始计时、开始专注，或预填一条日程/实际记录。",
+                                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_003), style = MaterialTheme.typography.titleMedium)
+                                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_004),
                                         style = MaterialTheme.typography.bodyMedium)
-                                    OutlinedButton(onClick = { creating = true }) { Text("添加第一条") }
+                                    OutlinedButton(onClick = { creating = true }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_005)) }
                                 }
                             }
                         }
@@ -325,12 +325,12 @@ private fun QuickEntryRow(
                 Text("已用 ${entry.usageCount} 次", style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(Modifier.weight(1f))
-                TextButton(onClick = onUse, enabled = !busy) { Text("使用") }
-                TextButton(onClick = onEdit, enabled = !busy) { Text("编辑") }
+                TextButton(onClick = onUse, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_006)) }
+                TextButton(onClick = onEdit, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_edit)) }
                 TextButton(onClick = onPin, enabled = !busy) { Text(if (entry.pinned) "取消固定" else "固定") }
                 TextButton(onClick = { onMove(-1) }, enabled = !busy && index > 0) { Text("↑") }
                 TextButton(onClick = { onMove(1) }, enabled = !busy && index in 0 until ordered.lastIndex) { Text("↓") }
-                TextButton(onClick = onDelete, enabled = !busy) { Text("删除") }
+                TextButton(onClick = onDelete, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_delete)) }
             }
         }
     }
@@ -405,7 +405,7 @@ private fun QuickEntryEditorDialog(
                 Modifier.heightIn(max = 560.dp).verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                Text("活动（沿用现有活动模板，不另建分类）", style = MaterialTheme.typography.labelLarge)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_007), style = MaterialTheme.typography.labelLarge)
                 Box {
                     OutlinedButton(onClick = { activityMenu = true }, enabled = !state.busy, modifier = Modifier.fillMaxWidth()) {
                         Text(if (activityId.isBlank()) "选择活动" else state.activityLabel(activityId),
@@ -421,10 +421,10 @@ private fun QuickEntryEditorDialog(
                     }
                 }
                 OutlinedTextField(value = label, onValueChange = { label = it.take(80) },
-                    label = { Text("显示名称（可选，留空用活动名）") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_008)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(value = icon, onValueChange = { icon = it.take(16) },
-                    label = { Text("图标（一个字符，可选）") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                Text("颜色")
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_009)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_039))
                 Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     QUICK_ENTRY_COLORS.forEach { value ->
                         Box(
@@ -437,7 +437,7 @@ private fun QuickEntryEditorDialog(
                         }
                     }
                 }
-                Text("点击芯片后", style = MaterialTheme.typography.labelLarge)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_010), style = MaterialTheme.typography.labelLarge)
                 Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     QuickEntryAction.entries.forEach { action ->
                         FilterChip(
@@ -449,17 +449,17 @@ private fun QuickEntryEditorDialog(
                 }
                 OutlinedTextField(
                     value = duration, onValueChange = { duration = it.filter(Char::isDigit).take(5) },
-                    label = { Text("默认时长（分钟，可选）") }, singleLine = true,
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_011)) }, singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
                 )
-                Text("上下文（可选）", style = MaterialTheme.typography.labelLarge)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_012), style = MaterialTheme.typography.labelLarge)
                 Box {
                     OutlinedButton(onClick = { projectMenu = true }, enabled = !state.busy, modifier = Modifier.fillMaxWidth()) {
                         Text(state.projectLabel(projectId)?.let { "项目：$it" } ?: "不关联项目")
                     }
                     DropdownMenu(expanded = projectMenu, onDismissRequest = { projectMenu = false }) {
-                        DropdownMenuItem(text = { Text("不关联项目") }, onClick = { projectId = null; projectMenu = false })
+                        DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_013)) }, onClick = { projectId = null; projectMenu = false })
                         activeProjects.forEach { project ->
                             DropdownMenuItem(text = { Text(project.name) }, onClick = { projectId = project.id; projectMenu = false })
                         }
@@ -470,7 +470,7 @@ private fun QuickEntryEditorDialog(
                         Text(state.taskLabel(taskId)?.let { "任务：$it" } ?: "不关联任务")
                     }
                     DropdownMenu(expanded = taskMenu, onDismissRequest = { taskMenu = false }) {
-                        DropdownMenuItem(text = { Text("不关联任务") }, onClick = { taskId = null; taskMenu = false })
+                        DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_014)) }, onClick = { taskId = null; taskMenu = false })
                         activeTasks.take(100).forEach { task ->
                             DropdownMenuItem(text = { Text(task.title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                                 onClick = { taskId = task.id; taskMenu = false })
@@ -478,7 +478,7 @@ private fun QuickEntryEditorDialog(
                     }
                 }
                 if (state.tags.isNotEmpty()) {
-                    Text("标签（可选）", style = MaterialTheme.typography.labelLarge)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_015), style = MaterialTheme.typography.labelLarge)
                     Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         state.tags.forEach { tag ->
                             FilterChip(
@@ -490,7 +490,7 @@ private fun QuickEntryEditorDialog(
                     }
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("固定到“今天”快捷区", Modifier.weight(1f))
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_016), Modifier.weight(1f))
                     Switch(checked = pinned, onCheckedChange = { pinned = it }, enabled = !state.busy)
                 }
                 error?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
@@ -500,7 +500,7 @@ private fun QuickEntryEditorDialog(
         confirmButton = {
             TextButton(onClick = { save() }, enabled = !state.busy) { Text(if (state.busy) "保存中…" else "保存") }
         },
-        dismissButton = { TextButton(onClick = onDismiss, enabled = !state.busy) { Text("取消") } },
+        dismissButton = { TextButton(onClick = onDismiss, enabled = !state.busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }
 
@@ -517,19 +517,19 @@ internal fun QuickEntryConflictDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("结束当前主计时并开始？") },
+        title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_017)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text("同一时间只允许一个主计时。下面这些正在运行；继续会先结束它们，再开始“${conflict.entry.label ?: "快捷记录"}”。")
                 conflict.slots.forEach { slot ->
                     Text("· ${slotName(slot)}（版本 ${slot.version}）", style = MaterialTheme.typography.bodyMedium)
                 }
-                Text("若列表已变化，本次不会开始；请重新点击芯片。", style = MaterialTheme.typography.bodySmall,
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_018), style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         },
-        confirmButton = { TextButton(onClick = onConfirm) { Text("结束并开始") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } },
+        confirmButton = { TextButton(onClick = onConfirm) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_007)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }
 
@@ -593,17 +593,17 @@ fun QuickEntryChips(
     ) {
         Column(Modifier.padding(vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text("快捷", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_019), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
                 Spacer(Modifier.weight(1f))
                 if (state.busy) CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp)
-                TextButton(onClick = onOpenManager, modifier = Modifier.testTag("quick-entry-manage")) { Text("管理") }
+                TextButton(onClick = onOpenManager, modifier = Modifier.testTag("quick-entry-manage")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_020)) }
             }
             Row(
                 Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 if (chips.isEmpty()) {
-                    OutlinedButton(onClick = onOpenManager) { Text("添加快捷记录") }
+                    OutlinedButton(onClick = onOpenManager) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_021)) }
                 } else {
                     chips.forEach { entry ->
                         Surface(

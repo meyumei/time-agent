@@ -63,12 +63,12 @@ fun NotificationAccess(modifier: Modifier = Modifier, onAccessChanged: () -> Uni
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
                     context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                    TextButton(onClick = { launcher.launch(Manifest.permission.POST_NOTIFICATIONS) }) { Text("允许通知") }
+                    TextButton(onClick = { launcher.launch(Manifest.permission.POST_NOTIFICATIONS) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_notification_access_001)) }
                 }
                 TextButton(onClick = {
                     openSystemScreen(context, Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
                         .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName))
-                }) { Text("通知设置") }
+                }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_notification_access_002)) }
             }
             Text(
                 if (access.exactAlarmsAllowed) "精确闹钟可用；实际显示仍受系统和省电策略影响。"
@@ -78,7 +78,7 @@ fun NotificationAccess(modifier: Modifier = Modifier, onAccessChanged: () -> Uni
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !access.exactAlarmsAllowed) {
                 TextButton(onClick = {
                     openSystemScreen(context, Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:${context.packageName}")))
-                }) { Text("设置提醒精度") }
+                }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_notification_access_003)) }
             }
         }
     }

@@ -97,7 +97,7 @@ internal fun TransactionSourceDetails(
             .ifEmpty { listOfNotNull(transaction.captureId) }
     }
     if (captureIds.isEmpty()) {
-        Text("来源：手动记录", style = MaterialTheme.typography.labelSmall)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_reshape_dialogs_001), style = MaterialTheme.typography.labelSmall)
         return
     }
     var expanded by rememberSaveable(transaction.id) { mutableStateOf(initiallyExpanded) }
@@ -179,8 +179,8 @@ internal fun LedgerMergeDialog(
             fontWeight = FontWeight.Medium,
         )
         Text("合并后金额 ${Money.format(draft.amountMinor)}（只读，按所见账目合计）", style = MaterialTheme.typography.titleMedium)
-        Text("原账目的来源与完整交易号会全部保留。", style = MaterialTheme.typography.bodySmall)
-        Text("分类", style = MaterialTheme.typography.labelLarge)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_reshape_dialogs_002), style = MaterialTheme.typography.bodySmall)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_reshape_dialogs_003), style = MaterialTheme.typography.labelLarge)
         OutlinedButton(
             onClick = { picker = true },
             modifier = Modifier.fillMaxWidth(),
@@ -189,12 +189,12 @@ internal fun LedgerMergeDialog(
             Text(selectable.firstOrNull { it.id == categoryId }?.name ?: "选择合并后的分类")
         }
         if (selectable.isEmpty()) {
-            Text("没有可用于该方向的分类。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_reshape_dialogs_004), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
         }
         OutlinedTextField(
             merchant,
             { merchant = it },
-            label = { Text("商户") },
+            label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_reshape_dialogs_005)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
             enabled = !busy,
@@ -202,11 +202,11 @@ internal fun LedgerMergeDialog(
         OutlinedTextField(
             note,
             { note = it },
-            label = { Text("备注") },
+            label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.field_notes)) },
             modifier = Modifier.fillMaxWidth(),
             enabled = !busy,
         )
-        Text("合并后发生时间", style = MaterialTheme.typography.labelLarge)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_reshape_dialogs_007), style = MaterialTheme.typography.labelLarge)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             DateField(
                 label = "日期",
@@ -223,7 +223,7 @@ internal fun LedgerMergeDialog(
         }
         externalError?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
         validation?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
-        Text("提交时使用打开本页时看到的版本；若账目已被修改，会保留本页并提示。", style = MaterialTheme.typography.bodySmall)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_reshape_dialogs_008), style = MaterialTheme.typography.bodySmall)
     }
 
     if (picker) {
@@ -336,7 +336,7 @@ internal fun LedgerSplitDialog(
                             TextButton(
                                 onClick = { working = working.copy(parts = working.parts.filterNot { it.id == part.id }) },
                                 enabled = !busy,
-                            ) { Text("删除") }
+                            ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_delete)) }
                         }
                     }
                     MoneyAmountField(
@@ -357,7 +357,7 @@ internal fun LedgerSplitDialog(
                     OutlinedTextField(
                         part.merchant,
                         { value -> updatePart(part.id) { it.copy(merchant = value) } },
-                        label = { Text("商户") },
+                        label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_reshape_dialogs_005)) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         enabled = !busy,
@@ -365,7 +365,7 @@ internal fun LedgerSplitDialog(
                     OutlinedTextField(
                         part.note,
                         { value -> updatePart(part.id) { it.copy(note = value) } },
-                        label = { Text("备注") },
+                        label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.field_notes)) },
                         modifier = Modifier.fillMaxWidth(),
                         enabled = !busy,
                     )
@@ -379,10 +379,10 @@ internal fun LedgerSplitDialog(
                 )
             },
             enabled = !busy,
-        ) { Text("增加分项") }
+        ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_reshape_dialogs_009)) }
         externalError?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
         hint?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
-        Text("只有每个分项为正数且合计等于原金额时才能提交。提交使用打开本页时看到的版本。", style = MaterialTheme.typography.bodySmall)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_reshape_dialogs_010), style = MaterialTheme.typography.bodySmall)
     }
 
     pickerPartId?.let { partId ->

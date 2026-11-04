@@ -474,7 +474,7 @@ fun TimelineAgendaCard(
                     )
                     Spacer(Modifier.width(3.dp))
                     Text(
-                        text = "时间冲突",
+                        text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_timeline_appearance_001),
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Medium,
                         color = com.timeagent.ui.design.LocalSemanticColors.current.onConflict,

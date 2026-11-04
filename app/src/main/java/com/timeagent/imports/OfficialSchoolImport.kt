@@ -54,14 +54,14 @@ fun OfficialSchoolImport(onExtracted: (CourseImportDraft) -> Unit, onClose: () -
     }
     Column(Modifier.fillMaxSize().safeDrawingPadding().imePadding().padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("华工教务导入", style = MaterialTheme.typography.titleLarge)
-            TextButton(onClick = onClose) { Text("关闭") }
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_official_school_import_001), style = MaterialTheme.typography.titleLarge)
+            TextButton(onClick = onClose) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_close)) }
         }
-        Text("请自行登录学校账号，再进入本学期完整课表，看到课程后点击提取。学校可能要求校内网络或 VPN。", style = MaterialTheme.typography.bodySmall)
-        Text("当前学校登录后的课表尚待真机验收。若连接失败，可返回使用教务导出的 PDF。", style = MaterialTheme.typography.bodySmall)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_official_school_import_002), style = MaterialTheme.typography.bodySmall)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_official_school_import_003), style = MaterialTheme.typography.bodySmall)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(onClick = { error = null; webView?.loadUrl(OfficialSchoolPolicy.LOGIN_URL) }) { Text("统一认证") }
-            OutlinedButton(onClick = { error = null; webView?.loadUrl(OfficialSchoolPolicy.TIMETABLE_URL) }) { Text("学生教务") }
+            OutlinedButton(onClick = { error = null; webView?.loadUrl(OfficialSchoolPolicy.LOGIN_URL) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_official_school_import_004)) }
+            OutlinedButton(onClick = { error = null; webView?.loadUrl(OfficialSchoolPolicy.TIMETABLE_URL) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_official_school_import_005)) }
         }
         Text("学校页面：$host", style = MaterialTheme.typography.labelSmall)
         error?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }

@@ -432,7 +432,7 @@ fun OnboardingScreen(model: OnboardingModel, onClose: () -> Unit) {
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("时间 Agent", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_001), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                     Text(
                         "第 ${model.step + 1} / ${model.totalSteps} 步",
                         style = MaterialTheme.typography.labelMedium,
@@ -446,7 +446,7 @@ fun OnboardingScreen(model: OnboardingModel, onClose: () -> Unit) {
                     } else {
                         model.skipCurrent()
                     }
-                }) { Text("跳过") }
+                }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_002)) }
             }
             Spacer(Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
@@ -480,7 +480,7 @@ fun OnboardingScreen(model: OnboardingModel, onClose: () -> Unit) {
             Spacer(Modifier.height(16.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (model.step > 0) {
-                    OutlinedButton(onClick = { model.back() }) { Text("上一步") }
+                    OutlinedButton(onClick = { model.back() }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_003)) }
                 }
                 Spacer(Modifier.weight(1f))
                 Button(onClick = {
@@ -500,7 +500,7 @@ fun OnboardingScreen(model: OnboardingModel, onClose: () -> Unit) {
 private fun WelcomeStep(model: OnboardingModel) {
     StepTitle("欢迎使用时间 Agent", "3 分钟了解计划与实际，选择你喜欢的陪伴方式。")
     Spacer(Modifier.height(20.dp))
-    Text("选择呈现模式", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_004), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
     Spacer(Modifier.height(8.dp))
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
         PresentationMode.entries.forEach { mode ->
@@ -530,7 +530,7 @@ private fun WelcomeStep(model: OnboardingModel) {
     ModePreview(model.presentation)
     Spacer(Modifier.height(12.dp))
     Text(
-        "两种模式的页面和功能完全一致，随时可以在 管家 → 设置 → 外观 中切换。",
+        androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_005),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -553,12 +553,12 @@ private fun ModePreview(mode: PresentationMode) {
                         modifier = Modifier.size(36.dp).clip(CircleShape)
                             .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
                         contentAlignment = Alignment.Center,
-                    ) { Text("鱼", style = MaterialTheme.typography.labelLarge) }
+                    ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_006), style = MaterialTheme.typography.labelLarge) }
                     Spacer(Modifier.width(10.dp))
                 }
                 Column {
                     Text(if (companion) "大肥鱼陪你安排今天" else "今天", style = MaterialTheme.typography.titleSmall)
-                    Text("3 个计划 · 1 条实际记录", style = MaterialTheme.typography.bodySmall)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_007), style = MaterialTheme.typography.bodySmall)
                 }
             }
             Spacer(Modifier.height(12.dp))
@@ -569,7 +569,7 @@ private fun ModePreview(mode: PresentationMode) {
             PreviewRow("19:30", "散步", MaterialTheme.colorScheme.secondary)
             if (companion) {
                 Spacer(Modifier.height(10.dp))
-                Text("大肥鱼会安静地待在这里，需要时再出现。", style = MaterialTheme.typography.bodySmall)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_008), style = MaterialTheme.typography.bodySmall)
             }
         }
     }
@@ -592,17 +592,17 @@ private fun PlanActualStep() {
     DemoTimeline()
     Spacer(Modifier.height(12.dp))
     Text(
-        "拖动这里的示例块、点开始计时都只发生在演示里，不会写入你的数据。",
+        androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_009),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
     Spacer(Modifier.height(16.dp))
     Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
         Column(Modifier.padding(16.dp)) {
-            Text("第一次计时", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_010), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.height(4.dp))
             Text(
-                "在“今天”顶部点开始计时，结束时会自动生成一条实际记录。计时中即使离开页面或杀进程，回来后仍会继续。",
+                androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_011),
                 style = MaterialTheme.typography.bodySmall,
             )
         }
@@ -663,7 +663,7 @@ private fun DemoTimeline() {
                     }
                     .padding(10.dp),
             ) {
-                Text("计划 · 晨间专注", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_012), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold)
                 Text(
                     "${clockLabel(startMinute.toInt())}–${clockLabel(startMinute.toInt() + 60)}",
                     style = MaterialTheme.typography.labelSmall,
@@ -750,7 +750,7 @@ private fun PermissionStep() {
     )
     Spacer(Modifier.height(16.dp))
     Text(
-        "麦克风、日历、健康、通知监听、悬浮窗不会在引导中申请。",
+        androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_013),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -774,14 +774,14 @@ private fun PermissionCard(
                 }
                 Spacer(Modifier.width(12.dp))
                 if (granted) {
-                    Text("已允许", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_014), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
                 } else {
                     OutlinedButton(onClick = onAction, enabled = enabled) { Text(actionLabel) }
                 }
             }
             if (!granted) {
                 Spacer(Modifier.height(6.dp))
-                Text("可以以后再说，不影响时间管理。", style = MaterialTheme.typography.labelSmall)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_015), style = MaterialTheme.typography.labelSmall)
             }
         }
     }
@@ -804,20 +804,20 @@ private fun AiStep(model: OnboardingModel) {
     Spacer(Modifier.height(20.dp))
     Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
         Column(Modifier.padding(16.dp)) {
-            Text("现在设置", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_016), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.height(4.dp))
             Text(
-                "在 管家 → 设置 → AI 中填写 Key 和模型。Key 只保存在本机，不经过官方代理。",
+                androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_017),
                 style = MaterialTheme.typography.bodySmall,
             )
             Spacer(Modifier.height(12.dp))
             Button(onClick = { model.openAiSettings() }, enabled = model.hasAiSettingsCallback()) {
-                Text("打开 AI 设置")
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_018))
             }
             if (!model.hasAiSettingsCallback()) {
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    "也可以稍后从 管家 → 设置 → AI 进入。",
+                    androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_019),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -826,7 +826,7 @@ private fun AiStep(model: OnboardingModel) {
     }
     Spacer(Modifier.height(16.dp))
     Text(
-        "没有 Key 时，大肥鱼不会假装回答；计划、实际、任务、提醒、复盘等本地功能仍然可用。",
+        androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_020),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -884,7 +884,7 @@ private fun SampleStep(
                     onClose()
                 },
                 enabled = !model.busy,
-            ) { Text("从空白开始") }
+            ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_021)) }
             model.error?.let {
                 Spacer(Modifier.height(8.dp))
                 Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
@@ -893,7 +893,7 @@ private fun SampleStep(
     }
     Spacer(Modifier.height(12.dp))
     Text(
-        "示例只用于理解界面，不会进入日历同步、公共导出或备份；复盘以外的统计会排除它们。",
+        androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_022),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -922,31 +922,31 @@ fun SampleDataScreen(model: SampleDataModel, onClose: () -> Unit) {
                 .padding(horizontal = 24.dp, vertical = 16.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("示例数据", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
-                TextButton(onClick = onClose) { Text("完成") }
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_023), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+                TextButton(onClick = onClose) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_done)) }
             }
             Spacer(Modifier.height(8.dp))
             Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
                 Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
                     Column(Modifier.padding(16.dp)) {
-                        Text("新手引导", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_025), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
                         Spacer(Modifier.height(4.dp))
                         Text(
-                            "重新查看计划/实际演示、权限说明和 AI 设置说明。老用户不会看到示例数据步骤。",
+                            androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_026),
                             style = MaterialTheme.typography.bodySmall,
                         )
                         Spacer(Modifier.height(10.dp))
                         OutlinedButton(onClick = { model.replayOnboarding() }, enabled = model.canReplayOnboarding()) {
-                            Text("重新查看引导")
+                            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_027))
                         }
                         if (!model.canReplayOnboarding()) {
                             Spacer(Modifier.height(4.dp))
-                            Text("当前页面没有接入引导导航，请在应用设置中重新打开。", style = MaterialTheme.typography.labelSmall)
+                            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_028), style = MaterialTheme.typography.labelSmall)
                         }
                     }
                 }
                 Spacer(Modifier.height(16.dp))
-                Text("示例一周", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_029), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
                 Spacer(Modifier.height(6.dp))
                 if (model.status.loaded) {
                     Text(
@@ -961,10 +961,10 @@ fun SampleDataScreen(model: SampleDataModel, onClose: () -> Unit) {
                     OutlinedButton(
                         onClick = { scope.launch { model.previewCleanup() } },
                         enabled = !model.busy,
-                    ) { Text("清除示例数据") }
+                    ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_030)) }
                 } else {
                     Text(
-                        "还没有示例数据。加载后会出现在本周时间轴、任务和项目列表中，可随时清除。",
+                        androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_031),
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Spacer(Modifier.height(10.dp))
@@ -977,12 +977,12 @@ fun SampleDataScreen(model: SampleDataModel, onClose: () -> Unit) {
                     Spacer(Modifier.height(16.dp))
                     Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
                         Column(Modifier.padding(16.dp)) {
-                            Text("确认清除", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_032), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
                             Spacer(Modifier.height(4.dp))
                             Text("将清除 ${preview.total} 条示例关联记录。", style = MaterialTheme.typography.bodySmall)
                             if (preview.hasEdited) {
                                 Spacer(Modifier.height(10.dp))
-                                Text("以下内容已被你编辑：", style = MaterialTheme.typography.labelLarge)
+                                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_033), style = MaterialTheme.typography.labelLarge)
                                 preview.edited.forEach { item ->
                                     Spacer(Modifier.height(6.dp))
                                     Text(
@@ -994,15 +994,15 @@ fun SampleDataScreen(model: SampleDataModel, onClose: () -> Unit) {
                                 Button(
                                     onClick = { scope.launch { model.cleanup(keepEdited = false) } },
                                     enabled = !model.busy,
-                                ) { Text("一并删除") }
+                                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_034)) }
                                 Spacer(Modifier.height(8.dp))
                                 OutlinedButton(
                                     onClick = { scope.launch { model.cleanup(keepEdited = true) } },
                                     enabled = !model.busy,
-                                ) { Text("保留为我的数据") }
+                                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_035)) }
                                 Spacer(Modifier.height(6.dp))
                                 Text(
-                                    "保留只会移除示例标记，不删除内容；与它关联的示例任务或项目也会一并保留。",
+                                    androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_036),
                                     style = MaterialTheme.typography.labelSmall,
                                 )
                             } else {
@@ -1010,10 +1010,10 @@ fun SampleDataScreen(model: SampleDataModel, onClose: () -> Unit) {
                                 Button(
                                     onClick = { scope.launch { model.cleanup(keepEdited = false) } },
                                     enabled = !model.busy,
-                                ) { Text("确认清除") }
+                                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_032)) }
                             }
                             Spacer(Modifier.height(8.dp))
-                            TextButton(onClick = model::dismissPreview) { Text("取消") }
+                            TextButton(onClick = model::dismissPreview) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
                         }
                     }
                 }
@@ -1027,7 +1027,7 @@ fun SampleDataScreen(model: SampleDataModel, onClose: () -> Unit) {
                 }
                 Spacer(Modifier.height(20.dp))
                 Text(
-                    "示例数据不会进入日历同步、公共导出或备份。复盘可以查看示例；其他统计会把它们排除。",
+                    androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_037),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

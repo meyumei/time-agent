@@ -66,14 +66,14 @@ fun rememberHomeVoiceState(
         lifecycle.lifecycle.addObserver(observer)
         onDispose { lifecycle.lifecycle.removeObserver(observer); session.cancel(); speech.close(); sessionHolder[0] = null }
     }
-    if (helpOpen) AlertDialog(onDismissRequest = { helpOpen = false }, title = { Text("检查语音输入") },
+    if (helpOpen) AlertDialog(onDismissRequest = { helpOpen = false }, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_home_voice_dock_001)) },
         text = { Text((failureMessage ?: "离线中文识别尚未就绪，可重新准备后再试。") + "\n\n小米／澎湃 OS：应用管理 → 时间 Agent → 权限管理 → 录音或麦克风，允许使用。也请检查控制中心的麦克风开关。中文识别已内置，无需安装系统语音服务。") },
         confirmButton = { TextButton(onClick = {
             helpOpen = false
             runCatching { context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context.packageName}"))) }
                 .onFailure { showMessage("请在手机设置的应用管理中打开时间 Agent 的麦克风权限。") }
-        }) { Text("打开应用权限") } },
-        dismissButton = { TextButton(onClick = { helpOpen = false; failureMessage = null; session.cancel(); resetSignal++; engineRevision++ }) { Text("重新准备") } })
+        }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_home_voice_dock_002)) } },
+        dismissButton = { TextButton(onClick = { helpOpen = false; failureMessage = null; session.cancel(); resetSignal++; engineRevision++ }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_home_voice_dock_003)) } })
 
     return HomeVoiceState(status, resultReady, resetSignal,
         start = {

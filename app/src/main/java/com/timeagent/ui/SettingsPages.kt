@@ -38,21 +38,21 @@ fun NotificationSettingsScreen(onClose: () -> Unit) {
         if (impacts.isNotEmpty()) StatusBanner(impacts.joinToString("") + "提醒仍会保存在本机。")
         Text("通知权限：${if (access.notificationsAllowed) "已允许" else "未允许"}")
         Text("精确闹钟：${if (access.exactAlarmsAllowed) "已允许" else "未允许"}")
-        Text("提醒的声音、震动和锁屏显示在系统通知设置中调整。")
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_settings_pages_001))
         Button(onClick = {
             context.startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName))
-        }) { Text("打开系统通知设置") }
+        }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_settings_pages_002)) }
         if (Build.VERSION.SDK_INT >= 31) OutlinedButton(onClick = {
             context.startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, android.net.Uri.parse("package:${context.packageName}")))
-        }) { Text("打开精确闹钟权限") }
+        }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_settings_pages_003)) }
     }
 }
 
 @Composable
 fun CalendarSettingsScreen(onClose: () -> Unit) {
     SettingsPage("发送到系统日历", onClose) {
-        Text("打开一条日程或任务，在详情中选择“发送到日历”，再在系统日历中确认保存。")
-        Text("修改后如需更新系统日历，请再次打开对应条目。")
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_settings_pages_004))
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_settings_pages_005))
     }
 }
 
@@ -61,9 +61,9 @@ fun AboutScreen(onClose: () -> Unit) {
     val context = LocalContext.current
     SettingsPage("关于时间 Agent", onClose) {
         Text("时间 Agent · ${context.packageManager.getPackageInfo(context.packageName, 0).versionName}")
-        Text("时间管理、个人管家与大肥鱼陪伴。原生业务保存在本机；AI 使用你自己填写的 API Key。")
-        Text("Linux（proot）与 DSH 为内置角色提供运行环境。")
-        Text("开源许可")
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_settings_pages_006))
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_settings_pages_007))
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_settings_pages_008))
         Text(context.assets.open("fish/licenses/DSHA-THIRD_PARTY_NOTICES.md").bufferedReader().use { it.readText() })
     }
 }

@@ -41,30 +41,30 @@ fun FishMemoryScreen(session: FishSession, onClose: () -> Unit) {
     }
     Box(Modifier.fillMaxSize()) {
     Column(Modifier.fillMaxSize().statusBarsPadding().padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
-        TextButton(onClick=onClose) { Text("返回管家") }
-        Text("共同记忆",style=MaterialTheme.typography.headlineSmall)
-        TextButton(onClick = { showHistory = true }) { Text("编辑与删除历史 · 可恢复") }
-        Text("这里是同一个角色保存的交流与经历。日程事实仍以今天、计划中的原记录为准。",style=MaterialTheme.typography.bodySmall)
-        if (readOnly && !runtime.ready) Text("缓存，可能不是最新。启动内置角色后可刷新和编辑。",style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.secondary)
+        TextButton(onClick=onClose) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_memory_screen_001)) }
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_memory_screen_002),style=MaterialTheme.typography.headlineSmall)
+        TextButton(onClick = { showHistory = true }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_memory_screen_003)) }
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_memory_screen_004),style=MaterialTheme.typography.bodySmall)
+        if (readOnly && !runtime.ready) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_memory_screen_005),style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.secondary)
         Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-            OutlinedTextField(query,{query=it},modifier=Modifier.weight(1f),placeholder={Text("寻找一段共同经历")},singleLine=true)
-            Button(onClick={session.loadMemories(query)},enabled=!loading) { Text("查找") }
+            OutlinedTextField(query,{query=it},modifier=Modifier.weight(1f),placeholder={Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_memory_screen_006))},singleLine=true)
+            Button(onClick={session.loadMemories(query)},enabled=!loading) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_memory_screen_007)) }
         }
         if(loading) LinearProgressIndicator(Modifier.fillMaxWidth())
         message?.let { Text(it,color=MaterialTheme.colorScheme.error) }
         LazyColumn(verticalArrangement=Arrangement.spacedBy(10.dp)) {
-            if(discoveries.isNotEmpty()) item { Text("最近的 B站见闻 · 公开来源",style=MaterialTheme.typography.titleSmall) }
+            if(discoveries.isNotEmpty()) item { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_memory_screen_008),style=MaterialTheme.typography.titleSmall) }
             items(discoveries) { source ->
                 Text(buildAnnotatedString { withLink(LinkAnnotation.Url(source.url)) { append(source.title) } })
             }
-            if(!loading && memories.isEmpty()) item { Text("还没有找到记忆。先和它聊聊，真实的共同经历会逐渐留下来。") }
+            if(!loading && memories.isEmpty()) item { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_memory_screen_009)) }
             items(memories,key={it.id}) { memory ->
                 Surface(shape=MaterialTheme.shapes.medium,color=MaterialTheme.colorScheme.surfaceContainerLow) {
                     Column(Modifier.fillMaxWidth().padding(12.dp)) {
                         Text(memory.text);Text(memory.tier,style=MaterialTheme.typography.labelSmall)
                         Row {
-                            TextButton(enabled = runtime.ready && !loading, onClick = { editing = memory; editedText = memory.text }) { Text("编辑") }
-                            TextButton(enabled = runtime.ready && !loading, onClick = { deleting = memory }) { Text("删除") }
+                            TextButton(enabled = runtime.ready && !loading, onClick = { editing = memory; editedText = memory.text }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_edit)) }
+                            TextButton(enabled = runtime.ready && !loading, onClick = { deleting = memory }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_delete)) }
                         }
                     }
                 }
@@ -74,9 +74,9 @@ fun FishMemoryScreen(session: FishSession, onClose: () -> Unit) {
     SnackbarHost(snackbar, Modifier.align(androidx.compose.ui.Alignment.BottomCenter).navigationBarsPadding())
     }
     if (showHistory) AlertDialog(onDismissRequest = { showHistory = false },
-        title = { Text("共同记忆历史") },
+        title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_memory_screen_012)) },
         text = { LazyColumn(Modifier.heightIn(max = 420.dp)) {
-            if (history.isEmpty()) item { Text("还没有编辑或删除记录") }
+            if (history.isEmpty()) item { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_memory_screen_013)) }
             items(history, key = { it.token }) { change ->
                 Column(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
                     Text(change.text)
@@ -87,19 +87,19 @@ fun FishMemoryScreen(session: FishSession, onClose: () -> Unit) {
                     }) { Text(if (change.undone) "重做" else "恢复原记忆") }
                 }
             }
-        } }, confirmButton = { TextButton(onClick = { showHistory = false }) { Text("关闭") } })
+        } }, confirmButton = { TextButton(onClick = { showHistory = false }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_close)) } })
     editing?.let { memory ->
-        AlertDialog(onDismissRequest = { editing = null }, title = { Text("编辑共同记忆") },
-            text = { OutlinedTextField(editedText, { editedText = it }, label = { Text("内容") }) },
+        AlertDialog(onDismissRequest = { editing = null }, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_memory_screen_014)) },
+            text = { OutlinedTextField(editedText, { editedText = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_memory_screen_015)) }) },
             confirmButton = { TextButton(enabled = runtime.ready && editedText.isNotBlank(), onClick = {
                 session.editMemory(memory, editedText); editing = null
-            }) { Text("保存") } },
-            dismissButton = { TextButton(onClick = { editing = null }) { Text("取消") } })
+            }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) } },
+            dismissButton = { TextButton(onClick = { editing = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } })
     }
     deleting?.let { memory ->
-        AlertDialog(onDismissRequest = { deleting = null }, title = { Text("删除共同记忆？") },
+        AlertDialog(onDismissRequest = { deleting = null }, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_memory_screen_016)) },
             text = { Text(memory.text) },
-            confirmButton = { TextButton(enabled = runtime.ready, onClick = { session.deleteMemory(memory); deleting = null }) { Text("删除") } },
-            dismissButton = { TextButton(onClick = { deleting = null }) { Text("取消") } })
+            confirmButton = { TextButton(enabled = runtime.ready, onClick = { session.deleteMemory(memory); deleting = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_delete)) } },
+            dismissButton = { TextButton(onClick = { deleting = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } })
     }
 }

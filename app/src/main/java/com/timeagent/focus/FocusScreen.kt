@@ -224,17 +224,17 @@ fun FocusScreen(
                 Text(if (active == null) "开始专注" else "专注", style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
                 if (busy) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
-                TextButton(onClick = onClose) { Text("关闭") }
+                TextButton(onClick = onClose) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_close)) }
             }
             notice?.let { Text(it, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.bodyMedium) }
             error?.let {
                 Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium)
-                TextButton(onClick = { error = null }) { Text("知道了") }
+                TextButton(onClick = { error = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_acknowledge)) }
             }
 
             val current = active
             if (current == null) {
-                Text("专注结束后自动生成一条实际记录；暂停和休息不计入实际时长。", style = MaterialTheme.typography.bodyMedium)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_002), style = MaterialTheme.typography.bodyMedium)
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     FocusMode.values().forEach { item ->
                         FilterChip(
@@ -248,7 +248,7 @@ fun FocusScreen(
                 OutlinedTextField(
                     value = label,
                     onValueChange = { label = it.take(200); labelTouched = true },
-                    label = { Text("专注名称") },
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_003)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -263,11 +263,11 @@ fun FocusScreen(
                     }
                     NumberField("轮数", roundsText, { roundsText = it }, Modifier.fillMaxWidth())
                     NumberField("每几轮使用长休息", longBreakEveryText, { longBreakEveryText = it }, Modifier.fillMaxWidth())
-                    Text("开始后保存本次配置，供下次使用。默认 25 分钟专注、5 分钟短休息，每 4 轮长休息 15 分钟。",
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_004),
                         style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 if (!FocusClock.exactAlarmsAllowed(context)) {
-                    Text("精确闹钟未开启，后台阶段提醒可能延迟；专注时长仍按实际经过时间计算。",
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_005),
                         style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error)
                 }
                 if (task != null || plan != null) {
@@ -278,7 +278,7 @@ fun FocusScreen(
                     onClick = { begin() },
                     enabled = !busy && label.isNotBlank(),
                     modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
-                ) { Text("开始专注") }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_006)) }
             } else {
                 FocusRunningContent(
                     model = model,
@@ -314,17 +314,17 @@ fun FocusScreen(
             },
             confirmButton = {
                 if (hasFocus || switchable.isEmpty()) {
-                    TextButton(onClick = { slotConflict = null }) { Text("知道了") }
+                    TextButton(onClick = { slotConflict = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_acknowledge)) }
                 } else {
                     TextButton(onClick = {
                         val chosen = switchable
                         slotConflict = null
                         begin(chosen)
-                    }) { Text("结束并开始") }
+                    }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_007)) }
                 }
             },
             dismissButton = {
-                if (!hasFocus && switchable.isNotEmpty()) TextButton(onClick = { slotConflict = null }) { Text("取消") }
+                if (!hasFocus && switchable.isNotEmpty()) TextButton(onClick = { slotConflict = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
             },
         )
     }
@@ -332,9 +332,9 @@ fun FocusScreen(
     if (versionConflict) {
         AlertDialog(
             onDismissRequest = { versionConflict = false },
-            title = { Text("专注状态已变化") },
-            text = { Text("另一个操作已经更新了这次专注，本次操作未保存。当前状态已重新读取，请核对后再操作。") },
-            confirmButton = { TextButton(onClick = { versionConflict = false }) { Text("知道了") } },
+            title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_008)) },
+            text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_009)) },
+            confirmButton = { TextButton(onClick = { versionConflict = false }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_acknowledge)) } },
         )
     }
 }
@@ -444,19 +444,19 @@ private fun FocusRunningContent(
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         when (session.state) {
             FocusSessionEntity.STATE_FOCUSING -> {
-                Button(onClick = onPause, enabled = !busy, modifier = Modifier.weight(1f).heightIn(min = 52.dp)) { Text("暂停") }
+                Button(onClick = onPause, enabled = !busy, modifier = Modifier.weight(1f).heightIn(min = 52.dp)) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_010)) }
                 OutlinedButton(onClick = { finishAsk = true }, enabled = !busy,
-                    modifier = Modifier.weight(1f).heightIn(min = 52.dp)) { Text("结束") }
+                    modifier = Modifier.weight(1f).heightIn(min = 52.dp)) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_proactive_screen_006)) }
             }
             FocusSessionEntity.STATE_PAUSED -> {
-                Button(onClick = onResume, enabled = !busy, modifier = Modifier.weight(1f).heightIn(min = 52.dp)) { Text("继续") }
+                Button(onClick = onResume, enabled = !busy, modifier = Modifier.weight(1f).heightIn(min = 52.dp)) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_011)) }
                 OutlinedButton(onClick = { finishAsk = true }, enabled = !busy,
-                    modifier = Modifier.weight(1f).heightIn(min = 52.dp)) { Text("结束") }
+                    modifier = Modifier.weight(1f).heightIn(min = 52.dp)) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_proactive_screen_006)) }
             }
             FocusSessionEntity.STATE_BREAK -> {
-                Button(onClick = onSkipBreak, enabled = !busy, modifier = Modifier.weight(1f).heightIn(min = 52.dp)) { Text("跳过休息") }
+                Button(onClick = onSkipBreak, enabled = !busy, modifier = Modifier.weight(1f).heightIn(min = 52.dp)) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_012)) }
                 OutlinedButton(onClick = { finishAsk = true }, enabled = !busy,
-                    modifier = Modifier.weight(1f).heightIn(min = 52.dp)) { Text("结束") }
+                    modifier = Modifier.weight(1f).heightIn(min = 52.dp)) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_proactive_screen_006)) }
             }
         }
     }
@@ -464,7 +464,7 @@ private fun FocusRunningContent(
     if (finishAsk) {
         AlertDialog(
             onDismissRequest = { finishAsk = false },
-            title = { Text("结束这次专注？") },
+            title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_013)) },
             text = {
                 Text("已专注 ${FocusClock.formatDuration(focusNow)}。保存会生成一条实际记录；不保存则本次不生成记录，已专注的片段仍保留在专注会话详情中。")
             },
@@ -473,14 +473,14 @@ private fun FocusRunningContent(
                     TextButton(onClick = {
                         finishAsk = false
                         onFinish(false)
-                    }) { Text("不保存") }
+                    }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_014)) }
                     TextButton(onClick = {
                         finishAsk = false
                         onFinish(true)
-                    }) { Text("保存并结束") }
+                    }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_015)) }
                 }
             },
-            dismissButton = { TextButton(onClick = { finishAsk = false }) { Text("继续专注") } },
+            dismissButton = { TextButton(onClick = { finishAsk = false }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_016)) } },
         )
     }
 }
@@ -570,7 +570,7 @@ fun RunningFocusBar(model: TimeViewModel, onOpen: () -> Unit) {
                 style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(text, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.width(10.dp))
-            Text("打开", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_017), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
         }
     }
 }

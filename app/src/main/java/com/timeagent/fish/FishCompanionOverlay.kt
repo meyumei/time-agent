@@ -152,10 +152,10 @@ fun FishAppearancePicker(session: FishSession, onSettings: (() -> Unit)? = null)
     val config by session.companion.settings.collectAsStateWithLifecycle()
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         FilterChip(config.appearance == FishAppearance.CHIBI,
-            { session.companion.save(config.copy(appearance = FishAppearance.CHIBI)) }, { Text("Q版") })
+            { session.companion.save(config.copy(appearance = FishAppearance.CHIBI)) }, { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_companion_overlay_001)) })
         FilterChip(config.appearance == FishAppearance.ELEGANT,
-            { session.companion.save(config.copy(appearance = FishAppearance.ELEGANT)) }, { Text("御姐版") })
-        if (onSettings != null) TextButton(onClick = onSettings) { Text("陪伴设置") }
+            { session.companion.save(config.copy(appearance = FishAppearance.ELEGANT)) }, { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_companion_overlay_002)) })
+        if (onSettings != null) TextButton(onClick = onSettings) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_companion_overlay_003)) }
     }
 }
 
@@ -184,18 +184,18 @@ fun FishCompanionSettingsScreen(session: FishSession, onClose: () -> Unit) {
     }
     Column(Modifier.fillMaxSize().statusBarsPadding().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        TextButton(onClick = onClose) { Text("返回") }
-        Text("陪伴与作息", style = MaterialTheme.typography.headlineSmall)
+        TextButton(onClick = onClose) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_back)) }
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_companion_overlay_004), style = MaterialTheme.typography.headlineSmall)
         CharacterSprite(session, Modifier.size(200.dp).align(Alignment.CenterHorizontally))
-        Text("拖动可调整位置，点击进入管家对话，长按打开「大肥鱼的一切」。")
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_companion_overlay_005))
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("应用内显示大肥鱼", Modifier.weight(1f))
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_companion_overlay_006), Modifier.weight(1f))
             Switch(config.visible, { session.companion.save(config.copy(visible = it)) })
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text("全局悬浮陪伴")
-                Text("在桌面和其他应用上陪着你", style = MaterialTheme.typography.bodySmall)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_companion_overlay_007))
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_companion_overlay_008), style = MaterialTheme.typography.bodySmall)
             }
             Switch(config.globalVisible, { enabled ->
                 if (!enabled) {
@@ -206,14 +206,14 @@ fun FishCompanionSettingsScreen(session: FishSession, onClose: () -> Unit) {
                 else overlayPermission.launch(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}")))
             }, modifier = Modifier.testTag("fish-global-toggle"))
         }
-        Text("首次开启需授权“显示在其他应用上层”。全局角色可拖动，点击继续管家对话，长按返回这里；通知栏也可关闭。锁屏时隐藏，回到主界面使用原来的悬浮鱼。",
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_companion_overlay_009),
             style = MaterialTheme.typography.bodySmall)
         Text("作息 · ${session.zone.id}", style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            OutlinedTextField(wake, { wake = it.take(2) }, label = { Text("起床（0–23时）") }, modifier = Modifier.weight(1f))
-            OutlinedTextField(sleep, { sleep = it.take(2) }, label = { Text("睡觉（0–23时）") }, modifier = Modifier.weight(1f))
+            OutlinedTextField(wake, { wake = it.take(2) }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_companion_overlay_010)) }, modifier = Modifier.weight(1f))
+            OutlinedTextField(sleep, { sleep = it.take(2) }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_companion_overlay_011)) }, modifier = Modifier.weight(1f))
         }
-        Text("睡前会犯困，睡眠时安静休息。你发来消息时会醒来；正在执行事务时保持工作。主动聊天的时段与频率在「主动话题」里设置。")
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_companion_overlay_012))
         Button(onClick = {
             val from = wake.toIntOrNull()
             val until = sleep.toIntOrNull()
@@ -223,7 +223,7 @@ fun FishCompanionSettingsScreen(session: FishSession, onClose: () -> Unit) {
                 session.companion.tick(session.zone)
                 feedback = "作息已保存"
             }
-        }) { Text("保存作息") }
+        }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_fish_companion_overlay_013)) }
         if (feedback.isNotBlank()) Text(feedback)
     }
 }

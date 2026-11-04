@@ -120,11 +120,11 @@ val LocalTimelineColors = compositionLocalOf { TimelineColors() }
     }
     if (open) AlertDialog(
         onDismissRequest = { open = false },
-        title = { Text("选择颜色") },
+        title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_timeline_palette_001)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(title, fontWeight = FontWeight.SemiBold)
-                Text("同一模块的计划和实际使用相同颜色。", style = MaterialTheme.typography.bodySmall)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_timeline_palette_002), style = MaterialTheme.typography.bodySmall)
                 TimelinePalette.presets.chunked(4).forEach { row ->
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         row.forEach { preset ->
@@ -149,7 +149,7 @@ val LocalTimelineColors = compositionLocalOf { TimelineColors() }
                 }
             }
         },
-        confirmButton = { TextButton(onClick = { colors.choose(subject, null); open = false }) { Text("恢复默认") } },
-        dismissButton = { TextButton(onClick = { open = false }) { Text("取消") } },
+        confirmButton = { TextButton(onClick = { colors.choose(subject, null); open = false }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_timeline_palette_003)) } },
+        dismissButton = { TextButton(onClick = { open = false }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }

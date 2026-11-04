@@ -112,10 +112,10 @@ internal fun TimelinePointMarkers(
             onDismissRequest = { pending = null },
             confirmButton = {
                 TextButton(onClick = { pending = null }) {
-                    Text("关闭")
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_close))
                 }
             },
-            title = { Text("该时刻提醒") },
+            title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_timeline_point_markers_001)) },
             text = {
                 Column(
                     modifier = Modifier

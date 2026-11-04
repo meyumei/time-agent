@@ -50,8 +50,8 @@ import java.util.UUID
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "返回训练中心") }
                 Text(if (readOnly) "训练记录" else "训练中", style = MaterialTheme.typography.labelLarge, modifier = Modifier.weight(1f))
-                if (readOnly) TextButton(onClick = { templateName = session.title }) { Text("存为模板") }
-                else Button(onClick = { focusManager.clearFocus(); confirmation = "结束训练并保存已完成的 ${summary.completedSets} 组？" to { model.finish(session.id) {} } }, enabled = !busy, modifier = Modifier.testTag("workout-finish"), shape = RoundedCornerShape(30.dp)) { Text("完成") }
+                if (readOnly) TextButton(onClick = { templateName = session.title }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_timeline_001)) }
+                else Button(onClick = { focusManager.clearFocus(); confirmation = "结束训练并保存已完成的 ${summary.completedSets} 组？" to { model.finish(session.id) {} } }, enabled = !busy, modifier = Modifier.testTag("workout-finish"), shape = RoundedCornerShape(30.dp)) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_done)) }
             }
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(formatWorkoutTime(summary.elapsedMillis), fontSize = 44.sp, fontWeight = FontWeight.Black, modifier = Modifier.testTag("workout-elapsed"))
@@ -64,7 +64,7 @@ import java.util.UUID
                 }
             }
             Text(session.title, modifier = Modifier.fillMaxWidth().clickable(enabled = !readOnly) { textTarget = "title"; editText = "训练标题" to session.title }.padding(vertical = 8.dp), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            if (session.status == WorkoutSessionStatus.PAUSED) Text("已暂停 · 训练计时和休息倒计时已冻结", style = MaterialTheme.typography.labelMedium, color = WorkoutBlue)
+            if (session.status == WorkoutSessionStatus.PAUSED) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_001), style = MaterialTheme.typography.labelMedium, color = WorkoutBlue)
             if (session.movements.any { it.exercise.metric.name in listOf("BODYWEIGHT_REPS", "ASSISTED_REPS") }) TextButton(onClick = { bodyWeight = true }, enabled = !readOnly) { Text("体重：${session.bodyWeightKg?.let { number(it) + " kg" } ?: "未设置"} · 用于自重/辅助容量") }
         }
     }, bottomBar = {
@@ -83,25 +83,25 @@ import java.util.UUID
                     Text("${summary.completedMovements} 个动作 · ${summary.workingSets} 个正式组", fontWeight = FontWeight.Bold)
                     Text("训练容量 ${number(summary.volumeKg)} kg · 不计热身组", style = MaterialTheme.typography.bodySmall)
                     Text(if (session.timelineRecordId == null) "时间轴回记尚未完成，训练详情已保留。" else "已关联时间轴实际记录", color = if (session.timelineRecordId == null) MaterialTheme.colorScheme.error else WorkoutBlue)
-                    if (session.timelineRecordId == null && session.status == WorkoutSessionStatus.COMPLETED) TextButton(onClick = { model.finish(session.id) {} }, enabled = !busy) { Text("重试回记时间轴") }
+                    if (session.timelineRecordId == null && session.status == WorkoutSessionStatus.COMPLETED) TextButton(onClick = { model.finish(session.id) {} }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_002)) }
                     if (session.notes.isNotBlank()) { HorizontalDivider(); Text(session.notes) }
-                    if (session.status == WorkoutSessionStatus.COMPLETED) Button(onClick = { model.repeat(session.id, onOpenSession) }, enabled = !busy) { Text("再练一次") }
+                    if (session.status == WorkoutSessionStatus.COMPLETED) Button(onClick = { model.repeat(session.id, onOpenSession) }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_003)) }
                 } }
             }
             val rest = WorkoutRules.restRemainingMillis(session, now)
             if (!readOnly && session.setTimer != null) item {
                 Surface(shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.secondaryContainer, modifier = Modifier.testTag("workout-set-timer")) {
                     Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Column(Modifier.weight(1f)) { Text("单组秒表", fontWeight = FontWeight.Bold); Text(formatWorkoutTime(WorkoutRules.sessionSetTimerElapsedMillis(session, now)), fontSize = 30.sp, color = MaterialTheme.colorScheme.onSecondaryContainer) }
-                        Button(onClick = { model.perform { model.repository.stopSetTimer(session.id) } }, enabled = !busy) { Text("记录时长") }
+                        Column(Modifier.weight(1f)) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_004), fontWeight = FontWeight.Bold); Text(formatWorkoutTime(WorkoutRules.sessionSetTimerElapsedMillis(session, now)), fontSize = 30.sp, color = MaterialTheme.colorScheme.onSecondaryContainer) }
+                        Button(onClick = { model.perform { model.repository.stopSetTimer(session.id) } }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_005)) }
                     }
                 }
             }
             if (!readOnly && rest > 0) item {
                 Surface(shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.secondaryContainer, modifier = Modifier.testTag("workout-rest")) { Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Column(Modifier.weight(1f)) { Text("组间休息", fontWeight = FontWeight.Bold); Text(formatWorkoutTime(rest), fontSize = 28.sp, color = MaterialTheme.colorScheme.onSecondaryContainer) }
-                    TextButton(onClick = { model.update(session.id) { it.copy(restEndsAt = it.restEndsAt?.plus(15_000), pausedRestRemainingMillis = it.pausedRestRemainingMillis?.plus(15_000)) } }) { Text("+15秒") }
-                    TextButton(onClick = { model.update(session.id) { it.copy(restEndsAt = null, pausedRestRemainingMillis = null) } }) { Text("跳过") }
+                    Column(Modifier.weight(1f)) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_006), fontWeight = FontWeight.Bold); Text(formatWorkoutTime(rest), fontSize = 28.sp, color = MaterialTheme.colorScheme.onSecondaryContainer) }
+                    TextButton(onClick = { model.update(session.id) { it.copy(restEndsAt = it.restEndsAt?.plus(15_000), pausedRestRemainingMillis = it.pausedRestRemainingMillis?.plus(15_000)) } }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_007)) }
+                    TextButton(onClick = { model.update(session.id) { it.copy(restEndsAt = null, pausedRestRemainingMillis = null) } }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_002)) }
                 } }
             }
             val interval = WorkoutRules.intervalState(session, now)
@@ -109,17 +109,17 @@ import java.util.UUID
                 Surface(shape = RoundedCornerShape(20.dp), color = Color(0xFF162638), modifier = Modifier.testTag("workout-interval")) { Column(Modifier.fillMaxWidth().padding(18.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("Tabata · 第 ${interval.round} 轮 · ${when (interval.phase.name) { "PREPARE" -> "准备"; "WORK" -> "训练"; "REST" -> "休息"; else -> "已结束" }}", color = Color.White)
                     Text(formatWorkoutTime(interval.remainingMillis), color = Color.White, fontSize = 44.sp, fontWeight = FontWeight.Bold)
-                    TextButton(onClick = { model.perform { model.repository.finishInterval(session.id) } }, enabled = interval.phase.name == "FINISHED") { Text("记录本次间歇", color = Color.White) }
-                    TextButton(onClick = { model.update(session.id) { it.copy(intervalTimer = null) } }) { Text("取消阶段计时", color = Color(0xFFB9CDE0)) }
+                    TextButton(onClick = { model.perform { model.repository.finishInterval(session.id) } }, enabled = interval.phase.name == "FINISHED") { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_008), color = Color.White) }
+                    TextButton(onClick = { model.update(session.id) { it.copy(intervalTimer = null) } }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_009), color = Color(0xFFB9CDE0)) }
                 } }
             }
-            if (session.movements.isEmpty()) item { Column(Modifier.fillMaxWidth().padding(36.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(14.dp)) { Icon(Icons.Rounded.FitnessCenter, null, modifier = Modifier.size(48.dp), tint = WorkoutBlue); Text("添加今天要练的动作"); Button(onClick = { onAdd(null) }) { Text("打开动作库") } } }
+            if (session.movements.isEmpty()) item { Column(Modifier.fillMaxWidth().padding(36.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(14.dp)) { Icon(Icons.Rounded.FitnessCenter, null, modifier = Modifier.size(48.dp), tint = WorkoutBlue); Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_010)); Button(onClick = { onAdd(null) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_011)) } } }
             itemsIndexed(session.movements, key = { _, movement -> movement.id }) { index, movement ->
                 WorkoutMovementCard(model, session, movement, index, previous[movement.exercise.id], readOnly, pounds, onAnatomy, onReplace = { onAdd(movement.id) }, onNote = { textTarget = movement.id; editText = "${movement.exercise.name} · 笔记" to movement.notes }, onDelete = { confirmation = "移除「${movement.exercise.name}」和它的记录组？" to { model.update(session.id) { it.copy(movements = it.movements.filterNot { item -> item.id == movement.id }) } } })
             }
             if (!readOnly) item {
-                TextButton(onClick = { templateName = session.title }) { Text("保存为训练模板") }
-                TextButton(onClick = { confirmation = "放弃本次训练？未完成的训练将不写入时间轴。" to { model.discard(session.id, onBack) } }) { Text("放弃训练", color = MaterialTheme.colorScheme.error) }
+                TextButton(onClick = { templateName = session.title }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_012)) }
+                TextButton(onClick = { confirmation = "放弃本次训练？未完成的训练将不写入时间轴。" to { model.discard(session.id, onBack) } }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_013), color = MaterialTheme.colorScheme.error) }
             }
         }
     }
@@ -127,7 +127,7 @@ import java.util.UUID
         when (textTarget) { "title" -> model.update(session.id) { it.copy(title = text.trim()) }; "notes" -> model.update(session.id) { it.copy(notes = text) }; else -> textTarget?.let { id -> model.updateMovement(session.id, id) { it.copy(notes = text) } } }; editText = null
     }) }
     templateName?.let { WorkoutTextDialog("模板名称", it, onDismiss = { templateName = null }, onSave = { name -> model.saveTemplate(session.id, name); templateName = null }) }
-    confirmation?.let { (message, action) -> AlertDialog(onDismissRequest = { confirmation = null }, text = { Text(message) }, confirmButton = { TextButton(onClick = { confirmation = null; action() }) { Text("确认") } }, dismissButton = { TextButton(onClick = { confirmation = null }) { Text("取消") } }) }
+    confirmation?.let { (message, action) -> AlertDialog(onDismissRequest = { confirmation = null }, text = { Text(message) }, confirmButton = { TextButton(onClick = { confirmation = null; action() }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_confirm)) } }, dismissButton = { TextButton(onClick = { confirmation = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } }) }
     if (bodyWeight) WorkoutTextDialog("体重（kg）", session.bodyWeightKg?.let(::number).orEmpty(), onDismiss = { bodyWeight = false }, onSave = { value -> model.update(session.id) { it.copy(bodyWeightKg = value.toDoubleOrNull()) }; bodyWeight = false }, numeric = true)
 }
 
@@ -141,30 +141,30 @@ import java.util.UUID
                 if (!readOnly) Box {
                     IconButton(onClick = { menu = true }) { Icon(Icons.Rounded.MoreVert, "动作设置：${movement.exercise.name}") }
                     DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
-                        DropdownMenuItem(text = { Text("动作笔记") }, onClick = { menu = false; onNote() })
+                        DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_014)) }, onClick = { menu = false; onNote() })
                         DropdownMenuItem(text = { Text("热身休息：${movement.warmupRestSeconds} 秒") }, onClick = { menu = false; warmupRestEdit = true })
-                        DropdownMenuItem(text = { Text("使用上次数据") }, onClick = { menu = false; model.copyPrevious(session.id, movement) })
-                        DropdownMenuItem(text = { Text("替换动作") }, onClick = { menu = false; onReplace() })
-                        if (index > 0) DropdownMenuItem(text = { Text("上移") }, onClick = { menu = false; model.update(session.id) { val position = it.movements.indexOfFirst { item -> item.id == movement.id }; if (position <= 0) it else it.copy(movements = it.movements.toMutableList().apply { java.util.Collections.swap(this, position, position - 1) }) } })
-                        if (index < session.movements.lastIndex) DropdownMenuItem(text = { Text("下移") }, onClick = { menu = false; model.update(session.id) { val position = it.movements.indexOfFirst { item -> item.id == movement.id }; if (position < 0 || position >= it.movements.lastIndex) it else it.copy(movements = it.movements.toMutableList().apply { java.util.Collections.swap(this, position, position + 1) }) } })
-                        if (index < session.movements.lastIndex) DropdownMenuItem(text = { Text("与下个动作组成超级组") }, onClick = { menu = false; val group = movement.supersetId ?: UUID.randomUUID().toString(); model.update(session.id) { current -> current.copy(movements = current.movements.mapIndexed { i, item -> if (i == index || i == index + 1) item.copy(supersetId = group) else item }) } })
-                        if (movement.supersetId != null) DropdownMenuItem(text = { Text("解除超级组") }, onClick = { menu = false; model.update(session.id) { it.copy(movements = it.movements.map { item -> if (item.supersetId == movement.supersetId) item.copy(supersetId = null) else item }) } })
+                        DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_015)) }, onClick = { menu = false; model.copyPrevious(session.id, movement) })
+                        DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_016)) }, onClick = { menu = false; onReplace() })
+                        if (index > 0) DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_task_list_content_003)) }, onClick = { menu = false; model.update(session.id) { val position = it.movements.indexOfFirst { item -> item.id == movement.id }; if (position <= 0) it else it.copy(movements = it.movements.toMutableList().apply { java.util.Collections.swap(this, position, position - 1) }) } })
+                        if (index < session.movements.lastIndex) DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_task_list_content_004)) }, onClick = { menu = false; model.update(session.id) { val position = it.movements.indexOfFirst { item -> item.id == movement.id }; if (position < 0 || position >= it.movements.lastIndex) it else it.copy(movements = it.movements.toMutableList().apply { java.util.Collections.swap(this, position, position + 1) }) } })
+                        if (index < session.movements.lastIndex) DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_017)) }, onClick = { menu = false; val group = movement.supersetId ?: UUID.randomUUID().toString(); model.update(session.id) { current -> current.copy(movements = current.movements.mapIndexed { i, item -> if (i == index || i == index + 1) item.copy(supersetId = group) else item }) } })
+                        if (movement.supersetId != null) DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_018)) }, onClick = { menu = false; model.update(session.id) { it.copy(movements = it.movements.map { item -> if (item.supersetId == movement.supersetId) item.copy(supersetId = null) else item }) } })
                         DropdownMenuItem(text = { Text(if (movement.singleSide) "关闭左右重量分开记录" else "左右重量分开记录") }, onClick = { menu = false; model.updateMovement(session.id, movement.id) { it.copy(singleSide = !it.singleSide) } })
                         DropdownMenuItem(text = { Text(if (movement.oneSide) "取消单侧计量" else "单侧计量（容量乘二）") }, onClick = { menu = false; model.updateMovement(session.id, movement.id) { it.copy(oneSide = !it.oneSide) } })
-                        DropdownMenuItem(text = { Text("移除动作", color = MaterialTheme.colorScheme.error) }, onClick = { menu = false; onDelete() })
+                        DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_019), color = MaterialTheme.colorScheme.error) }, onClick = { menu = false; onDelete() })
                     }
                 }
             }
             if (movement.notes.isNotBlank()) Text(movement.notes, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            if (movement.supersetId != null) Text("同一轮全部动作完成后计入容量；热身组不计容量。", style = MaterialTheme.typography.labelSmall, color = WorkoutBlue)
+            if (movement.supersetId != null) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_020), style = MaterialTheme.typography.labelSmall, color = WorkoutBlue)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(metricLabel(movement.exercise.metric), style = MaterialTheme.typography.labelSmall, modifier = Modifier.weight(1f))
                 TextButton(onClick = { restEdit = true }, enabled = !readOnly, contentPadding = PaddingValues(0.dp)) { Text("休息 ${movement.restSeconds} 秒", style = MaterialTheme.typography.labelSmall) }
-                if (movement.exercise.metric.name == "CARDIO" && !readOnly) TextButton(onClick = { fieldOptions = true }) { Text("记录项") }
+                if (movement.exercise.metric.name == "CARDIO" && !readOnly) TextButton(onClick = { fieldOptions = true }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_021)) }
             }
-            if (previous != null) Text("上次：" + previous.sets.filter { it.isCompleted }.take(5).joinToString(" / ") { set -> if (movement.exercise.metric == WorkoutMetric.DURATION) "${set.durationSeconds ?: 0}秒" else "${set.weightKg?.let(::number) ?: "自重"} × ${set.reps ?: 0}" }, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if (previous != null) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_022) + previous.sets.filter { it.isCompleted }.take(5).joinToString(" / ") { set -> if (movement.exercise.metric == WorkoutMetric.DURATION) "${set.durationSeconds ?: 0}秒" else "${set.weightKg?.let(::number) ?: "自重"} × ${set.reps ?: 0}" }, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             movement.sets.forEachIndexed { setIndex, set -> key(set.id) { WorkoutSetRow(model, session, movement, set, setIndex, readOnly, pounds) } }
-            if (!readOnly) TextButton(onClick = { model.updateMovement(session.id, movement.id) { item -> val last = item.sets.lastOrNull(); item.copy(sets = item.sets + (last?.copy(id = UUID.randomUUID().toString(), completedAt = null, durationSeconds = null, distanceMeters = null, caloriesKcal = null, recordValues = emptyMap(), rpe = null, comment = "") ?: WorkoutSet())) } }, modifier = Modifier.fillMaxWidth().testTag("workout-add-set")) { Text("＋ 添加一组") }
+            if (!readOnly) TextButton(onClick = { model.updateMovement(session.id, movement.id) { item -> val last = item.sets.lastOrNull(); item.copy(sets = item.sets + (last?.copy(id = UUID.randomUUID().toString(), completedAt = null, durationSeconds = null, distanceMeters = null, caloriesKcal = null, recordValues = emptyMap(), rpe = null, comment = "") ?: WorkoutSet())) } }, modifier = Modifier.fillMaxWidth().testTag("workout-add-set")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_023)) }
         }
     }
     if (restEdit) WorkoutTextDialog("组间休息（秒）", movement.restSeconds.toString(), onDismiss = { restEdit = false }, onSave = { value -> model.updateMovement(session.id, movement.id) { it.copy(restSeconds = value.toIntOrNull() ?: -1) }; restEdit = false }, numeric = true)
@@ -211,7 +211,7 @@ import java.util.UUID
                 if (movement.singleSide) NumericInput(drop.leftWeightKg?.times(factor), "左侧", readOnly, Modifier.weight(1f)) { value -> model.updateSet(session.id, movement.id, set.id) { current -> current.copy(dropSegments = current.dropSegments.mapIndexed { i, item -> if (i == dropIndex) item.copy(leftWeightKg = value?.div(factor)) else item }) } }
                 if (!readOnly) IconButton(onClick = { model.updateSet(session.id, movement.id, set.id) { current -> current.copy(dropSegments = current.dropSegments.filterIndexed { i, _ -> i != dropIndex }) } }, modifier = Modifier.size(25.dp)) { Icon(Icons.Rounded.Close, "删除递减段") }
             } }
-            if (!readOnly) TextButton(onClick = { model.updateSet(session.id, movement.id, set.id) { current -> current.copy(dropSegments = current.dropSegments + WorkoutDropSegment()) } }) { Text("＋ 递减段") }
+            if (!readOnly) TextButton(onClick = { model.updateSet(session.id, movement.id, set.id) { current -> current.copy(dropSegments = current.dropSegments + WorkoutDropSegment()) } }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_024)) }
         }
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             if (metric != "TABATA" && !readOnly && !set.isCompleted) IconButton(onClick = { model.perform { model.repository.startSetTimer(session.id, movement.id, set.id) } }, enabled = session.status == WorkoutSessionStatus.ACTIVE, modifier = Modifier.size(30.dp)) { Icon(Icons.Rounded.Timer, "计时第 ${index + 1} 组", modifier = Modifier.size(18.dp)) }
@@ -251,25 +251,25 @@ import java.util.UUID
 
 @Composable internal fun WorkoutTextDialog(title: String, initial: String, onDismiss: () -> Unit, onSave: (String) -> Unit, numeric: Boolean = false) {
     var text by remember { mutableStateOf(initial) }
-    AlertDialog(onDismissRequest = onDismiss, title = { Text(title) }, text = { OutlinedTextField(text, { text = it.take(20_000) }, modifier = Modifier.fillMaxWidth().testTag("workout-dialog-input"), minLines = if (numeric) 1 else 2, maxLines = 8, keyboardOptions = KeyboardOptions(keyboardType = if (numeric) KeyboardType.Decimal else KeyboardType.Text)) }, confirmButton = { TextButton(onClick = { onSave(text) }, modifier = Modifier.testTag("workout-dialog-save")) { Text("保存") } }, dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } })
+    AlertDialog(onDismissRequest = onDismiss, title = { Text(title) }, text = { OutlinedTextField(text, { text = it.take(20_000) }, modifier = Modifier.fillMaxWidth().testTag("workout-dialog-input"), minLines = if (numeric) 1 else 2, maxLines = 8, keyboardOptions = KeyboardOptions(keyboardType = if (numeric) KeyboardType.Decimal else KeyboardType.Text)) }, confirmButton = { TextButton(onClick = { onSave(text) }, modifier = Modifier.testTag("workout-dialog-save")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) } }, dismissButton = { TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } })
 }
 
 internal val CardioFields = linkedMapOf("distance" to "距离(km)", "kcal" to "消耗(kcal)", "bpm" to "平均心率", "count" to "次数", "steps" to "步数", "floors" to "楼层", "laps" to "圈数", "poolLength" to "泳池长度(米)", "rounds" to "轮数", "cadence" to "步频", "strokeRate" to "划频", "avgSpeed" to "均速(km/h)", "pace" to "配速(分:秒)", "elevationGain" to "爬升(米)", "workSeconds" to "训练(秒)", "restSeconds" to "休息(秒)")
 
 @Composable internal fun CardioFieldsDialog(initial: List<String>, onDismiss: () -> Unit, onSave: (List<String>) -> Unit) {
     var selected by remember { mutableStateOf(initial.ifEmpty { listOf("distance", "kcal", "bpm") }) }
-    AlertDialog(onDismissRequest = onDismiss, title = { Text("有氧记录项") }, text = { Column(Modifier.heightIn(max = 500.dp).verticalScroll(rememberScrollState())) { CardioFields.forEach { (key, label) -> Row(Modifier.fillMaxWidth().clickable { selected = if (key in selected) selected - key else selected + key }, verticalAlignment = Alignment.CenterVertically) { Checkbox(key in selected, { selected = if (key in selected) selected - key else selected + key }); Text(label) } } } }, confirmButton = { TextButton(onClick = { onSave(selected) }) { Text("保存") } }, dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } })
+    AlertDialog(onDismissRequest = onDismiss, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_025)) }, text = { Column(Modifier.heightIn(max = 500.dp).verticalScroll(rememberScrollState())) { CardioFields.forEach { (key, label) -> Row(Modifier.fillMaxWidth().clickable { selected = if (key in selected) selected - key else selected + key }, verticalAlignment = Alignment.CenterVertically) { Checkbox(key in selected, { selected = if (key in selected) selected - key else selected + key }); Text(label) } } } }, confirmButton = { TextButton(onClick = { onSave(selected) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) } }, dismissButton = { TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } })
 }
 
 @Composable internal fun TabataDialog(initial: WorkoutTabata, onDismiss: () -> Unit, onSave: (WorkoutTabata) -> Unit) {
     var prepare by remember { mutableStateOf(initial.prepareSeconds.toString()) }; var work by remember { mutableStateOf(initial.workSeconds.toString()) }; var rest by remember { mutableStateOf(initial.restSeconds.toString()) }; var rounds by remember { mutableStateOf(initial.rounds.toString()) }
-    AlertDialog(onDismissRequest = onDismiss, title = { Text("Tabata 阶段设置") }, text = {
+    AlertDialog(onDismissRequest = onDismiss, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_workout_session_screen_026)) }, text = {
         Column(Modifier.fillMaxWidth().heightIn(max = 420.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             listOf("准备(秒)" to (prepare to { v: String -> prepare = v }), "训练(秒)" to (work to { v: String -> work = v }), "休息(秒)" to (rest to { v: String -> rest = v }), "轮数" to (rounds to { v: String -> rounds = v })).forEach { (label, state) ->
                 OutlinedTextField(state.first, { if (it.all(Char::isDigit) && it.length < 6) state.second(it) }, modifier = Modifier.fillMaxWidth(), label = { Text(label) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
             }
         }
-    }, confirmButton = { TextButton(onClick = { onSave(WorkoutTabata(prepare.toIntOrNull() ?: 0, work.toIntOrNull() ?: 0, rest.toIntOrNull() ?: 0, rounds.toIntOrNull() ?: 0)) }) { Text("保存") } }, dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } })
+    }, confirmButton = { TextButton(onClick = { onSave(WorkoutTabata(prepare.toIntOrNull() ?: 0, work.toIntOrNull() ?: 0, rest.toIntOrNull() ?: 0, rounds.toIntOrNull() ?: 0)) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) } }, dismissButton = { TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } })
 }
 
 internal fun formatWorkoutTime(millis: Long): String { val seconds = (millis.coerceAtLeast(0) + 999) / 1000; return if (seconds >= 3600) "%02d:%02d:%02d".format(seconds / 3600, seconds / 60 % 60, seconds % 60) else "%02d:%02d".format(seconds / 60, seconds % 60) }

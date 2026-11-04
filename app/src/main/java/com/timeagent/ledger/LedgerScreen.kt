@@ -251,11 +251,11 @@ fun LedgerScreen(
         snackbarHost = { SnackbarHost(snackbarHost) },
         topBar = {
             TopAppBar(
-                title = { Text("账本") },
-                navigationIcon = { TextButton(onClick = onClose, enabled = !busy) { Text("返回") } },
+                title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_001)) },
+                navigationIcon = { TextButton(onClick = onClose, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_back)) } },
                 actions = {
-                    TextButton(onClick = { runAction("已撤销") { repository.undoLastAction() } }, enabled = !busy) { Text("撤销") }
-                    TextButton(onClick = { runAction("已重做") { repository.redoLastAction() } }, enabled = !busy) { Text("重做") }
+                    TextButton(onClick = { runAction("已撤销") { repository.undoLastAction() } }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_undo)) }
+                    TextButton(onClick = { runAction("已重做") { repository.redoLastAction() } }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_redo)) }
                 },
             )
         },
@@ -277,7 +277,7 @@ fun LedgerScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         CircularProgressIndicator()
                         Spacer(Modifier.height(8.dp))
-                        Text("正在读取本地账本…", style = MaterialTheme.typography.bodySmall)
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_004), style = MaterialTheme.typography.bodySmall)
                     }
                 }
             } else {
@@ -429,8 +429,8 @@ fun LedgerScreen(
     ignoreTarget?.let { capture ->
         AlertDialog(
             onDismissRequest = { if (!busy) ignoreTarget = null },
-            title = { Text("忽略这笔草稿？") },
-            text = { Text("不会写入账本。可用右上角“撤销”恢复为待确认。") },
+            title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_005)) },
+            text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_006)) },
             confirmButton = {
                 TextButton(
                     enabled = !busy,
@@ -441,17 +441,17 @@ fun LedgerScreen(
                             ignoreTarget = null
                         }
                     },
-                ) { Text("忽略") }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_007)) }
             },
-            dismissButton = { TextButton(onClick = { ignoreTarget = null }, enabled = !busy) { Text("取消") } },
+            dismissButton = { TextButton(onClick = { ignoreTarget = null }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
         )
     }
 
     deleteTarget?.let { transaction ->
         AlertDialog(
             onDismissRequest = { if (!busy) deleteTarget = null },
-            title = { Text("删除这笔账目？") },
-            text = { Text("会从统计中移除，并可用“撤销”恢复。") },
+            title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_008)) },
+            text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_009)) },
             confirmButton = {
                 TextButton(
                     enabled = !busy,
@@ -462,9 +462,9 @@ fun LedgerScreen(
                             deleteTarget = null
                         }
                     },
-                ) { Text("删除") }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_delete)) }
             },
-            dismissButton = { TextButton(onClick = { deleteTarget = null }, enabled = !busy) { Text("取消") } },
+            dismissButton = { TextButton(onClick = { deleteTarget = null }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
         )
     }
 
@@ -585,7 +585,7 @@ fun LedgerScreen(
         AlertDialog(
             onDismissRequest = { if (!busy) archiveAccountTarget = null },
             title = { Text("归档账户“${account.name}”？") },
-            text = { Text("新账目不能再选择它，历史账目保留。可用“撤销”恢复。") },
+            text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_010)) },
             confirmButton = {
                 TextButton(
                     enabled = !busy,
@@ -595,9 +595,9 @@ fun LedgerScreen(
                             archiveAccountTarget = null
                         }
                     },
-                ) { Text("归档") }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_archive)) }
             },
-            dismissButton = { TextButton(onClick = { archiveAccountTarget = null }, enabled = !busy) { Text("取消") } },
+            dismissButton = { TextButton(onClick = { archiveAccountTarget = null }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
         )
     }
 
@@ -605,7 +605,7 @@ fun LedgerScreen(
         AlertDialog(
             onDismissRequest = { if (!busy) archiveCategoryTarget = null },
             title = { Text("归档分类“${category.name}”？") },
-            text = { Text("新账目不能再选择它，历史账目保留。可用“撤销”恢复。") },
+            text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_010)) },
             confirmButton = {
                 TextButton(
                     enabled = !busy,
@@ -615,19 +615,19 @@ fun LedgerScreen(
                             archiveCategoryTarget = null
                         }
                     },
-                ) { Text("归档") }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_archive)) }
             },
-            dismissButton = { TextButton(onClick = { archiveCategoryTarget = null }, enabled = !busy) { Text("取消") } },
+            dismissButton = { TextButton(onClick = { archiveCategoryTarget = null }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
         )
     }
 
     notificationIntro?.let { intro ->
         AlertDialog(
             onDismissRequest = { if (!busy) notificationIntro = null },
-            title = { Text("关于系统通知使用权") },
+            title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_011)) },
             text = {
                 Text(
-                    "仅读取微信、支付宝的“支付完成”通知，在本机解析成待确认草稿；" +
+                    androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_012) +
                         "通知文本不会上传，也不会直接入账，需你在账本中确认后才会写入。"
                 )
             },
@@ -662,7 +662,7 @@ fun LedgerScreen(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { notificationIntro = null }, enabled = !busy) { Text("取消") }
+                TextButton(onClick = { notificationIntro = null }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
             },
         )
     }
@@ -678,7 +678,7 @@ private fun NoticeBar(text: String, isError: Boolean, onClose: () -> Unit) {
     ) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(text, Modifier.weight(1f), style = MaterialTheme.typography.bodySmall)
-            TextButton(onClick = onClose) { Text("关闭") }
+            TextButton(onClick = onClose) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_close)) }
         }
     }
 }
@@ -707,11 +707,11 @@ private fun PendingTab(
     ) {
         Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surfaceContainer) {
             Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("支付自动捕获", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_013), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         Text(if (captureEnabled) "已开启" else "已关闭（默认）", style = MaterialTheme.typography.labelLarge)
-                        Text("只读取微信、支付宝的支付完成通知，先形成待确认草稿，不直接入账。", style = MaterialTheme.typography.bodySmall)
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_014), style = MaterialTheme.typography.bodySmall)
                     }
                     Switch(checked = captureEnabled, onCheckedChange = onToggleCapture, enabled = !busy)
                 }
@@ -720,32 +720,32 @@ private fun PendingTab(
                     style = MaterialTheme.typography.bodySmall,
                     color = if (accessGranted) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
                 )
-                if (!accessGranted) TextButton(onClick = onOpenSettings, enabled = !busy) { Text("打开系统通知使用权设置") }
+                if (!accessGranted) TextButton(onClick = onOpenSettings, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_015)) }
                 Text(
                     "应用通知：${if (postAllowed) "允许" else "未允许"}（用于弹出待确认提醒）",
                     style = MaterialTheme.typography.bodySmall,
                     color = if (postAllowed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
                 )
-                if (!postAllowed) TextButton(onClick = onRequestPermission, enabled = !busy) { Text("允许应用通知") }
+                if (!postAllowed) TextButton(onClick = onRequestPermission, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_016)) }
                 Text(
                     "累计捕获 ${data.captures.size} 条 · 待确认 ${pending.size} 条",
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Medium,
                 )
                 if (data.activeAccounts.isEmpty() || data.activeCategories.isEmpty()) {
-                    Text("确认前需要至少一个账户和一个分类。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
-                    TextButton(onClick = onSetup) { Text("去添加账户与分类") }
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_017), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                    TextButton(onClick = onSetup) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_018)) }
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(onClick = onImport, enabled = !busy) { Text("导入账单 CSV") }
-                    Button(onClick = onManual, enabled = !busy) { Text("手动记一笔") }
+                    OutlinedButton(onClick = onImport, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_019)) }
+                    Button(onClick = onManual, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_020)) }
                 }
-                Text("未开启通知使用权时仍可手动记账；开启后不会回放历史通知。", style = MaterialTheme.typography.bodySmall)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_021), style = MaterialTheme.typography.bodySmall)
             }
         }
 
         if (pending.isEmpty()) {
-            Text("暂无待确认支付。", style = MaterialTheme.typography.bodyMedium)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_022), style = MaterialTheme.typography.bodyMedium)
         } else {
             pending.forEach { capture ->
                 PaymentDraftRow(capture, zone, busy, onConfirm, onIgnore)
@@ -783,8 +783,8 @@ private fun PaymentDraftRow(
                 Text("交易号 $it", style = MaterialTheme.typography.bodySmall)
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                TextButton(onClick = { onIgnore(capture) }, enabled = !busy) { Text("忽略") }
-                Button(onClick = { onConfirm(capture) }, enabled = !busy) { Text("选择分类并确认") }
+                TextButton(onClick = { onIgnore(capture) }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_007)) }
+                Button(onClick = { onConfirm(capture) }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_023)) }
             }
         }
     }
@@ -826,8 +826,8 @@ private fun LedgerTab(
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(selected = !allMonths && selectedMonth == currentMonth, onClick = onThisMonth, label = { Text("本月") })
-            FilterChip(selected = allMonths, onClick = onAll, label = { Text("全部") })
+            FilterChip(selected = !allMonths && selectedMonth == currentMonth, onClick = onThisMonth, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_024)) })
+            FilterChip(selected = allMonths, onClick = onAll, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.filter_all)) })
         }
         if (!allMonths) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -851,8 +851,8 @@ private fun LedgerTab(
             }
         }
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Button(onClick = onManual, enabled = !busy && !mergeMode) { Text("记一笔") }
-            OutlinedButton(onClick = onExport, enabled = !busy && !mergeMode && transactions.isNotEmpty()) { Text("导出 CSV") }
+            Button(onClick = onManual, enabled = !busy && !mergeMode) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_026)) }
+            OutlinedButton(onClick = onExport, enabled = !busy && !mergeMode && transactions.isNotEmpty()) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_027)) }
             OutlinedButton(onClick = onToggleMerge, enabled = !busy) { Text(if (mergeMode) "退出合并" else "合并") }
         }
         if (mergeMode) {
@@ -864,14 +864,14 @@ private fun LedgerTab(
                 ) {
                     Column(Modifier.weight(1f)) {
                         Text("已选 ${selectedIds.size} 笔", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-                        Text("只能合并同一账户、同一方向，至少两笔。", style = MaterialTheme.typography.bodySmall)
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_028), style = MaterialTheme.typography.bodySmall)
                     }
-                    Button(onClick = onMerge, enabled = !busy && selectedIds.size >= 2) { Text("合并所选") }
+                    Button(onClick = onMerge, enabled = !busy && selectedIds.size >= 2) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_029)) }
                 }
             }
         }
         if (transactions.isEmpty()) {
-            Text("这个时间范围还没有账目。", style = MaterialTheme.typography.bodyMedium)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_030), style = MaterialTheme.typography.bodyMedium)
         } else {
             transactions.forEach { transaction ->
                 Surface(shape = RoundedCornerShape(14.dp), color = MaterialTheme.colorScheme.surfaceContainerLow) {
@@ -908,9 +908,9 @@ private fun LedgerTab(
                         TransactionSourceDetails(transaction, sources, captures)
                         if (!mergeMode) {
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                TextButton(onClick = { onEdit(transaction) }, enabled = !busy) { Text("编辑") }
-                                TextButton(onClick = { onSplit(transaction) }, enabled = !busy) { Text("拆分") }
-                                TextButton(onClick = { onDelete(transaction) }, enabled = !busy) { Text("删除") }
+                                TextButton(onClick = { onEdit(transaction) }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_edit)) }
+                                TextButton(onClick = { onSplit(transaction) }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_031)) }
+                                TextButton(onClick = { onDelete(transaction) }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_delete)) }
                             }
                         }
                     }
@@ -935,10 +935,10 @@ private fun SetupTab(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Text("账户", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-        Button(onClick = onAddAccount, enabled = !busy) { Text("新增账户") }
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_032), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Button(onClick = onAddAccount, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_033)) }
         val activeAccounts = data.accounts.filter { it.archivedAt == null }
-        if (activeAccounts.isEmpty()) Text("还没有账户，确认支付草稿前请先添加。", style = MaterialTheme.typography.bodySmall)
+        if (activeAccounts.isEmpty()) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_034), style = MaterialTheme.typography.bodySmall)
         activeAccounts.forEach { account ->
             Surface(shape = RoundedCornerShape(12.dp), color = MaterialTheme.colorScheme.surfaceContainerLow) {
                 Row(Modifier.fillMaxWidth().padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -946,22 +946,22 @@ private fun SetupTab(
                         Text(account.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
                         Text("${accountTypeLabel(account.type)} · ${account.currency}", style = MaterialTheme.typography.bodySmall)
                     }
-                    TextButton(onClick = { onEditAccount(account) }, enabled = !busy) { Text("编辑") }
-                    TextButton(onClick = { onArchiveAccount(account) }, enabled = !busy) { Text("归档") }
+                    TextButton(onClick = { onEditAccount(account) }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_edit)) }
+                    TextButton(onClick = { onArchiveAccount(account) }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_archive)) }
                 }
             }
         }
         val archivedAccounts = data.accounts.filter { it.archivedAt != null }
         if (archivedAccounts.isNotEmpty()) {
-            Text("已归档账户（历史账目保留，可用撤销恢复）", style = MaterialTheme.typography.labelMedium)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_035), style = MaterialTheme.typography.labelMedium)
             archivedAccounts.forEach { Text("${it.name} · ${accountTypeLabel(it.type)}", style = MaterialTheme.typography.bodySmall) }
         }
 
         Spacer(Modifier.height(4.dp))
-        Text("分类", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-        Button(onClick = onAddCategory, enabled = !busy) { Text("新增分类") }
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_reshape_dialogs_003), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Button(onClick = onAddCategory, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_036)) }
         val activeCategories = data.categories.filter { it.archivedAt == null }
-        if (activeCategories.isEmpty()) Text("还没有分类，确认支付草稿前请先添加。", style = MaterialTheme.typography.bodySmall)
+        if (activeCategories.isEmpty()) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_037), style = MaterialTheme.typography.bodySmall)
         activeCategories.forEach { category ->
             Surface(shape = RoundedCornerShape(12.dp), color = MaterialTheme.colorScheme.surfaceContainerLow) {
                 Row(Modifier.fillMaxWidth().padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -969,17 +969,17 @@ private fun SetupTab(
                         Text(category.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
                         Text(directionLabel(category.direction), style = MaterialTheme.typography.bodySmall)
                     }
-                    TextButton(onClick = { onEditCategory(category) }, enabled = !busy) { Text("编辑") }
-                    TextButton(onClick = { onArchiveCategory(category) }, enabled = !busy) { Text("归档") }
+                    TextButton(onClick = { onEditCategory(category) }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_edit)) }
+                    TextButton(onClick = { onArchiveCategory(category) }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_archive)) }
                 }
             }
         }
         val archivedCategories = data.categories.filter { it.archivedAt != null }
         if (archivedCategories.isNotEmpty()) {
-            Text("已归档分类", style = MaterialTheme.typography.labelMedium)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_038), style = MaterialTheme.typography.labelMedium)
             archivedCategories.forEach { Text("${it.name} · ${directionLabel(it.direction)}", style = MaterialTheme.typography.bodySmall) }
         }
-        Text("归档只影响新建账目时的选择，不会改写历史账目。", style = MaterialTheme.typography.bodySmall)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_039), style = MaterialTheme.typography.bodySmall)
     }
 }
 
@@ -1039,23 +1039,23 @@ private fun CaptureDialog(
             imeAction = ImeAction.Next,
         )
         DirectionChips(direction) { direction = it }
-        Text("账户", style = MaterialTheme.typography.labelLarge)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_032), style = MaterialTheme.typography.labelLarge)
         OutlinedButton(onClick = { picker = "account" }, modifier = Modifier.fillMaxWidth(), enabled = accounts.isNotEmpty() && !busy) {
             Text(accounts.firstOrNull { it.id == accountId }?.let { "${it.name} · ${accountTypeLabel(it.type)}" } ?: "选择账户")
         }
-        Text("分类", style = MaterialTheme.typography.labelLarge)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_reshape_dialogs_003), style = MaterialTheme.typography.labelLarge)
         OutlinedButton(onClick = { picker = "category" }, modifier = Modifier.fillMaxWidth(), enabled = categories.isNotEmpty() && !busy) {
             Text(categories.firstOrNull { it.id == categoryId }?.let { "${it.name} · ${directionLabel(it.direction)}" } ?: "选择分类")
         }
         if (accounts.isEmpty() || categories.isEmpty()) {
-            Text("请先在“账户与分类”中添加至少一个账户和一个分类。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_040), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
         }
-        OutlinedTextField(merchant, { merchant = it }, label = { Text("商户") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(note, { note = it }, label = { Text("备注") }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(merchant, { merchant = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_reshape_dialogs_005)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(note, { note = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.field_notes)) }, modifier = Modifier.fillMaxWidth())
         LedgerDateTimeFields(occurredText, zone) { occurredText = it }
         externalError?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
         validation?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
-        Text("确认后写入账本，可用“撤销”回到待确认。", style = MaterialTheme.typography.bodySmall)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_041), style = MaterialTheme.typography.bodySmall)
     }
 
     picker?.let { kind ->
@@ -1154,19 +1154,19 @@ internal fun TransactionDialog(
             imeAction = ImeAction.Next,
         )
         DirectionChips(direction) { direction = it }
-        Text("账户", style = MaterialTheme.typography.labelLarge)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_032), style = MaterialTheme.typography.labelLarge)
         OutlinedButton(onClick = { picker = "account" }, modifier = Modifier.fillMaxWidth(), enabled = accountOptions.isNotEmpty() && !busy) {
             Text(accountOptions.firstOrNull { it.id == accountId }?.let { "${it.name} · ${accountTypeLabel(it.type)}" } ?: "选择账户")
         }
-        Text("分类", style = MaterialTheme.typography.labelLarge)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_reshape_dialogs_003), style = MaterialTheme.typography.labelLarge)
         OutlinedButton(onClick = { picker = "category" }, modifier = Modifier.fillMaxWidth(), enabled = categoryOptions.isNotEmpty() && !busy) {
             Text(categoryOptions.firstOrNull { it.id == categoryId }?.let { "${it.name} · ${directionLabel(it.direction)}" } ?: "选择分类")
         }
         if (accountOptions.isEmpty() || categoryOptions.isEmpty()) {
-            Text("请先添加账户和分类。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_042), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
         }
-        OutlinedTextField(merchant, { merchant = it }, label = { Text("商户") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(note, { note = it }, label = { Text("备注") }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(merchant, { merchant = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_reshape_dialogs_005)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(note, { note = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.field_notes)) }, modifier = Modifier.fillMaxWidth())
         LedgerDateTimeFields(occurredText, zone) { occurredText = it }
         if (existing != null) TransactionSourceDetails(existing, sources, captures, initiallyExpanded = true)
         externalError?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
@@ -1242,16 +1242,16 @@ private fun AccountDialog(
             }
         },
     ) {
-        OutlinedTextField(name, { name = it }, label = { Text("账户名称") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        Text("类型", style = MaterialTheme.typography.labelLarge)
+        OutlinedTextField(name, { name = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_043)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_044), style = MaterialTheme.typography.labelLarge)
         Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             LedgerAccountType.ALL.forEach { value ->
                 FilterChip(selected = type == value, onClick = { type = value }, label = { Text(accountTypeLabel(value)) })
             }
         }
-        OutlinedTextField(currency, { currency = it }, label = { Text("币种（CNY）") }, singleLine = true,
+        OutlinedTextField(currency, { currency = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_045)) }, singleLine = true,
             enabled = !busy && !currencyLocked, modifier = Modifier.fillMaxWidth())
-        if (currencyLocked) Text("账户已有历史账目，币种保持不变；其他币种请新增账户。", style = MaterialTheme.typography.bodySmall)
+        if (currencyLocked) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_046), style = MaterialTheme.typography.bodySmall)
         MoneyAmountField(
             value = opening,
             onValueChange = { opening = it },
@@ -1305,9 +1305,9 @@ private fun CategoryDialog(
             }
         },
     ) {
-        OutlinedTextField(name, { name = it }, label = { Text("分类名称") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(name, { name = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_047)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
         DirectionChips(direction) { direction = it }
-        OutlinedTextField(icon, { icon = it }, label = { Text("图标标记（可选）") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(icon, { icon = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_048)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
         externalError?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
         validation?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
     }
@@ -1315,7 +1315,7 @@ private fun CategoryDialog(
 
 @Composable
 private fun DirectionChips(direction: String, onChange: (String) -> Unit) {
-    Text("方向", style = MaterialTheme.typography.labelLarge)
+    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_049), style = MaterialTheme.typography.labelLarge)
     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         listOf(LedgerDirection.EXPENSE, LedgerDirection.INCOME, LedgerDirection.REFUND).forEach { value ->
             FilterChip(
@@ -1339,7 +1339,7 @@ internal fun ChoiceDialog(
         title = { Text(title) },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState())) {
-                if (options.isEmpty()) Text("暂无可选项")
+                if (options.isEmpty()) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_050))
                 options.forEach { (id, label) ->
                     TextButton(onClick = { onPick(id) }, modifier = Modifier.fillMaxWidth()) {
                         Text(label, Modifier.fillMaxWidth(), textAlign = TextAlign.Start)
@@ -1347,7 +1347,7 @@ internal fun ChoiceDialog(
                 }
             }
         },
-        confirmButton = { TextButton(onClick = onDismiss) { Text("取消") } },
+        confirmButton = { TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }
 
@@ -1378,7 +1378,7 @@ internal fun FormDialog(
                     Text(title, style = MaterialTheme.typography.titleLarge)
                     content()
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                        TextButton(onClick = onDismiss, enabled = !busy) { Text("取消") }
+                        TextButton(onClick = onDismiss, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
                         Button(onClick = onConfirm, enabled = !busy && confirmEnabled) {
                             Text(if (busy) "处理中…" else confirmLabel)
                         }
@@ -1394,7 +1394,7 @@ private enum class NotificationIntro { ENABLE_CAPTURE, OPEN_SETTINGS }
 @Composable
 private fun LedgerDateTimeFields(value: String, zone: ZoneId, onChange: (String) -> Unit) {
     val selected = LocalDateTime.parse(value, EDITOR_TIME)
-    Text("发生时间", style = MaterialTheme.typography.labelLarge)
+    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_ledger_screen_051), style = MaterialTheme.typography.labelLarge)
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         DateField("日期", selected.toLocalDate(), { date ->
             onChange(formatEditorTime(LocalDateTime.of(date, selected.toLocalTime()).atZone(zone).toInstant().toEpochMilli(), zone))

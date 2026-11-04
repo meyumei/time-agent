@@ -121,14 +121,14 @@ fun CourseScheduleScreen(
                                 .weight(1f)
                                 .heightIn(min = 48.dp)
                                 .testTag("course-week-previous"),
-                        ) { Text("上一周") }
+                        ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_schedule_screen_001)) }
                         TextButton(
                             onClick = { weekOffset++ },
                             modifier = Modifier
                                 .weight(1f)
                                 .heightIn(min = 48.dp)
                                 .testTag("course-week-next"),
-                        ) { Text("下一周") }
+                        ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_schedule_screen_002)) }
                     }
                     if (weekOffset != 0) {
                         TextButton(
@@ -136,7 +136,7 @@ fun CourseScheduleScreen(
                             modifier = Modifier
                                 .heightIn(min = 48.dp)
                                 .testTag("course-week-current"),
-                        ) { Text("回到本周") }
+                        ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_schedule_screen_003)) }
                     }
                     Button(
                         onClick = onImport,
@@ -144,7 +144,7 @@ fun CourseScheduleScreen(
                             .fillMaxWidth()
                             .heightIn(min = 48.dp)
                             .testTag("course-import"),
-                    ) { Text("导入课表") }
+                    ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_course_schedule_screen_004)) }
                 }
             }
             if (data.loading) {

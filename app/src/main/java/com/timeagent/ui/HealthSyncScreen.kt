@@ -73,10 +73,10 @@ import java.time.ZoneId
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text("健康数据同步", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                Text("睡眠和健身记录自动进入时间轴", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_health_sync_screen_001), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_health_sync_screen_002), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            TextButton(onClick = onClose) { Text("关闭") }
+            TextButton(onClick = onClose) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_close)) }
         }
         Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.secondaryContainer, modifier = Modifier.fillMaxWidth().testTag("health-sync-status")) {
             Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -87,7 +87,7 @@ import java.time.ZoneId
                     HealthConnectState.Ready -> "Health Connect 已就绪，可读取睡眠与健身记录。"
                 }
                 Text(statusText, style = MaterialTheme.typography.bodyMedium)
-                Text("来源应用无关：小米运动健康、华为、Keep、训记等写入 Health Connect 的记录都会同步。数据只在本机读取，不上传。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_health_sync_screen_003), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 if (connectState == HealthConnectState.NeedsPermission || connectState == HealthConnectState.Ready) {
                     TextButton(onClick = ::requestPermissions) { Text(if (connectState == HealthConnectState.NeedsPermission) "去授权读取" else "管理授权") }
                 }
@@ -101,18 +101,18 @@ import java.time.ZoneId
         SettingSwitch("同步睡眠", "按 Health Connect 睡眠时段生成“睡眠”记录", sleepEnabled, Modifier.testTag("health-sync-sleep")) { value -> sleepEnabled = value; settings.setSleepEnabled(value) }
         Surface(shape = RoundedCornerShape(14.dp), color = MaterialTheme.colorScheme.surfaceContainer, modifier = Modifier.fillMaxWidth().testTag("gb-file-card")) {
             Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("Gadgetbridge 数据文件（推荐）", fontWeight = FontWeight.Medium)
-                Text("让 Gadgetbridge 把数据库导出到文件后，本应用直接读取，睡眠经夜间聚合后进入时间轴——不依赖 Health Connect。在 Gadgetbridge 设置 → 自动化 → 自动导出里启用并把位置设为同一文件。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_health_sync_screen_004), fontWeight = FontWeight.Medium)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_health_sync_screen_005), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(if (gbUri.isBlank()) "未连接数据文件" else "已连接数据文件", style = MaterialTheme.typography.bodySmall, color = if (gbUri.isBlank()) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary, modifier = Modifier.testTag("gb-file-state"))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Button(onClick = { gbPicker.launch(arrayOf("*/*")) }, enabled = !busy) { Text(if (gbUri.isBlank()) "选择 GB 导出文件" else "更换文件") }
-                    if (gbUri.isNotBlank()) TextButton(onClick = { settings.setGbExportUri(""); gbUri = "" }, enabled = !busy) { Text("断开") }
+                    if (gbUri.isNotBlank()) TextButton(onClick = { settings.setGbExportUri(""); gbUri = "" }, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_health_sync_screen_006)) }
                 }
             }
         }
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text("睡眠来源偏好", style = MaterialTheme.typography.labelLarge)
-            Text("选中的来源会替换其他来源记录的同一晚睡眠；手工修改过的记录始终保留。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_health_sync_screen_007), style = MaterialTheme.typography.labelLarge)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_health_sync_screen_008), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 listOf("" to "先到先得", "华为运动健康" to "华为", "小米运动健康" to "小米", "Gadgetbridge" to "Gadgetbridge").forEach { (value, label) ->
                     FilterChip(
@@ -126,7 +126,7 @@ import java.time.ZoneId
         }
         SettingSwitch("同步健身记录", "训练课自动成为实际记录，标题优先用来源训练名", exerciseEnabled, Modifier.testTag("health-sync-exercise")) { value -> exerciseEnabled = value; settings.setExerciseEnabled(value) }
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text("同步范围（最近）", style = MaterialTheme.typography.labelLarge)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_health_sync_screen_009), style = MaterialTheme.typography.labelLarge)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 listOf(7, 14, 30).forEach { days ->
                     FilterChip(selected = windowDays == days, onClick = { windowDays = days; settings.setWindowDays(days) }, label = { Text("${days} 天") }, modifier = Modifier.testTag("health-sync-window-$days"))
@@ -140,8 +140,8 @@ import java.time.ZoneId
         message?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary, modifier = Modifier.testTag("health-sync-message")) }
         if (settings.lastSyncAt() > 0) Text("最近读取：${Instant.ofEpochMilli(settings.lastSyncAt()).label(zone)}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         HorizontalDivider()
-        Text("已同步条目", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-        if (data.healthItems.isEmpty()) Text("还没有同步过记录。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_health_sync_screen_010), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        if (data.healthItems.isEmpty()) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_health_sync_screen_011), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         data.healthItems.forEach { item ->
             val record = item.recordId?.let { id -> data.records.firstOrNull { it.id == id } }
             val stateText = when {

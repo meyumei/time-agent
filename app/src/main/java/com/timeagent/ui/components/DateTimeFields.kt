@@ -114,9 +114,9 @@ fun DateField(
                 TextButton(onClick = {
                     state.selectedDateMillis?.let { onValueChange(it.toUtcDate()) }
                     showDialog = false
-                }, enabled = state.selectedDateMillis != null) { Text("使用日期") }
+                }, enabled = state.selectedDateMillis != null) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_date_time_fields_001)) }
             },
-            dismissButton = { TextButton(onClick = { showDialog = false }) { Text("取消") } },
+            dismissButton = { TextButton(onClick = { showDialog = false }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
         ) {
             DatePicker(state = state, showModeToggle = true)
         }
@@ -142,7 +142,7 @@ fun TimeField(
         val state = rememberTimePickerState(value.hour, value.minute, is24Hour = is24Hour)
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text("选择时间") },
+            title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_date_time_fields_002)) },
             text = {
                 Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
@@ -159,9 +159,9 @@ fun TimeField(
                 TextButton(onClick = {
                     onValueChange(LocalTime.of(state.hour, state.minute))
                     showDialog = false
-                }) { Text("使用时间") }
+                }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_date_time_fields_003)) }
             },
-            dismissButton = { TextButton(onClick = { showDialog = false }) { Text("取消") } },
+            dismissButton = { TextButton(onClick = { showDialog = false }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
         )
     }
 }
@@ -207,7 +207,7 @@ fun DateTimeRangeField(
             ) {
                 Switch(checked = crossDay, onCheckedChange = null)
                 Spacer(Modifier.width(DesignTokens.spacing8))
-                Text("跨到次日", style = MaterialTheme.typography.bodyMedium)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_date_time_fields_004), style = MaterialTheme.typography.bodyMedium)
             }
         }
         if (valid) {
@@ -218,7 +218,7 @@ fun DateTimeRangeField(
             )
         } else {
             Text(
-                "结束时间必须晚于开始时间",
+                androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_date_time_fields_005),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error,
             )
@@ -242,7 +242,7 @@ fun DurationField(
     val invalid = text.isNotEmpty() && (text.toIntOrNull()?.let { it > 0 } != true)
 
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(DesignTokens.spacing8)) {
-        Text("时长", style = MaterialTheme.typography.labelLarge)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_date_time_fields_006), style = MaterialTheme.typography.labelLarge)
         Row(
             Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(DesignTokens.spacing8),
@@ -262,12 +262,12 @@ fun DurationField(
                 input.toIntOrNull()?.takeIf { it > 0 }?.let(onChange)
             },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("自定义时长（分钟）") },
+            label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_date_time_fields_007)) },
             singleLine = true,
             isError = invalid,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             supportingText = if (invalid) {
-                { Text("请输入大于 0 的整数") }
+                { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_date_time_fields_008)) }
             } else {
                 null
             },

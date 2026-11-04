@@ -91,7 +91,7 @@ fun RecurrenceField(
     val latestOnValidityChange by rememberUpdatedState(onValidityChange)
     LaunchedEffect(isValid) { latestOnValidityChange(isValid) }
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(DesignTokens.spacing8)) {
-        Text("重复", style = MaterialTheme.typography.titleSmall)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurrence_field_001), style = MaterialTheme.typography.titleSmall)
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(DesignTokens.spacing8)) {
             CHOICES.filter { allowNone || it != Mode.NONE }.forEach { m ->
                 FilterChip(selected = mode == m, onClick = { onChange(nextPattern(m, current, seedId, seedDate)) },
@@ -135,7 +135,7 @@ fun RecurrenceField(
                 if (mode != Mode.WEEKLY_COUNT) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Switch(current.minuteOfDay != null, { onChange(current.copy(minuteOfDay = if (it) 9 * 60 else null)) })
-                        Text("固定时间", Modifier.weight(1f))
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurrence_field_002), Modifier.weight(1f))
                     }
                     current.minuteOfDay?.let { minute ->
                         TimeField("发生时间", LocalTime.of(minute / 60, minute % 60), {
@@ -145,12 +145,12 @@ fun RecurrenceField(
                 }
                 DurationField(current.durationMinutes, { onChange(current.copy(durationMinutes = it)) })
                 InlineError(if (current.durationMinutes !in 1..1440) "每次时长须为 1–1440 分钟" else null)
-                Text("每次时长范围为 1–1440 分钟", style = MaterialTheme.typography.bodySmall)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurrence_field_003), style = MaterialTheme.typography.bodySmall)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Switch(current.untilDate != null, {
                         onChange(current.copy(untilDate = if (it) current.startDate else null))
                     })
-                    Text("设置结束日期", Modifier.weight(1f))
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurrence_field_004), Modifier.weight(1f))
                 }
                 current.untilDate?.let { until ->
                     DateField("结束日期", LocalDate.parse(until), { onChange(current.copy(untilDate = it.toString())) },
@@ -165,12 +165,12 @@ fun RecurrenceField(
                     else input.toIntOrNull()?.takeIf { it in 0..527040 }?.let {
                         onChange(current.copy(leadMinutes = it))
                     }
-                }, label = { Text("提前提醒分钟数（留空关闭）") }, modifier = Modifier.fillMaxWidth(),
+                }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurrence_field_005)) }, modifier = Modifier.fillMaxWidth(),
                     isError = lead.isNotBlank() && lead.toIntOrNull()?.let { it in 0..527040 } != true,
-                    supportingText = { Text("0 表示开始时；最多提前 527040 分钟") })
+                    supportingText = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurrence_field_006)) })
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Switch(current.paused, { onChange(current.copy(paused = it)) })
-                    Text("暂停规则", Modifier.weight(1f))
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurrence_field_007), Modifier.weight(1f))
                 }
                 Text("时区：${current.zoneId}", style = MaterialTheme.typography.bodySmall)
             }

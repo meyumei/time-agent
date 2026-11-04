@@ -61,7 +61,7 @@ fun AssistantConversationPanel(state: AssistantChatState, draft: String, onDraft
                 val scroll = rememberScrollState()
                 LaunchedEffect(state.turns.size, state.busy) { scroll.scrollTo(scroll.maxValue) }
                 Column(Modifier.fillMaxWidth().heightIn(max = 145.dp).verticalScroll(scroll).testTag("assistant-messages"), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    if (state.turns.isEmpty()) Text("按住下方圆圈说话，或输入一句话。记想法、设提醒、安排日程会直接执行，可随时说“撤销”或“恢复刚才撤销的操作”。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    if (state.turns.isEmpty()) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_conversation_panel_001), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     state.turns.takeLast(8).forEach { turn ->
                         Text((if (turn.role == "user") "你：" else "") + com.timeagent.fish.fishPlainText(turn.text), style = MaterialTheme.typography.bodySmall,
                             color = if (turn.role == "user") MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
@@ -73,7 +73,7 @@ fun AssistantConversationPanel(state: AssistantChatState, draft: String, onDraft
                 inputAccessory()
                 if (suggestion != null) TextButton(enabled = !state.busy, onClick = onSuggestion, modifier = Modifier.testTag("voice-command-suggestion").heightIn(min = 32.dp), contentPadding = PaddingValues(0.dp)) { Text("可能想说：$suggestion", style = MaterialTheme.typography.labelMedium) }
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    OutlinedTextField(draft, { onDraft(it.take(2000)) }, placeholder = { Text("继续说，或输入补充…", style = MaterialTheme.typography.bodySmall) }, maxLines = 2,
+                    OutlinedTextField(draft, { onDraft(it.take(2000)) }, placeholder = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_conversation_panel_002), style = MaterialTheme.typography.bodySmall) }, maxLines = 2,
                         enabled = !state.busy, shape = RoundedCornerShape(14.dp), textStyle = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.weight(1f).testTag("assistant-input"))
                     IconButton(onClick = { onSend(draft) }, enabled = !state.busy && draft.isNotBlank(), modifier = Modifier.testTag("assistant-send")) { Icon(Icons.AutoMirrored.Rounded.Send, "发送给助手", tint = MaterialTheme.colorScheme.primary) }
@@ -82,8 +82,8 @@ fun AssistantConversationPanel(state: AssistantChatState, draft: String, onDraft
             if (state.pending != null || state.undoId != null) Row {
                 if (state.pending != null) {
                     TextButton(onClick = { onSend("确认") }, enabled = !state.busy, modifier = Modifier.height(34.dp)) { Text(if (state.pending.needsFutureApproval) "确认记录未来时间" else "确认执行") }
-                    TextButton(onClick = { onSend("取消") }, enabled = !state.busy, modifier = Modifier.height(34.dp)) { Text("取消") }
-                } else TextButton(onClick = { onSend("撤销这次") }, enabled = !state.busy, modifier = Modifier.height(34.dp)) { Icon(Icons.Rounded.History, null, Modifier.size(15.dp)); Spacer(Modifier.width(4.dp)); Text("撤销这次") }
+                    TextButton(onClick = { onSend("取消") }, enabled = !state.busy, modifier = Modifier.height(34.dp)) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
+                } else TextButton(onClick = { onSend("撤销这次") }, enabled = !state.busy, modifier = Modifier.height(34.dp)) { Icon(Icons.Rounded.History, null, Modifier.size(15.dp)); Spacer(Modifier.width(4.dp)); Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_conversation_panel_004)) }
             }
         }
     }
@@ -99,14 +99,14 @@ fun ConversationSettingsDialog(settings: AssistantSettings, runtimeMode: Boolean
     var message by remember { mutableStateOf<String?>(null) }
     AlertDialog(onDismissRequest = { if (!busy) onClose() }, title = { Text(if (runtimeMode) "角色的模型设置" else "助手设置") }, text = {
         Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            if (runtimeMode) Text("语音在本机识别。与内置角色交流时，文字、相关共同记忆和它按需查询的业务结果会用于模型回复。修改运行中的模型设置后，需要重新启动角色，历史会保留。",style=MaterialTheme.typography.bodySmall)
+            if (runtimeMode) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_conversation_panel_005),style=MaterialTheme.typography.bodySmall)
             else {
-            Text("中文语音在本机识别。明确的记录、任务和计划无需 API Key，可直接执行并撤销。", style = MaterialTheme.typography.bodySmall)
-            Row(verticalAlignment = Alignment.CenterVertically) { Text("智能理解 · DeepSeek", Modifier.weight(1f)); Switch(enabled, { enabled = it }, enabled = !busy) }
-            Text("开启后，本地未理解的表达会自动发送给 DeepSeek，含本次文字、最近 8 条对话，以及有限的任务、课程、计划、记录活动名与时间、提醒和想法标题。不发送录音、任务描述、记录备注、想法或笔记正文、操作历史。", style = MaterialTheme.typography.bodySmall)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_conversation_panel_006), style = MaterialTheme.typography.bodySmall)
+            Row(verticalAlignment = Alignment.CenterVertically) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_conversation_panel_007), Modifier.weight(1f)); Switch(enabled, { enabled = it }, enabled = !busy) }
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_conversation_panel_008), style = MaterialTheme.typography.bodySmall)
             }
             OutlinedTextField(key, { key = it }, label = { Text(if (settings.hasApiKey()) "替换 Key（留空保留）" else "DeepSeek API Key") }, visualTransformation = PasswordVisualTransformation(), singleLine = true, enabled = !busy)
-            OutlinedTextField(model, { model = it }, label = { Text("模型名") }, singleLine = true, enabled = !busy)
+            OutlinedTextField(model, { model = it }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_assistant_conversation_panel_009)) }, singleLine = true, enabled = !busy)
             Text(if(runtimeMode) "密钥保存在本机，供内置运行环境连接模型服务。" else "密钥仅由本机 Keystore 加密保存。", style = MaterialTheme.typography.labelSmall)
             message?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
         }
@@ -122,5 +122,5 @@ fun ConversationSettingsDialog(settings: AssistantSettings, runtimeMode: Boolean
             catch (e: Exception) { message = e.message ?: "保存失败，请重试。" }
             finally { busy = false }
         }
-    }) { Text("保存") } }, dismissButton = { TextButton(onClick = onClose, enabled = !busy) { Text("关闭") } })
+    }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) } }, dismissButton = { TextButton(onClick = onClose, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_close)) } })
 }

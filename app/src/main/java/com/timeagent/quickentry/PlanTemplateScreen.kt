@@ -90,8 +90,8 @@ fun PlanTemplateScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("计划模板", fontWeight = FontWeight.Bold) },
-                navigationIcon = { TextButton(onClick = onClose) { Text("关闭") } },
+                title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_plan_template_screen_001), fontWeight = FontWeight.Bold) },
+                navigationIcon = { TextButton(onClick = onClose) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_close)) } },
             )
         },
         snackbarHost = { SnackbarHost(snackbar) },
@@ -105,13 +105,13 @@ fun PlanTemplateScreen(
                 Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp),
                     color = MaterialTheme.colorScheme.surfaceContainerLow) {
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("把一天存成模板", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                        Text("保存该日已有的日程，之后选一个起始日期预览并勾选要创建的内容。应用是一次事务、一次撤销。",
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_plan_template_screen_002), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_plan_template_screen_003),
                             style = MaterialTheme.typography.bodyMedium)
                         OutlinedButton(onClick = { captureOpen = true }, enabled = !state.busy) {
-                            Text("将某天保存为模板")
+                            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_plan_template_screen_004))
                         }
-                        TextButton(onClick = { editing = PlanTemplateEntity(UUID.randomUUID().toString(), "") }) { Text("新建模板") }
+                        TextButton(onClick = { editing = PlanTemplateEntity(UUID.randomUUID().toString(), "") }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_plan_template_screen_005)) }
                     }
                 }
             }
@@ -121,7 +121,7 @@ fun PlanTemplateScreen(
                         color = MaterialTheme.colorScheme.errorContainer) {
                         Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                             Text(message, Modifier.weight(1f), color = MaterialTheme.colorScheme.onErrorContainer)
-                            TextButton(onClick = { model.clearMessages() }) { Text("知道了") }
+                            TextButton(onClick = { model.clearMessages() }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_acknowledge)) }
                         }
                     }
                 }
@@ -132,7 +132,7 @@ fun PlanTemplateScreen(
                         color = MaterialTheme.colorScheme.secondaryContainer) {
                         Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                             Text(message, Modifier.weight(1f))
-                            TextButton(onClick = { model.clearMessages() }) { Text("知道了") }
+                            TextButton(onClick = { model.clearMessages() }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_acknowledge)) }
                         }
                     }
                 }
@@ -145,7 +145,7 @@ fun PlanTemplateScreen(
                 }
             } else if (state.templates.isEmpty()) {
                 item {
-                    Text("还没有计划模板。先用“将某天保存为模板”，或从时间轴多选后保存。",
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_plan_template_screen_006),
                         style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
                 }
             } else {
@@ -204,7 +204,7 @@ fun PlanTemplateScreen(
         AlertDialog(
             onDismissRequest = { if (!state.busy) deleting = null },
             title = { Text("删除模板“${template.name}”？") },
-            text = { Text("模板条目会一起删除；此操作可撤销，已有日程不会受影响。") },
+            text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_plan_template_screen_007)) },
             confirmButton = {
                 TextButton(
                     enabled = !state.busy,
@@ -217,9 +217,9 @@ fun PlanTemplateScreen(
                             }
                         }
                     },
-                ) { Text("删除") }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_delete)) }
             },
-            dismissButton = { TextButton(onClick = { deleting = null }, enabled = !state.busy) { Text("取消") } },
+            dismissButton = { TextButton(onClick = { deleting = null }, enabled = !state.busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
         )
     }
 }
@@ -252,9 +252,9 @@ private fun TemplateCard(
                 Text(template.description, style = MaterialTheme.typography.bodyMedium)
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(onClick = onApply, enabled = !busy && items.isNotEmpty()) { Text("选择日期并应用") }
-                TextButton(onClick = onDelete, enabled = !busy) { Text("删除") }
-                TextButton(onClick = onEdit, enabled = !busy) { Text("编辑") }
+                OutlinedButton(onClick = onApply, enabled = !busy && items.isNotEmpty()) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_plan_template_screen_008)) }
+                TextButton(onClick = onDelete, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_delete)) }
+                TextButton(onClick = onEdit, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_edit)) }
             }
             if (expanded) {
                 items.forEach { item ->
@@ -294,17 +294,17 @@ private fun CaptureTemplateDialog(
 
     AlertDialog(
         onDismissRequest = { if (!state.busy) onDismiss() },
-        title = { Text("将某天保存为模板") },
+        title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_plan_template_screen_004)) },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 OutlinedTextField(value = name, onValueChange = { name = it.take(100) },
-                    label = { Text("模板名称") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_capture_template_dialog_002)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(value = description, onValueChange = { description = it.take(1000) },
-                    label = { Text("说明（可选）") }, modifier = Modifier.fillMaxWidth())
+                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_plan_template_screen_009)) }, modifier = Modifier.fillMaxWidth())
                 DateField("要保存的日期", date, { date = it })
-                Text("会把这一天的日程（包括提醒点、全天日程）保存为第 1 天；事务和提醒设置不会复制。",
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_plan_template_screen_010),
                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                if (name.isBlank()) Text("请填写模板名称", style = MaterialTheme.typography.bodySmall)
+                if (name.isBlank()) Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_plan_template_screen_011), style = MaterialTheme.typography.bodySmall)
                 error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
                 state.error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
             }
@@ -324,7 +324,7 @@ private fun CaptureTemplateDialog(
                 },
             ) { Text(if (state.busy) "保存中…" else "保存模板") }
         },
-        dismissButton = { TextButton(onClick = onDismiss, enabled = !state.busy) { Text("取消") } },
+        dismissButton = { TextButton(onClick = onDismiss, enabled = !state.busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }
 
@@ -361,7 +361,7 @@ private fun ApplyTemplateDialog(
             Column(Modifier.heightIn(max = 560.dp).verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 DateField("起始日期", date, { date = it })
-                Text("第 1 天对应上面选择的日期；未勾选的内容不会创建。", style = MaterialTheme.typography.bodySmall,
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_plan_template_screen_012), style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
                 if (loading) {
                     Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center) {
@@ -370,11 +370,11 @@ private fun ApplyTemplateDialog(
                 } else {
                     val current = preview
                     if (current == null) {
-                        Text("模板读取失败，请关闭后重试", color = MaterialTheme.colorScheme.error)
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_plan_template_screen_013), color = MaterialTheme.colorScheme.error)
                     } else {
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            TextButton(onClick = { selected = current.items.map { it.item.id }.toSet() }) { Text("全选") }
-                            TextButton(onClick = { selected = emptySet() }) { Text("全不选") }
+                            TextButton(onClick = { selected = current.items.map { it.item.id }.toSet() }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_plan_template_screen_014)) }
+                            TextButton(onClick = { selected = emptySet() }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_plan_template_screen_015)) }
                         }
                         current.items.forEach { entry ->
                             val checked = entry.item.id in selected
@@ -402,7 +402,7 @@ private fun ApplyTemplateDialog(
                             }
                         }
                         if (selected.isEmpty()) {
-                            Text("至少勾选一条内容", style = MaterialTheme.typography.bodySmall,
+                            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_plan_template_screen_016), style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.error)
                         }
                     }
@@ -432,7 +432,7 @@ private fun ApplyTemplateDialog(
                 },
             ) { Text(if (state.busy) "应用中…" else "批量创建 ${selected.size} 条") }
         },
-        dismissButton = { TextButton(onClick = onDismiss, enabled = !state.busy) { Text("取消") } },
+        dismissButton = { TextButton(onClick = onDismiss, enabled = !state.busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }
 

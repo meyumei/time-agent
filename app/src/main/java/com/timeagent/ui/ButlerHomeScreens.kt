@@ -197,20 +197,20 @@ private fun PlanHubContent(
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Text(
-            text = "把未来的事放回项目、习惯、期限与本周目标里。",
+            text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_butler_home_screens_001),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         if (data.loading) {
-            Text("正在读取本地数据…", style = MaterialTheme.typography.bodySmall)
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_butler_home_screens_002), style = MaterialTheme.typography.bodySmall)
         }
         Button(onClick = onCreate, modifier = Modifier.fillMaxWidth().testTag("plan-create").semantics { contentDescription = "新建" }) {
-            Text("新建任务")
+            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_new_task))
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            TextButton(onClick = { onOpen("inbox") },modifier=Modifier.testTag("task-inbox-entry")) { Text("收集想法") }
-            TextButton(onClick = { onOpen("attachments") }) { Text("附件") }
-            TextButton(onClick = { onOpen("workout") },modifier=Modifier.testTag("task-workout-entry")) { Text("开始训练") }
+            TextButton(onClick = { onOpen("inbox") },modifier=Modifier.testTag("task-inbox-entry")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_butler_home_screens_004)) }
+            TextButton(onClick = { onOpen("attachments") }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_butler_home_screens_005)) }
+            TextButton(onClick = { onOpen("workout") },modifier=Modifier.testTag("task-workout-entry")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_butler_home_screens_006)) }
         }
 
         PlanSection(
@@ -383,12 +383,12 @@ fun ButlerHomeHeader(
                         .semantics { contentDescription = "大肥鱼，与你使用共同记忆的管家" },
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text("鱼", style = MaterialTheme.typography.titleLarge)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_onboarding_screen_006), style = MaterialTheme.typography.titleLarge)
                 }
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text("大肥鱼", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_butler_home_screens_007), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                     Text(
-                        text = "形象、声音与角色档案可自定义",
+                        text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_butler_home_screens_008),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -401,13 +401,13 @@ fun ButlerHomeHeader(
                 Button(
                     onClick = onChat,
                     modifier = Modifier.weight(1f).testTag("butler-chat"),
-                ) { Text("和大肥鱼聊聊") }
+                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_butler_home_screens_009)) }
                 OutlinedButton(onClick = onSettings, modifier = Modifier.testTag("butler-settings")) {
-                    Text("设置")
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_butler_home_screens_010))
                 }
             }
             TextButton(onClick = onMemory, modifier = Modifier.testTag("butler-memory")) {
-                Text("共同记忆与角色约定")
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_butler_home_screens_011))
             }
         }
     }
@@ -663,6 +663,6 @@ fun PlanScheduleOverview(
                 }
             }
         }
-        Text("点击日期中的日程可打开详情；日程时间轴仍支持 1/3/7 日切换。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_butler_home_screens_012), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

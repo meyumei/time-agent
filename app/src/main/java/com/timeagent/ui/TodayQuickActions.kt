@@ -27,13 +27,13 @@ internal fun TodayQuickActions(
             Icon(Icons.Rounded.Add, "今天快捷操作")
         }
         DropdownMenu(expanded, { expanded = false }) {
-            DropdownMenuItem(text = { Text("补记时间") }, onClick = { expanded = false; onRecord() },
+            DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_today_quick_actions_001)) }, onClick = { expanded = false; onRecord() },
                 modifier = Modifier.testTag("today-record"))
-            DropdownMenuItem(text = { Text("本次习惯") }, onClick = { expanded = false; onRecurring() },
+            DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_today_quick_actions_002)) }, onClick = { expanded = false; onRecurring() },
                 modifier = Modifier.testTag("today-recurring"))
-            DropdownMenuItem(text = { Text("处理期限") }, onClick = { expanded = false; onDeadline() },
+            DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_today_quick_actions_003)) }, onClick = { expanded = false; onDeadline() },
                 modifier = Modifier.testTag("today-deadlines"))
-            DropdownMenuItem(text = { Text("训练") }, onClick = { expanded = false; onWorkout() },
+            DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_016)) }, onClick = { expanded = false; onWorkout() },
                 modifier = Modifier.testTag("today-workout"))
         }
     }
