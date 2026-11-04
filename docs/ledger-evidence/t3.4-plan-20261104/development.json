@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-04",
+  "command": ":app:compileDebugKotlin",
+  "builds": [
+    {
+      "log": ".tmp/remaining-development-20261104/compile-plan-timeline-1.log",
+      "exitCode": 1,
+      "duration": "19s",
+      "error": "Missing TimelineSelection import; two unresolved-reference errors"
+    },
+    {
+      "log": ".tmp/remaining-development-20261104/compile-plan-timeline-2.log",
+      "exitCode": 0,
+      "duration": "1m42s"
+    },
+    {
+      "log": ".tmp/remaining-development-20261104/compile-plan-timeline-final.log",
+      "duration": "1m3s",
+      "endedAt": "2026-11-04T20:23:56.1684540+08:00",
+      "exitCode": 0
+    }
+  ],
+  "sourceSha256": {
+    "app/src/main/java/com/timeagent/ui/ButlerHomeScreens.kt": "764cbd9d9da63bf02f55f36ab7a6bbc937afdf710941f891ad1678d31fd30e35",
+    "app/src/main/java/com/timeagent/ui/TimeAgentApp.kt": "043b22716494cebdbbe36d6b34af8ae7f1857f1b8bad71b849b6d9042d4c514e",
+    "app/src/main/java/com/timeagent/ui/Timeline.kt": "e77f71dde10e50b93f2c510af3ad2304650695f1c2c82fbb6076475826355cbf",
+    "app/src/main/java/com/timeagent/ui/PlanScheduleContent.kt": "e13e707b2cd6565a13784a77e30ddc9a2cb078cd8198c26df99ba977174f639e",
+    "app/src/main/res/values/strings.xml": "855e1fe0687d9f69b9c08553d8efd523f9c7eec81a6bf0a205f5345c1fae8567"
+  },
+  "testsRun": false,
+  "deviceActions": false,
+  "limitations": [
+    "No UI/device/state-restoration acceptance",
+    "Module remember-only temporary dialog drafts still need persistence",
+    "Task tag filtering/manual-order persistence/quick preview remain T4.1 follow-up"
+  ]
+}

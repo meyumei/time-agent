@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.shape.CircleShape
@@ -75,8 +77,10 @@ fun PlanHubScreen(
     onOpen: (String) -> Unit,
     reselectRevision: Int = 0,
     scheduleContent: @Composable () -> Unit = {},
+    moduleContent: @Composable (Int, () -> Unit) -> Unit = { _, _ -> },
 ) {
-    var selectedTab by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableIntStateOf(1) }
+    var selectedTab by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableIntStateOf(0) }
+    val tabStates = androidx.compose.runtime.saveable.rememberSaveableStateHolder()
     Column(Modifier.fillMaxSize()) {
         Row(
             Modifier
@@ -87,14 +91,7 @@ fun PlanHubScreen(
         ) {
             listOf("日程", "任务", "截止", "项目", "周期").forEachIndexed { index, label ->
                 TextButton(
-                    onClick = {
-                        when (index) {
-                            0, 1 -> selectedTab = index
-                            2 -> onOpen("deadlines")
-                            3 -> onOpen("projects")
-                            else -> onOpen("recurring")
-                        }
-                    },
+                    onClick = { selectedTab = index },
                     modifier = Modifier
                         .heightIn(min = 48.dp)
                         .testTag("plan-tab-$index")
@@ -104,6 +101,7 @@ fun PlanHubScreen(
                 }
             }
         }
+        tabStates.SaveableStateProvider("plan-$selectedTab") {
         if (selectedTab == 0) scheduleContent()
         else if (selectedTab == 1) {
             TaskListContent(
@@ -112,7 +110,8 @@ fun PlanHubScreen(
                 onQuickPreview = onQuickPreview, reselectRevision = reselectRevision,
             )
         } else {
-            PlanHubContent(data, zone, onSelect, onCreate, onStart, onOpen, reselectRevision)
+            moduleContent(selectedTab) { selectedTab = 0 }
+        }
         }
     }
 }
@@ -604,7 +603,8 @@ fun PlanScheduleOverview(
     data: LocalSnapshot,
     now: Instant,
     zone: ZoneId,
-    onSelect: (TimelineItem) -> Unit,
+    onDate: (LocalDate) -> Unit,
+    onVisibleRange: (LocalDate, LocalDate) -> Unit = { _, _ -> },
 ) {
     var monthText by androidx.compose.runtime.saveable.rememberSaveable {
         androidx.compose.runtime.mutableStateOf(now.atZone(zone).toLocalDate().withDayOfMonth(1).toString())
@@ -613,9 +613,14 @@ fun PlanScheduleOverview(
         .getOrDefault(now.atZone(zone).toLocalDate().withDayOfMonth(1))
     val first = month.minusDays((month.dayOfWeek.value - 1).toLong())
     val days = (0 until 42).map { first.plusDays(it.toLong()) }
-    val items = remember(data, now) { data.timeline(now).filter { !it.isPoint } }
-    val byDate = remember(items, zone) {
-        items.groupBy { it.span.start.atZone(zone).toLocalDate() }
+    val reportRange by androidx.compose.runtime.rememberUpdatedState(onVisibleRange)
+    androidx.compose.runtime.LaunchedEffect(first) { reportRange(first, days.last()) }
+    val items = remember(data, now) { data.timeline(now).filter { it.kind != ItemKind.RECORD } }
+    val byDate = remember(items, zone, first) {
+        days.associateWith { date ->
+            val day = com.timeagent.core.TimeSpan(date.atStartOfDay(zone).toInstant(), date.plusDays(1).atStartOfDay(zone).toInstant())
+            items.filter { it.span.overlaps(day) }.sortedBy { it.span.start }
+        }
     }
     Column(
         Modifier
@@ -630,6 +635,10 @@ fun PlanScheduleOverview(
             Text("${month.year}年${month.monthValue}月", Modifier.weight(1f), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             IconButton(onClick = { monthText = month.plusMonths(1).toString() }) { Text("›") }
         }
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val calendarWidth = maxWidth.coerceAtLeast((48.dp + 4.dp) * 7)
+        Box(Modifier.horizontalScroll(rememberScrollState())) {
+        Column(Modifier.width(calendarWidth)) {
         Row(Modifier.fillMaxWidth()) {
             listOf("一", "二", "三", "四", "五", "六", "日").forEach {
                 Text(it, Modifier.weight(1f), textAlign = androidx.compose.ui.text.style.TextAlign.Center, style = MaterialTheme.typography.labelMedium)
@@ -639,6 +648,8 @@ fun PlanScheduleOverview(
             Row(Modifier.fillMaxWidth()) {
                 week.forEach { date ->
                     val dayItems = byDate[date].orEmpty()
+                    val description = androidx.compose.ui.res.stringResource(com.timeagent.R.string.plan_calendar_day,
+                        date.toString(), dayItems.size)
                     Column(
                         Modifier
                             .weight(1f)
@@ -646,22 +657,21 @@ fun PlanScheduleOverview(
                             .padding(2.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .background(if (date.month == month.month) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface)
+                            .clickable(role = Role.Button) { onDate(date) }
+                            .semantics { contentDescription = description }
                             .padding(4.dp),
                     ) {
                         Text(date.dayOfMonth.toString(), style = MaterialTheme.typography.labelMedium)
                         dayItems.take(3).forEach { item ->
-                            TextButton(
-                                onClick = { onSelect(item) },
-                                modifier = Modifier.fillMaxWidth().heightIn(min = 28.dp).padding(0.dp),
-                                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 2.dp, vertical = 0.dp),
-                            ) {
-                                Text(item.title, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.labelSmall)
-                            }
+                            Text(item.title, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.labelSmall)
                         }
                         if (dayItems.size > 3) Text("+${dayItems.size - 3}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
                     }
                 }
             }
+        }
+        }
+        }
         }
         Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_butler_home_screens_012), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }

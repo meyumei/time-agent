@@ -522,7 +522,24 @@ private data class WorkoutTimerSwitch(
                     onDelete = { task -> deletingTask = task },
                     onQuickPreview = { text -> quickTaskTitle = text },
                     onOpen = { openScreen(it) }, reselectRevision = reselectRevision,
-                    scheduleContent = { PlanScheduleOverview(data, model.repository.now(), zone) { selected = it } })
+                    scheduleContent = {
+                        PlanScheduleContent(model, data, busy || timelineDrag != null, themeMode, onThemeMode,
+                            onSelect = { selected = it }, onCreate = { addMenu = true },
+                            onCreateAt = { editor = EditorRequest(EditorKind.PLAN, selection = it, scheduleRange = true) },
+                            onAssistant = { voiceSheetOpen = true }, onReminder = { reminderDetail = it },
+                            onDragCommit = { item, result -> timelineDrag = TimelineDragRequest.capture(item, result, data) },
+                            onSaveTemplate = { captureTemplateJson = com.google.gson.Gson().toJson(it) })
+                    },
+                    moduleContent = { index, onBack ->
+                        when (index) {
+                            2 -> DeadlineScreen(data, model, onTask = { selected = it }, onClose = onBack)
+                            3 -> MinuteClockContent(model) { now ->
+                                ProjectScreen(data, model, now, zone, onTask = { selected = it }, onClose = onBack,
+                                    onSchedule = { editor = EditorRequest(EditorKind.PLAN, taskId = it.id, scheduleRange = true) })
+                            }
+                            4 -> RecurringScreen(data, model, onTask = { selected = it }, onClose = onBack)
+                        }
+                    })
                 2 -> Column {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                         TextButton(onClick = { openScreen("health") }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_time_agent_app_002)) }
