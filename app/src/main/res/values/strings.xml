@@ -120,7 +120,7 @@
     <string name="text_butler_home_screens_009" formatted="false">"和大肥鱼聊聊"</string>
     <string name="text_butler_home_screens_010" formatted="false">"设置"</string>
     <string name="text_butler_home_screens_011" formatted="false">"共同记忆与角色约定"</string>
-    <string name="text_butler_home_screens_012" formatted="false">"点击日期中的日程可打开详情；日程时间轴仍支持 1/3/7 日切换。"</string>
+    <string name="text_butler_home_screens_012" formatted="false">"点击日期进入一日时间轴，再点日程查看详情；时间轴仍支持 1/3/7 日切换。"</string>
     <string name="text_calendar_handoff_screen_001" formatted="false">"交给系统日历"</string>
     <string name="text_calendar_handoff_screen_002" formatted="false">"打开后请在系统日历中确认并保存。此处无法核实是否保存。"</string>
     <string name="text_calendar_handoff_screen_003" formatted="false">"日历说明（选填）"</string>
@@ -1074,4 +1074,7 @@
     <string name="timeline_all_day_start">起 ↔</string>
     <string name="timeline_all_day_end">止 ↔</string>
     <string name="timeline_drag_saved_conflicts">时间已调整，存在 %1$d 项重叠，可在详情中查看</string>
+    <string name="plan_back_to_timeline">返回时间轴</string>
+    <string name="plan_open_month">月历</string>
+    <string name="plan_calendar_day">%1$s，%2$d项日程，查看一日时间轴</string>
 </resources>

@@ -157,6 +157,8 @@ internal val DayNames = listOf("周一", "周二", "周三", "周四", "周五",
     onDragCommit: (TimelineItem, TimelineDragResult) -> Unit = { _, _ -> },
     onSaveTemplate: ((List<ScheduleBlockEntity>) -> Unit)? = null,
     preferenceKey: String = "today",
+    requestedDate: LocalDate? = null,
+    dateRequestRevision: Long = 0L,
 ) {
     val context = LocalContext.current
     val preference = remember(context, preferenceKey) { TimelinePreference(context, preferenceKey) }
@@ -213,6 +215,13 @@ internal val DayNames = listOf("周一", "周二", "周三", "周四", "周五",
         } else if (requestedWeek != week.selectedWeekStart.toEpochDay()) {
             requestedWeek = week.selectedWeekStart.toEpochDay()
             viewport = TimelineViewport.centered(selectedDate(), viewport.dayCount).copy(zoom = viewport.zoom, firstMinute = viewport.firstMinute)
+        }
+    }
+    var appliedDateRevision by rememberSaveable { mutableLongStateOf(Long.MIN_VALUE) }
+    LaunchedEffect(requestedDate, dateRequestRevision) {
+        requestedDate?.takeIf { appliedDateRevision != dateRequestRevision }?.let { date ->
+            appliedDateRevision = dateRequestRevision
+            viewport = TimelineViewport.centered(date, 1).copy(zoom = viewport.zoom, firstMinute = viewport.firstMinute)
         }
     }
     fun syncReviewWeek(firstDate: LocalDate) {
