@@ -231,12 +231,15 @@ fun DurationField(
     minutes: Int,
     onChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    textValue: String? = null,
+    onTextChange: ((String) -> Unit)? = null,
 ) {
     val presets = remember { listOf(15, 30, 45, 60, 90) }
-    var text by rememberSaveable { mutableStateOf(if (minutes > 0) minutes.toString() else "") }
+    var internalText by rememberSaveable { mutableStateOf(if (minutes > 0) minutes.toString() else "") }
+    val text = textValue ?: internalText
     LaunchedEffect(minutes) {
-        if (text.toIntOrNull() != minutes) {
-            text = if (minutes > 0) minutes.toString() else ""
+        if (textValue == null && internalText.toIntOrNull() != minutes) {
+            internalText = if (minutes > 0) minutes.toString() else ""
         }
     }
     val invalid = text.isNotEmpty() && (text.toIntOrNull()?.let { it > 0 } != true)
@@ -250,7 +253,7 @@ fun DurationField(
             presets.forEach { preset ->
                 FilterChip(
                     selected = minutes == preset,
-                    onClick = { text = preset.toString(); onChange(preset) },
+                    onClick = { internalText = preset.toString(); onTextChange?.invoke(preset.toString()); onChange(preset) },
                     label = { Text("$preset 分钟") },
                 )
             }
@@ -258,7 +261,8 @@ fun DurationField(
         OutlinedTextField(
             value = text,
             onValueChange = { input ->
-                text = input
+                internalText = input
+                onTextChange?.invoke(input)
                 input.toIntOrNull()?.takeIf { it > 0 }?.let(onChange)
             },
             modifier = Modifier.fillMaxWidth(),

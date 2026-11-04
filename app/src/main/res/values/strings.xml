@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="action_add_deadline">添加截止时间</string>
+    <string name="action_remove_deadline">移除截止时间</string>
+    <string name="field_deadline_date">截止日期</string>
+    <string name="error_draft_date">日期草稿无效，请重新选择；尚未保存。</string>
+    <string name="error_draft_time">时间草稿无效，请重新选择；尚未保存。</string>
     <string name="action_acknowledge" formatted="false">"知道了"</string>
     <string name="action_archive" formatted="false">"归档"</string>
     <string name="action_back" formatted="false">"返回"</string>
