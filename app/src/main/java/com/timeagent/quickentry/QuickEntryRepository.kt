@@ -254,8 +254,33 @@ class QuickEntryRepository(
         requestId: String = UUID.randomUUID().toString(),
         origin: Origin = Origin.UI,
         seenSlots: List<QuickEntrySlot> = emptyList(),
+        expectedVersion: Long? = null,
     ): QuickEntryLaunch {
+        val preview = previewActivation(entryId, expectedVersion)
+        if (preview !is QuickEntryLaunch.NeedsConfirmation) return preview
+        val entry = preview.entry
+        val slots = preview.slots
+        if (normalizeSlots(slots) != normalizeSlots(seenSlots)) return preview
+        val body = try {
+            execute(Perform(entry.id, entry.version, slots), origin, requestId).second
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return QuickEntryLaunch.Failed(e.message ?: "启动失败，尚未执行")
+        }
+        return when (entry.actionType) {
+            QuickEntryAction.START_TIMER -> body.recordId?.let { QuickEntryLaunch.StartedTimer(body.entry ?: entry, it) }
+                ?: QuickEntryLaunch.Failed("未生成计时记录，请重试")
+            QuickEntryAction.START_FOCUS -> body.focusSessionId?.let { QuickEntryLaunch.StartedFocus(body.entry ?: entry, it) }
+                ?: QuickEntryLaunch.Failed("未生成专注会话，请重试")
+            else -> error("不支持的动作")
+        }
+    }
+
+    /** Reads the exact confirmation content without executing or touching usage metadata. */
+    suspend fun previewActivation(entryId: String, expectedVersion: Long? = null): QuickEntryLaunch {
         val entry = dao.entry(entryId) ?: return QuickEntryLaunch.Failed("快捷记录不存在或已删除，尚未执行")
+        if (expectedVersion != null && entry.version != expectedVersion) throw StaleChange()
         val action = entry.actionType ?: return QuickEntryLaunch.Failed("快捷记录的动作无效，请重新编辑")
         if (action == QuickEntryAction.CREATE_SCHEDULE || action == QuickEntryAction.CREATE_ACTUAL) {
             return QuickEntryLaunch.OpenEditor(draft(entry, action))
@@ -267,24 +292,7 @@ class QuickEntryRepository(
         } catch (e: Exception) {
             return QuickEntryLaunch.Failed(e.message ?: "无法读取主计时状态，尚未开始")
         }
-        if (normalizeSlots(slots) != normalizeSlots(seenSlots)) {
-            return QuickEntryLaunch.NeedsConfirmation(entry, slots)
-        }
-        val body = try {
-            execute(Perform(entry.id, entry.version, slots), origin, requestId).second
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            return QuickEntryLaunch.Failed(e.message ?: "启动失败，尚未执行")
-        }
-        return when (action) {
-            QuickEntryAction.START_TIMER -> body.recordId?.let { QuickEntryLaunch.StartedTimer(body.entry ?: entry, it) }
-                ?: QuickEntryLaunch.Failed("未生成计时记录，请重试")
-            QuickEntryAction.START_FOCUS -> body.focusSessionId?.let { QuickEntryLaunch.StartedFocus(body.entry ?: entry, it) }
-                ?: QuickEntryLaunch.Failed("未生成专注会话，请重试")
-            QuickEntryAction.CREATE_SCHEDULE, QuickEntryAction.CREATE_ACTUAL ->
-                QuickEntryLaunch.OpenEditor(draft(body.entry ?: entry, action))
-        }
+        return QuickEntryLaunch.NeedsConfirmation(entry, slots)
     }
 
     suspend fun draft(entry: QuickEntryEntity, action: QuickEntryAction = entry.actionType ?: QuickEntryAction.START_TIMER): QuickEntryDraft {
@@ -1099,10 +1107,19 @@ class QuickEntryModel(
         }
     } ?: false
 
-    suspend fun activate(entryId: String, seenSlots: List<QuickEntrySlot> = emptyList()): QuickEntryLaunch {
+    suspend fun previewActivation(entryId: String): QuickEntryLaunch = try {
+        quickEntries.previewActivation(entryId)
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        QuickEntryLaunch.Failed(e.message ?: "无法读取主计时状态，尚未开始")
+    }
+
+    suspend fun activate(entryId: String, seenSlots: List<QuickEntrySlot> = emptyList(),
+        expectedVersion: Long? = null): QuickEntryLaunch {
         mutableState.update { it.copy(busy = true, error = null, notice = null) }
         return try {
-            quickEntries.activate(entryId, seenSlots = seenSlots)
+            quickEntries.activate(entryId, seenSlots = seenSlots, expectedVersion = expectedVersion)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {

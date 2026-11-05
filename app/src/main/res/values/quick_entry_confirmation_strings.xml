@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="quick_entry_confirm_start">开始这项计时？</string>
+    <string name="quick_entry_confirm_fallback">快捷记录</string>
+    <string name="quick_entry_confirm_idle">当前没有主计时。确认后开始“%1$s”。</string>
+    <string name="quick_entry_confirm_switch">同一时间只允许一个主计时。下面这些正在运行；继续会先结束它们，再开始“%1$s”。</string>
+</resources>

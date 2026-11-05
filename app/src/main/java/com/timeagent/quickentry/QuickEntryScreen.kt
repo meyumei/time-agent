@@ -47,6 +47,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,6 +59,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.gson.Gson
 import com.timeagent.data.ActivityTemplateEntity
 import com.timeagent.domain.command.QuickEntrySlot
 import com.timeagent.ui.components.UndoMessage
@@ -96,7 +99,15 @@ fun QuickEntryScreen(
     var undoMessage by remember { mutableStateOf<UndoMessage?>(null) }
     var editing by remember { mutableStateOf<QuickEntryEntity?>(null) }
     var creating by remember { mutableStateOf(false) }
-    var conflict by remember { mutableStateOf<QuickEntryLaunch.NeedsConfirmation?>(null) }
+    val confirmationSaver = remember {
+        Saver<QuickEntryLaunch.NeedsConfirmation?, String>(
+            save = { it?.let { value -> Gson().toJson(value) } },
+            restore = { Gson().fromJson(it, QuickEntryLaunch.NeedsConfirmation::class.java) },
+        )
+    }
+    var conflict by rememberSaveable(stateSaver = confirmationSaver) {
+        mutableStateOf<QuickEntryLaunch.NeedsConfirmation?>(null)
+    }
     var initialConsumed by androidx.compose.runtime.saveable.rememberSaveable(initialEntryId) { mutableStateOf(false) }
 
     LaunchedEffect(model) { model.refresh() }
@@ -112,7 +123,7 @@ fun QuickEntryScreen(
 
     fun use(entry: QuickEntryEntity, seen: List<QuickEntrySlot> = emptyList()) {
         scope.launch {
-            when (val result = model.activate(entry.id, seen)) {
+            when (val result = model.activate(entry.id, seen, expectedVersion = entry.version)) {
                 is QuickEntryLaunch.NeedsConfirmation -> conflict = result
                 is QuickEntryLaunch.StartedTimer -> model.notify("已开始计时：${displayTitle(entry, state)}")
                 is QuickEntryLaunch.StartedFocus -> model.notify("已开始专注：${displayTitle(entry, state)}")
@@ -137,8 +148,12 @@ fun QuickEntryScreen(
         if (initialEntryId != null && !initialConsumed) {
             initialConsumed = true
             model.refresh()
-            model.state.value.entries.firstOrNull { it.id == initialEntryId }?.let { use(it) }
-                ?: model.notify("快捷记录已删除，请重新选择")
+            when (val result = model.previewActivation(initialEntryId)) {
+                is QuickEntryLaunch.NeedsConfirmation -> conflict = result
+                is QuickEntryLaunch.OpenEditor -> if (onOpenDraft != null) onOpenDraft(result.draft)
+                is QuickEntryLaunch.Failed -> model.notify(result.message)
+                else -> Unit
+            }
         }
     }
 
@@ -517,10 +532,15 @@ internal fun QuickEntryConflictDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_017)) },
+        title = { Text(androidx.compose.ui.res.stringResource(
+            if (conflict.slots.isEmpty()) com.timeagent.R.string.quick_entry_confirm_start
+            else com.timeagent.R.string.text_quick_entry_screen_017)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("同一时间只允许一个主计时。下面这些正在运行；继续会先结束它们，再开始“${conflict.entry.label ?: "快捷记录"}”。")
+                val title = conflict.entry.label ?: androidx.compose.ui.res.stringResource(com.timeagent.R.string.quick_entry_confirm_fallback)
+                Text(androidx.compose.ui.res.stringResource(
+                    if (conflict.slots.isEmpty()) com.timeagent.R.string.quick_entry_confirm_idle
+                    else com.timeagent.R.string.quick_entry_confirm_switch, title))
                 conflict.slots.forEach { slot ->
                     Text("· ${slotName(slot)}（版本 ${slot.version}）", style = MaterialTheme.typography.bodyMedium)
                 }
@@ -528,7 +548,9 @@ internal fun QuickEntryConflictDialog(
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         },
-        confirmButton = { TextButton(onClick = onConfirm) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_focus_screen_007)) } },
+        confirmButton = { TextButton(onClick = onConfirm) { Text(androidx.compose.ui.res.stringResource(
+            if (conflict.slots.isEmpty()) com.timeagent.R.string.action_confirm
+            else com.timeagent.R.string.text_focus_screen_007)) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }
@@ -565,7 +587,7 @@ fun QuickEntryChips(
     fun launch(entry: QuickEntryEntity, seen: List<QuickEntrySlot> = emptyList()) {
         scope.launch {
             message = null
-            when (val result = model.activate(entry.id, seen)) {
+            when (val result = model.activate(entry.id, seen, expectedVersion = entry.version)) {
                 is QuickEntryLaunch.NeedsConfirmation -> conflict = result
                 is QuickEntryLaunch.StartedTimer -> message = "已开始计时：${displayTitle(entry, state)}"
                 is QuickEntryLaunch.StartedFocus -> {
