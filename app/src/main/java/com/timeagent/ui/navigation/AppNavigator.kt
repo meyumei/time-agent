@@ -53,7 +53,8 @@ class AppNavigator(val controller: NavHostController, private val reselected: Mu
 
     private fun owner(destination: String): AppTab = when {
         destination in setOf("tasks", "projects", "recurring", "deadlines", "goals") || destination.startsWith("project:") || destination == "plan-templates" -> AppTab.PLAN
-        destination in setOf("history", "reports", "habits") || destination.startsWith("report-period:") -> AppTab.REVIEW
+        destination in setOf("history", "reports", "habits") || destination.startsWith("report-period:") ||
+            destination.startsWith("habit:") || destination.startsWith("focus-session:") -> AppTab.REVIEW
         else -> AppTab.BUTLER
     }
 

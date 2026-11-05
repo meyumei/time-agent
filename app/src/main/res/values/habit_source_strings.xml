@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="habit_source_unavailable">暂时无法读取这个习惯，可能已被删除或读取失败。原数据未修改，可以重试或返回列表。</string>
+    <string name="habit_source_retry">重新读取</string>
+    <string name="habit_source_back">返回习惯列表</string>
+    <string name="focus_source_title">专注来源详情</string>
+    <string name="focus_source_missing">这次专注已不存在，请返回习惯页重新读取。</string>
+    <string name="focus_source_start">开始：%1$s</string>
+    <string name="focus_source_end">结束：%1$s</string>
+    <string name="focus_source_duration">已累计专注 %1$d 分钟（不含休息与暂停）</string>
+    <string name="focus_source_running">正在专注</string>
+    <string name="focus_source_paused">已暂停</string>
+    <string name="focus_source_break">正在休息</string>
+    <string name="focus_source_completed">已结束</string>
+    <string name="focus_source_abandoned">已放弃</string>
+    <string name="focus_source_unknown">状态需核对</string>
+    <string name="focus_source_open_running">查看正在进行的专注</string>
+    <string name="focus_source_open_actual">查看生成的实际记录</string>
+    <string name="focus_source_segment">第 %1$d 轮：%2$s — %3$s，专注 %4$d 分钟</string>
+</resources>

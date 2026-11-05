@@ -26,6 +26,7 @@ import com.timeagent.ui.components.UndoSnackbar
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
@@ -35,6 +36,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
+import com.timeagent.R
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
@@ -59,17 +62,19 @@ fun HabitScreen(
     model: HabitViewModel,
     onClose: () -> Unit,
     onOpen: (String, String) -> Unit = { _, _ -> },
+    initialHabitId: String? = null,
 ) {
     val board by model.board.collectAsStateWithLifecycle()
     val detail by model.detail.collectAsStateWithLifecycle()
+    val detailLoadedId by model.detailLoadedId.collectAsStateWithLifecycle()
     val busy by model.busy.collectAsStateWithLifecycle()
     val error by model.error.collectAsStateWithLifecycle()
     val undo by model.undoMessage.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     UndoSnackbar(snackbar, undo, onUndo = model::undo, onConsumed = model::consumeUndo)
 
-    var screen by rememberSaveable { mutableStateOf("list") }
-    var detailId by rememberSaveable { mutableStateOf<String?>(null) }
+    var screen by rememberSaveable(initialHabitId) { mutableStateOf(if (initialHabitId == null) "list" else "detail") }
+    var detailId by rememberSaveable(initialHabitId) { mutableStateOf(initialHabitId) }
     var showArchived by rememberSaveable { mutableStateOf(false) }
 
     fun openDetail(id: String) {
@@ -79,7 +84,7 @@ fun HabitScreen(
     }
 
     // Restores the detail after process death or when the flow has not emitted yet.
-    LaunchedEffect(screen, detailId, detail?.habit?.id) {
+    LaunchedEffect(screen, detailId) {
         val id = detailId
         if (id != null && (screen == "detail" || screen == "edit") && detail?.habit?.id != id) {
             model.openDetail(id)
@@ -126,7 +131,15 @@ fun HabitScreen(
         }
         "detail" -> {
             val current = detail
-            if (current == null || current.habit.id != detailId) {
+            if ((current == null || current.habit.id != detailId) && detailLoadedId == detailId) {
+                Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(stringResource(R.string.habit_source_unavailable))
+                    TextButton(onClick = { detailId?.let(model::openDetail) }) {
+                        Text(stringResource(R.string.habit_source_retry))
+                    }
+                    TextButton(onClick = ::back) { Text(stringResource(R.string.habit_source_back)) }
+                }
+            } else if (current == null || current.habit.id != detailId) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
             } else {
                 HabitDetailScreen(
@@ -189,6 +202,9 @@ class HabitViewModel(private val repository: HabitRepository) : ViewModel() {
 
     private val _detail = MutableStateFlow<HabitDetail?>(null)
     val detail = _detail.asStateFlow()
+    private val _detailLoadedId = MutableStateFlow<String?>(null)
+    val detailLoadedId = _detailLoadedId.asStateFlow()
+    private var detailJob: Job? = null
 
     private val _busy = MutableStateFlow(false)
     val busy = _busy.asStateFlow()
@@ -225,11 +241,17 @@ class HabitViewModel(private val repository: HabitRepository) : ViewModel() {
     }
 
     fun openDetail(id: String) {
-        viewModelScope.launch {
-            _detail.value = runCatching { repository.detail(id) }.getOrElse {
-                _error.value = it.message ?: "习惯详情加载失败"
-                null
+        detailJob?.cancel()
+        _detailLoadedId.value = null
+        detailJob = viewModelScope.launch {
+            try {
+                _detail.value = repository.detail(id)
+            } catch (error: Exception) {
+                if (error is kotlinx.coroutines.CancellationException) throw error
+                _error.value = error.message ?: "习惯详情加载失败"
+                _detail.value = null
             }
+            _detailLoadedId.value = id
         }
     }
 

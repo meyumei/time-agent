@@ -354,12 +354,16 @@ private data class WorkoutTimerSwitch(
     fun openOriginal(type: String, id: String) {
         when (type) {
             "WORKOUT" -> openScreen("workout:$id")
+            "FOCUS" -> openScreen("focus-session:$id")
+            "HABIT" -> openScreen("habit:$id")
             "TASK" -> data.tasks.find { it.id == id }?.let { selected = it } ?: run { notice = "原任务已被删除" }
             "REMINDER" -> data.reminders.find { it.id == id }?.let { reminderDetail = it } ?: run { notice = "原提醒已被删除" }
             "PROJECT" -> openScreen("project:$id")
             "ACTIVITY" -> openScreen("activities")
             "IDEA" -> openScreen("inbox")
-            else -> data.timeline(model.clock.now()).find { it.id == id }?.let { selected = it } ?: run { notice = "原记录已被删除，笔记原文仍保留" }
+            else -> data.timeline(model.clock.now()).find {
+                it.id == id || (it.entity as? TimeRecordEntity)?.id == id
+            }?.let { selected = it } ?: run { notice = "原记录已被删除，笔记原文仍保留" }
         }
     }
     val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -679,6 +683,13 @@ private data class WorkoutTimerSwitch(
             destination.removePrefix("report-period:")) { text -> fish?.editDraft(text); openScreen("fish-chat") }
         else if (destination.startsWith("quick-entry-confirm:")) com.timeagent.quickentry.QuickEntryScreen(
             quickModel, ::closeScreen, ::openQuickDraft, initialEntryId = destination.removePrefix("quick-entry-confirm:"))
+        else if (destination.startsWith("habit:")) HabitPage(model, ::closeScreen, ::openOriginal,
+            initialHabitId = destination.removePrefix("habit:"))
+        else if (destination.startsWith("focus-session:")) com.timeagent.focus.FocusSessionDetails(
+            data.focusSessions.firstOrNull { it.id == destination.removePrefix("focus-session:") },
+            data.loading, zone, ::closeScreen,
+            onOpenActive = { openScreen("focus") },
+            onOpenActual = { id -> openOriginal("RECORD", id) })
         else if (destination.startsWith("workout:")) WorkoutNavScreen(workoutsRepository,
             initialSessionId = destination.removePrefix("workout:"), onClose = ::closeScreen)
         else if (destination.startsWith("focus-task:")) com.timeagent.focus.FocusScreen(model, onClose = ::closeScreen,
