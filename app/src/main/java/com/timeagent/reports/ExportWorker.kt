@@ -17,6 +17,11 @@ import com.timeagent.data.TimeAgentDatabase
 import com.timeagent.ledger.LedgerRepository
 import com.timeagent.workout.data.WorkoutDatabase
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
@@ -68,10 +73,9 @@ class ExportWorker(
     private val gson = Gson()
     private val zone: ZoneId = ZoneId.systemDefault()
     private var tempFile: File? = null
-    private var startedElapsed = 0L
+    @Volatile private var notificationProgress = 0 to ""
 
     override suspend fun doWork(): Result {
-        startedElapsed = android.os.SystemClock.elapsedRealtime()
         val uri = inputData.getString(KEY_URI)?.let(Uri::parse)
             ?: return Result.failure(workDataOf(KEY_ERROR to "没有选择导出位置"))
         val format = runCatching { ExportFormat.valueOf(inputData.getString(KEY_FORMAT).orEmpty()) }
@@ -91,19 +95,21 @@ class ExportWorker(
         runCatching { temp.parentFile?.mkdirs() }
         ReportNotifications.ensureChannels(applicationContext)
         return try {
-            updateProgress(0, "准备导出")
-            withContext(Dispatchers.IO) {
-                when (format) {
-                    ExportFormat.CSV_ZIP -> writeCsvZip(temp, types, startAt, endAt)
-                    ExportFormat.JSON -> writeJson(temp, types, startAt, endAt)
-                    ExportFormat.ICS -> writeIcs(temp, startAt, endAt)
+            withProgressNotification {
+                updateProgress(0, "准备导出")
+                withContext(Dispatchers.IO) {
+                    when (format) {
+                        ExportFormat.CSV_ZIP -> writeCsvZip(temp, types, startAt, endAt)
+                        ExportFormat.JSON -> writeJson(temp, types, startAt, endAt)
+                        ExportFormat.ICS -> writeIcs(temp, startAt, endAt)
+                    }
                 }
+                checkActive()
+                updateProgress(96, "写入所选位置")
+                withContext(Dispatchers.IO) { copyToTarget(temp, uri) }
+                checkActive()
+                updateProgress(100, "导出完成")
             }
-            checkActive()
-            updateProgress(96, "写入所选位置")
-            withContext(Dispatchers.IO) { copyToTarget(temp, uri) }
-            checkActive()
-            updateProgress(100, "导出完成")
             ReportNotifications.notifyExportDone(applicationContext, fileName)
             Result.success(workDataOf(KEY_URI to uri.toString(), KEY_FILE_NAME to fileName))
         } catch (cancelled: CancellationException) {
@@ -126,9 +132,25 @@ class ExportWorker(
     }
 
     private suspend fun updateProgress(percent: Int, stage: String) {
+        notificationProgress = percent.coerceIn(0, 100) to stage
         setProgress(workDataOf(KEY_PROGRESS to percent.coerceIn(0, 100), KEY_STAGE to stage))
-        if (android.os.SystemClock.elapsedRealtime() - startedElapsed >= 2_000 && percent < 100)
-            ReportNotifications.showExportProgress(applicationContext, id, percent, stage)
+    }
+
+    private suspend fun <T> withProgressNotification(block: suspend () -> T): T = coroutineScope {
+        val notice = launch {
+            delay(2_000)
+            while (isActive) {
+                val (percent, stage) = notificationProgress
+                if (percent < 100) ReportNotifications.showExportProgress(applicationContext, id, percent, stage)
+                delay(1_000)
+            }
+        }
+        try {
+            block()
+        } finally {
+            // Stop before completion/error handling so a delayed update cannot revive the notice.
+            withContext(NonCancellable) { notice.cancelAndJoin() }
+        }
     }
 
     private fun checkActive() {
@@ -262,9 +284,10 @@ class ExportWorker(
             "b.notes, b.source, b.sourceRef, b.createdAt, b.updatedAt, b.version, b.deletedAt " +
             "FROM schedule_blocks b LEFT JOIN tasks t ON t.id=b.taskId " +
             "WHERE b.deletedAt IS NULL AND ((b.endAt > b.startAt AND b.startAt < ? AND b.endAt > ?) " +
+            "OR (b.kind='POINT' AND b.startAt >= ? AND b.startAt < ?) " +
             "OR (b.allDayStartDate IS NOT NULL AND b.allDayStartDate <= ? AND COALESCE(b.allDayEndDate,b.allDayStartDate) >= ?)) " +
             "ORDER BY b.startAt"
-        writeCsvQuery(db, out, withoutSamples(sql, "PLAN"), arrayOf(endAt, startAt, localDate(endAt - 1), localDate(startAt)), header) { cursor ->
+        writeCsvQuery(db, out, withoutSamples(sql, "PLAN"), arrayOf<Any>(endAt, startAt, startAt, endAt, localDate(endAt - 1), localDate(startAt)), header) { cursor ->
             listOf(
                 cursor.str("id"), cursor.str("taskId"), cursor.str("title"),
                 localDateTime(cursor.long("startAt")), localDateTime(cursor.long("endAt")),
@@ -549,7 +572,7 @@ class ExportWorker(
                     if (ExportDataType.SCHEDULE in types) {
                         progress("日程")
                         writer.name("schedules")
-                        writeQueryArray(db, writer, withoutSamples(SCHEDULE_JSON_SQL, "PLAN"), arrayOf(endAt, startAt, localDate(endAt - 1), localDate(startAt)))
+                        writeQueryArray(db, writer, withoutSamples(SCHEDULE_JSON_SQL, "PLAN"), arrayOf<Any>(endAt, startAt, startAt, endAt, localDate(endAt - 1), localDate(startAt)))
                     }
                     if (ExportDataType.ACTUAL in types) {
                         progress("实际")
@@ -754,9 +777,10 @@ class ExportWorker(
             "b.kind, b.allDayStartDate, b.allDayEndDate, b.notes FROM schedule_blocks b " +
             "LEFT JOIN tasks t ON t.id=b.taskId WHERE b.deletedAt IS NULL AND b.status='SCHEDULED' " +
             "AND ((b.allDayStartDate IS NOT NULL AND b.allDayStartDate <= ? AND COALESCE(b.allDayEndDate,b.allDayStartDate) >= ?) " +
-            "OR (b.endAt > b.startAt AND b.startAt < ? AND b.endAt > ?)) ORDER BY b.startAt"
+            "OR (b.endAt > b.startAt AND b.startAt < ? AND b.endAt > ?) " +
+            "OR (b.kind='POINT' AND b.startAt >= ? AND b.startAt < ?)) ORDER BY b.startAt"
         db.openHelper.readableDatabase.query(
-            withoutSamples(sql, "PLAN"), arrayOf(localDate(endAt - 1), localDate(startAt), endAt, startAt),
+            withoutSamples(sql, "PLAN"), arrayOf<Any>(localDate(endAt - 1), localDate(startAt), endAt, startAt, startAt, endAt),
         ).use { cursor ->
             var count = 0
             while (cursor.moveToNext()) {
@@ -777,7 +801,7 @@ class ExportWorker(
                     line("DTEND;VALUE=DATE:${end.plusDays(1).format(DateTimeFormatter.BASIC_ISO_DATE)}")
                 } else {
                     line("DTSTART:${utcDateTime(cursor.long("startAt"))}")
-                    line("DTEND:${utcDateTime(cursor.long("endAt"))}")
+                    if (cursor.str("kind") != "POINT") line("DTEND:${utcDateTime(cursor.long("endAt"))}")
                 }
                 line("SUMMARY:${escapeIcs(title)}")
                 val notes = cursor.str("notes")
@@ -915,6 +939,7 @@ class ExportWorker(
                 "b.status, b.kind, b.allDayStartDate, b.allDayEndDate, b.timezoneId, b.notes, b.source, b.sourceRef, " +
                 "b.createdAt, b.updatedAt, b.version, b.deletedAt FROM schedule_blocks b LEFT JOIN tasks t ON t.id=b.taskId " +
                 "WHERE b.deletedAt IS NULL AND ((b.endAt > b.startAt AND b.startAt < ? AND b.endAt > ?) " +
+                "OR (b.kind='POINT' AND b.startAt >= ? AND b.startAt < ?) " +
                 "OR (b.allDayStartDate IS NOT NULL AND b.allDayStartDate <= ? AND COALESCE(b.allDayEndDate,b.allDayStartDate) >= ?)) " +
                 "ORDER BY b.startAt"
 
