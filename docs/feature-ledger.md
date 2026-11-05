@@ -320,5 +320,6 @@ L01/L34：新建任务并安排为一个命令；新增无优先级保留旧优�
 | L03/L05/L07/L12，关联L01 | 子任务拖动/显示顺序/草稿、新子任务；任务提醒与附件缩略图/关联；安排时间同命令保存 | `t4.1-task-editor-relations.md`；`ledger-evidence/development-20261105/task-editor-relations-final.json`，编译退出0 | 真实手势、版本冲突整次回滚、整组撤销、重复提醒、附件原件、进程恢复 |
 | L01/L03/L04/L06/L07及共享编辑器调用页 | 共享日期/时长、周期摘要/星期/语义描述、提醒时长与撤销动作文字资源化 | `t2.4-component-dynamic-copy.md`及对应本日编译记录 | lint分析、字形/格式、屏幕阅读器与设备界面 |
 | L01/L02/L03/L05/L07，关联N03/N07 | 任务删除接入命令，冻结关联日程/提醒版本并整组关闭提醒；任务/项目删除增加共享八秒撤销提示 | `t4.1-delete-undo-followup.md`；本日`delete-undo.json`只记录编译 | 两种日程处理、并发版本拒绝、提醒/实例恢复、重复请求、八秒提示、设备与历史往返 |
+| L02/L03/L07，关联N02/N03/N09 | 今日概览最近计时复用带版本和稳定requestId的快捷记录回调，不再只打开管理页 | `t5.5-widget-actions-followup.md`；本日`widget-actions.json` | 桌面快速点按/旧版本/进程恢复；失败自动打开App仍待实现 |
 
 未改鱼名字形象、Linux/DSH、BYOK 或共同记忆；主库仍v22。普通任务转换周期/重复入口、其余模块反馈和剩余阶段2–5缺口继续登记在 `development-through-phase5.md`，不能以本节编译记录宣布全项完成。

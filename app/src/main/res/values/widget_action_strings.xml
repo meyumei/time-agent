@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_configure_timer">设置快捷计时</string>
+    <string name="widget_start_recent_timer">开始最近计时</string>
+</resources>
