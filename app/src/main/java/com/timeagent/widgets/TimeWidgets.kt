@@ -36,6 +36,7 @@ private data class WidgetData(
     val avatar: Bitmap?, val zone: ZoneId,
     val taskTitles: Map<String, String>,
     val activeEntryId: String?,
+    val recentTimerEntry: QuickEntryEntity?,
 )
 
 private suspend fun loadWidget(context: Context): WidgetData {
@@ -61,7 +62,10 @@ private suspend fun loadWidget(context: Context): WidgetData {
             companion,
             context.getSharedPreferences("widget_status", 0).getString("error", null),
             if (companion) fishAvatar(context) else null, repo.zone, tasks.associate { it.id to it.title },
-            activeEntryId)
+            activeEntryId,
+            entries.filter { it.actionType in listOf(QuickEntryAction.START_TIMER, QuickEntryAction.START_FOCUS) }
+                .maxWithOrNull(compareBy<QuickEntryEntity> { it.lastUsedAt ?: Long.MIN_VALUE }
+                    .thenBy { it.usageCount }.thenByDescending { it.sortOrder }))
     }
 }
 
@@ -94,7 +98,10 @@ private fun WidgetTitle(context: Context, data: WidgetData, title: String) {
 private fun TimerArea(context: Context, data: WidgetData, glanceId: GlanceId) {
     val slot = data.slot
     if (slot == null) {
-        Text("开始最近计时", GlanceModifier.fillMaxWidth().padding(8.dp).clickable(open(context, "quick-recent")),
+        val recent = data.recentTimerEntry
+        val action = if (recent == null) open(context, "quick-entries") else startEntryAction(recent, glanceId)
+        Text(context.getString(if (recent == null) R.string.widget_configure_timer else R.string.widget_start_recent_timer),
+            GlanceModifier.fillMaxWidth().padding(8.dp).clickable(action),
             style = TextStyle(color = GlanceTheme.colors.primary))
     } else {
         Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -170,8 +177,7 @@ class QuickTimerWidget : GlanceAppWidget() {
                                     WidgetKeys.id to slot.id, WidgetKeys.version to slot.version,
                                     WidgetKeys.request to "widget-stop:$id:${slot.kind}:${slot.id}:${slot.version}"))
                             } else if (entry.actionType in listOf(QuickEntryAction.START_TIMER, QuickEntryAction.START_FOCUS)) {
-                                actionRunCallback<StartWidgetEntry>(actionParametersOf(WidgetKeys.id to entry.id,
-                                    WidgetKeys.version to entry.version, WidgetKeys.request to "widget-start:$id:${entry.id}:${entry.version}:${entry.usageCount}"))
+                                startEntryAction(entry, id)
                             } else open(context, "quick-entry:${entry.id}")
                             Text(if (running) "停止 · ${entry.label ?: "快捷记录"}" else entry.label ?: "快捷记录",
                                 GlanceModifier.defaultWeight().padding(8.dp).clickable(action),
@@ -214,6 +220,13 @@ internal object WidgetKeys {
     val version = ActionParameters.Key<Long>("version")
     val request = ActionParameters.Key<String>("request")
 }
+
+private fun startEntryAction(entry: QuickEntryEntity, glanceId: GlanceId): Action =
+    actionRunCallback<StartWidgetEntry>(actionParametersOf(
+        WidgetKeys.id to entry.id,
+        WidgetKeys.version to entry.version,
+        WidgetKeys.request to "widget-start:$glanceId:${entry.id}:${entry.version}:${entry.usageCount}",
+    ))
 
 class StartWidgetEntry : ActionCallback {
     override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
