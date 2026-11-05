@@ -57,6 +57,7 @@
             </intent-filter>
         </receiver>
         <receiver android:name=".timer.TimerActionReceiver" android:exported="false" />
+        <receiver android:name=".timer.RecentTimerActionReceiver" android:exported="false" />
         <receiver android:name=".habits.HabitReminderDateReceiver" android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
