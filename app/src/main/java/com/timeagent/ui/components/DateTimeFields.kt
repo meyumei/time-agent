@@ -54,8 +54,6 @@ import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
-private val TimeDisplayFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-
 @Composable
 private fun FieldShell(
     label: String,
@@ -137,7 +135,7 @@ fun TimeField(
     var showDialog by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
     val is24Hour = android.text.format.DateFormat.is24HourFormat(context)
-    val displayFormat = if (is24Hour) TimeDisplayFormat else DateTimeFormatter.ofPattern("a h:mm")
+    val displayFormat = rememberTimeDisplayFormatter()
     FieldShell(label, value.format(displayFormat), error, { showDialog = true }, modifier)
     if (showDialog) {
         val fontScale = LocalDensity.current.fontScale

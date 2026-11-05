@@ -16,6 +16,7 @@ import com.timeagent.domain.command.*
 import com.timeagent.recurring.RecurringService
 import com.timeagent.ui.components.DateField
 import com.timeagent.ui.components.TimeField
+import com.timeagent.ui.components.rememberTimeDisplayFormatter
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -45,6 +46,7 @@ internal fun RecurringMoveEditDialog(
     val editing = !busy && !submitting && !completed
     val zone = remember(initial.zoneId) { ZoneId.of(initial.zoneId) }
     val timeFormat = remember { DateTimeFormatter.ofPattern("HH:mm") }
+    val displayFormat = rememberTimeDisplayFormatter(includeDate = true)
     val date = runCatching { LocalDate.parse(draft.fields.dateText) }.getOrNull()
     val time = runCatching { LocalTime.parse(draft.fields.timeText, timeFormat) }.getOrNull()
     fun update(fields: MoveFields) {
@@ -142,7 +144,7 @@ internal fun RecurringMoveEditDialog(
                 Text(stringResource(if (draft.fields.planned) R.string.move_draft_plan_hint else R.string.move_draft_date_hint))
             } else {
                 Text(stringResource(R.string.move_draft_confirm_target,
-                    Instant.ofEpochMilli(check.at).atZone(zone).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))))
+                    Instant.ofEpochMilli(check.at).atZone(zone).format(displayFormat)))
                 if (check.conflicts.isEmpty()) Text(stringResource(R.string.text_recurring_screen_019))
                 else {
                     Text(stringResource(R.string.move_draft_conflicts, check.conflicts.size), color = MaterialTheme.colorScheme.error)

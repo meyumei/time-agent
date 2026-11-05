@@ -30,6 +30,7 @@ import com.timeagent.core.*
 import com.timeagent.data.*
 import com.timeagent.recurring.RecurringService
 import com.timeagent.recurring.recurringState
+import com.timeagent.ui.components.rememberTimeDisplayFormatter
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -54,8 +55,11 @@ private fun wdName(d: Int): String = when (d) {
     1 -> "一"; 2 -> "二"; 3 -> "三"; 4 -> "四"; 5 -> "五"; 6 -> "六"; else -> "日"
 }
 
-private fun hhmm(minute: Int?): String =
-    if (minute == null) "无固定时刻" else "%02d:%02d".format(minute / 60, minute % 60)
+@Composable
+private fun hhmm(minute: Int?, format: DateTimeFormatter): String =
+    if (minute == null) stringResource(R.string.recurring_display_no_time)
+    else if (minute !in 0..1439) stringResource(R.string.recurring_display_invalid_time)
+    else LocalTime.of(minute / 60, minute % 60).format(format)
 
 private fun freqLabel(p: RecurringPattern): String = when (p.frequency) {
     "WEEKDAYS" -> "每周" + p.weekdays.orEmpty().sorted().joinToString("") { wdName(it) }
@@ -105,23 +109,25 @@ internal fun recurringFocusInstances(
         .sortedWith(compareBy<RecurringInstanceEntity>({ recurringDueAt(it, tasks[it.taskId], zone) ?: Long.MAX_VALUE }, { it.ordinal }))
 }
 
-private fun focusWhen(dueAt: Long?, hasTime: Boolean, today: LocalDate, zone: ZoneId): String {
-    if (dueAt == null) return "日期未定"
+@Composable
+private fun focusWhen(dueAt: Long?, hasTime: Boolean, today: LocalDate, zone: ZoneId, format: DateTimeFormatter): String {
+    if (dueAt == null) return stringResource(R.string.recurring_display_no_date)
     val at = Instant.ofEpochMilli(dueAt).atZone(zone)
     val date = at.toLocalDate()
-    val time = if (hasTime) " %02d:%02d".format(at.hour, at.minute) else ""
+    val time = if (hasTime) " ${at.format(format)}" else ""
     return when {
-        date.isBefore(today) -> "${at.monthValue}-${at.dayOfMonth}$time 已过期"
-        date.isEqual(today) -> "今天$time"
-        date.isEqual(today.plusDays(1)) -> "明天$time"
+        date.isBefore(today) -> stringResource(R.string.recurring_display_overdue, "${at.monthValue}-${at.dayOfMonth}$time")
+        date.isEqual(today) -> stringResource(R.string.recurring_display_today, time)
+        date.isEqual(today.plusDays(1)) -> stringResource(R.string.recurring_display_tomorrow, time)
         else -> "${at.monthValue}-${at.dayOfMonth}$time"
     }
 }
 
-private fun ruleSubtitle(rule: RecurringRuleEntity, p: RecurringPattern?, projectName: String?): String {
+@Composable
+private fun ruleSubtitle(rule: RecurringRuleEntity, p: RecurringPattern?, projectName: String?, format: DateTimeFormatter): String {
     val parts = mutableListOf<String>()
     parts += if (p == null) "规则无法解析" else freqLabel(p)
-    p?.minuteOfDay?.let { parts += hhmm(it) }
+    p?.minuteOfDay?.let { parts += hhmm(it, format) }
     parts += if (projectName != null) "项目：$projectName" else if(rule.projectId!=null) "原项目已删除，请重新选择归属" else "未关联项目"
     if (p?.paused == true) parts += "已暂停"
     return parts.joinToString(" · ")
@@ -137,6 +143,7 @@ fun RecurringScreen(
     val gson = remember { Gson() }
     val service = remember { RecurringService(model.repository) }
     val zone = remember { model.repository.zone }
+    val timeFormat = rememberTimeDisplayFormatter()
     val now by model.now.collectAsStateWithLifecycle()
     val today = now.atZone(zone).toLocalDate()
     var expanded by remember { mutableStateOf<Set<String>>(emptySet()) }
@@ -300,7 +307,8 @@ fun RecurringScreen(
                             recurringDueAt(inst, task, zone),
                             hasTime,
                             today,
-                            zone
+                            zone,
+                            timeFormat
                         ),
                         onOpen = { task?.let(onTask) },
                         onAct = { action -> act(inst, action) },
@@ -334,7 +342,7 @@ fun RecurringScreen(
                                 Column(Modifier.weight(1f).testTag("recurring-toggle-${rule.id}").clickable { expanded = toggle(expanded, rule.id) }) {
                                     Text(rule.title, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
                                     Text(
-                                        ruleSubtitle(rule, p, projectName[rule.projectId]),
+                                        ruleSubtitle(rule, p, projectName[rule.projectId], timeFormat),
                                         fontSize = 12.sp,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -353,7 +361,7 @@ fun RecurringScreen(
                                     fontSize = 11.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
-                                Text("固定时段：${hhmm(p?.minuteOfDay)}", fontSize = 12.sp)
+                                Text(stringResource(R.string.recurring_display_fixed_time, hhmm(p?.minuteOfDay, timeFormat)), fontSize = 12.sp)
                                 Text("目标：${if (p == null) "未知" else freqLabel(p)}", fontSize = 12.sp)
                                 Text(
                                     if (p?.frequency == "WEEKLY_COUNT")
