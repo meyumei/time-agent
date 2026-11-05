@@ -13,11 +13,12 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeout
 
 @Composable
-internal fun HabitPage(model: TimeViewModel, onClose: () -> Unit, onOpen: (String, String) -> Unit) {
+internal fun HabitPage(model: TimeViewModel, onClose: () -> Unit, onOpen: (String, String) -> Unit,
+    initialHabitId: String? = null) {
     val context = LocalContext.current.applicationContext
     val repository = remember(model, context) { HabitRepository(model.repository, context) }
     val habits: HabitViewModel = viewModel(factory = HabitViewModel.factory(repository))
-    HabitScreen(habits, onClose, onOpen)
+    HabitScreen(habits, onClose, onOpen, initialHabitId)
 }
 
 @Composable
