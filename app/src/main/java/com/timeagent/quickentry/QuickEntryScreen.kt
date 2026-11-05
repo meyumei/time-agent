@@ -425,34 +425,32 @@ private fun QuickEntryEditorDialog(
 
     fun save() {
         if (state.busy || submitting || completed) return
-        if (activityId.isBlank()) {
+        val pending = draft
+        val entry = pending.entry
+        if (entry.activityId.isBlank()) {
             error = "请选择一个活动"
             return
         }
-        val minutes = duration.trim().takeIf { it.isNotEmpty() }?.toIntOrNull()
-        if (duration.isNotBlank() && (minutes == null || minutes !in 1..10_080)) {
+        val minutes = pending.durationText.trim().takeIf { it.isNotEmpty() }?.toIntOrNull()
+        if (pending.durationText.isNotBlank() && (minutes == null || minutes !in 1..10_080)) {
             error = "默认时长须为 1 至 10080 分钟"
             return
         }
-        val item = draft.entry.copy(
-            label = label.trim().takeIf { it.isNotEmpty() },
-            icon = icon.trim(),
-            color = color,
-            projectId = projectId,
-            taskId = taskId,
-            tagIds = tags.joinToString(","),
-            action = actionName,
+        val item = entry.copy(
+            label = entry.label?.trim()?.takeIf { it.isNotEmpty() },
+            icon = entry.icon.trim(),
+            tagIds = entry.tagIdList.joinToString(","),
             defaultDurationMinutes = minutes,
         )
         submitting = true
         scope.launch {
             try {
                 // Persist before submission so a process restart can replay the same request.
-                if (!onDraftChange(draft)) {
+                if (!onDraftChange(pending)) {
                     error = context.getString(R.string.quick_draft_write_failed)
-                } else if (model.saveEntry(item, existing?.version, draft.requestId)) {
+                } else if (model.saveEntry(item, pending.original?.version, pending.requestId)) {
                     completed = true
-                    draft = draft.copy(saved = true)
+                    draft = pending.copy(saved = true)
                     onDraftChange(draft)
                     cleanup()
                 }
@@ -551,8 +549,11 @@ private fun QuickEntryEditorDialog(
                         state.tags.forEach { tag ->
                             FilterChip(
                                 selected = tag.id in tags,
-                                onClick = { update(draft.copy(entry = draft.entry.copy(
-                                    tagIds = (if (tag.id in tags) tags - tag.id else tags + tag.id).joinToString(",")))) },
+                                onClick = {
+                                    val currentTags = draft.entry.tagIdList
+                                    update(draft.copy(entry = draft.entry.copy(tagIds =
+                                        (if (tag.id in currentTags) currentTags - tag.id else currentTags + tag.id).joinToString(","))))
+                                },
                                 label = { Text(tag.name) },
                             )
                         }
