@@ -6,6 +6,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import com.timeagent.domain.command.CommandResult
+import com.timeagent.domain.command.CommandStatus
+import kotlinx.coroutines.CancellationException
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -156,9 +160,17 @@ fun DeadlineScreen(
     androidx.lifecycle.compose.LifecycleEventEffect(androidx.lifecycle.Lifecycle.Event.ON_RESUME) { access=reminderAccessState(context) }
     var accessOpen by remember { mutableStateOf(false) }
     var infoOpen by remember { mutableStateOf(false) }
-    var formOpen by remember { mutableStateOf(false) }
-    var editing by remember { mutableStateOf<RecurringRuleEntity?>(null) }
-    var editingFrom by remember { mutableStateOf<LocalDate?>(null) }
+    val draftStore = remember(context) { DeadlineEditorDraftStore(context) }
+    var editingDraftId by rememberSaveable { mutableStateOf<String?>(null) }
+    val drafts = remember(editingDraftId, data.recurringRules) { draftStore.all() }
+    val snackbar = remember { SnackbarHostState() }
+    var undoMessage by remember { mutableStateOf<com.timeagent.ui.components.UndoMessage?>(null) }
+    com.timeagent.ui.components.UndoSnackbar(snackbar, undoMessage,
+        onUndo = { token -> model.perform {
+            val result = model.repository.commands.execute(com.timeagent.domain.command.UndoCommand(UUID.randomUUID().toString(), token))
+            check(result.status in setOf(CommandStatus.APPLIED, CommandStatus.DUPLICATE)) { result.message }
+        } },
+        onConsumed = { if (undoMessage?.id == it) undoMessage = null })
     var expanded by remember { mutableStateOf(setOf<String>()) }
     var handledShown by remember { mutableStateOf(setOf<String>()) }
     var showHandledAll by remember { mutableStateOf(false) }
@@ -170,10 +182,11 @@ fun DeadlineScreen(
     val nextItems = nextPendingDeadlines(rules, data.recurringInstances, taskById, zone)
     val handledItems = handledDeadlines(rules, data.recurringInstances, taskById, zone)
 
-    fun editRule(rule: RecurringRuleEntity, from: LocalDate? = null) {
-        editing = rule
-        editingFrom = from
-        formOpen = true
+    fun editRule(rule: RecurringRuleEntity?, from: LocalDate? = null) {
+        val draft = rule?.let { draftStore.read(it.id) } ?: DeadlineEditorDraft.create(rule, from, today, zone,
+            context.getString(com.timeagent.R.string.deadline_draft_default_category))
+        if (draftStore.save(draft)) editingDraftId = draft.id
+        else model.report(context.getString(com.timeagent.R.string.deadline_draft_write_failed))
     }
 
     fun act(instance: RecurringInstanceEntity, action: String) {
@@ -183,8 +196,12 @@ fun DeadlineScreen(
         })
     }
 
-    Surface(Modifier.fillMaxSize()) {
-        Column(Modifier.fillMaxSize().statusBarsPadding()) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        snackbarHost = { SnackbarHost(snackbar, modifier = Modifier.navigationBarsPadding()) },
+    ) { innerPadding ->
+        Column(Modifier.fillMaxSize().padding(innerPadding).statusBarsPadding()) {
             Row(
                 Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -206,12 +223,18 @@ fun DeadlineScreen(
             ) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Button(
-                        onClick = { editing = null; editingFrom = null; formOpen = true },
+                        onClick = { editRule(null) },
                         modifier = Modifier.testTag("deadline-create"),
                     ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_002)) }
                     OutlinedButton(
                         onClick = { scope.launch { model.perform(action = { service.refresh() }) } },
                     ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_003)) }
+                }
+                drafts.forEach { draft ->
+                    OutlinedButton(onClick = { editingDraftId = draft.id }, modifier = Modifier.fillMaxWidth()) {
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.deadline_draft_resume,
+                            draft.fields.title.ifBlank { context.getString(com.timeagent.R.string.deadline_draft_untitled) }))
+                    }
                 }
                 Text(
                     androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_004),
@@ -415,23 +438,30 @@ fun DeadlineScreen(
         }
     }
 
-    if (formOpen) {
-        RuleDialog(
-            initial = editing,
-            fromDefault = editingFrom,
-            projects = data.projects.filter { it.deletedAt == null },
-            zone = zone,
-            today=today,
-            onDismiss = { formOpen = false },
-            onSave = { item, version, from ->
-                scope.launch {
-                    model.perform(
-                        onSuccess = { formOpen = false; editing = null; editingFrom = null },
-                        action = { service.saveRule(item, version, from, UUID.randomUUID().toString()) },
-                    )
-                }
-            },
-        )
+    editingDraftId?.let { id ->
+        val draft = remember(id) { draftStore.read(id) }
+        val busy by model.busy.collectAsState()
+        if (draft != null) key(id) {
+            RuleDialog(
+                initial = draft,
+                projects = data.projects.filter { it.deletedAt == null },
+                busy = busy,
+                onDraftChange = draftStore::save,
+                onRemoveDraft = { draftStore.remove(id) },
+                onDismiss = { editingDraftId = null },
+                onSave = { item, version, from, requestId ->
+                    val result = model.repository.commands.execute(com.timeagent.domain.command.SaveRecurringRule(
+                        requestId, item, version, from, RuleChangeScope.INCLUDING_PENDING))
+                    if (result.status in setOf(CommandStatus.APPLIED, CommandStatus.DUPLICATE)) {
+                        result.undoToken?.let { token ->
+                            undoMessage = com.timeagent.ui.components.UndoMessage(result.requestId,
+                                context.getString(com.timeagent.R.string.deadline_draft_saved), token)
+                        }
+                    }
+                    result
+                },
+            )
+        } else LaunchedEffect(id) { editingDraftId = null }
     }
 
     delayChoice?.let { instance ->
@@ -447,9 +477,7 @@ fun DeadlineScreen(
                 TextButton(onClick = {
                     delayChoice = null
                     if (rule != null) {
-                        editing = rule
-                        editingFrom = parseDate(instance.originalDate)
-                        formOpen = true
+                        editRule(rule, parseDate(instance.originalDate))
                     }
                 }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_017)) }
             },
@@ -685,40 +713,60 @@ private fun DeadlineTimeField(label: String, text: String, onChange: (String) ->
 
 @Composable
 private fun RuleDialog(
-    initial: RecurringRuleEntity?,
-    fromDefault: LocalDate?,
+    initial: DeadlineEditorDraft,
     projects: List<ProjectEntity>,
-    zone: ZoneId,
-    today:LocalDate,
+    busy: Boolean,
+    onDraftChange: (DeadlineEditorDraft) -> Boolean,
+    onRemoveDraft: () -> Boolean,
     onDismiss: () -> Unit,
-    onSave: (RecurringRuleEntity, Long?, LocalDate) -> Unit,
+    onSave: suspend (RecurringRuleEntity, Long?, LocalDate, String) -> CommandResult,
 ) {
     val context = LocalContext.current
-    val old = remember(initial) { initial?.let { rulePattern(it) } }
-    val ruleId=remember(initial?.id){initial?.id?:UUID.randomUUID().toString()}
-    var title by remember { mutableStateOf(initial?.title.orEmpty()) }
-    var category by remember { mutableStateOf(initial?.category?.ifBlank { "其他" } ?: "其他") }
-    var dateText by remember { mutableStateOf(old?.startDate ?: today.plusDays(1).toString()) }
-    var timeText by remember {
-        mutableStateOf(old?.minuteOfDay?.let { "%02d:%02d".format(it / 60, it % 60) } ?: "09:00")
-    }
-    var frequency by remember { mutableStateOf(old?.frequency ?: "ONCE") }
-    var leadText by remember { mutableStateOf(old?.leadMinutes?.let { (it / 1440).toString() }.orEmpty()) }
-    var projectId by remember { mutableStateOf(initial?.projectId) }
-    var reference by remember { mutableStateOf(initial?.reference.orEmpty()) }
-    var fromText by remember {
-        mutableStateOf((fromDefault ?: today).toString())
-    }
+    val scope = rememberCoroutineScope()
+    var draft by remember(initial.id) { mutableStateOf(initial) }
+    var completed by remember(initial.id) { mutableStateOf(initial.saved) }
+    var submitting by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
+    val original = initial.original
+    val old = remember(initial.id) { original?.let { rulePattern(it) } }
+    val today = remember(initial.id) { LocalDate.parse(initial.baseDate) }
+    val title = draft.fields.title
+    val category = draft.fields.category
+    val dateText = draft.fields.dateText
+    val timeText = draft.fields.timeText
+    val frequency = draft.fields.frequency
+    val leadText = draft.fields.leadText
+    val projectId = draft.fields.projectId
+    val reference = draft.fields.reference
+    val fromText = draft.fields.fromText
+    val editing = !busy && !submitting && !completed
+    fun update(fields: DeadlineFields) {
+        if (busy || submitting || completed || fields == draft.fields) return
+        draft = draft.copy(fields = fields, requestId = UUID.randomUUID().toString())
+        error = if (onDraftChange(draft)) null else context.getString(com.timeagent.R.string.deadline_draft_write_failed)
+    }
+    fun cleanup() {
+        if (onRemoveDraft()) onDismiss()
+        else error = context.getString(if (completed) com.timeagent.R.string.deadline_draft_cleanup_failed else com.timeagent.R.string.deadline_draft_write_failed)
+    }
+    val dismiss = rememberDraftExit(initial.id, draft.fields.values(), !editing,
+        onDiscard = ::cleanup,
+        onKeep = {
+            if (onDraftChange(draft)) onDismiss()
+            else error = context.getString(com.timeagent.R.string.deadline_draft_write_failed)
+        }, initialFields = initial.baseline.values())
 
     AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(context.getString(if (initial == null) com.timeagent.R.string.deadline_picker_create else com.timeagent.R.string.deadline_picker_edit)) },
+        onDismissRequest = { if (completed) cleanup() else dismiss() },
+        title = { Text(context.getString(if (original == null) com.timeagent.R.string.deadline_picker_create else com.timeagent.R.string.deadline_picker_edit)) },
         text = {
-            Column(Modifier.heightIn(max = 520.dp).verticalScroll(rememberScrollState())) {
+            if (completed) Column {
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.deadline_draft_saved))
+                error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+            } else Column(Modifier.heightIn(max = 520.dp).verticalScroll(rememberScrollState())) {
                 OutlinedTextField(
                     value = title,
-                    onValueChange = { title = it },
+                    onValueChange = { update(draft.fields.copy(title = it)) }, enabled = editing,
                     label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_template_editor_006)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth().testTag("deadline-title"),
@@ -728,7 +776,7 @@ private fun RuleDialog(
                     listOf("续费", "归还", "报销", "生日", "其他").forEach { item ->
                         FilterChip(
                             selected = category == item,
-                            onClick = { category = item },
+                            onClick = { update(draft.fields.copy(category = item)) }, enabled = editing,
                             label = { Text(item) },
                             modifier = Modifier.padding(end = 6.dp),
                         )
@@ -738,20 +786,20 @@ private fun RuleDialog(
                     label = context.getString(com.timeagent.R.string.deadline_picker_date),
                     text = dateText,
                     fallback = today.plusDays(1),
-                    onChange = { dateText = it; error = null },
+                    onChange = { update(draft.fields.copy(dateText = it)) },
                     modifier = Modifier.testTag("deadline-date"),
                 )
                 DeadlineTimeField(
                     label = context.getString(com.timeagent.R.string.deadline_picker_time),
                     text = timeText,
-                    onChange = { timeText = it; error = null },
+                    onChange = { update(draft.fields.copy(timeText = it)) },
                     modifier = Modifier.testTag("deadline-time"),
                 )
                 Row(Modifier.horizontalScroll(rememberScrollState())) {
                     listOf("ONCE" to "一次", "MONTHLY" to "每月", "YEARLY" to "每年").forEach { (key, label) ->
                         FilterChip(
                             selected = frequency == key,
-                            onClick = { frequency = key },
+                            onClick = { update(draft.fields.copy(frequency = key)) }, enabled = editing,
                             label = { Text(label) },
                             modifier = Modifier.padding(end = 6.dp),
                         )
@@ -759,39 +807,42 @@ private fun RuleDialog(
                 }
                 OutlinedTextField(
                     value = leadText,
-                    onValueChange = { leadText = it.filter { ch -> ch.isDigit() } },
+                    onValueChange = { update(draft.fields.copy(leadText = it.filter { ch -> ch.isDigit() })) }, enabled = editing,
                     label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_030)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth().testTag("deadline-lead"),
                 )
-                if (initial != null) {
+                if (original != null) {
                     DeadlineDateField(
                         label = context.getString(com.timeagent.R.string.deadline_picker_effective),
                         text = fromText,
-                        fallback = fromDefault ?: today,
-                        onChange = { fromText = it; error = null },
+                        fallback = today,
+                        onChange = { update(draft.fields.copy(fromText = it)) },
                     )
                 }
                 Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_template_editor_009), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(top = 8.dp))
                 Row(Modifier.horizontalScroll(rememberScrollState())) {
                     FilterChip(
                         selected = projectId == null,
-                        onClick = { projectId = null },
+                        onClick = { update(draft.fields.copy(projectId = null)) }, enabled = editing,
                         label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_032)) },
                         modifier = Modifier.padding(end = 6.dp),
                     )
                     projects.forEach { project ->
                         FilterChip(
                             selected = projectId == project.id,
-                            onClick = { projectId = project.id },
+                            onClick = { update(draft.fields.copy(projectId = project.id)) }, enabled = editing,
                             label = { Text(project.name) },
                             modifier = Modifier.padding(end = 6.dp),
                         )
                     }
                 }
+                if (projectId != null && projects.none { it.id == projectId }) {
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.deadline_draft_project_missing), color = MaterialTheme.colorScheme.error)
+                }
                 OutlinedTextField(
                     value = reference,
-                    onValueChange = { if (it.length <= 20000) reference = it },
+                    onValueChange = { if (it.length <= 20000) update(draft.fields.copy(reference = it)) }, enabled = editing,
                     label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_033)) },
                     minLines = 2,
                     modifier = Modifier.fillMaxWidth(),
@@ -807,56 +858,80 @@ private fun RuleDialog(
             }
         },
         confirmButton = {
-            TextButton(modifier = Modifier.testTag("deadline-save"), onClick = {
-                val date = parseDate(dateText)
-                val time = runCatching { LocalTime.parse(timeText.trim(), timeFmt) }.getOrNull()
-                val days = if (leadText.isBlank()) null else leadText.toIntOrNull()
-                val from = if (initial == null) {
-                    if (frequency == "ONCE") date else today
-                } else parseDate(fromText)
+            TextButton(modifier = Modifier.testTag("deadline-save"), enabled = !busy && !submitting, onClick = {
+                if (completed) { cleanup(); return@TextButton }
+                if (busy || submitting) return@TextButton
+                val pending = draft
+                val fields = pending.fields
+                val date = parseDate(fields.dateText)
+                val time = runCatching { LocalTime.parse(fields.timeText.trim(), timeFmt) }.getOrNull()
+                val days = if (fields.leadText.isBlank()) null else fields.leadText.toIntOrNull()
+                val from = if (pending.original == null) {
+                    if (fields.frequency == "ONCE") date else LocalDate.parse(pending.baseDate)
+                } else parseDate(fields.fromText)
                 when {
-                    title.isBlank() -> error = context.getString(com.timeagent.R.string.deadline_picker_error_title)
+                    fields.title.isBlank() -> error = context.getString(com.timeagent.R.string.deadline_picker_error_title)
                     date == null -> error = context.getString(com.timeagent.R.string.deadline_picker_error_date)
                     time == null -> error = context.getString(com.timeagent.R.string.deadline_picker_error_time)
-                    leadText.isNotBlank() && (days == null || days !in 0..366) -> error = context.getString(com.timeagent.R.string.deadline_picker_error_lead)
+                    fields.leadText.isNotBlank() && (days == null || days !in 0..366) -> error = context.getString(com.timeagent.R.string.deadline_picker_error_lead)
                     from == null -> error = context.getString(com.timeagent.R.string.deadline_picker_error_effective)
                     else -> {
                         val pattern = RecurringPattern(
-                            id = ruleId,
-                            frequency = frequency,
+                            id = pending.id,
+                            frequency = fields.frequency,
                             startDate = date.toString(),
                             minuteOfDay = time.hour * 60 + time.minute,
                             durationMinutes = old?.durationMinutes?:30,
                             untilDate=old?.untilDate,
-                            zoneId = old?.zoneId ?: zone.id,
+                            zoneId = old?.zoneId ?: pending.zoneId,
                             leadMinutes = days?.times(1440),
                             paused = old?.paused ?: false,
                             effectiveFrom = from.toString(),
                         )
-                        val item = if (initial == null) {
+                        val item = if (pending.original == null) {
                             RecurringRuleEntity(
-                                id = ruleId,
-                                title = title.trim(),
+                                id = pending.id,
+                                title = fields.title.trim(),
                                 patternJson = gson.toJson(pattern),
                                 domain = DEADLINE_DOMAIN,
-                                category = category,
-                                reference = reference,
-                                projectId = projectId,
+                                category = fields.category,
+                                reference = fields.reference,
+                                projectId = fields.projectId,
                             )
                         } else {
-                            initial.copy(
-                                title = title.trim(),
+                            pending.original.copy(
+                                title = fields.title.trim(),
                                 patternJson = gson.toJson(pattern),
-                                category = category,
-                                reference = reference,
-                                projectId = projectId,
+                                category = fields.category,
+                                reference = fields.reference,
+                                projectId = fields.projectId,
                             )
                         }
-                        onSave(item, initial?.version, from)
+                        if (!onDraftChange(pending)) {
+                            error = context.getString(com.timeagent.R.string.deadline_draft_write_failed)
+                            return@TextButton
+                        }
+                        submitting = true
+                        scope.launch {
+                            try {
+                                val result = onSave(item, pending.original?.version, from, pending.requestId)
+                                if (result.status in setOf(CommandStatus.APPLIED, CommandStatus.DUPLICATE)) {
+                                    completed = true
+                                    draft = pending.copy(saved = true)
+                                    onDraftChange(draft)
+                                    cleanup()
+                                } else error = result.message
+                            } catch (failure: Exception) {
+                                if (failure is CancellationException) throw failure
+                                error = failure.message ?: context.getString(com.timeagent.R.string.deadline_draft_save_failed)
+                            } finally {
+                                submitting = false
+                            }
+                        }
                     }
                 }
-            }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) }
+            }) { Text(androidx.compose.ui.res.stringResource(if (completed) com.timeagent.R.string.action_close else com.timeagent.R.string.action_save)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
+        dismissButton = { if (!completed) TextButton(onClick = dismiss, enabled = editing) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }
