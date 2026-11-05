@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="project_task_create_action">新建项目任务</string>
+    <string name="project_task_created_undo">已新建项目任务</string>
+    <string name="project_task_parent_changed">父任务归属已变化，尚未保存。请重新打开后核对。</string>
+</resources>

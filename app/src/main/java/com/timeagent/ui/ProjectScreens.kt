@@ -362,6 +362,8 @@ fun ProjectScreen(
     }
 
     addingTaskFor?.let { project ->
+        val saving by model.busy.collectAsState()
+        val newTaskId = rememberSaveable(project.id, addingTaskParentId) { UUID.randomUUID().toString() }
         val roots = tasks.filter {
             val p = placements[it.id]
             p != null && p.projectId == project.id && p.parentTaskId == null
@@ -369,12 +371,12 @@ fun ProjectScreen(
         AddTaskDialog(
             roots = roots,
             initialParentId = addingTaskParentId,
+            busy = saving,
             onDismiss = {
                 addingTaskFor = null
                 addingTaskParentId = null
             },
-            onConfirm = { title, minutes, parentId ->
-                val newTaskId = UUID.randomUUID().toString()
+            onConfirm = { title, minutes, parentId, requestId ->
                 val entity = TaskEntity(
                     id = newTaskId,
                     title = title,
@@ -388,17 +390,14 @@ fun ProjectScreen(
                         addingTaskParentId = null
                     },
                     action = {
-                        model.repository.assistantTransaction(UUID.randomUUID().toString()) {
-                            model.repository.saveTask(entity, expectedVersion = null)
-                            model.repository.savePlacement(
-                                TaskPlacementEntity(
-                                    taskId = newTaskId,
-                                    projectId = project.id,
-                                    parentTaskId = parentId,
-                                    version = 0
-                                ),
-                                expectedVersion = null
-                            )
+                        val result = model.repository.commands.execute(com.timeagent.domain.command.WriteProject(
+                            requestId, com.timeagent.domain.command.ProjectMutation.CreateTask(
+                                entity, project.id, project.version, parentId, parentId?.let { placements[it]?.version })))
+                        check(result.status in setOf(com.timeagent.domain.command.CommandStatus.APPLIED,
+                            com.timeagent.domain.command.CommandStatus.DUPLICATE)) { result.message }
+                        result.undoToken?.let { token ->
+                            deleteUndo = com.timeagent.ui.components.UndoMessage(result.requestId,
+                                context.getString(R.string.project_task_created_undo), token)
                         }
                     }
                 )
@@ -783,17 +782,19 @@ private fun AddExistingTaskDialog(
 private fun AddTaskDialog(
     roots: List<TaskEntity>,
     initialParentId: String?,
+    busy: Boolean,
     onDismiss: () -> Unit,
-    onConfirm: (title: String, minutes: Int, parentId: String?) -> Unit
+    onConfirm: (title: String, minutes: Int, parentId: String?, requestId: String) -> Unit
 ) {
     val context = LocalContext.current
     var title by rememberSaveable { mutableStateOf("") }
     var minutesText by rememberSaveable { mutableStateOf("30") }
     var parentId by rememberSaveable { mutableStateOf(initialParentId) }
     var error by rememberSaveable { mutableStateOf<String?>(null) }
+    val requestId = rememberSaveable(title, minutesText, parentId) { UUID.randomUUID().toString() }
 
     AlertDialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = { if (!busy) onDismiss() },
         title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_new_task)) },
         text = {
             Column(
@@ -804,6 +805,7 @@ private fun AddTaskDialog(
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it; error = null },
+                    enabled = !busy,
                     label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_009)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -813,29 +815,29 @@ private fun AddTaskDialog(
                     minutes = minutesText.trim().toIntOrNull()?.takeIf { it > 0 } ?: 0,
                     onChange = { },
                     textValue = minutesText,
-                    onTextChange = { minutesText = it; error = null }
+                    onTextChange = { if (!busy) { minutesText = it; error = null } }
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_018), style = MaterialTheme.typography.bodySmall)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { parentId = null }
+                        .clickable(enabled = !busy) { parentId = null }
                         .padding(vertical = 2.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    RadioButton(selected = parentId == null, onClick = { parentId = null })
+                    RadioButton(selected = parentId == null, onClick = { parentId = null }, enabled = !busy)
                     Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_019))
                 }
                 roots.forEach { root ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { parentId = root.id }
+                            .clickable(enabled = !busy) { parentId = root.id }
                             .padding(vertical = 2.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        RadioButton(selected = parentId == root.id, onClick = { parentId = root.id })
+                        RadioButton(selected = parentId == root.id, onClick = { parentId = root.id }, enabled = !busy)
                         Text(root.title)
                     }
                 }
@@ -861,12 +863,13 @@ private fun AddTaskDialog(
                         error = context.getString(R.string.project_editor_error_minutes_positive)
                         return@TextButton
                     }
-                    onConfirm(trimmed, minutes, parentId)
-                }
+                    onConfirm(trimmed, minutes, parentId, requestId)
+                },
+                enabled = !busy
             ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
+            TextButton(onClick = onDismiss, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
         }
     )
 }

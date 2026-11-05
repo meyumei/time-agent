@@ -203,6 +203,22 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
                                         version("GOAL", mutation.goal.id, mutation.expectedVersion, mutation.expectedVersion == null)
                                         repository.saveWeeklyGoalRaw(mutation.goal, mutation.expectedVersion)
                                     }
+                                    is ProjectMutation.CreateTask -> {
+                                        version("PROJECT", mutation.projectId, mutation.expectedProjectVersion)
+                                        version("TASK", mutation.task.id, null, create = true)
+                                        version("PLACEMENT", mutation.task.id, null, create = true)
+                                        mutation.parentTaskId?.let { parentId ->
+                                            requireNotNull(mutation.expectedParentPlacementVersion) {
+                                                repository.applicationContext?.getString(com.timeagent.R.string.project_task_parent_changed)
+                                                    ?: "Reopen the parent task before saving."
+                                            }
+                                            version("PLACEMENT", parentId, mutation.expectedParentPlacementVersion)
+                                        }
+                                        val saved = repository.saveTaskRaw(mutation.task, null)
+                                        repository.savePlacementRaw(TaskPlacementEntity(
+                                            saved.id, mutation.projectId, mutation.parentTaskId), null)
+                                        saved
+                                    }
                                 })
                                 emptyList()
                             }
@@ -472,7 +488,9 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
         is AdjustRecurringTimeline -> "调整周期日程"
         is WriteTaskDetails -> repository.applicationContext?.getString(com.timeagent.R.string.task_save_action) ?: "Save task"
         is DeleteTask -> repository.applicationContext?.getString(com.timeagent.R.string.task_delete_action) ?: "Delete task"
-        is WriteProject -> repository.applicationContext?.getString(com.timeagent.R.string.project_write_action) ?: "Update project"
+        is WriteProject -> if (command.mutation is ProjectMutation.CreateTask)
+            repository.applicationContext?.getString(com.timeagent.R.string.project_task_create_action) ?: "Create project task"
+            else repository.applicationContext?.getString(com.timeagent.R.string.project_write_action) ?: "Update project"
         is WriteLedger -> when (command.mutation) {
             is LedgerMutation.SaveAccount -> "保存账户"
             is LedgerMutation.ArchiveAccount -> "归档账户"

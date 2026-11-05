@@ -1,6 +1,7 @@
 package com.timeagent.domain.command
 
 import com.timeagent.data.ProjectEntity
+import com.timeagent.data.TaskEntity
 import com.timeagent.data.TaskPlacementEntity
 import com.timeagent.data.WeeklyGoalEntity
 
@@ -15,4 +16,11 @@ sealed interface ProjectMutation {
     data class Delete(val id: String, val expectedVersion: Long) : ProjectMutation
     data class PlaceTask(val placement: TaskPlacementEntity, val expectedVersion: Long?) : ProjectMutation
     data class SaveGoal(val goal: WeeklyGoalEntity, val expectedVersion: Long?) : ProjectMutation
+    data class CreateTask(
+        val task: TaskEntity,
+        val projectId: String,
+        val expectedProjectVersion: Long,
+        val parentTaskId: String? = null,
+        val expectedParentPlacementVersion: Long? = null,
+    ) : ProjectMutation
 }
