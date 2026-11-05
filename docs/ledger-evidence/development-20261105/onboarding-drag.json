@@ -1,0 +1,10 @@
+{
+  "date": "2026-11-05",
+  "command": "./scripts/build.ps1 -Tasks @(':app:compileDebugKotlin')",
+  "exitCode": 0,
+  "durationSeconds": 10.33,
+  "log": ".tmp/development-20261105/compile-onboarding-drag.log",
+  "testsRun": [],
+  "deviceOperations": [],
+  "limitations": "Kotlin compilation and source diff only; no tests, lint analysis or gesture acceptance"
+}
