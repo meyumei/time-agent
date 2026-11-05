@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="project_draft_resume">恢复项目草稿：%1$s</string>
+    <string name="project_draft_untitled">未命名项目</string>
+    <string name="project_draft_write_failed">项目草稿未能保存到本地。当前输入仍在，请重试后再离开。</string>
+    <string name="project_draft_cleanup_failed">项目已保存，草稿清理失败。请点关闭重试清理，不会再次保存项目。</string>
+    <string name="project_draft_saved">项目已保存</string>
+    <string name="project_draft_save_failed">项目未能保存，输入仍保留，请重试。</string>
+</resources>

@@ -1,0 +1,10 @@
+{
+  "date": "2026-11-05",
+  "command": "./scripts/build.ps1 -Tasks @(':app:compileDebugKotlin')",
+  "exitCode": 0,
+  "durationSeconds": 73.98,
+  "log": ".tmp/development-20261105/compile-project-editor-drafts.log",
+  "testsRun": [],
+  "deviceOperations": [],
+  "limitations": "Kotlin compilation and source review only; no tests, lint analysis or device acceptance"
+}

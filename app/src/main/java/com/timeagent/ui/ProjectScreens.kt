@@ -22,6 +22,10 @@ import com.timeagent.data.*
 import com.timeagent.ui.components.DateField
 import com.timeagent.ui.components.DurationField
 import com.timeagent.projects.projectProgress
+import com.timeagent.domain.command.CommandResult
+import com.timeagent.domain.command.CommandStatus
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
@@ -123,8 +127,15 @@ fun ProjectScreen(
     var detailId by rememberSaveable(initialProjectId) { mutableStateOf(initialProjectId) }
     val detail = projects.firstOrNull { it.id == detailId }
     BackHandler(enabled = detailId != null) { detailId = null }
-    var showCreate by rememberSaveable { mutableStateOf(false) }
-    var editing by rememberSaveable(stateSaver = projectEntitySaver) { mutableStateOf<ProjectEntity?>(null) }
+    val draftStore = remember(context) { ProjectEditorDraftStore(context) }
+    var editingDraftId by rememberSaveable { mutableStateOf<String?>(null) }
+    val projectDrafts = remember(editingDraftId, data.projects) { draftStore.all() }
+    fun editProject(project: ProjectEntity?) {
+        val draft = project?.let { draftStore.read(it.id) } ?: ProjectEditorDraft.create(project,
+            project?.dueAt?.let { formatDate(it, zone) }.orEmpty())
+        if (draftStore.save(draft)) editingDraftId = draft.id
+        else model.report(context.getString(R.string.project_draft_write_failed))
+    }
     var deleting by rememberSaveable(stateSaver = projectEntitySaver) { mutableStateOf<ProjectEntity?>(null) }
     var addingExistingFor by rememberSaveable(stateSaver = projectEntitySaver) { mutableStateOf<ProjectEntity?>(null) }
     var addingTaskFor by rememberSaveable(stateSaver = projectEntitySaver) { mutableStateOf<ProjectEntity?>(null) }
@@ -154,9 +165,15 @@ fun ProjectScreen(
         ) {
             if (detailId == null) item {
                 Button(
-                    onClick = { showCreate = true },
+                    onClick = { editProject(null) },
                     modifier = Modifier.testTag("project-create")
                 ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_001)) }
+            }
+            items(projectDrafts, key = { "project-draft:${it.id}" }) { draft ->
+                OutlinedButton(onClick = { editingDraftId = draft.id }, modifier = Modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.project_draft_resume,
+                        draft.name.ifBlank { stringResource(R.string.project_draft_untitled) }))
+                }
             }
             if (projects.isEmpty()) {
                 item { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_002)) }
@@ -222,7 +239,7 @@ fun ProjectScreen(
                         detailId = project.id
                     },
                     onTask = onTask,
-                    onEdit = { editing = project },
+                    onEdit = { editProject(project) },
                     onDelete = { deleting = project },
                     onAddExisting = { addingExistingFor = project },
                     onAddTask = {
@@ -246,63 +263,29 @@ fun ProjectScreen(
         }
     }
 
-    if (showCreate) {
-        ProjectEditDialog(
-            initial = null,
+    editingDraftId?.let { id ->
+        val draft = remember(id) { draftStore.read(id) }
+        val busy by model.busy.collectAsState()
+        if (draft != null) ProjectEditDialog(
+            initial = draft,
             zone = zone,
             today = now.atZone(zone).toLocalDate(),
-            onDismiss = { showCreate = false },
-            onSave = { name, dueAt, status ->
-                val stamp = now.toEpochMilli()
-                model.perform(
-                    onSuccess = { showCreate = false },
-                    action = {
-                        model.repository.saveProject(
-                            ProjectEntity(
-                                id = UUID.randomUUID().toString(),
-                                name = name,
-                                dueAt = dueAt,
-                                status = status,
-                                createdAt = stamp,
-                                updatedAt = stamp,
-                                version = 0,
-                                deletedAt = null
-                            ),
-                            expectedVersion = null
-                        )
+            busy = busy,
+            onDraftChange = draftStore::save,
+            onRemoveDraft = { draftStore.remove(id) },
+            onDismiss = { editingDraftId = null },
+            onSave = { project, expectedVersion, requestId ->
+                val result = model.repository.commands.execute(com.timeagent.domain.command.WriteProject(
+                    requestId, com.timeagent.domain.command.ProjectMutation.Save(project, expectedVersion)))
+                if (result.status in setOf(CommandStatus.APPLIED, CommandStatus.DUPLICATE)) {
+                    result.undoToken?.let { token ->
+                        deleteUndo = com.timeagent.ui.components.UndoMessage(result.requestId,
+                            context.getString(R.string.project_draft_saved), token)
                     }
-                )
-            }
-        )
-    }
-
-    editing?.let { project ->
-        ProjectEditDialog(
-            initial = project,
-            zone = zone,
-            today = now.atZone(zone).toLocalDate(),
-            onDismiss = { editing = null },
-            onSave = { name, dueAt, status ->
-                model.perform(
-                    onSuccess = { editing = null },
-                    action = {
-                        model.repository.saveProject(
-                            ProjectEntity(
-                                id = project.id,
-                                name = name,
-                                dueAt = dueAt,
-                                status = status,
-                                createdAt = project.createdAt,
-                                updatedAt = now.toEpochMilli(),
-                                version = project.version,
-                                deletedAt = null
-                            ),
-                            expectedVersion = project.version
-                        )
-                    }
-                )
-            }
-        )
+                }
+                result
+            })
+        else LaunchedEffect(id) { editingDraftId = null }
     }
 
     deleting?.let { project ->
@@ -596,39 +579,65 @@ private fun TaskRow(
 
 @Composable
 private fun ProjectEditDialog(
-    initial: ProjectEntity?,
+    initial: ProjectEditorDraft,
     zone: ZoneId,
     today: LocalDate,
+    busy: Boolean,
+    onDraftChange: (ProjectEditorDraft) -> Boolean,
+    onRemoveDraft: () -> Boolean,
     onDismiss: () -> Unit,
-    onSave: (name: String, dueAt: Long?, status: String) -> Unit
+    onSave: suspend (ProjectEntity, Long?, String) -> CommandResult,
 ) {
     val context = LocalContext.current
-    var name by rememberSaveable(initial?.id) { mutableStateOf(initial?.name ?: "") }
-    var dueText by rememberSaveable(initial?.id) {
-        mutableStateOf(initial?.dueAt?.let { formatDate(it, zone) } ?: "")
+    val scope = rememberCoroutineScope()
+    var draft by remember(initial.id) { mutableStateOf(initial) }
+    var submitting by remember { mutableStateOf(false) }
+    var completed by remember(initial.id) { mutableStateOf(initial.saved) }
+    var error by remember { mutableStateOf<String?>(null) }
+    val name = draft.name
+    val dueText = draft.dueText
+    val status = draft.status
+    val editing = !busy && !submitting && !completed
+    fun update(next: ProjectEditorDraft) {
+        if (busy || submitting || completed || next == draft) return
+        draft = next.copy(requestId = UUID.randomUUID().toString())
+        error = if (onDraftChange(draft)) null else context.getString(R.string.project_draft_write_failed)
     }
-    var status by rememberSaveable(initial?.id) { mutableStateOf(initial?.status ?: "ACTIVE") }
-    var error by rememberSaveable(initial?.id) { mutableStateOf<String?>(null) }
+    fun cleanup() {
+        if (onRemoveDraft()) onDismiss()
+        else error = context.getString(if (completed) R.string.project_draft_cleanup_failed else R.string.project_draft_write_failed)
+    }
+    val dismiss = rememberDraftExit(initial.id, listOf(name, dueText, status), !editing,
+        onDiscard = ::cleanup,
+        onKeep = {
+            if (onDraftChange(draft)) onDismiss()
+            else error = context.getString(R.string.project_draft_write_failed)
+        }, initialFields = listOf(initial.original?.name.orEmpty(), initial.initialDueText,
+            initial.original?.status ?: "ACTIVE"))
 
     AlertDialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = { if (completed) cleanup() else dismiss() },
         title = {
             Text(
                 stringResource(
-                    if (initial == null) R.string.project_editor_title_create
+                    if (initial.original == null) R.string.project_editor_title_create
                     else R.string.project_editor_title_edit
                 )
             )
         },
         text = {
-            Column(
+            if (completed) Column {
+                Text(stringResource(R.string.project_draft_saved))
+                error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+            } else Column(
                 modifier = Modifier
                     .heightIn(max = 380.dp)
                     .verticalScroll(rememberScrollState())
             ) {
                 OutlinedTextField(
                     value = name,
-                    onValueChange = { name = it; error = null },
+                    onValueChange = { update(draft.copy(name = it)) },
+                    enabled = editing,
                     label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_011)) },
                     singleLine = true,
                     modifier = Modifier
@@ -639,17 +648,18 @@ private fun ProjectEditDialog(
                 val dueDate = tryParseDate(dueText.trim())
                 if (dueText.isBlank()) {
                     OutlinedButton(
-                        onClick = { dueText = today.toString(); error = null },
+                        onClick = { update(draft.copy(dueText = today.toString())) },
+                        enabled = editing,
                         modifier = Modifier.fillMaxWidth()
                     ) { Text(stringResource(R.string.project_editor_due_set)) }
                 } else {
                     DateField(
                         label = stringResource(R.string.text_project_screens_012),
                         value = dueDate ?: today,
-                        onValueChange = { dueText = it.toString(); error = null },
+                        onValueChange = { update(draft.copy(dueText = it.toString())) },
                         error = if (dueDate == null) context.getString(R.string.project_editor_error_due_format) else null
                     )
-                    TextButton(onClick = { dueText = ""; error = null }) {
+                    TextButton(onClick = { update(draft.copy(dueText = "")) }, enabled = editing) {
                         Text(stringResource(R.string.project_editor_due_clear))
                     }
                 }
@@ -663,7 +673,7 @@ private fun ProjectEditDialog(
                             "COMPLETED" -> stringResource(R.string.project_editor_status_completed)
                             else -> option
                         }
-                        TextButton(onClick = { status = option; error = null }) {
+                        TextButton(onClick = { update(draft.copy(status = option)) }, enabled = editing) {
                             Text(
                                 text = if (status == option) stringResource(R.string.project_editor_option_selected, label)
                                 else label
@@ -683,12 +693,15 @@ private fun ProjectEditDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val trimmedName = name.trim()
+                    if (completed) { cleanup(); return@TextButton }
+                    if (busy || submitting) return@TextButton
+                    val pending = draft
+                    val trimmedName = pending.name.trim()
                     if (trimmedName.isEmpty()) {
                         error = context.getString(R.string.project_editor_error_name_required)
                         return@TextButton
                     }
-                    val due = dueText.trim()
+                    val due = pending.dueText.trim()
                     val dueAt: Long?
                     if (due.isEmpty()) {
                         dueAt = null
@@ -700,13 +713,40 @@ private fun ProjectEditDialog(
                         }
                         dueAt = parsed.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli() - 1
                     }
-                    onSave(trimmedName, dueAt, status)
+                    if (!onDraftChange(pending)) {
+                        error = context.getString(R.string.project_draft_write_failed)
+                        return@TextButton
+                    }
+                    val original = pending.original
+                    val project = (original ?: ProjectEntity(pending.id, "")).copy(
+                        name = trimmedName, dueAt = dueAt, status = pending.status)
+                    val requestId = pending.requestId
+                    submitting = true
+                    scope.launch {
+                        try {
+                            val result = onSave(project, original?.version, requestId)
+                            if (result.status in setOf(CommandStatus.APPLIED, CommandStatus.DUPLICATE)) {
+                                completed = true
+                                draft = pending.copy(saved = true)
+                                onDraftChange(draft)
+                                cleanup()
+                            } else error = result.message
+                        } catch (failure: Exception) {
+                            if (failure is CancellationException) throw failure
+                            error = failure.message ?: context.getString(R.string.project_draft_save_failed)
+                        } finally {
+                            submitting = false
+                        }
+                    }
                 },
+                enabled = !busy && !submitting,
                 modifier = Modifier.testTag("project-save")
-            ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) }
+            ) { Text(stringResource(if (completed) R.string.action_close else R.string.action_save)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
+            if (!completed) TextButton(onClick = dismiss, enabled = editing) {
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel))
+            }
         }
     )
 }

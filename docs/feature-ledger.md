@@ -330,6 +330,7 @@ L01/L34：新建任务并安排为一个命令；新增无优先级保留旧优�
 | L01/L02，关联N03/N10 | FOCUS/HABIT 来源直达专注/习惯详情，实际来源兼容底层编号；缺失习惯提供重试与返回 | `t5.6-habit-source-navigation.md`；本日`habit-source-navigation-reviewed.json`及前两轮记录 | 明细点击、分段实际、逐级返回、缺失/更新/进程恢复、大字和TalkBack |
 | L02/L03/L07，关联N02/N03/N06/N09 | 快捷编辑持久草稿/恢复入口/三选退出，原版本和请求编号保存；现有使用元数据不被旧草稿回退 | `t5.4-quick-entry-drafts.md`；本日`quick-entry-drafts.json`，编译退出0 | 字段/归属/原始时长恢复、取消/重复保存/清理失败、原版本冲突、使用元数据、进程/大字/TalkBack |
 | L01/L03/L05 | 项目新增任务/子任务由一次命令写任务和归属、核对项目/父归属版本；同组撤销、稳定编号与八秒反馈 | `t4.1-project-task-command.md`；本日`project-task-command.json` | 连续保存、父/项目冲突无残留、同组撤销重做、保存期间返回、设备/大字/TalkBack |
+| L05，关联L01 | 项目新建/编辑磁盘草稿、恢复与三选退出；原版本/稳定项目及请求编号、提交快照、失败留存和八秒撤销 | `t4.1-project-editor-drafts.md`；本日`project-editor-drafts-final.json`，编译退出0 | 多草稿/进程恢复、冲突不覆盖、取消/重复保存/清理失败、撤销、截止时区/大字/TalkBack |
 
 复核 N01 后更正此前“报告示例过滤”待补判断：规格允许示例进入复盘，不能据裸报告查询断定违规；CSV/JSON/ICS 主数据已有示例排除，关联边界继续核对。
 
