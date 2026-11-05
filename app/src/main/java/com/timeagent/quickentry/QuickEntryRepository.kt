@@ -473,6 +473,8 @@ class QuickEntryRepository(
             icon = item.icon.trim().take(16),
             tagIds = item.tagIdList.filter { it in knownTags }.joinToString(","),
             sortOrder = sortOrder,
+            usageCount = before?.usageCount ?: item.usageCount,
+            lastUsedAt = if (before != null) before.lastUsedAt else item.lastUsedAt,
             createdAt = before?.createdAt ?: stamp,
             updatedAt = stamp,
             version = repository.nextVersion("QUICK_ENTRY", item.id, before?.version),
@@ -1074,8 +1076,9 @@ class QuickEntryModel(
         }
     }
 
-    suspend fun saveEntry(item: QuickEntryEntity, expectedVersion: Long?): Boolean = action("已保存快捷记录") {
-        quickEntries.saveEntry(item, expectedVersion)
+    suspend fun saveEntry(item: QuickEntryEntity, expectedVersion: Long?,
+        requestId: String = UUID.randomUUID().toString()): Boolean = action("已保存快捷记录") {
+        quickEntries.saveEntry(item, expectedVersion, requestId)
         true
     } ?: false
 

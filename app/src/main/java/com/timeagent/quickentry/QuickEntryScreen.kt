@@ -54,6 +54,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
@@ -61,9 +63,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.gson.Gson
 import com.timeagent.data.ActivityTemplateEntity
+import com.timeagent.R
 import com.timeagent.domain.command.QuickEntrySlot
 import com.timeagent.ui.components.UndoMessage
 import com.timeagent.ui.components.UndoSnackbar
+import com.timeagent.ui.rememberDraftExit
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -97,8 +101,16 @@ fun QuickEntryScreen(
     val scope = rememberCoroutineScope()
     val snackbar = remember { SnackbarHostState() }
     var undoMessage by remember { mutableStateOf<UndoMessage?>(null) }
-    var editing by remember { mutableStateOf<QuickEntryEntity?>(null) }
-    var creating by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val draftStore = remember(context) { QuickEntryEditorDraftStore(context) }
+    var editingId by rememberSaveable { mutableStateOf<String?>(null) }
+    val drafts = remember(editingId, state.entries) { draftStore.all() }
+    fun edit(entry: QuickEntryEntity?) {
+        val draft = entry?.let { draftStore.read(it.id) } ?: QuickEntryEditorDraft.create(
+            entry, state.activities.firstOrNull { it.archivedAt == null }?.id.orEmpty())
+        if (draftStore.save(draft)) editingId = draft.entry.id
+        else model.notify(context.getString(R.string.quick_draft_write_failed))
+    }
     val confirmationSaver = remember {
         Saver<QuickEntryLaunch.NeedsConfirmation?, String>(
             save = { it?.let { value -> Gson().toJson(value) } },
@@ -169,7 +181,7 @@ fun QuickEntryScreen(
             ExtendedFloatingActionButton(
                 text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_002)) },
                 icon = { Text("+", style = MaterialTheme.typography.titleLarge) },
-                onClick = { creating = true },
+                onClick = { edit(null) },
                 modifier = Modifier.testTag("quick-entry-add"),
             )
         },
@@ -205,12 +217,20 @@ fun QuickEntryScreen(
                     contentPadding = PaddingValues(16.dp, 12.dp, 16.dp, 96.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
+                    items(drafts, key = { "draft:${it.entry.id}" }) { draft ->
+                        OutlinedButton(onClick = { editingId = draft.entry.id }, enabled = !state.busy,
+                            modifier = Modifier.fillMaxWidth()) {
+                            Text(stringResource(R.string.quick_draft_resume,
+                                draft.entry.label?.takeIf(String::isNotBlank)
+                                    ?: stringResource(R.string.quick_draft_untitled)))
+                        }
+                    }
                     if (pinned.isNotEmpty()) {
                         item { SectionLabel("固定") }
                         items(pinned, key = { it.id }) { entry ->
                             QuickEntryRow(entry, state, orderedEntries(state), state.busy,
                                 onUse = { use(entry) },
-                                onEdit = { editing = entry },
+                                onEdit = { edit(entry) },
                                 onPin = { scope.launch { model.setPinned(entry.id, entry.version, !entry.pinned) } },
                                 onMove = { delta -> scope.launch { model.moveEntry(entry.id, delta) } },
                                 onDelete = { remove(entry) },
@@ -222,7 +242,7 @@ fun QuickEntryScreen(
                         items(recent, key = { it.id }) { entry ->
                             QuickEntryRow(entry, state, orderedEntries(state), state.busy,
                                 onUse = { use(entry) },
-                                onEdit = { editing = entry },
+                                onEdit = { edit(entry) },
                                 onPin = { scope.launch { model.setPinned(entry.id, entry.version, true) } },
                                 onMove = { delta -> scope.launch { model.moveEntry(entry.id, delta) } },
                                 onDelete = { remove(entry) },
@@ -234,7 +254,7 @@ fun QuickEntryScreen(
                         items(others, key = { it.id }) { entry ->
                             QuickEntryRow(entry, state, orderedEntries(state), state.busy,
                                 onUse = { use(entry) },
-                                onEdit = { editing = entry },
+                                onEdit = { edit(entry) },
                                 onPin = { scope.launch { model.setPinned(entry.id, entry.version, true) } },
                                 onMove = { delta -> scope.launch { model.moveEntry(entry.id, delta) } },
                                 onDelete = { remove(entry) },
@@ -249,7 +269,7 @@ fun QuickEntryScreen(
                                     Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_003), style = MaterialTheme.typography.titleMedium)
                                     Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_004),
                                         style = MaterialTheme.typography.bodyMedium)
-                                    OutlinedButton(onClick = { creating = true }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_005)) }
+                                    OutlinedButton(onClick = { edit(null) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_005)) }
                                 }
                             }
                         }
@@ -259,13 +279,14 @@ fun QuickEntryScreen(
         }
     }
 
-    if (creating || editing != null) {
-        QuickEntryEditorDialog(
-            model = model,
-            state = state,
-            existing = editing,
-            onDismiss = { creating = false; editing = null },
-        )
+    editingId?.let { id ->
+        val draft = remember(id) { draftStore.read(id) }
+        if (draft != null) QuickEntryEditorDialog(
+            model = model, state = state, initial = draft,
+            onDraftChange = draftStore::save,
+            onRemoveDraft = { draftStore.remove(id) },
+            onDismiss = { editingId = null },
+        ) else LaunchedEffect(id) { editingId = null }
     }
 
     conflict?.let { pending ->
@@ -355,30 +376,55 @@ private fun QuickEntryRow(
 private fun QuickEntryEditorDialog(
     model: QuickEntryModel,
     state: QuickEntryUiState,
-    existing: QuickEntryEntity?,
+    initial: QuickEntryEditorDraft,
+    onDraftChange: (QuickEntryEditorDraft) -> Boolean,
+    onRemoveDraft: () -> Boolean,
     onDismiss: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-    val key = existing?.id ?: "new"
+    val context = LocalContext.current
+    val key = initial.entry.id
+    val existing = initial.original
+    var draft by remember(key) { mutableStateOf(initial) }
+    var completed by remember(key) { mutableStateOf(initial.saved) }
+    var submitting by remember { mutableStateOf(false) }
+    val busy = state.busy || submitting || completed
     val activeActivities = state.activities.filter { it.archivedAt == null || it.id == existing?.activityId }
     val activeProjects = state.projects.filter { it.deletedAt == null }
     val activeTasks = state.tasks.filter { it.deletedAt == null && it.status != "CANCELLED" }
-    var activityId by remember(key) { mutableStateOf(existing?.activityId ?: activeActivities.firstOrNull()?.id.orEmpty()) }
-    var label by remember(key) { mutableStateOf(existing?.label.orEmpty()) }
-    var icon by remember(key) { mutableStateOf(existing?.icon.orEmpty()) }
-    var color by remember(key) { mutableStateOf(existing?.color?.takeIf { it != 0L } ?: 0xFF5756B7L) }
-    var actionName by remember(key) { mutableStateOf(existing?.action ?: QuickEntryAction.START_TIMER.name) }
-    var duration by remember(key) { mutableStateOf(existing?.defaultDurationMinutes?.toString().orEmpty()) }
-    var projectId by remember(key) { mutableStateOf(existing?.projectId) }
-    var taskId by remember(key) { mutableStateOf(existing?.taskId) }
-    var tags by remember(key) { mutableStateOf(existing?.tagIdList.orEmpty()) }
-    var pinned by remember(key) { mutableStateOf(existing?.pinned ?: false) }
+    val activityId = draft.entry.activityId
+    val label = draft.entry.label.orEmpty()
+    val icon = draft.entry.icon
+    val color = draft.entry.color
+    val actionName = draft.entry.action
+    val duration = draft.durationText
+    val projectId = draft.entry.projectId
+    val taskId = draft.entry.taskId
+    val tags = draft.entry.tagIdList
+    val pinned = draft.entry.pinned
     var activityMenu by remember { mutableStateOf(false) }
     var projectMenu by remember { mutableStateOf(false) }
     var taskMenu by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
 
+    fun update(next: QuickEntryEditorDraft) {
+        if (state.busy || submitting || completed || next == draft) return
+        draft = next.copy(requestId = UUID.randomUUID().toString())
+        error = if (onDraftChange(draft)) null else context.getString(R.string.quick_draft_write_failed)
+    }
+    fun cleanup() {
+        if (onRemoveDraft()) onDismiss()
+        else error = context.getString(if (completed) R.string.quick_draft_cleanup_failed else R.string.quick_draft_write_failed)
+    }
+    val dismiss = rememberDraftExit(key, listOf(draft.entry, duration), busy,
+        onDiscard = ::cleanup,
+        onKeep = {
+            if (onDraftChange(draft)) onDismiss()
+            else error = context.getString(R.string.quick_draft_write_failed)
+        }, initialFields = listOf(initial.baselineEntry, initial.baselineEntry.defaultDurationMinutes?.toString().orEmpty()))
+
     fun save() {
+        if (state.busy || submitting || completed) return
         if (activityId.isBlank()) {
             error = "请选择一个活动"
             return
@@ -388,9 +434,7 @@ private fun QuickEntryEditorDialog(
             error = "默认时长须为 1 至 10080 分钟"
             return
         }
-        val item = QuickEntryEntity(
-            id = existing?.id ?: UUID.randomUUID().toString(),
-            activityId = activityId,
+        val item = draft.entry.copy(
             label = label.trim().takeIf { it.isNotEmpty() },
             icon = icon.trim(),
             color = color,
@@ -399,24 +443,33 @@ private fun QuickEntryEditorDialog(
             tagIds = tags.joinToString(","),
             action = actionName,
             defaultDurationMinutes = minutes,
-            sortOrder = existing?.sortOrder ?: 0,
-            pinned = pinned,
-            usageCount = existing?.usageCount ?: 0,
-            lastUsedAt = existing?.lastUsedAt,
-            createdAt = existing?.createdAt ?: 0,
-            updatedAt = existing?.updatedAt ?: 0,
-            version = existing?.version ?: 0,
         )
+        submitting = true
         scope.launch {
-            if (model.saveEntry(item, existing?.version)) onDismiss()
+            try {
+                // Persist before submission so a process restart can replay the same request.
+                if (!onDraftChange(draft)) {
+                    error = context.getString(R.string.quick_draft_write_failed)
+                } else if (model.saveEntry(item, existing?.version, draft.requestId)) {
+                    completed = true
+                    draft = draft.copy(saved = true)
+                    onDraftChange(draft)
+                    cleanup()
+                }
+            } finally {
+                submitting = false
+            }
         }
     }
 
     AlertDialog(
-        onDismissRequest = { if (!state.busy) onDismiss() },
+        onDismissRequest = { if (completed) cleanup() else dismiss() },
         title = { Text(if (existing == null) "新建快捷记录" else "编辑快捷记录") },
         text = {
-            Column(
+            if (completed) Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(stringResource(R.string.quick_draft_saved))
+                error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+            } else Column(
                 Modifier.heightIn(max = 560.dp).verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
@@ -430,21 +483,21 @@ private fun QuickEntryEditorDialog(
                         activeActivities.forEach { activity ->
                             DropdownMenuItem(
                                 text = { Text(activityLabelOf(activity, state.activities)) },
-                                onClick = { activityId = activity.id; activityMenu = false },
+                                onClick = { update(draft.copy(entry = draft.entry.copy(activityId = activity.id))); activityMenu = false },
                             )
                         }
                     }
                 }
-                OutlinedTextField(value = label, onValueChange = { label = it.take(80) },
+                OutlinedTextField(value = label, onValueChange = { update(draft.copy(entry = draft.entry.copy(label = it.take(80)))) },
                     label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_008)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = icon, onValueChange = { icon = it.take(16) },
+                OutlinedTextField(value = icon, onValueChange = { update(draft.copy(entry = draft.entry.copy(icon = it.take(16)))) },
                     label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_009)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
                 Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_organization_activity_039))
                 Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     QUICK_ENTRY_COLORS.forEach { value ->
                         Box(
                             Modifier.size(32.dp).background(Color(value.toInt()), CircleShape)
-                                .clickable { color = value }
+                                .clickable { update(draft.copy(entry = draft.entry.copy(color = value))) }
                                 .testTag("quick-color-${value}"),
                             contentAlignment = Alignment.Center,
                         ) {
@@ -457,13 +510,13 @@ private fun QuickEntryEditorDialog(
                     QuickEntryAction.entries.forEach { action ->
                         FilterChip(
                             selected = actionName == action.name,
-                            onClick = { actionName = action.name },
+                            onClick = { update(draft.copy(entry = draft.entry.copy(action = action.name))) },
                             label = { Text(quickActionLabel(action.name)) },
                         )
                     }
                 }
                 OutlinedTextField(
-                    value = duration, onValueChange = { duration = it.filter(Char::isDigit).take(5) },
+                    value = duration, onValueChange = { update(draft.copy(durationText = it.filter(Char::isDigit).take(5))) },
                     label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_011)) }, singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
@@ -474,9 +527,9 @@ private fun QuickEntryEditorDialog(
                         Text(state.projectLabel(projectId)?.let { "项目：$it" } ?: "不关联项目")
                     }
                     DropdownMenu(expanded = projectMenu, onDismissRequest = { projectMenu = false }) {
-                        DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_013)) }, onClick = { projectId = null; projectMenu = false })
+                        DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_013)) }, onClick = { update(draft.copy(entry = draft.entry.copy(projectId = null))); projectMenu = false })
                         activeProjects.forEach { project ->
-                            DropdownMenuItem(text = { Text(project.name) }, onClick = { projectId = project.id; projectMenu = false })
+                            DropdownMenuItem(text = { Text(project.name) }, onClick = { update(draft.copy(entry = draft.entry.copy(projectId = project.id))); projectMenu = false })
                         }
                     }
                 }
@@ -485,10 +538,10 @@ private fun QuickEntryEditorDialog(
                         Text(state.taskLabel(taskId)?.let { "任务：$it" } ?: "不关联任务")
                     }
                     DropdownMenu(expanded = taskMenu, onDismissRequest = { taskMenu = false }) {
-                        DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_014)) }, onClick = { taskId = null; taskMenu = false })
+                        DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_014)) }, onClick = { update(draft.copy(entry = draft.entry.copy(taskId = null))); taskMenu = false })
                         activeTasks.take(100).forEach { task ->
                             DropdownMenuItem(text = { Text(task.title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                                onClick = { taskId = task.id; taskMenu = false })
+                                onClick = { update(draft.copy(entry = draft.entry.copy(taskId = task.id))); taskMenu = false })
                         }
                     }
                 }
@@ -498,7 +551,8 @@ private fun QuickEntryEditorDialog(
                         state.tags.forEach { tag ->
                             FilterChip(
                                 selected = tag.id in tags,
-                                onClick = { tags = if (tag.id in tags) tags - tag.id else tags + tag.id },
+                                onClick = { update(draft.copy(entry = draft.entry.copy(
+                                    tagIds = (if (tag.id in tags) tags - tag.id else tags + tag.id).joinToString(",")))) },
                                 label = { Text(tag.name) },
                             )
                         }
@@ -506,16 +560,18 @@ private fun QuickEntryEditorDialog(
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_quick_entry_screen_016), Modifier.weight(1f))
-                    Switch(checked = pinned, onCheckedChange = { pinned = it }, enabled = !state.busy)
+                    Switch(checked = pinned, onCheckedChange = { update(draft.copy(entry = draft.entry.copy(pinned = it))) }, enabled = !busy)
                 }
                 error?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
                 state.error?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
             }
         },
         confirmButton = {
-            TextButton(onClick = { save() }, enabled = !state.busy) { Text(if (state.busy) "保存中…" else "保存") }
+            TextButton(onClick = { if (completed) cleanup() else save() }, enabled = !state.busy && !submitting) {
+                Text(if (completed) stringResource(R.string.action_close) else if (submitting) "保存中…" else "保存")
+            }
         },
-        dismissButton = { TextButton(onClick = onDismiss, enabled = !state.busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
+        dismissButton = { if (!completed) TextButton(onClick = dismiss, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }
 

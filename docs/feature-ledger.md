@@ -328,6 +328,7 @@ L01/L34：新建任务并安排为一个命令；新增无优先级保留旧优�
 | L01/L07，关联N05 | CSV/JSON/ICS 包含范围内提醒点，ICS 提醒点省略结束；长阶段两秒后低频进度提示且退出时取消 | `t5.7-export-reminder-points.md`；本日`export-reminder-points.json`，编译退出0 | 三格式输出往返、边界/示例排除、外部日历、长写入/取消/失败/权限；未实际导出 |
 | L01/L02/L09/L11，关联N03/N05/N10 | 报告习惯睡眠关联去重和备注识别；实际/专注/训练首尾分钟、专注跨日计数；完整窗口与今天分离 | `t5.7-report-habit-consistency.md`；本日`report-habit-consistency-final.json`，编译退出0 | 睡眠编辑/去重、各时刻指标、未来窗口分母、统计图与习惯页一致性；报告示例过滤判断见下方更正，明细入口见下一项 |
 | L01/L02，关联N03/N10 | FOCUS/HABIT 来源直达专注/习惯详情，实际来源兼容底层编号；缺失习惯提供重试与返回 | `t5.6-habit-source-navigation.md`；本日`habit-source-navigation-reviewed.json`及前两轮记录 | 明细点击、分段实际、逐级返回、缺失/更新/进程恢复、大字和TalkBack |
+| L02/L03/L07，关联N02/N03/N06/N09 | 快捷编辑持久草稿/恢复入口/三选退出，原版本和请求编号保存；现有使用元数据不被旧草稿回退 | `t5.4-quick-entry-drafts.md`；本日`quick-entry-drafts.json`，编译退出0 | 字段/归属/原始时长恢复、取消/重复保存/清理失败、原版本冲突、使用元数据、进程/大字/TalkBack |
 
 复核 N01 后更正此前“报告示例过滤”待补判断：规格允许示例进入复盘，不能据裸报告查询断定违规；CSV/JSON/ICS 主数据已有示例排除，关联边界继续核对。
 
