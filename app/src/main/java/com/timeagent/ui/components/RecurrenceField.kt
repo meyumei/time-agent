@@ -27,6 +27,22 @@ private enum class Mode(@StringRes val labelRes: Int?, val frequency: String?) {
 
 private val CHOICES = Mode.entries.filter { it.labelRes != null }
 
+data class RecurrenceInputDraft(
+    val durationText: String,
+    val leadText: String,
+    val customOpen: Boolean = false,
+) {
+    fun isValid(pattern: RecurringPattern): Boolean =
+        durationText.toIntOrNull()?.let { it in 1..1440 && it == pattern.durationMinutes } == true &&
+            (if (leadText.isBlank()) pattern.leadMinutes == null
+            else leadText.toIntOrNull()?.let { it in 0..527040 && it == pattern.leadMinutes } == true)
+
+    companion object {
+        fun from(pattern: RecurringPattern) = RecurrenceInputDraft(
+            pattern.durationMinutes.toString(), pattern.leadMinutes?.toString().orEmpty())
+    }
+}
+
 private fun modeOf(p: RecurringPattern?): Mode = when {
     p == null -> Mode.NONE
     p.frequency == "ONCE" -> Mode.ONCE
@@ -82,18 +98,32 @@ fun RecurrenceField(
     seedId: String = "draft-rule",
     allowNone: Boolean = true,
     onValidityChange: (Boolean) -> Unit = {},
+    inputDraft: RecurrenceInputDraft? = null,
+    onInputDraftChange: (RecurrenceInputDraft) -> Unit = {},
 ) {
     val mode = modeOf(value)
     val dayNames = stringArrayResource(R.array.rr_day_names_short).toList()
     val current = value
-    var customOpen by rememberSaveable { mutableStateOf(false) }
-    var lead by rememberSaveable(value?.id, value?.leadMinutes) {
+    var localCustomOpen by rememberSaveable(value?.id) { mutableStateOf(false) }
+    var localLead by rememberSaveable(value?.id, value?.leadMinutes) {
         mutableStateOf(value?.leadMinutes?.toString().orEmpty())
     }
-    val leadValid = lead.isBlank() || lead.toIntOrNull()?.let { it in 0..527040 } == true
+    var localDuration by rememberSaveable(value?.id, value?.durationMinutes) {
+        mutableStateOf(value?.durationMinutes?.toString().orEmpty())
+    }
+    val input = inputDraft ?: RecurrenceInputDraft(localDuration, localLead, localCustomOpen)
+    val customOpen = input.customOpen
+    val lead = input.leadText
+    fun updateInput(next: RecurrenceInputDraft) {
+        if (inputDraft != null) onInputDraftChange(next)
+        else {
+            localDuration = next.durationText
+            localLead = next.leadText
+            localCustomOpen = next.customOpen
+        }
+    }
     val isValid = current == null || (
-        leadValid &&
-            current.durationMinutes in 1..1440 &&
+        input.isValid(current) &&
             (current.untilDate?.let { it >= current.startDate } != false)
         )
     val latestOnValidityChange by rememberUpdatedState(onValidityChange)
@@ -136,7 +166,7 @@ fun RecurrenceField(
         }
         Text(summary(current, dayNames), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         if (current != null) {
-            TextButton(onClick = { customOpen = !customOpen }, modifier = Modifier.heightIn(min = 48.dp)) {
+            TextButton(onClick = { updateInput(input.copy(customOpen = !customOpen)) }, modifier = Modifier.heightIn(min = 48.dp)) {
                 Text(if (customOpen) stringResource(R.string.rr_custom_collapse) else stringResource(R.string.rr_custom_expand))
             }
             if (customOpen) {
@@ -154,8 +184,11 @@ fun RecurrenceField(
                         })
                     }
                 }
-                DurationField(current.durationMinutes, { onChange(current.copy(durationMinutes = it)) })
-                InlineError(if (current.durationMinutes !in 1..1440) stringResource(R.string.rr_duration_range_error) else null)
+                DurationField(current.durationMinutes, { onChange(current.copy(durationMinutes = it)) },
+                    textValue = input.durationText,
+                    onTextChange = { updateInput(input.copy(durationText = it)) })
+                InlineError(if (input.durationText.toIntOrNull()?.let { it in 1..1440 } != true)
+                    stringResource(R.string.rr_duration_range_error) else null)
                 Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurrence_field_003), style = MaterialTheme.typography.bodySmall)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Switch(current.untilDate != null, {
@@ -170,10 +203,10 @@ fun RecurrenceField(
                 DateField(stringResource(R.string.rr_label_effective_from), LocalDate.parse(current.effectiveFrom), {
                     onChange(current.copy(effectiveFrom = it.toString()))
                 })
-                OutlinedTextField(lead, { input ->
-                    lead = input
-                    if (input.isBlank()) onChange(current.copy(leadMinutes = null))
-                    else input.toIntOrNull()?.takeIf { it in 0..527040 }?.let {
+                OutlinedTextField(lead, { rawLead ->
+                    updateInput(input.copy(leadText = rawLead))
+                    if (rawLead.isBlank()) onChange(current.copy(leadMinutes = null))
+                    else rawLead.toIntOrNull()?.takeIf { it in 0..527040 }?.let {
                         onChange(current.copy(leadMinutes = it))
                     }
                 }, label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurrence_field_005)) }, modifier = Modifier.fillMaxWidth(),

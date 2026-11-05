@@ -1,0 +1,17 @@
+{
+  "requestedModel": "deepseek-v4.1-flash",
+  "observedModel": "deepseek-v4.1-flash",
+  "requestedEffort": "max",
+  "actualEffort": null,
+  "toolCalls": 9,
+  "stop": "time_limit",
+  "exitCode": 1,
+  "durationSeconds": 150.84,
+  "result": null,
+  "date": "2026-11-05",
+  "task": "Read-only recurring draft source review",
+  "testsRun": [],
+  "deviceOperations": [],
+  "finalReportAvailable": false,
+  "limitations": "Time-limited review ended without a final report; not a review pass. Main agent independently reviewed source and compiled Kotlin."
+}
