@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recurring_instance_completed">本次已完成，未自动生成实际记录</string>
+    <string name="recurring_instance_skipped">本次已跳过，关联日程已移出</string>
+    <string name="recurring_instance_reopened">本次已恢复待办，请核对日程和提醒</string>
+    <string name="recurring_instance_updated">本次状态已保存</string>
+</resources>

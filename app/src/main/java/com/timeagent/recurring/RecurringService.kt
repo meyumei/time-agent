@@ -3,6 +3,7 @@ package com.timeagent.recurring
 import com.google.gson.Gson
 import com.timeagent.core.*
 import com.timeagent.data.*
+import com.timeagent.domain.command.CommandResult
 import com.timeagent.domain.command.throwIfRejected
 import com.timeagent.memory.PersonalMemoryRules
 import java.time.*
@@ -186,17 +187,19 @@ class RecurringService(private val repository: TimeRepository) {
         repository.saveRecurringInstance(item.copy(status=status,taskVersion=saved.version,planVersion=null,scheduleNote=note),item.version)
     }
     suspend fun act(instanceId: String, expectedVersion: Long, action: String, requestId: String,
-                    expectedTaskVersion: Long? = null, expectedPlans: Map<String, Long>? = null) {
+                    expectedTaskVersion: Long? = null, expectedPlans: Map<String, Long>? = null): CommandResult =
         repository.transaction {
-            repository.commands.replay(requestId)?.let { return@transaction }
+            repository.commands.replay(requestId)?.let {
+                it.throwIfRejected()
+                return@transaction it
+            }
             val instance = dao().recurringInstance(instanceId) ?: throw StaleChange()
             val task = dao().task(instance.taskId) ?: throw StaleChange()
             repository.commands.executeForRepository(com.timeagent.domain.command.ActRecurringInstance(
                 requestId, instanceId, expectedVersion, action, expectedTaskVersion ?: task.version,
                 expectedPlans ?: activePlans(task.id),
-            )).throwIfRejected()
+            )).also { it.throwIfRejected() }
         }
-    }
 
     private suspend fun activePlans(taskId: String): Map<String, Long> = dao().plans()
         .filter { it.taskId == taskId && it.status == "SCHEDULED" && it.deletedAt == null }.associate { it.id to it.version }
