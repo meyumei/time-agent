@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="deadline_draft_default_category">其他</string>
+    <string name="deadline_draft_resume">恢复期限草稿：%1$s</string>
+    <string name="deadline_draft_untitled">未命名期限</string>
+    <string name="deadline_draft_write_failed">期限草稿未能保存到本地。输入仍保留，请重试后再离开。</string>
+    <string name="deadline_draft_cleanup_failed">期限已保存，草稿清理失败。请点关闭重试清理，不会再次保存期限。</string>
+    <string name="deadline_draft_saved">期限已保存</string>
+    <string name="deadline_draft_save_failed">期限未能保存，输入仍保留，请重试。</string>
+    <string name="deadline_draft_project_missing">原项目不可用，请重新选择归属。</string>
+</resources>
