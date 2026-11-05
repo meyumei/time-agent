@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="project_task_draft_resume">恢复任务草稿：%1$s · %2$s</string>
+    <string name="project_task_draft_untitled">未命名任务</string>
+    <string name="project_task_draft_write_failed">任务草稿未能保存到本地。输入仍保留，请重试后再离开。</string>
+    <string name="project_task_draft_cleanup_failed">任务已保存，草稿清理失败。请点关闭重试清理，不会再次新建任务。</string>
+    <string name="project_task_draft_saved">任务已保存</string>
+    <string name="project_task_draft_save_failed">任务未能保存，输入仍保留，请重试。</string>
+    <string name="project_task_draft_parent_missing">原父任务不可用，请重新选择层级；保存时仍会核对原版本。</string>
+    <string name="project_task_draft_project">项目：%1$s</string>
+</resources>

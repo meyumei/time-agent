@@ -20,13 +20,11 @@ import androidx.compose.ui.unit.dp
 import com.timeagent.R
 import com.timeagent.data.*
 import com.timeagent.ui.components.DateField
-import com.timeagent.ui.components.DurationField
 import com.timeagent.projects.projectProgress
 import com.timeagent.domain.command.CommandResult
 import com.timeagent.domain.command.CommandStatus
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
-import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -138,8 +136,19 @@ fun ProjectScreen(
     }
     var deleting by rememberSaveable(stateSaver = projectEntitySaver) { mutableStateOf<ProjectEntity?>(null) }
     var addingExistingFor by rememberSaveable(stateSaver = projectEntitySaver) { mutableStateOf<ProjectEntity?>(null) }
-    var addingTaskFor by rememberSaveable(stateSaver = projectEntitySaver) { mutableStateOf<ProjectEntity?>(null) }
-    var addingTaskParentId by rememberSaveable { mutableStateOf<String?>(null) }
+    val taskDraftStore = remember(context) { ProjectTaskEditorDraftStore(context) }
+    var editingTaskDraftId by rememberSaveable { mutableStateOf<String?>(null) }
+    val projectTaskDrafts = remember(editingTaskDraftId, detailId, data.tasks, data.projects) {
+        taskDraftStore.all().filter { detailId == null || it.project.id == detailId }
+    }
+    fun editProjectTask(project: ProjectEntity, parentId: String?) {
+        val roots = placements.values.filter { placement ->
+            placement.projectId == project.id && placement.parentTaskId == null && tasks.any { it.id == placement.taskId }
+        }
+        val draft = ProjectTaskEditorDraft.create(project, roots, parentId)
+        if (taskDraftStore.save(draft)) editingTaskDraftId = draft.id
+        else model.report(context.getString(R.string.project_task_draft_write_failed))
+    }
     var goalFor by rememberSaveable(stateSaver = projectEntitySaver) { mutableStateOf<ProjectEntity?>(null) }
 
     Scaffold(
@@ -173,6 +182,12 @@ fun ProjectScreen(
                 OutlinedButton(onClick = { editingDraftId = draft.id }, modifier = Modifier.fillMaxWidth()) {
                     Text(stringResource(R.string.project_draft_resume,
                         draft.name.ifBlank { stringResource(R.string.project_draft_untitled) }))
+                }
+            }
+            items(projectTaskDrafts, key = { "project-task-draft:${it.id}" }) { draft ->
+                OutlinedButton(onClick = { editingTaskDraftId = draft.id }, modifier = Modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.project_task_draft_resume, draft.project.name,
+                        draft.fields.title.ifBlank { stringResource(R.string.project_task_draft_untitled) }))
                 }
             }
             if (projects.isEmpty()) {
@@ -242,14 +257,8 @@ fun ProjectScreen(
                     onEdit = { editProject(project) },
                     onDelete = { deleting = project },
                     onAddExisting = { addingExistingFor = project },
-                    onAddTask = {
-                        addingTaskParentId = null
-                        addingTaskFor = project
-                    },
-                    onAddSubtask = { parent ->
-                        addingTaskParentId = parent.id
-                        addingTaskFor = project
-                    },
+                    onAddTask = { editProjectTask(project, null) },
+                    onAddSubtask = { parent -> editProjectTask(project, parent.id) },
                     onGoal = { goalFor = project },
                     onUnassign = { task ->
                         model.perform(
@@ -344,48 +353,31 @@ fun ProjectScreen(
         )
     }
 
-    addingTaskFor?.let { project ->
-        val saving by model.busy.collectAsState()
-        val newTaskId = rememberSaveable(project.id, addingTaskParentId) { UUID.randomUUID().toString() }
-        val roots = tasks.filter {
-            val p = placements[it.id]
-            p != null && p.projectId == project.id && p.parentTaskId == null
-        }
-        AddTaskDialog(
-            roots = roots,
-            initialParentId = addingTaskParentId,
-            busy = saving,
-            onDismiss = {
-                addingTaskFor = null
-                addingTaskParentId = null
-            },
-            onConfirm = { title, minutes, parentId, requestId ->
-                val entity = TaskEntity(
-                    id = newTaskId,
-                    title = title,
-                    estimatedMinutes = minutes,
-                    status = "TODO",
-                    version = 0
-                )
-                model.perform(
-                    onSuccess = {
-                        addingTaskFor = null
-                        addingTaskParentId = null
-                    },
-                    action = {
-                        val result = model.repository.commands.execute(com.timeagent.domain.command.WriteProject(
-                            requestId, com.timeagent.domain.command.ProjectMutation.CreateTask(
-                                entity, project.id, project.version, parentId, parentId?.let { placements[it]?.version })))
-                        check(result.status in setOf(com.timeagent.domain.command.CommandStatus.APPLIED,
-                            com.timeagent.domain.command.CommandStatus.DUPLICATE)) { result.message }
+    editingTaskDraftId?.let { id ->
+        val draft = remember(id) { taskDraftStore.read(id) }
+        val busy by model.busy.collectAsState()
+        if (draft != null) key(id) {
+            val rootIds = draft.seenParents.map { it.taskId }.toSet()
+            ProjectTaskEditDialog(draft, tasks.filter { it.id in rootIds }, busy,
+                onDraftChange = taskDraftStore::save,
+                onRemoveDraft = { taskDraftStore.remove(id) },
+                onDismiss = { editingTaskDraftId = null },
+                onSave = { pending, title, minutes ->
+                    val parentId = pending.fields.parentId
+                    val result = model.repository.commands.execute(com.timeagent.domain.command.WriteProject(
+                        pending.requestId, com.timeagent.domain.command.ProjectMutation.CreateTask(
+                            TaskEntity(id = pending.id, title = title, estimatedMinutes = minutes, status = "TODO", version = 0),
+                            pending.project.id, pending.project.version, parentId,
+                            parentId?.let { parent -> pending.seenParents.find { it.taskId == parent }?.version })))
+                    if (result.status in setOf(CommandStatus.APPLIED, CommandStatus.DUPLICATE)) {
                         result.undoToken?.let { token ->
                             deleteUndo = com.timeagent.ui.components.UndoMessage(result.requestId,
                                 context.getString(R.string.project_task_created_undo), token)
                         }
                     }
-                )
-            }
-        )
+                    result
+                })
+        } else LaunchedEffect(id) { editingTaskDraftId = null }
     }
 
     goalFor?.let { project ->
@@ -805,102 +797,6 @@ private fun AddExistingTaskDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
-        }
-    )
-}
-
-@Composable
-private fun AddTaskDialog(
-    roots: List<TaskEntity>,
-    initialParentId: String?,
-    busy: Boolean,
-    onDismiss: () -> Unit,
-    onConfirm: (title: String, minutes: Int, parentId: String?, requestId: String) -> Unit
-) {
-    val context = LocalContext.current
-    var title by rememberSaveable { mutableStateOf("") }
-    var minutesText by rememberSaveable { mutableStateOf("30") }
-    var parentId by rememberSaveable { mutableStateOf(initialParentId) }
-    var error by rememberSaveable { mutableStateOf<String?>(null) }
-    val requestId = rememberSaveable(title, minutesText, parentId) { UUID.randomUUID().toString() }
-
-    AlertDialog(
-        onDismissRequest = { if (!busy) onDismiss() },
-        title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_new_task)) },
-        text = {
-            Column(
-                modifier = Modifier
-                    .heightIn(max = 400.dp)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it; error = null },
-                    enabled = !busy,
-                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_editors_009)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(Modifier.height(8.dp))
-                DurationField(
-                    minutes = minutesText.trim().toIntOrNull()?.takeIf { it > 0 } ?: 0,
-                    onChange = { },
-                    textValue = minutesText,
-                    onTextChange = { if (!busy) { minutesText = it; error = null } }
-                )
-                Spacer(Modifier.height(8.dp))
-                Text(text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_018), style = MaterialTheme.typography.bodySmall)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(enabled = !busy) { parentId = null }
-                        .padding(vertical = 2.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RadioButton(selected = parentId == null, onClick = { parentId = null }, enabled = !busy)
-                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_019))
-                }
-                roots.forEach { root ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable(enabled = !busy) { parentId = root.id }
-                            .padding(vertical = 2.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(selected = parentId == root.id, onClick = { parentId = root.id }, enabled = !busy)
-                        Text(root.title)
-                    }
-                }
-                error?.let {
-                    Text(
-                        text = it,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    val trimmed = title.trim()
-                    if (trimmed.isEmpty()) {
-                        error = context.getString(R.string.project_editor_error_task_name_required)
-                        return@TextButton
-                    }
-                    val minutes = minutesText.trim().toIntOrNull()
-                    if (minutes == null || minutes <= 0) {
-                        error = context.getString(R.string.project_editor_error_minutes_positive)
-                        return@TextButton
-                    }
-                    onConfirm(trimmed, minutes, parentId, requestId)
-                },
-                enabled = !busy
-            ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
         }
     )
 }
