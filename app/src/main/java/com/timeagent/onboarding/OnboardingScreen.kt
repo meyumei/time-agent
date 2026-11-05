@@ -655,10 +655,25 @@ private fun DemoTimeline() {
                     .clip(RoundedCornerShape(10.dp))
                     .background(MaterialTheme.colorScheme.primaryContainer)
                     .pointerInput(Unit) {
-                        detectDragGestures { change, drag ->
+                        // Accumulate raw drag from the gesture origin so sub-snap increments are not
+                        // discarded; only the displayed value is snapped to 15 minutes.
+                        var dragOriginMinute = startMinute
+                        var accumulatedPx = 0f
+                        detectDragGestures(
+                            onDragStart = {
+                                dragOriginMinute = startMinute
+                                accumulatedPx = 0f
+                            },
+                            onDragEnd = { accumulatedPx = 0f },
+                            onDragCancel = {
+                                startMinute = dragOriginMinute
+                                accumulatedPx = 0f
+                            },
+                        ) { change, drag ->
                             change.consume()
-                            val next = (startMinute + drag.y / density.density) / 15f
-                            startMinute = (next.roundToInt() * 15f).coerceIn(540f, 660f)
+                            accumulatedPx += drag.y
+                            val candidate = dragOriginMinute + accumulatedPx / density.density
+                            startMinute = ((candidate / 15f).roundToInt() * 15f).coerceIn(540f, 660f)
                         }
                     }
                     .padding(10.dp),
