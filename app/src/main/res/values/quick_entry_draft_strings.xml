@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="quick_draft_resume">恢复快捷记录草稿：%1$s</string>
+    <string name="quick_draft_untitled">未命名快捷记录</string>
+    <string name="quick_draft_write_failed">草稿未能写入本地。当前输入仍在，请重试后再离开。</string>
+    <string name="quick_draft_cleanup_failed">快捷记录已保存，草稿清理失败。请点关闭重试清理，不会再次保存。</string>
+    <string name="quick_draft_saved">快捷记录已保存。</string>
+</resources>

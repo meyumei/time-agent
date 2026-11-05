@@ -1,0 +1,11 @@
+{
+  "requestedModel": "deepseek-v4.1-flash",
+  "observedModel": "deepseek-v4.1-flash",
+  "requestedEffort": "max",
+  "actualEffort": null,
+  "toolCalls": 8,
+  "stop": "time_limit",
+  "exitCode": 1,
+  "durationSeconds": 181.28,
+  "result": null
+}
