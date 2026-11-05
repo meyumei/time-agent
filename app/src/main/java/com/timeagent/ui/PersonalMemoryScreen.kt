@@ -12,6 +12,7 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Undo
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -20,7 +21,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.timeagent.data.PersonalMemoryEntity
+import com.timeagent.domain.command.*
 import com.timeagent.memory.PersonalMemoryRules
+import com.timeagent.ui.components.UndoMessage
+import com.timeagent.ui.components.UndoSnackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -52,6 +56,13 @@ fun PersonalMemoryScreen(
     var deleting by remember { mutableStateOf<PersonalMemoryEntity?>(null) }
     var exportBytes by remember { mutableStateOf<ByteArray?>(null) }
     var message by remember { mutableStateOf<String?>(null) }
+    val snackbar = remember { SnackbarHostState() }
+    var undoMessage by remember { mutableStateOf<UndoMessage?>(null) }
+    UndoSnackbar(snackbar, undoMessage,
+        onUndo = { token -> model.perform {
+            model.repository.commands.execute(UndoCommand(UUID.randomUUID().toString(), token)).throwIfRejected()
+        } },
+        onConsumed = { if (undoMessage?.id == it) undoMessage = null })
     LaunchedEffect(initialDraft) {
         if (initialDraft != null) {
             prefill = initialDraft
@@ -71,7 +82,7 @@ fun PersonalMemoryScreen(
         TopAppBar(title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_001)) }, navigationIcon = { IconButton(onClick = onClose, enabled = !busy) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "返回") } }, actions = {
             IconButton(onClick = { model.perform(onSuccess = { message = "已撤销最近操作" }) { model.repository.undoLastAction() } }, enabled = !busy && data.history.any { !it.undone }) { Icon(Icons.AutoMirrored.Rounded.Undo, "撤销最近操作") }
         })
-    }) { padding ->
+    }, snackbarHost = { SnackbarHost(snackbar, Modifier.navigationBarsPadding()) }) { padding ->
         Column(Modifier.padding(padding).fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_002), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -123,7 +134,32 @@ fun PersonalMemoryScreen(
     }
     if (creating) MemoryEditorDialog(model, null, busy, initialText = prefill?.text.orEmpty(), initialSource = prefill?.sourceText.orEmpty(), onClose = { creating = false; prefill = null })
     editing?.let { item -> MemoryEditorDialog(model, item, busy, onClose = { editing = null }) }
-    deleting?.let { item -> AlertDialog(onDismissRequest = { deleting = null }, title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_009)) }, text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_inbox_screens_018)) }, confirmButton = { TextButton(onClick = { deleting = null; model.perform { model.repository.deleteMemory(item.id, item.version) } }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_delete)) } }, dismissButton = { TextButton(onClick = { deleting = null }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } }) }
+    deleting?.let { item ->
+        val requestId = rememberSaveable(item.id, item.version) { UUID.randomUUID().toString() }
+        AlertDialog(
+            onDismissRequest = { if (!busy) deleting = null },
+            title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_personal_memory_screen_009)) },
+            text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.memory_command_delete_impact)) },
+            confirmButton = {
+                TextButton(enabled = !busy, onClick = {
+                    model.perform(onSuccess = { deleting = null }) {
+                        val result = model.repository.commands.execute(WritePersonalMemory(requestId,
+                            PersonalMemoryMutation.Delete(item.id, item.version)))
+                        result.throwIfRejected()
+                        result.undoToken?.let { token ->
+                            undoMessage = UndoMessage(result.requestId,
+                                context.getString(com.timeagent.R.string.memory_command_deleted), token)
+                        }
+                    }
+                }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_delete)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { deleting = null }, enabled = !busy) {
+                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel))
+                }
+            },
+        )
+    }
 }
 
 @Composable
@@ -136,6 +172,7 @@ internal fun MemoryEditorDialog(
     onSaveDraft: ((PersonalMemoryEntity) -> Unit)? = null,
     onClose: () -> Unit,
 ) {
+    val memoryId = rememberSaveable(existing?.id, initialText, initialSource) { existing?.id ?: UUID.randomUUID().toString() }
     var kind by remember(existing?.id) { mutableStateOf(existing?.kind ?: "PREFERENCE") }
     var text by remember(existing?.id, initialText) { mutableStateOf(existing?.text ?: initialText) }
     var source by remember(existing?.id, initialSource) { mutableStateOf(existing?.sourceText ?: initialSource) }
@@ -146,6 +183,9 @@ internal fun MemoryEditorDialog(
     var weekday by remember(existing?.id) { mutableStateOf(existing?.weekday?.toString() ?: "1") }
     var start by remember(existing?.id) { mutableStateOf(existing?.startMinute.clock()) }
     var end by remember(existing?.id) { mutableStateOf(existing?.endMinute.clock()) }
+    val requestId = rememberSaveable(memoryId, kind, text, source, from, until, rule, keyword, weekday, start, end) {
+        UUID.randomUUID().toString()
+    }
     var validation by remember { mutableStateOf<String?>(null) }
     AlertDialog(onDismissRequest = { if (!busy) onClose() }, title = { Text(if (existing == null) "添加个人记忆" else "编辑个人记忆") }, text = {
         Column(Modifier.heightIn(max = 520.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -170,12 +210,12 @@ internal fun MemoryEditorDialog(
             fun date(value: String): Long? = value.trim().takeIf(String::isNotEmpty)?.let { LocalDate.parse(it).atStartOfDay(model.zone).toInstant().toEpochMilli() }
             fun minute(value: String): Int? = value.trim().takeIf(String::isNotEmpty)?.let { LocalTime.parse(it).toSecondOfDay() / 60 }
             val now = model.repository.now().toEpochMilli()
-            val base = existing ?: PersonalMemoryEntity(UUID.randomUUID().toString(), kind, text.trim(), sourceType = "USER_INPUT", sourceText = source.trim(), createdAt = now, updatedAt = now)
+            val base = existing ?: PersonalMemoryEntity(memoryId, kind, text.trim(), sourceType = "USER_INPUT", sourceText = source.trim(), createdAt = now, updatedAt = now)
             val validUntil = until.trim().takeIf(String::isNotEmpty)?.let { LocalDate.parse(it).plusDays(1).atStartOfDay(model.zone).toInstant().toEpochMilli() }
             val item = base.copy(kind = kind, text = text.trim(), sourceText = source.trim(), validFrom = date(from), validUntil = validUntil, ruleType = rule, keyword = keyword.trim(), weekday = if (rule == "AVOID_WEEKDAY") weekday.toIntOrNull() else null, startMinute = if (rule == "TIME_WINDOW") minute(start) else null, endMinute = if (rule == "TIME_WINDOW") minute(end) else null, updatedAt = now)
             PersonalMemoryRules.validate(item)
             if (onSaveDraft != null) onSaveDraft(item)
-            else model.perform(onSuccess = onClose) { model.repository.saveMemory(item, existing?.version) }
+            else model.perform(onSuccess = onClose) { model.repository.saveMemory(item, existing?.version, requestId) }
         } catch (error: Exception) { validation = error.message ?: "请检查填写内容" }
     }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) } }, dismissButton = { TextButton(onClick = onClose, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } })
 }

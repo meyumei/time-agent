@@ -1,0 +1,10 @@
+{
+  "date": "2026-11-05",
+  "command": "./scripts/build.ps1 -Tasks @(':app:compileDebugKotlin')",
+  "exitCode": 0,
+  "durationSeconds": 204.08,
+  "log": ".tmp/development-20261105/compile-personal-memory-commands.log",
+  "testsRun": [],
+  "deviceOperations": [],
+  "limitations": "Kotlin compilation only; no tests, lint or device operations"
+}
