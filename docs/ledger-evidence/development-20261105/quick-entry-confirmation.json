@@ -1,0 +1,10 @@
+{
+  "date": "2026-11-05",
+  "command": "./scripts/build.ps1 -Tasks @(':app:compileDebugKotlin')",
+  "exitCode": 1,
+  "durationSeconds": 109.01,
+  "log": ".tmp/development-20261105/compile-quick-entry-confirmation.log",
+  "testsRun": [],
+  "deviceOperations": [],
+  "limitations": "Kotlin compilation and source review only; no tests, lint analysis or device acceptance"
+}
