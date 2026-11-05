@@ -1,0 +1,10 @@
+{
+  "date": "2026-11-05",
+  "command": "./scripts/build.ps1 -Tasks @(':app:compileDebugKotlin')",
+  "exitCode": 0,
+  "durationSeconds": 77.5,
+  "log": ".tmp/development-20261105/compile-recurring-instance-feedback.log",
+  "testsRun": [],
+  "deviceOperations": [],
+  "limitations": "Kotlin compilation only; no tests, lint or device operations"
+}

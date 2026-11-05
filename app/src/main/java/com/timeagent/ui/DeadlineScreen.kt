@@ -202,9 +202,13 @@ fun DeadlineScreen(
     }
 
     fun act(instance: RecurringInstanceEntity, action: String) {
+        val taskVersion = taskById[instance.taskId]?.version
+        val plans = data.plans.filter { it.taskId == instance.taskId && it.status == "SCHEDULED" && it.deletedAt == null }
+            .associate { it.id to it.version }
+        val requestId = UUID.randomUUID().toString()
         model.perform(action = {
-            service.act(instance.id, instance.version, action, UUID.randomUUID().toString(),
-                taskById[instance.taskId]?.version, data.plans.filter { it.taskId == instance.taskId && it.status == "SCHEDULED" && it.deletedAt == null }.associate { it.id to it.version })
+            val result = service.act(instance.id, instance.version, action, requestId, taskVersion, plans)
+            recurringInstanceUndo(context, result, action)?.let { undoMessage = it }
         })
     }
 

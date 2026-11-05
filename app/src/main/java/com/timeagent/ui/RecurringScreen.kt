@@ -201,6 +201,17 @@ fun RecurringScreen(
         else model.report(context.getString(R.string.move_draft_write_failed))
     }
 
+    fun act(instance: RecurringInstanceEntity, action: String) {
+        val taskVersion = taskById[instance.taskId]?.version
+        val plans = data.plans.filter { it.taskId == instance.taskId && it.status == "SCHEDULED" && it.deletedAt == null }
+            .associate { it.id to it.version }
+        val requestId = UUID.randomUUID().toString()
+        model.perform(action = {
+            val result = service.act(instance.id, instance.version, action, requestId, taskVersion, plans)
+            recurringInstanceUndo(context, result, action)?.let { undoMessage = it }
+        })
+    }
+
     Scaffold(modifier = Modifier.fillMaxSize(), contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = { SnackbarHost(snackbar, modifier = Modifier.navigationBarsPadding()) }) { innerPadding ->
     Column(Modifier.fillMaxSize().padding(innerPadding).statusBarsPadding()) {
@@ -292,12 +303,7 @@ fun RecurringScreen(
                             zone
                         ),
                         onOpen = { task?.let(onTask) },
-                        onAct = { action ->
-                            model.perform(action = {
-                                service.act(inst.id, inst.version, action, UUID.randomUUID().toString(),
-                                    task?.version, data.plans.filter { it.taskId == inst.taskId && it.status == "SCHEDULED" && it.deletedAt == null }.associate { it.id to it.version })
-                            })
-                        },
+                        onAct = { action -> act(inst, action) },
                         onMove = { choice = inst },
                         onRule = { rule?.let { expanded = toggle(expanded, it.id) } }
                     )
@@ -374,12 +380,7 @@ fun RecurringScreen(
                                         task = taskById[inst.taskId],
                                         snapshotTitle = snapshotTitle(gson, inst),
                                         onOpen = { taskById[inst.taskId]?.let(onTask) },
-                                        onAct = { action ->
-                                            model.perform(action = {
-                                                service.act(inst.id, inst.version, action, UUID.randomUUID().toString(),
-                                                    taskById[inst.taskId]?.version, data.plans.filter { it.taskId == inst.taskId && it.status == "SCHEDULED" && it.deletedAt == null }.associate { it.id to it.version })
-                                            })
-                                        },
+                                        onAct = { action -> act(inst, action) },
                                         onMove = { choice = inst }
                                     )
                                 }
