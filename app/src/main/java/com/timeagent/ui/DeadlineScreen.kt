@@ -37,7 +37,6 @@ private val gson = Gson()
 private val dateFmt = DateTimeFormatter.ofPattern("uuuu-MM-dd").withResolverStyle(ResolverStyle.STRICT)
 private val timeFmt = DateTimeFormatter.ofPattern("HH:mm").withResolverStyle(ResolverStyle.STRICT)
 private val stampFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-private val deadlineFmt = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm").withResolverStyle(ResolverStyle.STRICT)
 private const val DEADLINE_DOMAIN = "DEADLINE"
 
 private fun rulePattern(rule: RecurringRuleEntity): RecurringPattern? =
@@ -45,10 +44,6 @@ private fun rulePattern(rule: RecurringRuleEntity): RecurringPattern? =
 
 private fun parseDate(text: String): LocalDate? =
     runCatching { LocalDate.parse(text.trim(), dateFmt) }.getOrNull()
-
-private fun parseMillis(text: String, zone: ZoneId): Long? = runCatching {
-    java.time.LocalDateTime.parse(text.trim(), deadlineFmt).atZone(zone).toInstant().toEpochMilli()
-}.getOrNull()
 
 private fun fmtAt(value: Long?, zone: ZoneId): String =
     value?.let { Instant.ofEpochMilli(it).atZone(zone).format(stampFmt) } ?: "—"
@@ -71,7 +66,6 @@ private fun statusLabel(s: String): String = when (s) {
     else -> s
 }
 
-private data class DelayCheck(val target: Long, val conflicts: List<Conflict>)
 
 internal enum class DeadlineBucket { TODAY_OR_OVERDUE, WITHIN_7_DAYS, LATER }
 
@@ -175,7 +169,9 @@ fun DeadlineScreen(
     var handledShown by remember { mutableStateOf(setOf<String>()) }
     var showHandledAll by remember { mutableStateOf(false) }
     var delayChoice by remember { mutableStateOf<RecurringInstanceEntity?>(null) }
-    var delayInput by remember { mutableStateOf<RecurringInstanceEntity?>(null) }
+    val moveStore = remember(context) { RecurringMoveDraftStore(context) }
+    var editingMoveId by rememberSaveable { mutableStateOf<String?>(null) }
+    val moveDrafts = remember(editingMoveId, data.recurringInstances) { moveStore.all().filter { it.domain == DEADLINE_DOMAIN } }
 
     val rules = data.recurringRules.filter { it.domain == DEADLINE_DOMAIN && it.deletedAt == null }
     val taskById = data.tasks.associateBy { it.id }
@@ -187,6 +183,12 @@ fun DeadlineScreen(
             context.getString(com.timeagent.R.string.deadline_draft_default_category))
         if (draftStore.save(draft)) editingDraftId = draft.id
         else model.report(context.getString(com.timeagent.R.string.deadline_draft_write_failed))
+    }
+
+    fun openMove(instance: RecurringInstanceEntity) {
+        val draft = moveStore.read(instance.id) ?: RecurringMoveDraft.create(instance, taskById[instance.taskId], zone)
+        if (moveStore.save(draft)) editingMoveId = draft.id
+        else model.report(context.getString(com.timeagent.R.string.move_draft_write_failed))
     }
 
     fun act(instance: RecurringInstanceEntity, action: String) {
@@ -234,6 +236,11 @@ fun DeadlineScreen(
                     OutlinedButton(onClick = { editingDraftId = draft.id }, modifier = Modifier.fillMaxWidth()) {
                         Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.deadline_draft_resume,
                             draft.fields.title.ifBlank { context.getString(com.timeagent.R.string.deadline_draft_untitled) }))
+                    }
+                }
+                moveDrafts.forEach { draft ->
+                    OutlinedButton(onClick = { editingMoveId = draft.id }, modifier = Modifier.fillMaxWidth()) {
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.move_draft_resume, draft.title))
                     }
                 }
                 Text(
@@ -471,7 +478,7 @@ fun DeadlineScreen(
             title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_014)) },
             text = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_015)) },
             confirmButton = {
-                TextButton(onClick = { delayChoice = null; delayInput = instance }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_016)) }
+                TextButton(onClick = { delayChoice = null; openMove(instance) }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_016)) }
             },
             dismissButton = {
                 TextButton(onClick = {
@@ -484,14 +491,18 @@ fun DeadlineScreen(
         )
     }
 
-    delayInput?.let { instance ->
-        DelayInputDialog(
-            instance = instance,
-            service = service,
-            model = model,
-            zone = zone,
-            onDismiss = { delayInput = null },
-        )
+    editingMoveId?.let { id ->
+        val draft = remember(id) { moveStore.read(id) }
+        if (draft != null) key(id) {
+            RecurringMoveEditDialog(draft, model,
+                onDraftChange = moveStore::save,
+                onRemoveDraft = { moveStore.remove(id) },
+                onDismiss = { editingMoveId = null },
+                onSaved = { result -> result.undoToken?.let { token ->
+                    undoMessage = com.timeagent.ui.components.UndoMessage(result.requestId,
+                        context.getString(com.timeagent.R.string.move_draft_saved), token)
+                } })
+        } else LaunchedEffect(id) { editingMoveId = null }
     }
 }
 
@@ -612,83 +623,6 @@ private fun InstanceRow(
             }
         }
     }
-}
-
-@Composable
-private fun DelayInputDialog(
-    instance: RecurringInstanceEntity,
-    service: RecurringService,
-    model: TimeViewModel,
-    zone: ZoneId,
-    onDismiss: () -> Unit,
-) {
-    val scope = rememberCoroutineScope()
-    var text by remember(instance.id) { mutableStateOf("") }
-    var checked by remember(instance.id) { mutableStateOf<DelayCheck?>(null) }
-    var error by remember(instance.id) { mutableStateOf<String?>(null) }
-    val busy by model.busy.collectAsState()
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_016)) },
-        text = {
-            Column {
-                OutlinedTextField(
-                    value = text,
-                    onValueChange = { text = it; checked = null; error = null },
-                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_022)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                error?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
-                val c = checked
-                if (c != null) {
-                    Text("检查时间：${fmtAt(c.target, zone)}", style = MaterialTheme.typography.bodySmall)
-                    Text(
-                        androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_023),
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
-                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_024), style = MaterialTheme.typography.bodySmall)
-            }
-        },
-        confirmButton = {
-            if (checked == null) {
-                TextButton(onClick = {
-                    val target = parseMillis(text, zone)
-                    if (target == null) {
-                        error = "请输入有效的 yyyy-MM-dd HH:mm"
-                    } else {
-                        scope.launch {
-                            model.perform(action = {
-                                checked = DelayCheck(target, service.previewMove(instance.id, instance.version, target, false))
-                            })
-                        }
-                    }
-                }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_025)) }
-            } else {
-                TextButton(enabled = !busy, onClick = {
-                    val c = checked ?: return@TextButton
-                    scope.launch {
-                        model.perform(
-                            onSuccess = { onDismiss() },
-                            action = {
-                                service.move(
-                                    instance.id,
-                                    instance.version,
-                                    c.target,
-                                    false,
-                                    c.conflicts,
-                                    UUID.randomUUID().toString(),
-                                )
-                            },
-                        )
-                    }
-                }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_026)) }
-            }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
-    )
 }
 
 @Composable

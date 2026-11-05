@@ -59,14 +59,6 @@ private fun wdName(d: Int): String = when (d) {
 private fun hhmm(minute: Int?): String =
     if (minute == null) "无固定时刻" else "%02d:%02d".format(minute / 60, minute % 60)
 
-private fun fmt(epochMillis: Long, zone: ZoneId): String =
-    Instant.ofEpochMilli(epochMillis).atZone(zone).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
-
-private fun parseAt(text: String, zone: ZoneId): Long? = runCatching {
-    LocalDateTime.parse(text.trim(), DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm").withResolverStyle(java.time.format.ResolverStyle.STRICT))
-        .atZone(zone).toInstant().toEpochMilli()
-}.getOrNull()
-
 private fun freqLabel(p: RecurringPattern): String = when (p.frequency) {
     "WEEKDAYS" -> "每周" + p.weekdays.orEmpty().sorted().joinToString("") { wdName(it) }
     "WEEKLY_COUNT" -> "每周 ${p.weeklyCount} 次"
@@ -180,12 +172,9 @@ fun RecurringScreen(
     var pendingRule by remember { mutableStateOf<PendingRuleSave?>(null) }
     var pendingPreview by remember { mutableStateOf<RuleChangePreview?>(null) }
     var choice by remember { mutableStateOf<RecurringInstanceEntity?>(null) }
-    var moving by remember { mutableStateOf<RecurringInstanceEntity?>(null) }
-    var moveInput by remember { mutableStateOf("") }
-    var moveWithPlan by remember { mutableStateOf(true) }
-    var pendingTarget by remember { mutableStateOf<Long?>(null) }
-    var pendingConflicts by remember { mutableStateOf<List<Conflict>?>(null) }
-    var moveError by remember { mutableStateOf<String?>(null) }
+    val moveStore = remember(context) { RecurringMoveDraftStore(context) }
+    var editingMoveId by rememberSaveable { mutableStateOf<String?>(null) }
+    val moveDrafts = remember(editingMoveId, data.recurringInstances) { moveStore.all().filter { it.domain == "HABIT" } }
 
     val rules = data.recurringRules.filter { it.domain == "HABIT" && it.deletedAt == null }
         .sortedByDescending { it.createdAt }
@@ -233,13 +222,10 @@ fun RecurringScreen(
         )
     }
 
-    fun openMove(inst: RecurringInstanceEntity, p: RecurringPattern?) {
-        moveInput = inst.scheduledAt?.let { fmt(it, zone) } ?: (inst.originalDate + " " + hhmm(p?.minuteOfDay ?: 0))
-        moveWithPlan = p?.minuteOfDay != null
-        pendingTarget = null
-        pendingConflicts = null
-        moveError = null
-        moving = inst
+    fun openMove(instance: RecurringInstanceEntity) {
+        val draft = moveStore.read(instance.id) ?: RecurringMoveDraft.create(instance, taskById[instance.taskId], zone)
+        if (moveStore.save(draft)) editingMoveId = draft.id
+        else model.report(context.getString(R.string.move_draft_write_failed))
     }
 
     Scaffold(modifier = Modifier.fillMaxSize(), contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -286,6 +272,13 @@ fun RecurringScreen(
                 OutlinedButton(onClick = { editingDraftId = draft.id }, modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
                     Text(stringResource(R.string.recurring_draft_resume,
                         draft.fields.title.ifBlank { context.getString(R.string.recurring_draft_untitled) }))
+                }
+            }
+        }
+        if (moveDrafts.isNotEmpty()) Column(Modifier.fillMaxWidth().heightIn(max = 160.dp).verticalScroll(rememberScrollState())) {
+            moveDrafts.forEach { draft ->
+                OutlinedButton(onClick = { editingMoveId = draft.id }, modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
+                    Text(stringResource(R.string.move_draft_resume, draft.title))
                 }
             }
         }
@@ -506,7 +499,7 @@ fun RecurringScreen(
             confirmButton = {
                 TextButton(onClick = {
                     choice = null
-                    openMove(inst, rule?.let { patternOrNull(gson, it) })
+                    openMove(inst)
                 }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_016)) }
             },
             dismissButton = {
@@ -518,92 +511,18 @@ fun RecurringScreen(
         )
     }
 
-    moving?.let { inst ->
-        val target = pendingTarget
-        Dialog(onDismissRequest = {
-            moving = null; pendingTarget = null; pendingConflicts = null
-        }) {
-            Surface(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    Modifier.padding(16.dp).heightIn(max = 520.dp).verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text("改期：${taskById[inst.taskId]?.title ?: "任务不可用"}", fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
-                    if (target == null) {
-                        OutlinedTextField(
-                            value = moveInput,
-                            onValueChange = {
-                                moveInput = it; moveError = null; pendingTarget = null; pendingConflicts = null
-                            },
-                            label = { Text("yyyy-MM-dd HH:mm") },
-                            singleLine = true,
-                            isError = moveError != null,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Switch(checked = moveWithPlan, onCheckedChange = { moveWithPlan = it })
-                            Spacer(Modifier.width(8.dp))
-                            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_017), fontSize = 13.sp)
-                        }
-                        Text(
-                            if (moveWithPlan) "将按新时间占用计划时段" else "仅改待办日期，并移出原计划",
-                            fontSize = 11.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        moveError?.let { Text(it, fontSize = 12.sp, color = MaterialTheme.colorScheme.error) }
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            TextButton(onClick = {
-                                moving = null; pendingTarget = null; pendingConflicts = null
-                            }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
-                            Button(onClick = {
-                                val at = parseAt(moveInput, zone)
-                                if (at == null) {
-                                    moveError = "请输入 yyyy-MM-dd HH:mm"
-                                } else {
-                                    model.perform(action = {
-                                        val found = service.previewMove(inst.id, inst.version, at, moveWithPlan)
-                                        pendingConflicts = found
-                                        pendingTarget = at
-                                    })
-                                }
-                            }, modifier = Modifier.testTag("recurring-move-check")) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_018)) }
-                        }
-                    } else {
-                        val conflictsFound = pendingConflicts.orEmpty()
-                        Text("新时间：${fmt(target, zone)}", fontSize = 13.sp)
-                        if (conflictsFound.isEmpty()) {
-                            Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_019), fontSize = 12.sp)
-                        } else {
-                            Text("发现 ${conflictsFound.size} 个冲突：", fontSize = 12.sp, color = MaterialTheme.colorScheme.error)
-                            conflictsFound.take(5).forEach { c -> Text("· ${c.title}", fontSize = 12.sp) }
-                        }
-                        Text(
-                            androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_020),
-                            fontSize = 11.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            TextButton(onClick = {
-                                pendingTarget = null; pendingConflicts = null
-                            }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_021)) }
-                            Button(onClick = {
-                                model.perform(
-                                    onSuccess = { moving = null; pendingTarget = null; pendingConflicts = null },
-                                    action = {
-                                        service.move(
-                                            inst.id, inst.version, target, moveWithPlan,
-                                            conflictsFound, UUID.randomUUID().toString()
-                                        )
-                                    }
-                                )
-                            }, modifier = Modifier.testTag("recurring-move-confirm")) {
-                                Text(if (conflictsFound.isEmpty()) "确认改期" else "确认冲突并改期")
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    editingMoveId?.let { id ->
+        val draft = remember(id) { moveStore.read(id) }
+        if (draft != null) key(id) {
+            RecurringMoveEditDialog(draft, model,
+                onDraftChange = moveStore::save,
+                onRemoveDraft = { moveStore.remove(id) },
+                onDismiss = { editingMoveId = null },
+                onSaved = { result -> result.undoToken?.let { token ->
+                    undoMessage = com.timeagent.ui.components.UndoMessage(result.requestId,
+                        context.getString(R.string.move_draft_saved), token)
+                } })
+        } else LaunchedEffect(id) { editingMoveId = null }
     }
 }
 

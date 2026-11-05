@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="move_draft_resume">恢复改期草稿：%1$s</string>
+    <string name="move_draft_title">仅本次改期：%1$s</string>
+    <string name="move_draft_date">新日期</string>
+    <string name="move_draft_time">新时刻</string>
+    <string name="move_draft_invalid_date">日期无效，请重新选择。</string>
+    <string name="move_draft_invalid_time">时刻无效，请重新选择。</string>
+    <string name="move_draft_write_failed">改期草稿未能保存到本地。输入仍保留，请重试后再离开。</string>
+    <string name="move_draft_cleanup_failed">改期已保存，草稿清理失败。请点关闭重试清理，不会再次改期。</string>
+    <string name="move_draft_save_failed">改期未能保存，输入仍保留，请重试。</string>
+    <string name="move_draft_saved">本次改期已保存</string>
+    <string name="move_draft_task_changed">原事项已变化，请重新打开后核对。当前草稿仍保留。</string>
+    <string name="move_draft_confirm_target">新时间：%1$s</string>
+    <string name="move_draft_conflicts">发现 %1$d 个冲突：</string>
+    <string name="move_draft_confirm">确认改期</string>
+    <string name="move_draft_confirm_conflicts">确认冲突并改期</string>
+    <string name="move_draft_plan_hint">将按新时间占用计划时段。</string>
+    <string name="move_draft_date_hint">仅改待办日期，并移出原计划。</string>
+</resources>
