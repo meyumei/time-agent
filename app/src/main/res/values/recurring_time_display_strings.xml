@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recurring_display_no_time">无固定时刻</string>
+    <string name="recurring_display_invalid_time">时刻无效，请编辑规则</string>
+    <string name="recurring_display_no_date">日期未定</string>
+    <string name="recurring_display_overdue">%1$s 已过期</string>
+    <string name="recurring_display_today">今天%1$s</string>
+    <string name="recurring_display_tomorrow">明天%1$s</string>
+    <string name="recurring_display_fixed_time">固定时段：%1$s</string>
+    <string name="deadline_display_due_rule">期限 %1$s · %2$s</string>
+    <string name="deadline_display_due_original">期限 %1$s · 原始日期 %2$s</string>
+    <string name="deadline_display_completed_at">完成于 %1$s</string>
+</resources>

@@ -24,6 +24,7 @@ import com.timeagent.core.*
 import com.timeagent.data.*
 import com.timeagent.recurring.*
 import com.timeagent.reminders.*
+import com.timeagent.ui.components.rememberTimeDisplayFormatter
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
@@ -36,7 +37,6 @@ import kotlinx.coroutines.launch
 private val gson = Gson()
 private val dateFmt = DateTimeFormatter.ofPattern("uuuu-MM-dd").withResolverStyle(ResolverStyle.STRICT)
 private val timeFmt = DateTimeFormatter.ofPattern("HH:mm").withResolverStyle(ResolverStyle.STRICT)
-private val stampFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 private const val DEADLINE_DOMAIN = "DEADLINE"
 
 private fun rulePattern(rule: RecurringRuleEntity): RecurringPattern? =
@@ -45,8 +45,8 @@ private fun rulePattern(rule: RecurringRuleEntity): RecurringPattern? =
 private fun parseDate(text: String): LocalDate? =
     runCatching { LocalDate.parse(text.trim(), dateFmt) }.getOrNull()
 
-private fun fmtAt(value: Long?, zone: ZoneId): String =
-    value?.let { Instant.ofEpochMilli(it).atZone(zone).format(stampFmt) } ?: "—"
+private fun fmtAt(value: Long?, zone: ZoneId, format: DateTimeFormatter): String =
+    value?.let { Instant.ofEpochMilli(it).atZone(zone).format(format) } ?: "—"
 
 private fun freqLabel(f: String?): String = when (f) {
     "ONCE" -> "一次"
@@ -541,6 +541,7 @@ private fun DeadlineFocusRow(
     val instance = item.instance
     val task = item.task
     val state = recurringState(instance, task)
+    val displayFormat = rememberTimeDisplayFormatter(includeDate = true)
     Card(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
         Column(Modifier.padding(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -553,7 +554,8 @@ private fun DeadlineFocusRow(
                 Text(statusLabel(state), style = MaterialTheme.typography.bodySmall)
             }
             Text(
-                "期限 ${fmtAt(item.dueAt, zone)} · ${item.rule.title}",
+                androidx.compose.ui.res.stringResource(com.timeagent.R.string.deadline_display_due_rule,
+                    fmtAt(item.dueAt, zone, displayFormat), item.rule.title),
                 style = MaterialTheme.typography.bodySmall,
             )
             val usable = task != null && task.deletedAt == null
@@ -595,13 +597,15 @@ private fun InstanceRow(
     onReopen: () -> Unit,
     onDelay: () -> Unit,
 ) {
+    val displayFormat = rememberTimeDisplayFormatter(includeDate = true)
     Column(Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(task?.title ?: "任务不存在", modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(statusLabel(recurringState(instance,task)), style = MaterialTheme.typography.bodySmall)
         }
         Text(
-            "期限 ${fmtAt(task?.dueAt, zone)} · 原始日期 ${instance.originalDate}",
+            androidx.compose.ui.res.stringResource(com.timeagent.R.string.deadline_display_due_original,
+                fmtAt(task?.dueAt, zone, displayFormat), instance.originalDate),
             style = MaterialTheme.typography.bodySmall,
         )
         if (task == null || task.deletedAt != null) {
@@ -620,7 +624,8 @@ private fun InstanceRow(
                 style = MaterialTheme.typography.bodySmall,
             )
             if (task.status == "COMPLETED") {
-                Text("完成于 ${fmtAt(task.completedAt, zone)}", style = MaterialTheme.typography.bodySmall)
+                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.deadline_display_completed_at,
+                    fmtAt(task.completedAt, zone, displayFormat)), style = MaterialTheme.typography.bodySmall)
             }
         }
         Row {
