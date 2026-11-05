@@ -633,7 +633,13 @@ private data class WorkoutTimerSwitch(
             ProjectScreen(data, model, now, zone, onTask = { selected = it }, onClose = ::closeScreen,
                 onSchedule = { editor = EditorRequest(EditorKind.PLAN, taskId = it.id, scheduleRange = true) })
         }
-        "goals" -> MinuteClockContent(model) { now -> WeeklyGoalsScreen(data,model,now,zone,onClose=::closeScreen) }
+        "goals" -> MinuteClockContent(model) { now ->
+            WeeklyGoalsScreen(data, model, now, zone, onClose = ::closeScreen,
+                onSaved = { result -> result.undoToken?.let { token ->
+                    timelineUndo = com.timeagent.ui.components.UndoMessage(result.requestId,
+                        context.getString(com.timeagent.R.string.goal_draft_saved), token)
+                } })
+        }
         "courses" -> CourseScheduleScreen(
             data = data,
             zone = zone,

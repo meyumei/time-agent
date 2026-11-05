@@ -49,8 +49,10 @@ fun ProjectReviewSection(data: LocalSnapshot, weekStart: LocalDate, now: Instant
     },confirmButton={TextButton(onClick={sources=null}){Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_close))}}) }
 }
 
-@Composable fun WeeklyGoalsScreen(data:LocalSnapshot,model:TimeViewModel,now:Instant,zone:ZoneId,onClose:()->Unit) {
-    WeeklyGoalDialog(null,data.projects.filter{it.deletedAt==null},data.activities.filter{it.archivedAt==null},data.weeklyGoals,now,zone,onClose) { goal,version ->
-        model.perform(onSuccess=onClose) {model.repository.saveWeeklyGoal(goal,version)}
-    }
+@Composable
+fun WeeklyGoalsScreen(
+    data: LocalSnapshot, model: TimeViewModel, now: Instant, zone: ZoneId, onClose: () -> Unit,
+    onSaved: (com.timeagent.domain.command.CommandResult) -> Unit = {},
+) {
+    WeeklyGoalEditor(null, data, model, now, zone, onDismiss = onClose, onSaved = onSaved)
 }
