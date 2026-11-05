@@ -664,6 +664,26 @@ private fun DelayInputDialog(
 }
 
 @Composable
+private fun DeadlineDateField(
+    label: String,
+    text: String,
+    fallback: LocalDate,
+    onChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val parsed = parseDate(text)
+    com.timeagent.ui.components.DateField(label, parsed ?: fallback, { onChange(it.toString()) }, modifier,
+        error = if (parsed == null) androidx.compose.ui.res.stringResource(com.timeagent.R.string.deadline_picker_error_date) else null)
+}
+
+@Composable
+private fun DeadlineTimeField(label: String, text: String, onChange: (String) -> Unit, modifier: Modifier = Modifier) {
+    val parsed = runCatching { LocalTime.parse(text.trim(), timeFmt) }.getOrNull()
+    com.timeagent.ui.components.TimeField(label, parsed ?: LocalTime.of(9, 0), { onChange(it.format(timeFmt)) }, modifier,
+        error = if (parsed == null) androidx.compose.ui.res.stringResource(com.timeagent.R.string.deadline_picker_error_time) else null)
+}
+
+@Composable
 private fun RuleDialog(
     initial: RecurringRuleEntity?,
     fromDefault: LocalDate?,
@@ -673,6 +693,7 @@ private fun RuleDialog(
     onDismiss: () -> Unit,
     onSave: (RecurringRuleEntity, Long?, LocalDate) -> Unit,
 ) {
+    val context = LocalContext.current
     val old = remember(initial) { initial?.let { rulePattern(it) } }
     val ruleId=remember(initial?.id){initial?.id?:UUID.randomUUID().toString()}
     var title by remember { mutableStateOf(initial?.title.orEmpty()) }
@@ -692,7 +713,7 @@ private fun RuleDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (initial == null) "新建期限" else "编辑期限") },
+        title = { Text(context.getString(if (initial == null) com.timeagent.R.string.deadline_picker_create else com.timeagent.R.string.deadline_picker_edit)) },
         text = {
             Column(Modifier.heightIn(max = 520.dp).verticalScroll(rememberScrollState())) {
                 OutlinedTextField(
@@ -713,23 +734,19 @@ private fun RuleDialog(
                         )
                     }
                 }
-                Row {
-                    OutlinedTextField(
-                        value = dateText,
-                        onValueChange = { dateText = it },
-                        label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_028)) },
-                        singleLine = true,
-                        modifier = Modifier.weight(1f).testTag("deadline-date"),
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    OutlinedTextField(
-                        value = timeText,
-                        onValueChange = { timeText = it },
-                        label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_029)) },
-                        singleLine = true,
-                        modifier = Modifier.weight(0.7f).testTag("deadline-time"),
-                    )
-                }
+                DeadlineDateField(
+                    label = context.getString(com.timeagent.R.string.deadline_picker_date),
+                    text = dateText,
+                    fallback = today.plusDays(1),
+                    onChange = { dateText = it; error = null },
+                    modifier = Modifier.testTag("deadline-date"),
+                )
+                DeadlineTimeField(
+                    label = context.getString(com.timeagent.R.string.deadline_picker_time),
+                    text = timeText,
+                    onChange = { timeText = it; error = null },
+                    modifier = Modifier.testTag("deadline-time"),
+                )
                 Row(Modifier.horizontalScroll(rememberScrollState())) {
                     listOf("ONCE" to "一次", "MONTHLY" to "每月", "YEARLY" to "每年").forEach { (key, label) ->
                         FilterChip(
@@ -748,12 +765,11 @@ private fun RuleDialog(
                     modifier = Modifier.fillMaxWidth().testTag("deadline-lead"),
                 )
                 if (initial != null) {
-                    OutlinedTextField(
-                        value = fromText,
-                        onValueChange = { fromText = it },
-                        label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_031)) },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
+                    DeadlineDateField(
+                        label = context.getString(com.timeagent.R.string.deadline_picker_effective),
+                        text = fromText,
+                        fallback = fromDefault ?: today,
+                        onChange = { fromText = it; error = null },
                     )
                 }
                 Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_template_editor_009), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(top = 8.dp))
@@ -799,11 +815,11 @@ private fun RuleDialog(
                     if (frequency == "ONCE") date else today
                 } else parseDate(fromText)
                 when {
-                    title.isBlank() -> error = "标题不能为空"
-                    date == null -> error = "日期格式应为 yyyy-MM-dd"
-                    time == null -> error = "时间格式应为 HH:mm"
-                    leadText.isNotBlank() && (days == null || days !in 0..366) -> error = "提前天数需在 0..366"
-                    from == null -> error = "生效日期格式应为 yyyy-MM-dd"
+                    title.isBlank() -> error = context.getString(com.timeagent.R.string.deadline_picker_error_title)
+                    date == null -> error = context.getString(com.timeagent.R.string.deadline_picker_error_date)
+                    time == null -> error = context.getString(com.timeagent.R.string.deadline_picker_error_time)
+                    leadText.isNotBlank() && (days == null || days !in 0..366) -> error = context.getString(com.timeagent.R.string.deadline_picker_error_lead)
+                    from == null -> error = context.getString(com.timeagent.R.string.deadline_picker_error_effective)
                     else -> {
                         val pattern = RecurringPattern(
                             id = ruleId,
