@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pause_draft_pause">暂停</string>
+    <string name="pause_draft_resume">恢复</string>
+    <string name="pause_draft_pause_title">暂停“%1$s”？</string>
+    <string name="pause_draft_resume_title">恢复“%1$s”？</string>
+    <string name="pause_draft_pending">继续处理规则变更：%1$s</string>
+    <string name="pause_draft_write_failed">确认草稿未能保存到本地，请重试后再离开。规则尚未保存。</string>
+    <string name="pause_draft_cleanup_failed">规则已保存，确认草稿清理失败。请点关闭重试清理，不会再次修改规则。</string>
+    <string name="pause_draft_saved">规则变更已保存</string>
+    <string name="pause_draft_preview_failed">影响预览未能加载。规则尚未保存，请重试。</string>
+    <string name="pause_draft_save_failed">规则变更未能确认，草稿仍保留，请重试。</string>
+    <string name="pause_draft_scope_locked">范围已选定，重试会复用同一请求。需要重新选择时，请先重新预览。</string>
+    <string name="pause_draft_refresh_preview">重新预览并选择范围</string>
+    <string name="pause_draft_keep">稍后处理</string>
+    <string name="pause_draft_discard">取消本次变更</string>
+    <string name="pause_draft_invalid_pattern">规则数据无法解析，尚未修改。请先打开规则编辑查看。</string>
+</resources>

@@ -29,8 +29,6 @@ import com.google.gson.Gson
 import com.timeagent.core.*
 import com.timeagent.data.*
 import com.timeagent.recurring.RecurringService
-import com.timeagent.recurring.RuleChangeScope
-import com.timeagent.recurring.RuleChangePreview
 import com.timeagent.recurring.recurringState
 import java.time.*
 import java.time.format.DateTimeFormatter
@@ -120,14 +118,6 @@ private fun focusWhen(dueAt: Long?, hasTime: Boolean, today: LocalDate, zone: Zo
     }
 }
 
-private data class PendingRuleSave(
-    val entity: RecurringRuleEntity,
-    val expectedVersion: Long?,
-    val from: LocalDate,
-    val scope: RuleChangeScope? = null,
-    val requestId: String
-)
-
 private fun ruleSubtitle(rule: RecurringRuleEntity, p: RecurringPattern?, projectName: String?): String {
     val parts = mutableListOf<String>()
     parts += if (p == null) "规则无法解析" else freqLabel(p)
@@ -169,8 +159,9 @@ fun RecurringScreen(
         if (draftStore.save(draft)) editingDraftId = draft.id
         else model.report(context.getString(R.string.recurring_draft_write_failed))
     }
-    var pendingRule by remember { mutableStateOf<PendingRuleSave?>(null) }
-    var pendingPreview by remember { mutableStateOf<RuleChangePreview?>(null) }
+    val pauseStore = remember(context) { RecurringPauseDraftStore(context) }
+    var editingPauseId by rememberSaveable { mutableStateOf<String?>(null) }
+    val pauseDrafts = remember(editingPauseId, data.recurringRules) { pauseStore.all().filter { it.original.domain == "HABIT" } }
     var choice by remember { mutableStateOf<RecurringInstanceEntity?>(null) }
     val moveStore = remember(context) { RecurringMoveDraftStore(context) }
     var editingMoveId by rememberSaveable { mutableStateOf<String?>(null) }
@@ -198,28 +189,10 @@ fun RecurringScreen(
     }
 
     fun togglePause(rule: RecurringRuleEntity, p: RecurringPattern?) {
-        if (p == null) { model.report("规则数据无法解析"); return }
-        val next = p.copy(paused = !p.paused, effectiveFrom = today.toString())
-        pendingPreview = null
-        pendingRule = PendingRuleSave(rule.copy(patternJson = gson.toJson(next)), rule.version, today,
-            requestId = UUID.randomUUID().toString())
-        model.perform(action = {
-            pendingPreview = service.previewRuleChange(rule.id, today)
-        })
-    }
-
-    fun commitPending(scope: RuleChangeScope) {
-        val pending = pendingRule ?: return
-        val preview = pendingPreview ?: return
-        model.perform(
-            onSuccess = {
-                pendingRule = null
-                pendingPreview = null
-            },
-            action = {
-                service.saveRule(pending.entity, pending.expectedVersion, pending.from, pending.requestId, scope, preview)
-            }
-        )
+        if (p == null) { model.report(context.getString(R.string.pause_draft_invalid_pattern)); return }
+        val draft = pauseStore.read(rule.id) ?: RecurringPauseDraft.create(rule, p, today)
+        if (pauseStore.save(draft)) editingPauseId = draft.id
+        else model.report(context.getString(R.string.pause_draft_write_failed))
     }
 
     fun openMove(instance: RecurringInstanceEntity) {
@@ -266,6 +239,13 @@ fun RecurringScreen(
                 onClick = { model.perform(action = { service.refresh() }) },
                 modifier = Modifier.weight(1f)
             ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_004), fontSize = 13.sp) }
+        }
+        if (pauseDrafts.isNotEmpty()) Column(Modifier.fillMaxWidth().heightIn(max = 160.dp).verticalScroll(rememberScrollState())) {
+            pauseDrafts.forEach { draft ->
+                OutlinedButton(onClick = { editingPauseId = draft.id }, modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
+                    Text(stringResource(R.string.pause_draft_pending, draft.original.title))
+                }
+            }
         }
         if (drafts.isNotEmpty()) Column(Modifier.fillMaxWidth().heightIn(max = 160.dp).verticalScroll(rememberScrollState())) {
             drafts.forEach { draft ->
@@ -358,7 +338,7 @@ fun RecurringScreen(
                                     modifier = Modifier.testTag("recurring-rule-${rule.id}")
                                 ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_012), fontSize = 12.sp) }
                                 TextButton(onClick = { togglePause(rule, p) }) {
-                                    Text(if (p?.paused == true) "恢复" else "暂停", fontSize = 12.sp)
+                                    Text(stringResource(if (p?.paused == true) R.string.pause_draft_resume else R.string.pause_draft_pause), fontSize = 12.sp)
                                 }
                             }
                             if (open) {
@@ -419,7 +399,7 @@ fun RecurringScreen(
     }
 
     }
-    if (pendingRule == null) editingDraftId?.let { id ->
+    editingDraftId?.let { id ->
         val draft = remember(id) { draftStore.read(id) }
         if (draft != null) key(id) {
             RecurringRuleEditDialog(draft, projects, model,
@@ -433,61 +413,18 @@ fun RecurringScreen(
         } else LaunchedEffect(id) { editingDraftId = null }
     }
 
-    pendingRule?.let { pending ->
-        val counts = pendingPreview
-        AlertDialog(
-            onDismissRequest = {
-                pendingRule = null
-                pendingPreview = null
-            },
-            title = { Text("从 ${pending.from} 起修改规则？", fontSize = 15.sp) },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_009), fontSize = 13.sp)
-                    if (counts == null) {
-                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_010), fontSize = 13.sp)
-                    } else {
-                        Text("仅以后：从 ${counts.firstUnmaterializedDate} 起生成，已生成条目保持原样。", fontSize = 13.sp)
-                        Text(
-                            "可随规则修改：${counts.editable} 条",
-                            fontSize = 13.sp,
-                            modifier = Modifier.testTag("recurring-preview-editable")
-                        )
-                        Text(
-                            "受保护、不能修改：${counts.protectedCount} 条",
-                            fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.testTag("recurring-preview-protected")
-                        )
-                    }
-                    Text(
-                        androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_011),
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = { commitPending(RuleChangeScope.INCLUDING_PENDING) },
-                    enabled = counts != null,
-                    modifier = Modifier.testTag("recurring-save-including-pending")
-                ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_012), fontSize = 13.sp) }
-            },
-            dismissButton = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    TextButton(
-                        onClick = { commitPending(RuleChangeScope.FUTURE_ONLY) },
-                        enabled = counts != null,
-                        modifier = Modifier.testTag("recurring-save-future-only")
-                    ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_013), fontSize = 13.sp) }
-                    TextButton(onClick = {
-                        pendingRule = null
-                        pendingPreview = null
-                    }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel), fontSize = 13.sp) }
-                }
-            }
-        )
+    editingPauseId?.let { id ->
+        val draft = remember(id) { pauseStore.read(id) }
+        if (draft != null) key(id) {
+            RecurringPauseDialog(draft, model,
+                onDraftChange = pauseStore::save,
+                onRemoveDraft = { pauseStore.remove(id) },
+                onDismiss = { editingPauseId = null },
+                onSaved = { result -> result.undoToken?.let { token ->
+                    undoMessage = com.timeagent.ui.components.UndoMessage(result.requestId,
+                        context.getString(R.string.pause_draft_saved), token)
+                } })
+        } else LaunchedEffect(id) { editingPauseId = null }
     }
 
     choice?.let { inst ->

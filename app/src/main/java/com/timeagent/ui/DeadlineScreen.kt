@@ -157,6 +157,9 @@ fun DeadlineScreen(
     val draftStore = remember(context) { DeadlineEditorDraftStore(context) }
     var editingDraftId by rememberSaveable { mutableStateOf<String?>(null) }
     val drafts = remember(editingDraftId, data.recurringRules) { draftStore.all() }
+    val pauseStore = remember(context) { RecurringPauseDraftStore(context) }
+    var editingPauseId by rememberSaveable { mutableStateOf<String?>(null) }
+    val pauseDrafts = remember(editingPauseId, data.recurringRules) { pauseStore.all().filter { it.original.domain == DEADLINE_DOMAIN } }
     val snackbar = remember { SnackbarHostState() }
     var undoMessage by remember { mutableStateOf<com.timeagent.ui.components.UndoMessage?>(null) }
     com.timeagent.ui.components.UndoSnackbar(snackbar, undoMessage,
@@ -189,6 +192,13 @@ fun DeadlineScreen(
         val draft = moveStore.read(instance.id) ?: RecurringMoveDraft.create(instance, taskById[instance.taskId], zone)
         if (moveStore.save(draft)) editingMoveId = draft.id
         else model.report(context.getString(com.timeagent.R.string.move_draft_write_failed))
+    }
+
+    fun togglePause(rule: RecurringRuleEntity, pattern: RecurringPattern?) {
+        if (pattern == null) { model.report(context.getString(com.timeagent.R.string.pause_draft_invalid_pattern)); return }
+        val draft = pauseStore.read(rule.id) ?: RecurringPauseDraft.create(rule, pattern, today)
+        if (pauseStore.save(draft)) editingPauseId = draft.id
+        else model.report(context.getString(com.timeagent.R.string.pause_draft_write_failed))
     }
 
     fun act(instance: RecurringInstanceEntity, action: String) {
@@ -231,6 +241,11 @@ fun DeadlineScreen(
                     OutlinedButton(
                         onClick = { scope.launch { model.perform(action = { service.refresh() }) } },
                     ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_003)) }
+                }
+                pauseDrafts.forEach { draft ->
+                    OutlinedButton(onClick = { editingPauseId = draft.id }, modifier = Modifier.fillMaxWidth()) {
+                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.pause_draft_pending, draft.original.title))
+                    }
                 }
                 drafts.forEach { draft ->
                     OutlinedButton(onClick = { editingDraftId = draft.id }, modifier = Modifier.fillMaxWidth()) {
@@ -360,18 +375,8 @@ fun DeadlineScreen(
                                     modifier = Modifier.testTag("deadline-rule-${rule.id}"),
                                 ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_012)) }
                                 TextButton(onClick = {
-                                    if (pattern == null) return@TextButton
-                                    scope.launch {
-                                        model.perform(action = {
-                                            service.saveRule(
-                                                rule.copy(patternJson = gson.toJson(pattern.copy(paused = !paused))),
-                                                rule.version,
-                                                today,
-                                                UUID.randomUUID().toString(),
-                                            )
-                                        })
-                                    }
-                                }) { Text(if (paused) "恢复" else "暂停") }
+                                    togglePause(rule, pattern)
+                                }) { Text(androidx.compose.ui.res.stringResource(if (paused) com.timeagent.R.string.pause_draft_resume else com.timeagent.R.string.pause_draft_pause)) }
                             }
 
                             if (rule.reference.isNotBlank()) {
@@ -443,6 +448,20 @@ fun DeadlineScreen(
                 Spacer(Modifier.height(24.dp))
             }
         }
+    }
+
+    editingPauseId?.let { id ->
+        val draft = remember(id) { pauseStore.read(id) }
+        if (draft != null) key(id) {
+            RecurringPauseDialog(draft, model,
+                onDraftChange = pauseStore::save,
+                onRemoveDraft = { pauseStore.remove(id) },
+                onDismiss = { editingPauseId = null },
+                onSaved = { result -> result.undoToken?.let { token ->
+                    undoMessage = com.timeagent.ui.components.UndoMessage(result.requestId,
+                        context.getString(com.timeagent.R.string.pause_draft_saved), token)
+                } })
+        } else LaunchedEffect(id) { editingPauseId = null }
     }
 
     editingDraftId?.let { id ->
