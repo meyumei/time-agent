@@ -1124,8 +1124,9 @@ class QuickEntryModel(
         }
     }
 
-    suspend fun saveTemplate(template: PlanTemplateEntity, items: List<PlanTemplateItemEntity>): TemplateSaveOutcome? =
-        action(null) { quickEntries.saveTemplate(template, items, template.version.takeIf { template.version > 0 }) }
+    suspend fun saveTemplate(template: PlanTemplateEntity, items: List<PlanTemplateItemEntity>,
+        requestId: String = UUID.randomUUID().toString()): TemplateSaveOutcome? =
+        action(null) { quickEntries.saveTemplate(template, items, template.version.takeIf { template.version > 0 }, requestId) }
 
     suspend fun saveDayAsTemplate(name: String, date: LocalDate, description: String = ""): TemplateSaveOutcome? =
         action("已保存计划模板") { quickEntries.saveDayAsTemplate(name, date, description) }
