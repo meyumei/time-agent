@@ -389,21 +389,12 @@ fun ProjectScreen(
     }
 
     goalFor?.let { project ->
-        WeeklyGoalDialog(
-            project = project,
-            projects = projects,
-            activities = data.activities,
-            goals = data.weeklyGoals,
-            now = now,
-            zone = zone,
+        WeeklyGoalEditor(project, data, model, now, zone,
             onDismiss = { goalFor = null },
-            onSave = { goal, expectedVersion ->
-                model.perform(
-                    onSuccess = { goalFor = null },
-                    action = { model.repository.saveWeeklyGoal(goal, expectedVersion) }
-                )
-            }
-        )
+            onSaved = { result -> result.undoToken?.let { token ->
+                deleteUndo = com.timeagent.ui.components.UndoMessage(result.requestId,
+                    context.getString(R.string.goal_draft_saved), token)
+            } })
     }
 }
 
@@ -910,170 +901,6 @@ private fun AddTaskDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
-        }
-    )
-}
-
-@Composable
-internal fun WeeklyGoalDialog(
-    project: ProjectEntity?,
-    projects: List<ProjectEntity>,
-    activities: List<ActivityTemplateEntity>,
-    goals: List<WeeklyGoalEntity>,
-    now: Instant,
-    zone: ZoneId,
-    onDismiss: () -> Unit,
-    onSave: (WeeklyGoalEntity, Long?) -> Unit
-) {
-    val context = LocalContext.current
-    var useProject by rememberSaveable { mutableStateOf(project != null) }
-    val seenGoalsJson = rememberSaveable { com.google.gson.Gson().toJson(goals) }
-    val seenGoals = remember(seenGoalsJson) {
-        com.google.gson.Gson().fromJson(seenGoalsJson, Array<WeeklyGoalEntity>::class.java).toList()
-    }
-    var selectedProjectId by rememberSaveable { mutableStateOf<String?>(project?.id) }
-    var selectedActivityId by rememberSaveable { mutableStateOf<String?>(null) }
-    var weekText by rememberSaveable { mutableStateOf(mondayOf(now, zone).toString()) }
-    var minutesText by rememberSaveable { mutableStateOf("") }
-    var error by rememberSaveable { mutableStateOf<String?>(null) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_report_screen_014)) },
-        text = {
-            Column(
-                modifier = Modifier
-                    .heightIn(max = 420.dp)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Text(text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_020), style = MaterialTheme.typography.bodySmall)
-                Row {
-                    val projectType = stringResource(R.string.project_editor_goal_type_project)
-                    val activityType = stringResource(R.string.project_editor_goal_type_activity)
-                    TextButton(onClick = { useProject = true; error = null }) {
-                        Text(
-                            if (useProject) stringResource(R.string.project_editor_option_selected, projectType)
-                            else projectType
-                        )
-                    }
-                    TextButton(onClick = { useProject = false; error = null }) {
-                        Text(
-                            if (!useProject) stringResource(R.string.project_editor_option_selected, activityType)
-                            else activityType
-                        )
-                    }
-                }
-                if (useProject) {
-                    projects.forEach { p ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { selectedProjectId = p.id; error = null }
-                                .padding(vertical = 2.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            RadioButton(
-                                selected = selectedProjectId == p.id,
-                                onClick = { selectedProjectId = p.id; error = null }
-                            )
-                            Text(p.name)
-                        }
-                    }
-                } else {
-                    if (activities.isEmpty()) {
-                        Text(text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_021), style = MaterialTheme.typography.bodySmall)
-                    }
-                    activities.forEach { activity ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { selectedActivityId = activity.id; error = null }
-                                .padding(vertical = 2.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            RadioButton(
-                                selected = selectedActivityId == activity.id,
-                                onClick = { selectedActivityId = activity.id; error = null }
-                            )
-                            Text(activity.name)
-                        }
-                    }
-                }
-                Spacer(Modifier.height(8.dp))
-                val parsedWeek = tryParseDate(weekText.trim())
-                DateField(
-                    label = stringResource(R.string.text_project_screens_022),
-                    value = parsedWeek ?: mondayOf(now, zone),
-                    onValueChange = { weekText = it.toString(); error = null },
-                    error = if (weekText.isNotBlank() && parsedWeek == null) {
-                        context.getString(R.string.project_editor_error_week_format)
-                    } else {
-                        null
-                    }
-                )
-                Spacer(Modifier.height(8.dp))
-                DurationField(
-                    minutes = minutesText.trim().toIntOrNull()?.takeIf { it > 0 } ?: 0,
-                    onChange = { },
-                    textValue = minutesText,
-                    onTextChange = { minutesText = it; error = null }
-                )
-                error?.let {
-                    Text(
-                        text = it,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-                Text(
-                    text = androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_project_screens_024),
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    val weekDate = tryParseDate(weekText.trim())
-                    if (weekDate == null) {
-                        error = context.getString(R.string.project_editor_error_week_format)
-                        return@TextButton
-                    }
-                    if (weekDate.dayOfWeek != DayOfWeek.MONDAY) {
-                        error = context.getString(R.string.project_editor_error_week_monday)
-                        return@TextButton
-                    }
-                    val minutes = minutesText.trim().toIntOrNull()
-                    if (minutes == null || minutes <= 0) {
-                        error = context.getString(R.string.project_editor_error_goal_minutes_positive)
-                        return@TextButton
-                    }
-                    val targetProjectId = if (useProject) selectedProjectId else null
-                    val targetActivityId = if (useProject) null else selectedActivityId
-                    if (targetProjectId == null && targetActivityId == null) {
-                        error = context.getString(R.string.project_editor_error_goal_target_required)
-                        return@TextButton
-                    }
-                    val week = weekDate.toString()
-                    val existing = seenGoals.firstOrNull {
-                        it.weekStart == week &&
-                            it.projectId == targetProjectId &&
-                            it.activityId == targetActivityId
-                    }
-                    val goal = WeeklyGoalEntity(
-                        id = existing?.id ?: UUID.randomUUID().toString(),
-                        projectId = targetProjectId,
-                        activityId = targetActivityId,
-                        weekStart = week,
-                        targetMinutes = minutes,
-                        version = existing?.version ?: 0
-                    )
-                    onSave(goal, existing?.version)
-                }
-            ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save)) }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) }
         }
     )
 }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="goal_draft_picker_title">周目标草稿</string>
+    <string name="goal_draft_create">新建周目标</string>
+    <string name="goal_draft_resume">恢复：%1$s · %2$s</string>
+    <string name="goal_draft_missing_target">原目标不可用，请重新选择</string>
+    <string name="goal_draft_no_target">尚未选择目标</string>
+    <string name="goal_draft_write_failed">周目标草稿未能保存到本地。输入仍保留，请重试后再离开。</string>
+    <string name="goal_draft_cleanup_failed">周目标已保存，草稿清理失败。请点关闭重试清理，不会再次保存周目标。</string>
+    <string name="goal_draft_saved">周目标已保存</string>
+    <string name="goal_draft_save_failed">周目标未能保存，输入仍保留，请重试。</string>
+</resources>
