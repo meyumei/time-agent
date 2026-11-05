@@ -63,9 +63,7 @@ private suspend fun loadWidget(context: Context): WidgetData {
             context.getSharedPreferences("widget_status", 0).getString("error", null),
             if (companion) fishAvatar(context) else null, repo.zone, tasks.associate { it.id to it.title },
             activeEntryId,
-            entries.filter { it.actionType in listOf(QuickEntryAction.START_TIMER, QuickEntryAction.START_FOCUS) }
-                .maxWithOrNull(compareBy<QuickEntryEntity> { it.lastUsedAt ?: Long.MIN_VALUE }
-                    .thenBy { it.usageCount }.thenByDescending { it.sortOrder }))
+            entries.recentTimerEntry())
     }
 }
 

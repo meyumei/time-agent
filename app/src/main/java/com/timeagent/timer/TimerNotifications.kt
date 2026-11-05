@@ -8,11 +8,14 @@ import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import com.google.gson.Gson
 import com.timeagent.MainActivity
+import com.timeagent.R
 import com.timeagent.core.workout.*
 import com.timeagent.data.TimeRepository
 import com.timeagent.di.AppEntryPoint
 import com.timeagent.domain.command.*
 import com.timeagent.focus.*
+import com.timeagent.quickentry.QuickEntryEntity
+import com.timeagent.quickentry.recentTimerEntry
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -31,17 +34,22 @@ object TimerNotifications {
     internal const val CHANNEL = "main_timer"
     private const val QUICK_CHANNEL = "quick_record"
     internal const val PREFS = "timer_notifications"
+    private const val QUICK_ERROR_ID = 4303
     private val gson = Gson()
 
     fun start(context: Context, repository: TimeRepository, scope: CoroutineScope) {
         val mainChanges = repository.database.invalidationTracker.createFlow("time_records", "focus_sessions",
-            "task_placements", "projects", "entry_contexts")
+            "task_placements", "projects", "entry_contexts", "quick_entries")
         val workouts = repository.workoutDatabase?.dao()?.observeSessions()
             ?: kotlinx.coroutines.flow.flowOf(emptyList())
         scope.launch {
-            combine(mainChanges, workouts) { _, _ -> read(repository, context) }
-                .distinctUntilChanged().collect { publish(context, it) }
+            combine(mainChanges, workouts) { _, _ -> readState(repository, context) }
+                .distinctUntilChanged().collect { (slot, recent) -> publish(context, slot, recent) }
         }
+    }
+
+    private suspend fun readState(repository: TimeRepository, context: Context) = repository.transaction {
+        read(repository, context) to repository.database.quickEntryDao().entries().recentTimerEntry()
     }
 
     internal suspend fun read(repository: TimeRepository, context: Context): MainTimerNotice? = repository.transaction {
@@ -75,11 +83,11 @@ object TimerNotifications {
         }
     }
 
-    internal fun publish(context: Context, slot: MainTimerNotice?) {
+    internal fun publish(context: Context, slot: MainTimerNotice?, recent: QuickEntryEntity?) {
         ensureChannels(context)
         if (slot == null) {
             context.stopService(Intent(context, TimerForegroundService::class.java))
-            showQuick(context)
+            showQuick(context, recent)
             return
         }
         context.getSystemService(NotificationManager::class.java).cancel(QUICK_ID)
@@ -94,18 +102,19 @@ object TimerNotifications {
     fun refresh(context: Context) {
         scope.launch {
             val repository = AppEntryPoint.from(context).timeRepository()
-            publish(context, read(repository, context))
+            val (slot, recent) = readState(repository, context)
+            publish(context, slot, recent)
         }
     }
 
     suspend fun restoreOnForeground(context: Context): String? {
         val repository = AppEntryPoint.from(context).timeRepository()
-        val slot = read(repository, context)
+        val (slot, recent) = readState(repository, context)
         val manager = context.getSystemService(NotificationManager::class.java)
         val permissionOff = !manager.areNotificationsEnabled() ||
             manager.getNotificationChannel(CHANNEL)?.importance == NotificationManager.IMPORTANCE_NONE
         val dismissed = slot != null && manager.activeNotifications.none { it.id == ID }
-        publish(context, slot)
+        publish(context, slot, recent)
         if (slot == null || (!permissionOff && !dismissed)) return null
         val prefs = context.getSharedPreferences(PREFS, 0)
         val key = "${slot.kind}:${slot.id}:${if (permissionOff) "permission" else "dismissed"}"
@@ -156,18 +165,68 @@ object TimerNotifications {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
     }
 
-    private fun showQuick(context: Context) {
+    private fun startRecent(context: Context, entry: QuickEntryEntity): PendingIntent {
+        val requestId = "notification-start:${entry.id}:${entry.version}:${entry.usageCount}"
+        val intent = Intent(context, RecentTimerActionReceiver::class.java)
+            .setData(android.net.Uri.parse("timeagent://notification-start/${android.net.Uri.encode(requestId)}"))
+            .putExtra("id", entry.id).putExtra("version", entry.version).putExtra("requestId", requestId)
+        return PendingIntent.getBroadcast(context, intent.dataString.hashCode(), intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+    }
+
+    internal fun recentResult(context: Context, message: String?) {
+        val manager = context.getSystemService(NotificationManager::class.java)
+        if (message == null) { manager.cancel(QUICK_ERROR_ID); return }
+        ensureChannels(context)
+        manager.notify(QUICK_ERROR_ID, Notification.Builder(context, QUICK_CHANNEL)
+            .setSmallIcon(android.R.drawable.ic_dialog_alert)
+            .setContentTitle(context.getString(R.string.notification_recent_failed))
+            .setContentText(message).setStyle(Notification.BigTextStyle().bigText(message))
+            .setContentIntent(open(context, "quick-entries")).setAutoCancel(true).build())
+    }
+
+    private fun showQuick(context: Context, recent: QuickEntryEntity?) {
         val manager = context.getSystemService(NotificationManager::class.java)
         if (!context.getSharedPreferences(PREFS, 0).getBoolean("quick_enabled", false)) { manager.cancel(QUICK_ID); return }
         val notification = Notification.Builder(context, QUICK_CHANNEL).setSmallIcon(android.R.drawable.ic_input_add)
             .setContentTitle("时间 Agent · 快捷记录").setOngoing(true).setOnlyAlertOnce(true)
             .setContentIntent(open(context, "quick-entries"))
-            .addAction(Notification.Action.Builder(null, "最近计时", open(context, "quick-recent")).build())
+            .addAction(Notification.Action.Builder(null, context.getString(R.string.notification_recent_start),
+                recent?.let { startRecent(context, it) } ?: open(context, "quick-entries")).build())
             .addAction(Notification.Action.Builder(null, "语音记录", open(context, "voice")).build())
             .addAction(Notification.Action.Builder(null, "新建任务", open(context, "new-task")).build()).build()
         if (manager.areNotificationsEnabled()) manager.notify(QUICK_ID, notification)
     }
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+}
+
+class RecentTimerActionReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        val id = intent.getStringExtra("id") ?: return
+        val version = intent.getLongExtra("version", -1).takeIf { it >= 0 } ?: return
+        val requestId = intent.getStringExtra("requestId") ?: return
+        val pending = goAsync()
+        scope.launch {
+            try {
+                val repository = AppEntryPoint.from(context).timeRepository()
+                // Empty seenSlots refuses to replace a timer that started after this notice.
+                val result = repository.commands.execute(WriteQuickEntry(requestId,
+                    QuickEntryMutation.Perform(id, version), Origin.NOTIFICATION))
+                val success = result.status in setOf(CommandStatus.APPLIED, CommandStatus.DUPLICATE)
+                TimerNotifications.recentResult(context, if (success) null else result.message)
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                TimerNotifications.recentResult(context,
+                    context.getString(R.string.notification_recent_retry))
+            } finally {
+                TimerNotifications.refresh(context)
+                pending.finish()
+            }
+        }
+    }
+
+    companion object { private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO) }
 }
 
 class TimerForegroundService : Service() {
