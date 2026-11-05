@@ -348,6 +348,7 @@ class ReportRepository(
         val categoryId: String?,
         val projectId: String?,
         val activityId: String?,
+        val notes: String,
     )
 
     private fun loadPlans(startAt: Long, endAt: Long): List<PlanRow> = readable.rows(
@@ -362,13 +363,13 @@ class ReportRepository(
     private fun loadRecords(startAt: Long, endAt: Long): List<RecordRow> {
         val focus = readable.rows("SELECT id, segmentsJson FROM focus_sessions").associateBy { "focus:${it.str("id")}" }
         return readable.rows(
-            "SELECT r.id, r.taskId, r.title, r.startAt, r.endAt, r.categoryId, c.projectId, c.activityId FROM time_records r " +
+            "SELECT r.id, r.taskId, r.title, r.startAt, r.endAt, r.categoryId, r.notes, c.projectId, c.activityId FROM time_records r " +
                 "LEFT JOIN entry_contexts c ON c.entityType='RECORD' AND c.entityId=r.id " +
                 "WHERE r.endAt IS NOT NULL AND r.endAt > r.startAt AND r.startAt < ? AND r.endAt > ? ORDER BY r.startAt", endAt, startAt,
         ).flatMap { row ->
             val record = RecordRow(row.str("id"), row.str("taskId").ifBlank { null }, row.str("title"),
                 row.long("startAt"), row.long("endAt"), row.str("categoryId").ifBlank { null },
-                row.str("projectId").ifBlank { null }, row.str("activityId").ifBlank { null })
+                row.str("projectId").ifBlank { null }, row.str("activityId").ifBlank { null }, row.str("notes"))
             val session = focus[record.id]
             if (session == null) listOf(record) else FocusSegments.decode(session.str("segmentsJson")).mapNotNull { segment ->
                 val start = maxOf(segment.startAt, startAt)
@@ -526,10 +527,11 @@ class ReportRepository(
         val eventStart = window.start.with(DayOfWeek.MONDAY)
         val eventStartAt = eventStart.atStartOfDay(zone).toInstant().toEpochMilli()
         val events = loadHabitEvents(eventStart, window.end, eventStartAt, endAt, tasks, placements, recordTags)
+        val evaluationToday = minOf(window.end, today())
         var achievedTotal = 0
         var evaluatedTotal = 0
         val lines = habits.map { habit ->
-            val evaluation = HabitStatistics.evaluate(habit, events, window.start, window.end)
+            val evaluation = HabitStatistics.evaluate(habit, events, window.start, window.end, today = evaluationToday)
             achievedTotal += evaluation.achieved
             evaluatedTotal += evaluation.evaluated
             HabitReportLine(
@@ -555,16 +557,19 @@ class ReportRepository(
         recordTags: Map<String, List<String>>,
     ): List<HabitEvent> {
         val events = mutableListOf<HabitEvent>()
+        val records = loadRecords(startAt, endAt)
         val sleepIds = if (hasTable("health_sync_items")) {
-            readable.rows("SELECT recordId FROM health_sync_items WHERE kind='SLEEP' AND recordId IS NOT NULL")
+            readable.rows("SELECT h.recordId FROM health_sync_items h JOIN time_records r ON r.id=h.recordId " +
+                "WHERE h.kind='SLEEP' AND h.recordId IS NOT NULL")
                 .map { it.str("recordId") }.toSet()
         } else emptySet()
 
-        loadRecords(startAt, endAt).forEach { record ->
+        records.forEach { record ->
             val end = record.endAt ?: return@forEach
             val title = taskLabel(record.taskId, record.title, tasks)
-            val isSleep = record.id in sleepIds || title.contains("睡眠") || title.contains("睡觉") ||
-                title.contains("sleep", ignoreCase = true)
+            val sleepText = "$title ${record.notes}"
+            val isSleep = record.id in sleepIds || sleepText.contains("睡眠") || sleepText.contains("睡觉") ||
+                sleepText.contains("sleep", ignoreCase = true)
             val projectId = record.projectId ?: record.taskId?.let(placements::get)
             val activityId = record.activityId ?: record.taskId?.let { tasks[it]?.str("activityId")?.ifBlank { null } }
             if (isSleep) {
@@ -582,7 +587,8 @@ class ReportRepository(
                 )
                 return@forEach
             }
-            splitByDay(record.startAt, end).forEachIndexed { index, slice ->
+            val slices = splitByDay(record.startAt, end)
+            slices.forEachIndexed { index, slice ->
                 events += HabitEvent(
                     date = slice.first,
                     kind = HabitStatistics.KIND_RECORD,
@@ -591,7 +597,7 @@ class ReportRepository(
                     minutes = ((slice.third - slice.second).coerceAtLeast(0L) / 60_000L).toInt(),
                     count = if (index == 0) 1 else 0,
                     minuteOfDay = if (index == 0) minuteOfDay(record.startAt) else null,
-                    endMinuteOfDay = if (index == 0) null else minuteOfDay(end),
+                    endMinuteOfDay = if (index == slices.lastIndex) minuteOfDay(end) else null,
                     startAt = slice.second,
                     endAt = slice.third,
                     projectId = projectId,
@@ -615,23 +621,25 @@ class ReportRepository(
                     val elapsed = session.long("focusedElapsedMs")
                     listOf(com.timeagent.focus.FocusSegment(start, start + elapsed, elapsed, session.int("roundIndex")))
                 }
-                var first = true
+                val counted = mutableSetOf<LocalDate>()
                 segments.forEach { segment ->
                     if (segment.endAt <= segment.startAt || segment.elapsedMs <= 0) return@forEach
                     splitByDay(segment.startAt, segment.endAt).forEach { slice ->
                         val wall = (segment.endAt - segment.startAt).coerceAtLeast(1L)
                         val share = segment.elapsedMs * (slice.third - slice.second) / wall
+                        val count = if (counted.add(slice.first)) 1 else 0
                         events += HabitEvent(
                             date = slice.first,
                             kind = HabitStatistics.KIND_FOCUS,
                             id = id,
                             title = label,
                             minutes = (share / 60_000L).toInt(),
-                            count = if (first) 1 else 0,
+                            count = count,
+                            minuteOfDay = if (count == 1) minuteOfDay(segment.startAt) else null,
+                            endMinuteOfDay = minuteOfDay(segment.endAt),
                             startAt = slice.second,
                             endAt = slice.third,
                         )
-                        first = false
                     }
                 }
             }
@@ -644,7 +652,8 @@ class ReportRepository(
             val end = session.endedAt ?: return@forEach
             val active = (end - session.startedAt - session.totalPausedMillis).coerceAtLeast(0L)
             val wall = (end - session.startedAt).coerceAtLeast(1L)
-            splitByDay(session.startedAt, end).forEachIndexed { index, slice ->
+            val slices = splitByDay(session.startedAt, end)
+            slices.forEachIndexed { index, slice ->
                 val share = active * (slice.third - slice.second) / wall
                 events += HabitEvent(
                     date = slice.first,
@@ -653,6 +662,8 @@ class ReportRepository(
                     title = session.title.ifBlank { "训练" },
                     minutes = (share / 60_000L).toInt(),
                     count = if (index == 0) 1 else 0,
+                    minuteOfDay = if (index == 0) minuteOfDay(session.startedAt) else null,
+                    endMinuteOfDay = if (index == slices.lastIndex) minuteOfDay(end) else null,
                     startAt = slice.second,
                     endAt = slice.third,
                 )
@@ -661,10 +672,13 @@ class ReportRepository(
 
         if (hasTable("health_sync_items")) {
             readable.rows(
-                "SELECT startAt, endAt, title FROM health_sync_items " +
+                "SELECT recordId, startAt, endAt, title FROM health_sync_items " +
                     "WHERE kind='SLEEP' AND userDeleted=0 AND endAt > startAt AND startAt < ? AND endAt > ?",
                 endAt, startAt,
             ).forEach { item ->
+                // A linked record is authoritative even when edited outside this report window.
+                val linkedRecordId = item.str("recordId").ifBlank { null }
+                if (linkedRecordId != null && linkedRecordId in sleepIds) return@forEach
                 val start = maxOf(item.long("startAt"), startAt)
                 val end = minOf(item.long("endAt"), endAt)
                 if (end <= start) return@forEach
