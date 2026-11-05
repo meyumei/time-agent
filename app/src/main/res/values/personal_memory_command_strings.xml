@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="memory_command_save">保存个人规则</string>
+    <string name="memory_command_delete">删除个人规则</string>
+    <string name="memory_command_propose">提出个人规则候选</string>
+    <string name="memory_command_deleted">个人规则已删除</string>
+    <string name="memory_command_delete_impact">删除后可撤销，也可从历史恢复；不会删除大肥鱼的共同记忆。</string>
+</resources>

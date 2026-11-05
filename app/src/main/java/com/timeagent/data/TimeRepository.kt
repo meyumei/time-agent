@@ -255,7 +255,13 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         val saved = item.copy(version = nextVersion("GOAL",item.id,before?.version))
         dao.putWeeklyGoal(saved); journal("GOAL",item.id,before,saved,"保存周目标"); saved
     }
-    suspend fun saveMemory(item: PersonalMemoryEntity, expectedVersion: Long? = null): PersonalMemoryEntity = transaction {
+    suspend fun saveMemory(item: PersonalMemoryEntity, expectedVersion: Long? = null,
+        requestId: String = UUID.randomUUID().toString()): PersonalMemoryEntity {
+        val result = commands.executeForRepository(WritePersonalMemory(requestId, PersonalMemoryMutation.Save(item, expectedVersion)))
+        result.throwIfRejected()
+        return gson.fromJson(result.payload, PersonalMemoryEntity::class.java)
+    }
+    internal suspend fun saveMemoryRaw(item: PersonalMemoryEntity, expectedVersion: Long? = null): PersonalMemoryEntity = transaction {
         PersonalMemoryRules.validate(item)
         val before = dao.memory(item.id)
         checkVersion(before?.version, expectedVersion)
@@ -263,7 +269,10 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
         dao.putMemory(saved); journal("MEMORY", item.id, before, saved, "保存个人记忆")
         saved
     }
-    suspend fun deleteMemory(id: String, expectedVersion: Long) = transaction {
+    suspend fun deleteMemory(id: String, expectedVersion: Long, requestId: String = UUID.randomUUID().toString()) {
+        commands.executeForRepository(WritePersonalMemory(requestId, PersonalMemoryMutation.Delete(id, expectedVersion))).throwIfRejected()
+    }
+    internal suspend fun deleteMemoryRaw(id: String, expectedVersion: Long) = transaction {
         val before = requireNotNull(dao.memory(id)); checkVersion(before.version, expectedVersion)
         val after = before.copy(deletedAt = now().toEpochMilli(), updatedAt = now().toEpochMilli(), version = nextVersion("MEMORY", id, before.version))
         dao.putMemory(after); journal("MEMORY", id, before, after, "删除个人记忆")
@@ -275,12 +284,18 @@ class TimeRepository(private val db: TimeAgentDatabase, private val clock: Clock
     }
     internal suspend fun rememberExplicitRaw(text: String): PersonalMemoryEntity {
         val parsed = requireNotNull(PersonalMemoryRules.fromExplicit(text, now())) { "请用明确的“记住……”表达；问句和转述不会保存" }
-        return dao.memories().firstOrNull { it.deletedAt == null && it.text == parsed.text && it.confirmed } ?: saveMemory(parsed)
+        return dao.memories().firstOrNull { it.deletedAt == null && it.text == parsed.text && it.confirmed } ?: saveMemoryRaw(parsed)
     }
-    suspend fun proposeMemoryCandidate(): PersonalMemoryEntity? = transaction {
+    suspend fun proposeMemoryCandidate(requestId: String = UUID.randomUUID().toString()): PersonalMemoryEntity? {
+        val result = commands.executeForRepository(WritePersonalMemory(requestId,
+            PersonalMemoryMutation.ProposeCandidate("$requestId:candidate")))
+        result.throwIfRejected()
+        return gson.fromJson(result.payload, PersonalMemoryEntity::class.java)
+    }
+    internal suspend fun proposeMemoryCandidateRaw(memoryId: String): PersonalMemoryEntity? = transaction {
         val proposedRecordIds = dao.memories().filter { it.sourceType == "OBSERVATION" }.mapNotNull { it.sourceId }.toSet()
         val record = dao.records().firstOrNull { it.id !in proposedRecordIds && it.endAt != null && it.endAt <= now().toEpochMilli() && it.source != "HEALTH_SYNC" && it.title.isNotBlank() && it.title !in setOf("睡眠", "睡觉") } ?: return@transaction null
-        saveMemory(PersonalMemoryEntity(UUID.randomUUID().toString(), "PREFERENCE", "我可能偏好${record.title.take(200)}", sourceType = "OBSERVATION", sourceText = "仅依据一条实际记录：${record.title} · ${Instant.ofEpochMilli(record.startAt).atZone(zone)}；不代表长期习惯", sourceId = record.id, confirmed = false))
+        saveMemoryRaw(PersonalMemoryEntity(memoryId, "PREFERENCE", "我可能偏好${record.title.take(200)}", sourceType = "OBSERVATION", sourceText = "仅依据一条实际记录：${record.title} · ${Instant.ofEpochMilli(record.startAt).atZone(zone)}；不代表长期习惯", sourceId = record.id, confirmed = false))
     }
     suspend fun snapshot(): LocalSnapshot = transaction { readSnapshot() }
     private suspend fun readSnapshot() = LocalSnapshot(dao.tasks(), dao.activePlans(), dao.records(), dao.courses(), dao.occurrences(), dao.terms(), dao.categories(), dao.history(), dao.importBatches(), false, dao.activities(), dao.reminders(), dao.ideas(), dao.notes(), dao.healthItems(), dao.suggestions(), dao.memories(), dao.recurringRules(), dao.recurringInstances(), dao.projects(), dao.placements(), dao.weeklyGoals(), dao.attachments(), db.focusDao().all(), db.calendarSyncDao().links().mapNotNull { link -> link.readOnlyReason?.let { link.localEntityId to it } }.toMap(), db.entryContextDao().all(), db.sampleDataDao().all())

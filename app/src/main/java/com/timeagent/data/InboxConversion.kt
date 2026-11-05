@@ -24,7 +24,7 @@ internal suspend fun TimeRepository.convertInboxRaw(command: ConvertInbox) {
         )
         is InboxTarget.Memory -> {
             require(database.dao().memory(target.item.id) == null) { "规则已存在" }
-            saveMemory(target.item.copy(sourceType = "USER_INPUT", sourceId = idea.id))
+            saveMemoryRaw(target.item.copy(sourceType = "USER_INPUT", sourceId = idea.id))
         }
     }
     saveIdea(idea.copy(status = "ARCHIVED"), idea.version)

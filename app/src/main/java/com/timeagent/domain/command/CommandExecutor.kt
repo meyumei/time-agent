@@ -236,6 +236,24 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
                                 payload = gson.toJson(WorkoutRepository(workoutDb, repository, repository.commandClock).applyMutation(command.mutation))
                                 emptyList()
                             }
+                            is WritePersonalMemory -> {
+                                payload = gson.toJson(when (val mutation = command.mutation) {
+                                    is PersonalMemoryMutation.Save -> {
+                                        version("MEMORY", mutation.item.id, mutation.expectedVersion, mutation.expectedVersion == null)
+                                        repository.saveMemoryRaw(mutation.item, mutation.expectedVersion)
+                                    }
+                                    is PersonalMemoryMutation.Delete -> {
+                                        version("MEMORY", mutation.id, mutation.expectedVersion)
+                                        repository.deleteMemoryRaw(mutation.id, mutation.expectedVersion)
+                                        dao.memory(mutation.id)
+                                    }
+                                    is PersonalMemoryMutation.ProposeCandidate -> {
+                                        version("MEMORY", mutation.memoryId, null, create = true)
+                                        repository.proposeMemoryCandidateRaw(mutation.memoryId)
+                                    }
+                                })
+                                emptyList()
+                            }
                             is WriteReminder -> {
                                 payload = gson.toJson(com.timeagent.reminders.ReminderInstanceRepository(repository).applyMutation(command.mutation))
                                 emptyList()
@@ -333,6 +351,7 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
             "PROJECT" -> dao.project(id)
             "PLACEMENT" -> dao.placement(id)
             "GOAL" -> dao.weeklyGoal(id)
+            "MEMORY" -> dao.memory(id)
             else -> error("未知实体类型")
         }
         val current = when (entity) {
@@ -347,11 +366,13 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
             is ProjectEntity -> entity.version
             is TaskPlacementEntity -> entity.version
             is WeeklyGoalEntity -> entity.version
+            is PersonalMemoryEntity -> entity.version
             else -> null
         }
         val deleted = when (entity) {
             is TaskEntity -> entity.deletedAt != null || (!allowCancelled && entity.status == "CANCELLED")
             is ProjectEntity -> entity.deletedAt != null
+            is PersonalMemoryEntity -> entity.deletedAt != null
             else -> false
         }
         if (!create && (entity == null || deleted)) throw Rejected(CommandStatus.NOT_FOUND, "内容不存在或已删除，尚未保存")
@@ -491,6 +512,11 @@ class CommandExecutor internal constructor(private val repository: TimeRepositor
         is WriteProject -> if (command.mutation is ProjectMutation.CreateTask)
             repository.applicationContext?.getString(com.timeagent.R.string.project_task_create_action) ?: "Create project task"
             else repository.applicationContext?.getString(com.timeagent.R.string.project_write_action) ?: "Update project"
+        is WritePersonalMemory -> repository.applicationContext?.getString(when (command.mutation) {
+            is PersonalMemoryMutation.Save -> com.timeagent.R.string.memory_command_save
+            is PersonalMemoryMutation.Delete -> com.timeagent.R.string.memory_command_delete
+            is PersonalMemoryMutation.ProposeCandidate -> com.timeagent.R.string.memory_command_propose
+        }) ?: "Update personal rule"
         is WriteLedger -> when (command.mutation) {
             is LedgerMutation.SaveAccount -> "保存账户"
             is LedgerMutation.ArchiveAccount -> "归档账户"
