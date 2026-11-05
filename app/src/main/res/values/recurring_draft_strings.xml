@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recurring_draft_resume">恢复周期草稿：%1$s</string>
+    <string name="recurring_draft_untitled">未命名规则</string>
+    <string name="recurring_draft_create">新建规则</string>
+    <string name="recurring_draft_edit">编辑规则</string>
+    <string name="recurring_draft_write_failed">周期草稿未能保存到本地。输入仍保留，请重试后再离开。</string>
+    <string name="recurring_draft_cleanup_failed">规则已保存，草稿清理失败。请点关闭重试清理，不会再次保存规则。</string>
+    <string name="recurring_draft_saved">周期规则已保存</string>
+    <string name="recurring_draft_save_failed">规则未能保存，输入仍保留，请重试。</string>
+    <string name="recurring_draft_invalid_input">请先修正时长、提前量、日期或星期设置。</string>
+    <string name="recurring_draft_title_required">标题不能为空</string>
+    <string name="recurring_draft_scope_title">从 %1$s 起修改规则？</string>
+    <string name="recurring_draft_scope_future">仅以后：从 %1$s 起生成，已生成条目保持原样。</string>
+    <string name="recurring_draft_scope_counts">可随规则修改：%1$d 条；受保护：%2$d 条</string>
+    <string name="recurring_draft_scope_locked">保存范围已选定。重试会复用同一请求；取消可返回编辑。</string>
+    <string name="recurring_draft_scope_including">包含可修改的待办实例</string>
+    <string name="recurring_draft_scope_only_future">仅以后</string>
+    <string name="recurring_draft_project_missing">原项目不可用，请重新选择归属。</string>
+</resources>

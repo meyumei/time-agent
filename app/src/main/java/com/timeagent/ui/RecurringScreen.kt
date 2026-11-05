@@ -11,6 +11,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.timeagent.R
+import com.timeagent.domain.command.CommandStatus
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -27,8 +32,6 @@ import com.timeagent.recurring.RecurringService
 import com.timeagent.recurring.RuleChangeScope
 import com.timeagent.recurring.RuleChangePreview
 import com.timeagent.recurring.recurringState
-import com.timeagent.ui.components.DateField
-import com.timeagent.ui.components.RecurrenceField
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -125,59 +128,12 @@ private fun focusWhen(dueAt: Long?, hasTime: Boolean, today: LocalDate, zone: Zo
     }
 }
 
-private data class RuleForm(
-    val id: String,
-    val rule: RecurringRuleEntity?,
-    val title: String,
-    val pattern: RecurringPattern,
-    val projectId: String?
-)
-
 private data class PendingRuleSave(
     val entity: RecurringRuleEntity,
     val expectedVersion: Long?,
     val from: LocalDate,
     val scope: RuleChangeScope? = null,
     val requestId: String
-)
-
-private fun newForm(today: LocalDate, zoneId: String): RuleForm {
-    val id = UUID.randomUUID().toString()
-    return RuleForm(
-        id = id,
-        rule = null,
-        title = "",
-        pattern = RecurringPattern(
-            id = id,
-            frequency = "DAILY",
-            startDate = today.toString(),
-            effectiveFrom = today.toString(),
-            durationMinutes = 30,
-            zoneId = zoneId
-        ),
-        projectId = null
-    )
-}
-
-private fun formOf(
-    rule: RecurringRuleEntity,
-    p: RecurringPattern?,
-    defaultFrom: String,
-    today: LocalDate,
-    zoneId: String
-) = RuleForm(
-    id = rule.id,
-    rule = rule,
-    title = rule.title,
-    pattern = p?.copy(effectiveFrom = defaultFrom) ?: RecurringPattern(
-        id = rule.id,
-        frequency = "DAILY",
-        startDate = today.toString(),
-        effectiveFrom = defaultFrom,
-        durationMinutes = 30,
-        zoneId = zoneId
-    ),
-    projectId = rule.projectId
 )
 
 private fun ruleSubtitle(rule: RecurringRuleEntity, p: RecurringPattern?, projectName: String?): String {
@@ -203,7 +159,24 @@ fun RecurringScreen(
     val today = now.atZone(zone).toLocalDate()
     var expanded by remember { mutableStateOf<Set<String>>(emptySet()) }
     var history by remember { mutableStateOf<Set<String>>(emptySet()) }
-    var form by remember { mutableStateOf<RuleForm?>(null) }
+    val context = LocalContext.current
+    val draftStore = remember(context) { RecurringEditorDraftStore(context) }
+    var editingDraftId by rememberSaveable { mutableStateOf<String?>(null) }
+    val drafts = remember(editingDraftId, data.recurringRules) { draftStore.all() }
+    val snackbar = remember { SnackbarHostState() }
+    var undoMessage by remember { mutableStateOf<com.timeagent.ui.components.UndoMessage?>(null) }
+    com.timeagent.ui.components.UndoSnackbar(snackbar, undoMessage,
+        onUndo = { token -> model.perform {
+            val result = model.repository.commands.execute(com.timeagent.domain.command.UndoCommand(UUID.randomUUID().toString(), token))
+            check(result.status in setOf(CommandStatus.APPLIED, CommandStatus.DUPLICATE)) { result.message }
+        } },
+        onConsumed = { if (undoMessage?.id == it) undoMessage = null })
+    fun editRule(rule: RecurringRuleEntity?, from: String = today.toString()) {
+        val draft = rule?.let { draftStore.read(it.id) } ?: RecurringEditorDraft.create(
+            rule, today, zone, model.repository.now().toEpochMilli(), from)
+        if (draftStore.save(draft)) editingDraftId = draft.id
+        else model.report(context.getString(R.string.recurring_draft_write_failed))
+    }
     var pendingRule by remember { mutableStateOf<PendingRuleSave?>(null) }
     var pendingPreview by remember { mutableStateOf<RuleChangePreview?>(null) }
     var choice by remember { mutableStateOf<RecurringInstanceEntity?>(null) }
@@ -246,59 +219,11 @@ fun RecurringScreen(
         })
     }
 
-    fun saveForm(f: RuleForm) {
-        try {
-            require(f.title.isNotBlank()) { "标题不能为空" }
-            val p = f.pattern
-            val start = LocalDate.parse(p.startDate.trim())
-            val from = LocalDate.parse(p.effectiveFrom.trim())
-            require(p.durationMinutes in 1..1440) { "预计分钟需在 1-1440" }
-            require(p.frequency != "WEEKDAYS" || p.weekdays.isNotEmpty()) { "请选择星期" }
-            require(p.frequency != "WEEKLY_COUNT" || p.weeklyCount in 1..21) { "每周次数需在 1-21" }
-            val pattern = p.copy(
-                startDate = start.toString(),
-                effectiveFrom = from.toString(),
-                zoneId = p.zoneId.takeIf { !it.isNullOrBlank() } ?: zone.id
-            )
-            val entity = RecurringRuleEntity(
-                id = f.id,
-                title = f.title.trim(),
-                patternJson = gson.toJson(pattern),
-                domain = "HABIT",
-                category = f.rule?.category ?: "",
-                reference = f.rule?.reference ?: "",
-                projectId = f.projectId,
-                createdAt = f.rule?.createdAt ?: model.repository.now().toEpochMilli(),
-                updatedAt = f.rule?.updatedAt ?: 0L,
-                version = f.rule?.version ?: 0L,
-                deletedAt = null
-            )
-            val requestId = UUID.randomUUID().toString()
-            val existing = f.rule
-            if (existing == null) {
-                model.perform(
-                    onSuccess = { form = null },
-                    action = { service.saveRule(entity, null, from, requestId) }
-                )
-            } else {
-                pendingPreview = null
-                pendingRule = PendingRuleSave(entity, existing.version, from, null, requestId)
-                model.perform(action = {
-                    val preview = service.previewRuleChange(entity.id, from)
-                    pendingPreview = preview
-                })
-            }
-        } catch (e: Exception) {
-            model.report(e.message ?: "请检查输入")
-        }
-    }
-
     fun commitPending(scope: RuleChangeScope) {
         val pending = pendingRule ?: return
         val preview = pendingPreview ?: return
         model.perform(
             onSuccess = {
-                form = null
                 pendingRule = null
                 pendingPreview = null
             },
@@ -317,7 +242,9 @@ fun RecurringScreen(
         moving = inst
     }
 
-    Surface(Modifier.fillMaxSize()) { Column(Modifier.fillMaxSize().statusBarsPadding()) {
+    Scaffold(modifier = Modifier.fillMaxSize(), contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        snackbarHost = { SnackbarHost(snackbar, modifier = Modifier.navigationBarsPadding()) }) { innerPadding ->
+    Column(Modifier.fillMaxSize().padding(innerPadding).statusBarsPadding()) {
         Row(
             Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -346,13 +273,21 @@ fun RecurringScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Button(
-                onClick = { form = newForm(today, zone.id) },
+                onClick = { editRule(null) },
                 modifier = Modifier.weight(1f).testTag("recurring-create")
             ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_003), fontSize = 13.sp) }
             OutlinedButton(
                 onClick = { model.perform(action = { service.refresh() }) },
                 modifier = Modifier.weight(1f)
             ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_004), fontSize = 13.sp) }
+        }
+        if (drafts.isNotEmpty()) Column(Modifier.fillMaxWidth().heightIn(max = 160.dp).verticalScroll(rememberScrollState())) {
+            drafts.forEach { draft ->
+                OutlinedButton(onClick = { editingDraftId = draft.id }, modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
+                    Text(stringResource(R.string.recurring_draft_resume,
+                        draft.fields.title.ifBlank { context.getString(R.string.recurring_draft_untitled) }))
+                }
+            }
         }
         if (rules.isEmpty() && focus.isEmpty()) {
             Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
@@ -426,7 +361,7 @@ fun RecurringScreen(
                                     )
                                 }
                                 TextButton(
-                                    onClick = { form = formOf(rule, p, today.toString(), today, zone.id) },
+                                    onClick = { editRule(rule) },
                                     modifier = Modifier.testTag("recurring-rule-${rule.id}")
                                 ) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_012), fontSize = 12.sp) }
                                 TextButton(onClick = { togglePause(rule, p) }) {
@@ -491,10 +426,18 @@ fun RecurringScreen(
     }
 
     }
-    if (pendingRule == null) {
-        form?.let { f ->
-            RuleEditor(initial = f, projects = projects, onDismiss = { form = null }, onSave = { saveForm(it) })
-        }
+    if (pendingRule == null) editingDraftId?.let { id ->
+        val draft = remember(id) { draftStore.read(id) }
+        if (draft != null) key(id) {
+            RecurringRuleEditDialog(draft, projects, model,
+                onDraftChange = draftStore::save,
+                onRemoveDraft = { draftStore.remove(id) },
+                onDismiss = { editingDraftId = null },
+                onSaved = { result -> result.undoToken?.let { token ->
+                    undoMessage = com.timeagent.ui.components.UndoMessage(result.requestId,
+                        context.getString(R.string.recurring_draft_saved), token)
+                } })
+        } else LaunchedEffect(id) { editingDraftId = null }
     }
 
     pendingRule?.let { pending ->
@@ -569,7 +512,7 @@ fun RecurringScreen(
             dismissButton = {
                 TextButton(onClick = {
                     choice = null
-                    if (rule != null) form = formOf(rule, patternOrNull(gson, rule), inst.originalDate, today, zone.id)
+                    if (rule != null) editRule(rule, inst.originalDate)
                 }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_017)) }
             }
         )
@@ -797,74 +740,6 @@ private fun InstanceRow(
             } else if (state in setOf(InstState.DONE,InstState.SKIPPED,InstState.CANCELLED,InstState.SUSPENDED,InstState.SUPERSEDED)) {
                 TextButton(onClick = { onAct("REOPEN") }) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_020), fontSize = 12.sp) }
                 TextButton(onClick = onMove) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_016), fontSize = 12.sp) }
-            }
-        }
-    }
-}
-
-@Composable
-private fun RuleEditor(
-    initial: RuleForm,
-    projects: List<ProjectEntity>,
-    onDismiss: () -> Unit,
-    onSave: (RuleForm) -> Unit
-) {
-    var f by remember(initial) { mutableStateOf(initial) }
-    var recurrenceValid by remember(initial) { mutableStateOf(true) }
-    Dialog(onDismissRequest = onDismiss) {
-        Surface(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
-            Column(
-                Modifier.padding(16.dp).heightIn(max = 560.dp).verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(if (initial.rule == null) "新建规则" else "编辑规则", fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
-                OutlinedTextField(
-                    value = f.title,
-                    onValueChange = { f = f.copy(title = it) },
-                    label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_template_editor_006)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth().testTag("recurring-title")
-                )
-                if (initial.rule != null) {
-                    DateField(
-                        "本次及以后生效日期 yyyy-MM-dd",
-                        runCatching { LocalDate.parse(f.pattern.effectiveFrom) }.getOrDefault(LocalDate.now()),
-                        { f = f.copy(pattern = f.pattern.copy(effectiveFrom = it.toString())) }
-                    )
-                }
-                RecurrenceField(
-                    value = f.pattern,
-                    onChange = { next -> if (next != null) f = f.copy(pattern = next) },
-                    modifier = Modifier.fillMaxWidth(),
-                    seedDate = runCatching { LocalDate.parse(f.pattern.startDate) }.getOrDefault(LocalDate.now()),
-                    seedId = f.id,
-                    allowNone = false,
-                    onValidityChange = { recurrenceValid = it }
-                )
-                Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_recurring_screen_024), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Row(
-                    Modifier.horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    FilterChip(
-                        selected = f.projectId == null,
-                        onClick = { f = f.copy(projectId = null) },
-                        label = { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.text_deadline_screen_032), fontSize = 12.sp) }
-                    )
-                    projects.forEach { project ->
-                        FilterChip(
-                            selected = f.projectId == project.id,
-                            onClick = { f = f.copy(projectId = project.id) },
-                            label = { Text(project.name, fontSize = 12.sp, maxLines = 1) }
-                        )
-                    }
-                }
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel), fontSize = 13.sp) }
-                    Button(onClick = { onSave(f) }, enabled = recurrenceValid, modifier = Modifier.testTag("recurring-save")) {
-                        Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_save), fontSize = 13.sp)
-                    }
-                }
             }
         }
     }
