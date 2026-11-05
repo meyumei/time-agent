@@ -86,8 +86,10 @@ object HabitStatistics {
     /**
      * Evaluates one habit over `[from, to]`. Days before `startDate`, days outside
      * `activeWeekdays`, and days without source data never count as missed.
+     * Reports can keep future dates in the window while judging only through [today].
      */
-    fun evaluate(habit: HabitEntity, events: List<HabitEvent>, from: LocalDate, to: LocalDate): HabitEvaluation {
+    fun evaluate(habit: HabitEntity, events: List<HabitEvent>, from: LocalDate, to: LocalDate,
+        today: LocalDate = to): HabitEvaluation {
         val end = maxOf(from, to)
         val begin = minOf(from, to)
         val sourceEvents = events
@@ -99,29 +101,29 @@ object HabitStatistics {
         val days = mutableListOf<HabitDay>()
         var cursor = begin
         while (!cursor.isAfter(end)) {
-            days += day(habit, cursor, today = to, byDate = sourceEvents)
+            days += day(habit, cursor, today = today, byDate = sourceEvents)
             cursor = cursor.plusDays(1)
         }
 
         // 12-week (or caller window) trend; used by the detail page and by weekly streaks.
-        val weeks = weeksOf(begin, end).map { weekOf(habit, it, to, sourceEvents) }
+        val weeks = weeksOf(begin, end).map { weekOf(habit, it, today, sourceEvents) }
         val weekStart = to.with(DayOfWeek.MONDAY)
         val weekDays = (0L..6L).map { offset ->
             val date = weekStart.plusDays(offset)
             when {
-                date.isAfter(to) -> HabitDay(date, HabitDayState.UPCOMING, null)
-                else -> day(habit, date, to, sourceEvents)
+                date.isAfter(today) -> HabitDay(date, HabitDayState.UPCOMING, null)
+                else -> day(habit, date, today, sourceEvents)
             }
         }
         val currentWeek = weeks.firstOrNull { it.weekStart == weekStart }
-            ?: weekOf(habit, weekStart, to, sourceEvents)
+            ?: weekOf(habit, weekStart, today, sourceEvents)
 
         val judged = days.filter { it.state == HabitDayState.ACHIEVED || it.state == HabitDayState.MISSED }
         val achieved = judged.count { it.state == HabitDayState.ACHIEVED }
         val streak = if (habit.periodKind == HabitPeriod.WEEKLY) {
-            weeklyStreak(weeks, today = to)
+            weeklyStreak(weeks, today = today)
         } else {
-            dailyStreak(days, today = to)
+            dailyStreak(days, today = today)
         }
         // A weekly habit is judged per week; averaging its days would inflate the rate.
         val judgedWeeks = weeks.filter { it.state == HabitDayState.ACHIEVED || it.state == HabitDayState.MISSED }
@@ -161,6 +163,7 @@ object HabitStatistics {
     ): HabitDay {
         if (date.isBefore(habit.start)) return HabitDay(date, HabitDayState.BEFORE_START, null)
         if (!habit.isActive(date)) return HabitDay(date, HabitDayState.INACTIVE, null)
+        if (date.isAfter(today)) return HabitDay(date, HabitDayState.UPCOMING, null)
         val events = byDate[date].orEmpty()
         if (events.isEmpty()) {
             // A manual habit is explicit: no check-in is a real "not done". Derived sources may

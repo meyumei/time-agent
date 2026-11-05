@@ -326,5 +326,6 @@ L01/L34：新建任务并安排为一个命令；新增无优先级保留旧优�
 | L02/L07，关联N02/N03/N06/N09 | 快捷通知开始最近计时经版本化幂等命令；快捷项变更刷新通知、共享完整最近项选择；冲突拒绝且失败点击仅进管理页 | `t5.3-notification-recent-timer.md`；本日`notification-recent-reviewed.json`，最终编译退出0 | 通知连续点按、修改/删除旧版本、主计时竞争、锁屏/权限/后台；确认页打开即执行继续处理 |
 | L02/L07，关联N02/N03/N06/N09 | 确认路由只读加载、空槽位也先确认；列表/芯片保留快捷项版本，确认保存原运行集合 | `t5.4-quick-entry-confirmation.md`；本日`quick-entry-confirmation-final.json`，退出0，失败编译另保留 | 取消不写入、冲突变化、内容变化拒绝、进程恢复、连续点按、大字与无障碍 |
 | L01/L07，关联N05 | CSV/JSON/ICS 包含范围内提醒点，ICS 提醒点省略结束；长阶段两秒后低频进度提示且退出时取消 | `t5.7-export-reminder-points.md`；本日`export-reminder-points.json`，编译退出0 | 三格式输出往返、边界/示例排除、外部日历、长写入/取消/失败/权限；未实际导出 |
+| L01/L02/L09/L11，关联N03/N05/N10 | 报告习惯睡眠关联去重和备注识别；实际/专注/训练首尾分钟、专注跨日计数；完整窗口与今天分离 | `t5.7-report-habit-consistency.md`；本日`report-habit-consistency-final.json`，编译退出0 | 睡眠编辑/去重、各时刻指标、未来窗口分母、统计图与习惯页一致性；报告示例过滤和明细入口继续补 |
 
 未改鱼名字形象、Linux/DSH、BYOK 或共同记忆；主库仍v22。普通任务转换周期/重复入口、其余模块反馈和剩余阶段2–5缺口继续登记在 `development-through-phase5.md`，不能以本节编译记录宣布全项完成。
