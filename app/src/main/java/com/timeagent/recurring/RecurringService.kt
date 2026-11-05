@@ -237,16 +237,20 @@ class RecurringService(private val repository: TimeRepository) {
         return item to task
     }
     private fun sorted(items:List<Conflict>)=items.sortedBy{it.id}
-    suspend fun previewMove(instanceId:String,expectedVersion:Long,targetAt:Long,withPlan:Boolean):List<Conflict> = withContext(Dispatchers.IO) { PersonalDataGate.access {
+    suspend fun previewMove(instanceId:String,expectedVersion:Long,targetAt:Long,withPlan:Boolean):List<Conflict> {
+        val check = previewMoveDetails(instanceId, expectedVersion, targetAt, withPlan)
+        checkedMove = check
+        return check.conflicts
+    }
+    suspend fun previewMoveDetails(instanceId:String,expectedVersion:Long,targetAt:Long,withPlan:Boolean):RecurringMovePreview = withContext(Dispatchers.IO) { PersonalDataGate.access { repository.transaction {
         require(targetAt>repository.now().toEpochMilli()) { "请选择未来的改期时间" }
         val (item,task)=movable(instanceId,expectedVersion)
         val source=gson.fromJson(item.ruleSnapshot,RecurringRuleEntity::class.java)
         require(source.domain!="DEADLINE" || !withPlan) { "生活期限是时间点，请关闭同时安排时段" }
         if(withPlan)PersonalMemoryRules.violation(dao().memories(),task,Instant.ofEpochMilli(targetAt),Instant.ofEpochMilli(targetAt+task.estimatedMinutes*60000L),repository.zone)?.let{throw IllegalArgumentException("与个人约定冲突：${it.text}")}
         val warnings=if(withPlan)repository.conflicts(span(targetAt,targetAt+task.estimatedMinutes*60000L),"recurring-plan:$instanceId")else emptyList()
-        checkedMove=RecurringMovePreview(instanceId,expectedVersion,targetAt,withPlan,task.version,dao().plan("recurring-plan:$instanceId")?.version,warnings)
-        warnings
-    } }
+        RecurringMovePreview(instanceId,expectedVersion,targetAt,withPlan,task.version,dao().plan("recurring-plan:$instanceId")?.version,warnings)
+    } } }
     suspend fun move(instanceId:String,expectedVersion:Long,targetAt:Long,withPlan:Boolean,expectedConflicts:List<Conflict>,requestId:String) {
         repository.transaction {
             repository.commands.replay(requestId)?.let { return@transaction }
