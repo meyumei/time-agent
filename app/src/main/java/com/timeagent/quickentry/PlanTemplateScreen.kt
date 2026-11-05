@@ -36,8 +36,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -69,10 +74,22 @@ fun PlanTemplateScreen(
     var captureOpen by remember { mutableStateOf(false) }
     var applying by remember { mutableStateOf<PlanTemplateEntity?>(null) }
     var deleting by remember { mutableStateOf<PlanTemplateEntity?>(null) }
-    var editing by remember { mutableStateOf<PlanTemplateEntity?>(null) }
+    val editorSaver = remember { Saver<PlanTemplateEntity?, String>(
+        save = { it?.let { value -> com.google.gson.Gson().toJson(value) }.orEmpty() },
+        restore = { it.takeIf(String::isNotEmpty)?.let { raw -> com.google.gson.Gson().fromJson(raw, PlanTemplateEntity::class.java) } }) }
+    var editing by rememberSaveable(stateSaver = editorSaver) { mutableStateOf<PlanTemplateEntity?>(null) }
+    val editorStates = rememberSaveableStateHolder()
+    val context = LocalContext.current
+    val draftStore = remember(context) { TemplateEditorDraftStore(context) }
+    val drafts = remember(editing, state.templates) { draftStore.all() }
 
     editing?.let { template ->
-        TemplateEditor(model, template, state.templateItems[template.id].orEmpty()) { editing = null }
+        editorStates.SaveableStateProvider(template.id) {
+            TemplateEditor(model, template, state.templateItems[template.id].orEmpty()) {
+                editorStates.removeState(template.id)
+                editing = null
+            }
+        }
         return
     }
 
@@ -101,6 +118,13 @@ fun PlanTemplateScreen(
             contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            items(drafts, key = { "draft:${it.template.id}" }) { draft ->
+                OutlinedButton(onClick = { editing = draft.template }, enabled = !state.busy,
+                    modifier = Modifier.fillMaxWidth()) {
+                    Text(stringResource(com.timeagent.R.string.template_draft_resume,
+                        draft.name.ifBlank { stringResource(com.timeagent.R.string.template_draft_untitled) }))
+                }
+            }
             item {
                 Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp),
                     color = MaterialTheme.colorScheme.surfaceContainerLow) {
@@ -394,6 +418,11 @@ private fun ApplyTemplateDialog(
                                     ).joinToString(" · ")
                                     if (meta.isNotBlank()) Text(meta, style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    if (entry.item.kind == TEMPLATE_KIND_TASK && entry.item.startTime != null) {
+                                        Text(stringResource(com.timeagent.R.string.template_preview_task_schedule),
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
                                     entry.warnings.forEach {
                                         Text(it, style = MaterialTheme.typography.labelSmall,
                                             color = MaterialTheme.colorScheme.error)
@@ -430,22 +459,36 @@ private fun ApplyTemplateDialog(
                         }
                     }
                 },
-            ) { Text(if (state.busy) "应用中…" else "批量创建 ${selected.size} 条") }
+            ) {
+                val chosen = current?.items.orEmpty().filter { it.item.id in selected }
+                val tasks = chosen.count { it.item.kind == TEMPLATE_KIND_TASK }
+                val schedules = chosen.count { it.item.kind == TEMPLATE_KIND_SCHEDULE || it.item.startTime != null }
+                Text(if (state.busy) stringResource(com.timeagent.R.string.template_preview_applying)
+                    else stringResource(com.timeagent.R.string.template_preview_counts, tasks, schedules))
+            }
         },
         dismissButton = { TextButton(onClick = onDismiss, enabled = !state.busy) { Text(androidx.compose.ui.res.stringResource(com.timeagent.R.string.action_cancel)) } },
     )
 }
 
+@Composable
 private fun previewTime(entry: TemplatePreviewItem, zone: ZoneId): String {
-    if (entry.item.kind == TEMPLATE_KIND_TASK) return "任务"
-    if (entry.item.scheduleKind == TEMPLATE_SCHEDULE_ALL_DAY) return "全天"
-    val start = entry.startAt ?: return "时间无效"
+    val taskWithSchedule = entry.item.kind == TEMPLATE_KIND_TASK && entry.item.startTime != null
+    if (entry.item.kind == TEMPLATE_KIND_TASK && !taskWithSchedule)
+        return stringResource(com.timeagent.R.string.template_preview_task_only)
+    if (entry.item.scheduleKind == TEMPLATE_SCHEDULE_ALL_DAY)
+        return stringResource(if (taskWithSchedule) com.timeagent.R.string.template_preview_task_all_day
+            else com.timeagent.R.string.template_preview_all_day)
+    val start = entry.startAt ?: return stringResource(com.timeagent.R.string.template_preview_invalid_time)
     val end = entry.endAt ?: return TEMPLATE_TIME_FORMAT.format(Instant.ofEpochMilli(start).atZone(zone))
     if (entry.item.scheduleKind == TEMPLATE_SCHEDULE_POINT) {
-        return TEMPLATE_TIME_FORMAT.format(Instant.ofEpochMilli(start).atZone(zone)) + " 提醒点"
+        val time = TEMPLATE_TIME_FORMAT.format(Instant.ofEpochMilli(start).atZone(zone))
+        return if (taskWithSchedule) stringResource(com.timeagent.R.string.template_preview_task_point, time)
+            else stringResource(com.timeagent.R.string.template_preview_point, time)
     }
-    return TEMPLATE_TIME_FORMAT.format(Instant.ofEpochMilli(start).atZone(zone)) + "–" +
+    val range = TEMPLATE_TIME_FORMAT.format(Instant.ofEpochMilli(start).atZone(zone)) + "–" +
         TEMPLATE_TIME_FORMAT.format(Instant.ofEpochMilli(end).atZone(zone))
+    return if (taskWithSchedule) stringResource(com.timeagent.R.string.template_preview_task_timed, range) else range
 }
 
 private fun scheduleKindLabel(kind: String): String = when (kind) {

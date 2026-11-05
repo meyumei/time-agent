@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="template_editor_title">编辑计划模板</string>
+    <string name="template_draft_write_failed">草稿保存失败，编辑内容仍在；请留在当前页面后重试。</string>
+    <string name="template_draft_cleanup_failed">模板已保存，但旧草稿未能清除；请关闭后核对，勿重复保存。</string>
+    <string name="template_draft_restored">已恢复未保存的编辑；保存时仍核对编辑前的模板版本。</string>
+    <string name="template_draft_resume">继续草稿：%1$s</string>
+    <string name="template_draft_untitled">未命名模板</string>
+    <string name="template_preview_task_schedule">将创建任务和关联日程；取消勾选会一起取消，不会只创建其中一项。</string>
+    <string name="template_preview_applying">应用中…</string>
+    <string name="template_preview_counts">创建 %1$d 个任务、%2$d 个日程</string>
+    <string name="template_preview_task_only">任务</string>
+    <string name="template_preview_all_day">全天</string>
+    <string name="template_preview_task_all_day">任务＋全天日程</string>
+    <string name="template_preview_task_point">任务＋%1$s 提醒点</string>
+    <string name="template_preview_task_timed">任务＋%1$s 日程</string>
+    <string name="template_preview_point">%1$s 提醒点</string>
+    <string name="template_preview_invalid_time">时间无效</string>
+</resources>
